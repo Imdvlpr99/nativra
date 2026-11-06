@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+*.log
+.turbo/
+.DS_Store
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.expo/
+.expo-shared/
+
+nativra.lock.json.bak

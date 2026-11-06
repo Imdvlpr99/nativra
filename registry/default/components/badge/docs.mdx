@@ -1,0 +1,40 @@
+# Badge
+
+A small status indicator label for React Native.
+
+## Usage
+
+```tsx
+import { Badge } from "@/components/ui/Badge";
+
+export function Example() {
+  return <Badge label="New" variant="primary" size="md" />;
+}
+```
+
+## Variants
+
+- **default** — neutral badge
+- **primary** — highlighted status
+- **secondary** — secondary importance
+- **destructive** — error or alert state
+- **outline** — bordered badge
+
+## Sizes
+
+- **sm** — small
+- **md** — medium (default)
+- **lg** — large
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Badge text |
+| variant | string | "default" | Visual style |
+| size | string | "md" | Size preset |
+
+## Accessibility
+
+- Semantically rendered as text
+- Use as a status indicator alongside interactive elements

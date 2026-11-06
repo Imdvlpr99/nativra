@@ -1,0 +1,32 @@
+# Card
+
+A surface container for grouped content.
+
+## Usage
+
+```tsx
+import { Card } from "@/components/ui/Card";
+import { Text } from "@/components/ui/Text";
+
+export function Example() {
+  return (
+    <Card elevated padding="md">
+      <Text variant="h3">Card Title</Text>
+      <Text variant="p">Card content goes here.</Text>
+    </Card>
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| elevated | boolean | false | Add shadow effect |
+| padding | string | "md" | Internal spacing (sm, md, lg) |
+| children | ReactNode | — | Card content |
+
+## Accessibility
+
+- Use as a container for related content
+- Heading inside card should have semantic hierarchy

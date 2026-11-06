@@ -1,0 +1,26 @@
+# Label
+
+Accessible form label component with required asterisk and disabled state.
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/Label";
+
+export function Example() {
+  return <Label required>Email address</Label>;
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| children | string | — | Label text |
+| required | boolean | false | Show required asterisk |
+| disabled | boolean | false | Disabled visual state |
+
+## Accessibility
+
+- Semantic HTML label element
+- Associated with form controls

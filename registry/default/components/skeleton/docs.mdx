@@ -1,0 +1,31 @@
+# Skeleton
+
+Loading placeholder skeleton with subtle pulse animation effect.
+
+## Usage
+
+```tsx
+import { Skeleton } from "@/components/ui/Skeleton";
+
+export function Example() {
+  return (
+    <>
+      <Skeleton width={180} height={16} radius="md" />
+      <Skeleton width="100%" height={40} radius="lg" />
+    </>
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| width | number \| string | "100%" | Width value |
+| height | number \| string | 20 | Height value |
+| radius | string | "md" | Border radius (none, sm, md, lg, full) |
+
+## Accessibility
+
+- Set `accessibilityRole="none"` - purely visual placeholder
+- Use in place of actual content during loading

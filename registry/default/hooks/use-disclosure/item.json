@@ -1,0 +1,13 @@
+{
+  "id": "use-disclosure",
+  "name": "useDisclosure",
+  "description": "A hook for open/close/toggle boolean state.",
+  "type": "hook",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-disclosure.ts" }],
+  "tags": ["hook", "state", "modal"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

@@ -1,0 +1,25 @@
+# Separator
+
+A horizontal or vertical divider line.
+
+## Usage
+
+```tsx
+import { Separator } from "@/components/ui/Separator";
+
+export function Example() {
+  return <Separator orientation="horizontal" />;
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| orientation | string | "horizontal" | Direction (horizontal, vertical) |
+| decorative | boolean | true | Hide from screen readers if decorative |
+
+## Accessibility
+
+- Set `decorative={true}` for visual-only separators
+- Use `decorative={false}` for semantic divisions

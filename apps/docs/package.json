@@ -1,0 +1,45 @@
+{
+  "name": "@nativra/docs",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Nativra public documentation site and component catalog",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf .next out",
+    "prebuild": "node ../../scripts/build-registry.mjs",
+    "predev": "node ../../scripts/build-registry.mjs"
+  },
+  "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@nativra/registry-client": "workspace:*",
+    "@nativra/registry-schema": "workspace:*",
+    "@nativra/theme-engine": "workspace:*",
+    "@next/mdx": "^15.1.0",
+    "fumadocs-core": "^14.4.0",
+    "fumadocs-ui": "^14.4.0",
+    "lucide-react": "^1.70.0",
+    "next": "^15.1.0",
+    "next-mdx-remote": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nativra/config": "workspace:*",
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.4.49",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}

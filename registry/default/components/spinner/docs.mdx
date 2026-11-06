@@ -1,0 +1,31 @@
+# Spinner
+
+Accessible activity indicator spinner with size and semantic color presets.
+
+## Usage
+
+```tsx
+import { Spinner } from "@/components/ui/Spinner";
+
+export function Example() {
+  return <Spinner size="md" color="#0284c7" />;
+}
+```
+
+## Sizes
+
+- **sm** — small indicator
+- **md** — medium (default)
+- **lg** — large indicator
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| size | string | "md" | Size preset |
+| color | string | — | Spinner color (uses theme foreground by default) |
+
+## Accessibility
+
+- Built with `accessibilityRole="progressbar"`
+- Shows loading state to screen readers

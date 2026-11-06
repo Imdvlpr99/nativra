@@ -1,0 +1,56 @@
+# Button
+
+A pressable button component with variant and size presets.
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/Button";
+
+export function Example() {
+  return (
+    <Button 
+      variant="primary" 
+      size="md"
+      onPress={() => console.log("Pressed")}
+    >
+      Click me
+    </Button>
+  );
+}
+```
+
+## Variants
+
+- **default** — neutral background
+- **primary** — highlighted action button
+- **secondary** — low-emphasis button
+- **destructive** — destructive action (delete, remove)
+- **outline** — bordered variant
+- **ghost** — text-only variant
+- **link** — link styling
+
+## Sizes
+
+- **xs** — extra small (compact)
+- **sm** — small
+- **md** — medium (default)
+- **lg** — large
+- **xl** — extra large
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| variant | string | "default" | Visual style |
+| size | string | "md" | Size preset |
+| disabled | boolean | false | Disable interactions |
+| loading | boolean | false | Show loading indicator |
+| children | string | — | Button label text |
+| onPress | function | — | Press handler |
+
+## Accessibility
+
+- Built with `accessibilityRole="button"`
+- Respects disabled state in screen readers
+- Shows loading state with `accessibilityState={{ busy: true }}`

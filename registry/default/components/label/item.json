@@ -1,0 +1,31 @@
+{
+  "id": "label",
+  "name": "Label",
+  "description": "Accessible form label component with required asterisk and disabled state.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Label.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Label.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["label", "form", "text", "accessibility"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

@@ -1,0 +1,37 @@
+# Input
+
+A text input with label, helper and error state.
+
+## Usage
+
+```tsx
+import { Input } from "@/components/ui/Input";
+
+export function Example() {
+  return (
+    <Input
+      label="Email"
+      placeholder="you@example.com"
+      error={false}
+    />
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Field label |
+| placeholder | string | — | Placeholder text |
+| error | boolean | false | Show error state |
+| errorMessage | string | — | Error text |
+| disabled | boolean | false | Disable input |
+| value | string | — | Current value |
+| onChangeText | function | — | Change handler |
+
+## Accessibility
+
+- Label linked to input
+- Error messages announced
+- Full keyboard support

@@ -1,0 +1,36 @@
+# Checkbox
+
+Accessible checkbox component with check indicator and label support.
+
+## Usage
+
+```tsx
+import { Checkbox } from "@/components/ui/Checkbox";
+import { useState } from "react";
+
+export function Example() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={setChecked}
+      label="I agree to the terms"
+    />
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| checked | boolean | — | Checked state |
+| onCheckedChange | function | — | Change handler |
+| label | string | — | Label text |
+| disabled | boolean | false | Disable interactions |
+
+## Accessibility
+
+- Full keyboard navigation support
+- Screen reader announcements
+- Built with ARIA attributes

@@ -1,0 +1,31 @@
+{
+  "id": "switch",
+  "name": "Switch",
+  "description": "Accessible toggle switch with themed active/inactive colors.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Switch.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Switch.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["switch", "toggle", "form", "interactive"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

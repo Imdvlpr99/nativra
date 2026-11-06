@@ -1,0 +1,20 @@
+{
+  "id": "card",
+  "name": "Card",
+  "description": "A surface container for grouped content.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Card.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Card.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["card", "surface", "container"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

@@ -1,0 +1,17 @@
+{
+  "id": "dark-slate",
+  "name": "Dark Slate",
+  "description": "A slate-toned theme with cool dark colors for Nativra components.",
+  "type": "theme",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "theme.ts" }],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["theme", "dark", "tokens", "design-system"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

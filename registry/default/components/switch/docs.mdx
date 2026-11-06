@@ -1,0 +1,34 @@
+# Switch
+
+Accessible toggle switch with themed active/inactive colors.
+
+## Usage
+
+```tsx
+import { Switch } from "@/components/ui/Switch";
+import { useState } from "react";
+
+export function Example() {
+  const [enabled, setEnabled] = useState(false);
+  return (
+    <Switch
+      value={enabled}
+      onValueChange={setEnabled}
+    />
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| value | boolean | — | Toggle state |
+| onValueChange | function | — | Change handler |
+| disabled | boolean | false | Disable interactions |
+
+## Accessibility
+
+- Full keyboard support
+- Screen reader announcements
+- Accessible state updates

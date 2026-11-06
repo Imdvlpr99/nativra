@@ -1,0 +1,39 @@
+# Text
+
+Typography component with semantic heading, body, and muted variants.
+
+## Usage
+
+```tsx
+import { Text } from "@/components/ui/Text";
+
+export function Example() {
+  return (
+    <>
+      <Text variant="h1">Heading 1</Text>
+      <Text variant="p">Body text with default styling.</Text>
+      <Text variant="muted">Secondary helper text.</Text>
+    </>
+  );
+}
+```
+
+## Variants
+
+- **h1, h2, h3, h4** — heading levels
+- **p** — paragraph (default body text)
+- **lead** — large leading text
+- **muted** — secondary/helper text
+- **code** — monospace code text
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| variant | string | "p" | Typography style |
+| children | string | — | Text content |
+
+## Accessibility
+
+- Use heading variants semantically (`h1` for page title, `h2` for section, etc.)
+- Follows semantic text hierarchy

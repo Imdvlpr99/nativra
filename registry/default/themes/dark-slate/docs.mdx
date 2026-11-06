@@ -1,0 +1,55 @@
+# Dark Slate Theme
+
+A slate-toned theme with cool dark colors, perfect for modern native apps.
+
+## Usage
+
+```tsx
+import { darkSlate } from "@/lib/themes/dark-slate";
+import { useColorScheme } from "react-native";
+import { toStyleSheetTokens } from "@nativra/theme-engine";
+
+export function App() {
+  const isDark = useColorScheme() === "dark";
+  const tokens = toStyleSheetTokens(darkSlate, isDark ? "dark" : "light");
+  
+  return (
+    <View style={{ backgroundColor: tokens.colors.background }}>
+      {/* Your app content */}
+    </View>
+  );
+}
+```
+
+## Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| background | #0f172a | App background |
+| foreground | #f8fafc | Primary text |
+| card | #1e293b | Card/surface backgrounds |
+| primary | #38bdf8 | Actions, highlights |
+| primary-foreground | #0f172a | Text on primary |
+| muted | #334155 | Secondary backgrounds |
+| muted-foreground | #94a3b8 | Secondary text |
+| border | #334155 | Dividers, borders |
+| destructive | #ef4444 | Danger/error states |
+
+## Customization
+
+Copy the theme into your project and edit the token values:
+
+```tsx
+export const myCustomTheme = {
+  background: "#your-color",
+  foreground: "#your-color",
+  // ... override other tokens
+} as const;
+```
+
+## Accessibility
+
+Dark Slate maintains WCAG AA contrast ratios for:
+- Text on backgrounds (foreground on background)
+- Text on surfaces (foreground on card)
+- Interactive elements (primary and destructive buttons)

@@ -1,0 +1,70 @@
+# useDisclosure
+
+A React hook for managing the open/closed state of UI components like modals, drawers, accordions, and popovers.
+
+## Usage
+
+```tsx
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Button } from "@/components/ui/Button";
+
+export function Example() {
+  const { isOpen, open, close, toggle } = useDisclosure();
+  
+  return (
+    <>
+      <Button onPress={toggle}>Toggle</Button>
+      {isOpen && <Modal onClose={close}>Modal content</Modal>}
+    </>
+  );
+}
+```
+
+## API
+
+```tsx
+const { isOpen, open, close, toggle } = useDisclosure(initialState);
+```
+
+### Parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| initialState | boolean | false | Initial open/close state |
+
+### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| isOpen | boolean | Current open state |
+| open | function | Set state to true |
+| close | function | Set state to false |
+| toggle | function | Flip the current state |
+
+## Examples
+
+### Modal Controller
+```tsx
+const disclosure = useDisclosure();
+return (
+  <>
+    <Button onPress={disclosure.open}>Open Modal</Button>
+    {disclosure.isOpen && (
+      <Modal onClose={disclosure.close}>
+        Modal Body
+      </Modal>
+    )}
+  </>
+);
+```
+
+### Accordion Item
+```tsx
+const { isOpen, toggle } = useDisclosure();
+return (
+  <>
+    <Button onPress={toggle}>{title}</Button>
+    {isOpen && <Content />}
+  </>
+);
+```

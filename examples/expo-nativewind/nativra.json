@@ -1,0 +1,11 @@
+{
+  "$schema": "https://nativra.dev/schema.json",
+  "stylingTarget": "nativewind",
+  "componentsDir": "components/ui",
+  "hooksDir": "hooks",
+  "utilsDir": "lib/utils",
+  "registries": {
+    "default": "https://registry.nativra.dev"
+  }
+}
+

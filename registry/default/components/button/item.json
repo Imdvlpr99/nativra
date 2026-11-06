@@ -1,0 +1,31 @@
+{
+  "id": "button",
+  "name": "Button",
+  "description": "A pressable button with variant and size presets for React Native.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Button.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Button.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["button", "press", "interactive", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

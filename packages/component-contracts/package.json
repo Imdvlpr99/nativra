@@ -1,0 +1,27 @@
+{
+  "name": "@nativra/component-contracts",
+  "version": "0.0.1",
+  "description": "Shared TypeScript types and behavioral contracts for Nativra components",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@nativra/config": "workspace:*",
+    "tsup": "^8.3.5",
+    "rimraf": "^6.0.1"
+  }
+}

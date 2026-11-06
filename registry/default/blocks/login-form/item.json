@@ -1,0 +1,37 @@
+{
+  "id": "login-form",
+  "name": "Login Form",
+  "description": "A full authentication block with email, password, and sign-in action.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/LoginForm.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/LoginForm.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "input", "registry": "default" },
+    { "id": "label", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "auth", "login", "form"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

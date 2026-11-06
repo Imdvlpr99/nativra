@@ -1,0 +1,40 @@
+# Avatar
+
+A circular image container with fallback initials for React Native.
+
+## Usage
+
+```tsx
+import { Avatar } from "@/components/ui/Avatar";
+
+export function Example() {
+  return (
+    <Avatar
+      src="https://example.com/avatar.jpg"
+      fallback="JD"
+      size="md"
+    />
+  );
+}
+```
+
+## Sizes
+
+- **sm** — 32px
+- **md** — 40px (default)
+- **lg** — 56px
+- **xl** — 80px
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| src | string | — | Image URI |
+| fallback | string | — | Initials/text if no image |
+| size | string | "md" | Size preset |
+| accessibilityLabel | string | fallback | Screen reader label |
+
+## Accessibility
+
+- Shows initials when image fails to load
+- Proper ARIA labeling

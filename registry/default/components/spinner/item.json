@@ -1,0 +1,31 @@
+{
+  "id": "spinner",
+  "name": "Spinner",
+  "description": "Accessible activity indicator spinner with size and semantic color presets.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Spinner.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Spinner.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["spinner", "loading", "progress", "feedback"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

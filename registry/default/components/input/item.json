@@ -1,0 +1,20 @@
+{
+  "id": "input",
+  "name": "Input",
+  "description": "A text input with label, helper and error state.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Input.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Input.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["input", "form", "text"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

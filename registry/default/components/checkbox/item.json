@@ -1,0 +1,31 @@
+{
+  "id": "checkbox",
+  "name": "Checkbox",
+  "description": "Accessible checkbox component with check indicator and label support.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Checkbox.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Checkbox.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["checkbox", "form", "toggle", "interactive"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+
