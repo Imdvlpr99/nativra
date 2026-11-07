@@ -2,11 +2,7 @@ import type { Command } from "commander";
 import { readFile, access } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
-import {
-  checkProjectCompatibility,
-  DEFAULT_COMPATIBILITY_MATRIX,
-  type CompatibilityMatrix,
-} from "@nativra/registry-schema";
+import { checkProjectCompatibility } from "@nativra/registry-schema";
 import { loadConfig } from "../config.js";
 import { readLock } from "../install.js";
 
@@ -42,7 +38,7 @@ export function registerDoctorCommand(program: Command) {
       try {
         const config = await loadConfig(options.cwd);
         stylingTarget = config.stylingTarget;
-        hasV4Config = Boolean(config.config?.v4);
+        hasV4Config = config.version === 4;
         checks.push({
           name: "nativra.json configuration",
           pass: true,
@@ -50,7 +46,7 @@ export function registerDoctorCommand(program: Command) {
             hasV4Config ? chalk.green("v4-nested") : chalk.yellow("v1-flat")
           }`,
         });
-      } catch (err) {
+      } catch {
         checks.push({
           name: "nativra.json configuration",
           pass: false,

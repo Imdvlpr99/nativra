@@ -246,11 +246,11 @@ export const DEFAULT_COMPATIBILITY_MATRIX: CompatibilityMatrix = {
 };
 
 export interface ProjectEnvironment {
-  reactNative?: string;
-  expoSdk?: number;
-  react?: string;
-  typescript?: string;
-  nativewind?: string;
+  reactNative?: string | undefined;
+  expoSdk?: number | undefined;
+  react?: string | undefined;
+  typescript?: string | undefined;
+  nativewind?: string | undefined;
 }
 
 export interface CompatibilityCheckResult {

@@ -6,7 +6,6 @@ import {
   toTailwindPreset,
   getThemePreset,
   THEME_PRESETS,
-  zincTheme,
   emeraldTheme,
 } from "./index.js";
 

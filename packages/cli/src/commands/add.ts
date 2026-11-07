@@ -10,8 +10,9 @@ import {
   fileExists,
   filesForTarget,
   readLock,
-  writeInstalledFile,
   writeLock,
+  executeInstallTransaction,
+  type PlannedInstallFile,
 } from "../install.js";
 
 export function registerAddCommand(program: Command) {
@@ -19,13 +20,20 @@ export function registerAddCommand(program: Command) {
     .command("add <components...>")
     .description("Add one or more registry items to your project")
     .option("--cwd <dir>", "Project root directory", process.cwd())
-    .option("--yes", "Skip confirmation prompts")
-    .option("--overwrite", "Overwrite existing files without prompting")
+    .option("--yes", "Skip interactive confirmation prompts. Existing files are preserved unless --overwrite is set.")
+    .option("--overwrite", "Overwrite existing files without prompting (equivalent to --on-conflict overwrite)")
+    .option("--on-conflict <mode>", "Conflict resolution strategy for existing files: 'skip', 'overwrite', or 'error'", "skip")
     .option("--registry <url>", "Override registry location (URL or local directory)")
     .action(
       async (
         components: string[],
-        options: { cwd: string; yes?: boolean; overwrite?: boolean; registry?: string }
+        options: {
+          cwd: string;
+          yes?: boolean;
+          overwrite?: boolean;
+          onConflict?: "skip" | "overwrite" | "error";
+          registry?: string;
+        }
       ) => {
         const config = await loadConfig(options.cwd).catch((err) => {
           console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
@@ -67,37 +75,67 @@ export function registerAddCommand(program: Command) {
             }
           }
 
+          // Build transactional installation plan (Plan Section 2.1)
+          const plan: PlannedInstallFile[] = [];
           for (const item of items) {
-            const entry = { version: item.version, files: {} as Record<string, string> };
-
             for (const file of filesForTarget(item, config)) {
               const destPath = destPathFor(options.cwd, item, file, config);
+              let action: "create" | "overwrite" | "skip" = "create";
 
-              // Never silently overwrite. Non-interactive (--yes) runs skip conflicts.
-              if (!options.overwrite && (await fileExists(destPath))) {
-                let action = "skip";
-                if (!options.yes) {
-                  ({ action } = await prompts({
+              if (await fileExists(destPath)) {
+                if (options.overwrite || options.onConflict === "overwrite") {
+                  action = "overwrite";
+                } else if (options.yes || options.onConflict === "error") {
+                  if (options.onConflict === "error") {
+                    console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
+                    process.exit(1);
+                  }
+                  action = "skip";
+                  console.log(chalk.gray(`  → Skipped (existing file): ${destPath}`));
+                } else {
+                  const { chosen } = await prompts({
                     type: "select",
-                    name: "action",
+                    name: "chosen",
                     message: `${chalk.yellow(destPath)} already exists. What should Nativra do?`,
                     choices: [
                       { title: "Skip", value: "skip" },
                       { title: "Overwrite", value: "overwrite" },
                     ],
-                  }));
-                }
-                if (action !== "overwrite") {
-                  console.log(chalk.gray(`  → Skipped: ${destPath}`));
-                  continue;
+                  });
+                  action = chosen === "overwrite" ? "overwrite" : "skip";
                 }
               }
 
-              entry.files[destPath] = await writeInstalledFile(destPath, file.content ?? "");
-              console.log(chalk.green(`  ✓ Written: ${destPath}`));
+              plan.push({
+                componentId: item.id,
+                destPath,
+                content: file.content ?? "",
+                action,
+              });
             }
+          }
 
-            if (Object.keys(entry.files).length > 0) lock.items[item.id] = entry;
+          // Execute transaction safely with rollback protection
+          const { writtenFiles } = await executeInstallTransaction(plan);
+          for (const [path] of Object.entries(writtenFiles)) {
+            console.log(chalk.green(`  ✓ Written: ${path}`));
+          }
+
+          // Update lockfile metadata only after transaction commits
+          for (const item of items) {
+            const entry = lock.items[item.id] ?? {
+              version: item.version,
+              files: {} as Record<string, string>,
+            };
+            for (const file of filesForTarget(item, config)) {
+              const destPath = destPathFor(options.cwd, item, file, config);
+              if (writtenFiles[destPath]) {
+                entry.files[destPath] = writtenFiles[destPath];
+              }
+            }
+            if (Object.keys(entry.files).length > 0) {
+              lock.items[item.id] = entry;
+            }
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
               const deps = item.npmDependencies.map((d) => `${d.package}@${d.version}`).join(" ");

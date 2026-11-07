@@ -2,6 +2,21 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
+import { sha256 } from "@nativra/utils";
+
+function isSafeRelativePath(targetPath: string): boolean {
+  if (!targetPath || typeof targetPath !== "string") return false;
+  if (
+    targetPath.includes("\0") ||
+    /^[a-zA-Z]:/.test(targetPath) ||
+    targetPath.startsWith("/") ||
+    targetPath.startsWith("\\")
+  ) {
+    return false;
+  }
+  const segments = targetPath.split(/[/\\]/);
+  return !segments.includes("..");
+}
 
 /**
  * @nativra/registry-client
@@ -30,22 +45,28 @@ export interface RegistrySource {
   name?: string;
 }
 
+export interface RegistryClientOptions {
+  timeoutMs?: number;
+}
+
 // ---------------------------------------------------------------------------
 // Registry client class
 // ---------------------------------------------------------------------------
 
 export class RegistryClient {
   private readonly sources: RegistrySource[];
+  private readonly timeoutMs: number;
   /** Simple in-memory cache: registryName -> manifest */
   private readonly manifestCache = new Map<string, RegistryManifest>();
   /** Simple in-memory cache: `registryName/itemId` -> item */
   private readonly itemCache = new Map<string, RegistryItem>();
 
-  constructor(sources: RegistrySource[]) {
+  constructor(sources: RegistrySource[], options?: RegistryClientOptions) {
     if (sources.length === 0) {
       throw new Error("RegistryClient requires at least one source.");
     }
     this.sources = sources;
+    this.timeoutMs = options?.timeoutMs ?? 15000;
   }
 
   // -------------------------------------------------------------------------
@@ -75,6 +96,22 @@ export class RegistryClient {
     const source = this.findSource(registryName);
     const raw = await this.fetchJson<unknown>(source, `items/${id}.json`);
     const item = RegistryItemSchema.parse(raw);
+
+    // Verify integrity hashes and safe relative file paths (Plan Section 2.5 & 2.6)
+    for (const file of item.files) {
+      if (!isSafeRelativePath(file.path)) {
+        throw new Error(`Item "${item.id}" contains an unsafe file path: "${file.path}"`);
+      }
+      if (file.hash && file.content !== undefined) {
+        const computed = sha256(file.content);
+        if (computed !== file.hash) {
+          throw new Error(
+            `Integrity verification failed for "${file.path}" in "${item.id}": expected hash ${file.hash}, got ${computed}`
+          );
+        }
+      }
+    }
+
     this.itemCache.set(cacheKey, item);
     return item;
   }
@@ -87,16 +124,23 @@ export class RegistryClient {
   /**
    * Resolve an item and all its transitive registry dependencies.
    * Returns items in dependency order (dependencies first).
+   * Detects and reports cyclic dependencies with clear stack diagnostics.
    */
   async resolveWithDependencies(id: string, registryName = "default"): Promise<RegistryItem[]> {
     const resolved: RegistryItem[] = [];
-    const seen = new Set<string>();
+    const resolvedKeys = new Set<string>();
+    const visitingStack: string[] = [];
 
     const resolve = async (itemId: string, registry: string) => {
       const key = `${registry}/${itemId}`;
-      if (seen.has(key)) return;
-      seen.add(key);
+      if (resolvedKeys.has(key)) return;
 
+      if (visitingStack.includes(key)) {
+        const cycle = [...visitingStack, key].map((k) => k.split("/")[1] ?? k).join(" -> ");
+        throw new Error(`Dependency cycle detected:\n${cycle}`);
+      }
+
+      visitingStack.push(key);
       const item = await this.getItem(itemId, registry);
 
       // Resolve dependencies first
@@ -104,6 +148,8 @@ export class RegistryClient {
         await resolve(dep.id, dep.registry ?? "default");
       }
 
+      visitingStack.pop();
+      resolvedKeys.add(key);
       resolved.push(item);
     };
 
@@ -142,15 +188,29 @@ export class RegistryClient {
       return JSON.parse(content) as T;
     }
 
-    // Remote fetch
+    // Remote fetch with timeout and cancellation (Plan Section 3.1)
     const url = `${source.location.replace(/\/$/, "")}/${relativePath}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch registry resource "${url}": ${response.status} ${response.statusText}`
-      );
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      controller.abort(new Error(`Registry request timed out after ${this.timeoutMs}ms: ${url}`));
+    }, this.timeoutMs);
+
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch registry resource "${url}": ${response.status} ${response.statusText}`
+        );
+      }
+      return (await response.json()) as T;
+    } catch (err) {
+      if (controller.signal.aborted) {
+        throw new Error(`Registry request timed out after ${this.timeoutMs}ms: ${url}`);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timer);
     }
-    return response.json() as Promise<T>;
   }
 }
 
@@ -159,16 +219,25 @@ export class RegistryClient {
 // ---------------------------------------------------------------------------
 
 /** Create a client targeting the local registry directory */
-export function createLocalRegistryClient(registryDir: string): RegistryClient {
-  return new RegistryClient([
-    { kind: "local", location: registryDir, name: "default" },
-  ]);
+export function createLocalRegistryClient(
+  registryDir: string,
+  options?: RegistryClientOptions
+): RegistryClient {
+  return new RegistryClient(
+    [{ kind: "local", location: registryDir, name: "default" }],
+    options
+  );
 }
 
 /** Create a client targeting a remote registry URL */
-export function createRemoteRegistryClient(baseUrl: string): RegistryClient {
-  return new RegistryClient([
-    { kind: "remote", location: baseUrl, name: "default" },
-  ]);
+export function createRemoteRegistryClient(
+  baseUrl: string,
+  options?: RegistryClientOptions
+): RegistryClient {
+  return new RegistryClient(
+    [{ kind: "remote", location: baseUrl, name: "default" }],
+    options
+  );
 }
+
 

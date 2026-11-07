@@ -1,11 +1,11 @@
 import type { Command } from "commander";
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import chalk from "chalk";
 import { createPatch } from "diff";
 import ora from "ora";
 import { createClient } from "../client.js";
 import { loadConfig } from "../config.js";
+import { destPathFor } from "../install.js";
 
 export function registerDiffCommand(program: Command) {
   program
@@ -38,13 +38,8 @@ export function registerDiffCommand(program: Command) {
       let hasDiff = false;
 
       for (const file of targetFiles) {
-        const destDir = item.type === "hook"
-          ? join(options.cwd, config.hooksDir)
-          : item.type === "utility"
-          ? join(options.cwd, config.utilsDir)
-          : join(options.cwd, config.componentsDir);
-
-        const localPath = join(destDir, file.path.split("/").pop() ?? file.path);
+        // Shared path resolution (Plan Section 3.3)
+        const localPath = destPathFor(options.cwd, item, file, config);
 
         let localContent: string;
         try {

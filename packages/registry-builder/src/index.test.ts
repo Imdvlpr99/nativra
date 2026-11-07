@@ -41,10 +41,31 @@ describe("buildRegistry", () => {
     expect(r.errors.length).toBeGreaterThan(0);
   });
 
-  it("reports missing source files", async () => {
+  it("reports missing source files and prevents emitting invalid registry", async () => {
     const { src, out } = await setup(item(), false);
     const r = await buildRegistry({ sourceDir: src, outDir: out });
     expect(r.errors.join()).toContain("Could not read source file");
+    expect(r.items).toHaveLength(0);
+  });
+
+  it("rejects path traversal attempts", async () => {
+    const { src, out } = await setup(item({ files: [{ path: "../secret.txt" }] }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toContain("Unsafe file path rejected");
+  });
+
+  it("cleans stale items from output directory", async () => {
+    const { src, out } = await setup(item());
+    const itemsDir = join(out, "items");
+    await mkdir(itemsDir, { recursive: true });
+    await writeFile(join(itemsDir, "old-stale-item.json"), "{}");
+
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors).toEqual([]);
+    const { existsSync } = await import("node:fs");
+    expect(existsSync(join(itemsDir, "old-stale-item.json"))).toBe(false);
+    expect(existsSync(join(itemsDir, "thing.json"))).toBe(true);
   });
 });
+
 

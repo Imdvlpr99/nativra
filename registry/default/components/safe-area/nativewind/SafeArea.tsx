@@ -13,6 +13,8 @@ export interface SafeAreaProps extends ViewProps {
   children?: React.ReactNode;
 }
 
+const SafeView = SafeAreaView as unknown as React.ComponentType<any>;
+
 export function SafeArea({
   edges = ["top", "bottom", "left", "right"],
   className,
@@ -20,13 +22,13 @@ export function SafeArea({
   ...props
 }: SafeAreaProps) {
   return (
-    <SafeAreaView
+    <SafeView
       edges={edges}
       className={cn("flex-1 bg-white dark:bg-zinc-950", className)}
       {...props}
     >
       {children}
-    </SafeAreaView>
+    </SafeView>
   );
 }
 

@@ -14,11 +14,12 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra add <...components>",
-    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies and records cryptographic file hashes in nativra.json.",
+    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, and records exact file locations in nativra.lock.json.",
     flags: [
-      "--yes (Skip overwrite confirmation)",
-      "--dry-run (Preview changes without writing to disk)",
-      "--registry <url-or-name> (Specify alternate registry)",
+      "--yes (Skip interactive prompts; preserves existing files unless --overwrite is set)",
+      "--overwrite (Overwrite existing files without prompting)",
+      "--on-conflict <skip|overwrite|error> (Explicit conflict strategy; defaults to skip)",
+      "--registry <url-or-name> (Specify alternate registry URL or local directory)",
     ],
   },
   {
@@ -43,8 +44,13 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra update [component]",
-    desc: "Safely update installed components to their latest registry version. Detects local modifications and warns before overwriting.",
+    desc: "Safely update installed components to their latest registry version. Automatically creates a verified backup manifest before modifying files.",
     flags: ["--force (Overwrite local modifications)"],
+  },
+  {
+    cmd: "npx nativra rollback <component>",
+    desc: "Restore an updated component to its previous state using the manifest-driven backup system.",
+    flags: [],
   },
   {
     cmd: "npx nativra doctor",

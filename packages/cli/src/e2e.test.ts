@@ -41,15 +41,27 @@ describe("nativra CLI (local registry)", () => {
     expect(JSON.parse(readFileSync(join(cwd, "nativra.lock.json"), "utf8")).items.button).toBeDefined();
   });
 
-  it("add never silently overwrites existing files", () => {
+  it("add never silently overwrites existing files with --yes", () => {
     const file = join(cwd, "components/ui/Button.tsx");
     writeFileSync(file, "// mine");
     runReg("add", "button", "--yes");
     expect(readFileSync(file, "utf8")).toBe("// mine");
   });
 
+  it("add aborts when --on-conflict error is set and file exists", () => {
+    expect(() => runReg("add", "button", "--yes", "--on-conflict", "error")).toThrow();
+  });
+
+  it("add overwrites existing files when --overwrite is set", () => {
+    const file = join(cwd, "components/ui/Button.tsx");
+    writeFileSync(file, "// mine");
+    runReg("add", "button", "--yes", "--overwrite");
+    expect(readFileSync(file, "utf8")).toContain("className");
+  });
+
   it("update skips locally modified files, --force overwrites", () => {
     const file = join(cwd, "components/ui/Button.tsx");
+    writeFileSync(file, "// mine");
     expect(runReg("update", "button")).toContain("local changes");
     expect(readFileSync(file, "utf8")).toBe("// mine");
     runReg("update", "button", "--force");
@@ -72,6 +84,13 @@ describe("nativra CLI (local registry)", () => {
   it("add full template flow", () => {
     runReg("add", "auth-flow", "--yes");
     expect(existsSync(join(cwd, "components/ui/AuthFlow.tsx"))).toBe(true);
+  });
+
+  it("diff command inspects differences against upstream registry", () => {
+    const file = join(cwd, "components/ui/Button.tsx");
+    writeFileSync(file, "// custom diff change");
+    const out = runReg("diff", "button");
+    expect(out).toContain("Button.tsx");
   });
 
   it("rollback command safely reports or restores", () => {

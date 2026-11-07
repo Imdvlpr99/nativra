@@ -1,8 +1,27 @@
-import { readFile, readdir, writeFile, mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { readFile, readdir, writeFile, mkdir, rm } from "node:fs/promises";
+import { join, resolve, sep } from "node:path";
 import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { RegistryItemSchema } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
+
+function isSafeRelativePath(targetPath: string): boolean {
+  if (!targetPath || typeof targetPath !== "string") return false;
+  // Disallow null bytes, absolute paths, drive letters, UNC paths
+  if (
+    targetPath.includes("\0") ||
+    /^[a-zA-Z]:/.test(targetPath) ||
+    targetPath.startsWith("/") ||
+    targetPath.startsWith("\\")
+  ) {
+    return false;
+  }
+  // Disallow traversal segments
+  const segments = targetPath.split(/[/\\]/);
+  if (segments.includes("..")) {
+    return false;
+  }
+  return true;
+}
 
 /**
  * @nativra/registry-builder
@@ -91,8 +110,17 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
         const files = def["files"] as Array<{ path: string; target?: string }> | undefined;
         if (Array.isArray(files)) {
           for (const file of files) {
-            // Source files live alongside item.json, in target subdirectories
-            const sourcePath = join(itemDir, file.path);
+            if (!isSafeRelativePath(file.path)) {
+              errors.push(`[${entry}] Unsafe file path rejected: ${file.path}`);
+              continue;
+            }
+            const normalizedItemDir = resolve(itemDir);
+            const sourcePath = resolve(itemDir, file.path);
+            if (!sourcePath.startsWith(normalizedItemDir + sep)) {
+              errors.push(`[${entry}] Path traversal detected: ${file.path}`);
+              continue;
+            }
+
             try {
               const content = await readFile(sourcePath, "utf8");
               (file as Record<string, unknown>)["content"] = content;
@@ -125,6 +153,19 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
     }
   }
 
+  // If errors were encountered, fail without modifying output files (Plan Section 2.7 & 3.4)
+  if (errors.length > 0) {
+    return {
+      manifest: {
+        name: registryName,
+        schemaVersion: "1.0.0",
+        items: [],
+      },
+      items: [],
+      errors,
+    };
+  }
+
   // Build manifest
   const manifest: RegistryManifest = {
     name: registryName,
@@ -148,6 +189,19 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
   const indent = config.pretty ? 2 : 0;
   const itemsOutDir = join(config.outDir, "items");
   await mkdir(itemsOutDir, { recursive: true });
+
+  // Clean stale artifacts (Plan Section 3.4)
+  try {
+    const existing = await readdir(itemsOutDir);
+    const validFileNames = new Set(items.map((i) => `${i.id}.json`));
+    for (const file of existing) {
+      if (!validFileNames.has(file)) {
+        await rm(join(itemsOutDir, file), { force: true });
+      }
+    }
+  } catch {
+    // itemsOutDir was just created
+  }
 
   await writeFile(
     join(config.outDir, "registry.json"),

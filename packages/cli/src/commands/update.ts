@@ -1,11 +1,17 @@
 import type { Command } from "commander";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { readFile } from "node:fs/promises";
 import chalk from "chalk";
 import { sha256 } from "@nativra/utils";
 import { createClient } from "../client.js";
 import { loadConfig } from "../config.js";
-import { destPathFor, filesForTarget, readLock, writeInstalledFile, writeLock } from "../install.js";
+import {
+  destPathFor,
+  filesForTarget,
+  readLock,
+  writeInstalledFile,
+  writeLock,
+  createBackup,
+} from "../install.js";
 
 export function registerUpdateCommand(program: Command) {
   program
@@ -52,15 +58,16 @@ export function registerUpdateCommand(program: Command) {
             continue;
           }
 
-          // Safety backup before update (Section 6.3 & 6.4)
+          // Safety backup before update (Plan Section 2.3 & 2.4)
           if (local !== null) {
             try {
-              const backupDir = join(options.cwd, ".nativra", "backups", id);
-              await mkdir(backupDir, { recursive: true });
-              const filename = dest.split("/").pop()?.split("\\").pop() ?? "backup.tsx";
-              await writeFile(join(backupDir, `${filename}.bak`), local, "utf8");
-            } catch {
-              // ignore backup write errors
+              await createBackup(options.cwd, id, [{ destPath: dest, exists: true }]);
+            } catch (backupErr) {
+              console.error(
+                chalk.red(`  ✗ Cannot create required backup for "${dest}": ${(backupErr as Error).message}`)
+              );
+              console.error(chalk.red(`    Update aborted to prevent loss of local source.`));
+              continue;
             }
           }
 

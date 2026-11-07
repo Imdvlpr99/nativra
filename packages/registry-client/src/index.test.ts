@@ -25,5 +25,11 @@ describe("RegistryClient (local)", () => {
   it("errors for unknown registries", async () => {
     await expect(client.getItem("button", "nope")).rejects.toThrow(/No registry source/);
   });
+
+  it("verifies file integrity hashes on item load", async () => {
+    const item = await client.getItem("button");
+    expect(item.files[0]?.hash).toBeDefined();
+  });
 });
+
 

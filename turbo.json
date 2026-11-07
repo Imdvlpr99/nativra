@@ -26,11 +26,16 @@
     },
     "test": {
       "dependsOn": [
-        "^build",
-        "build"
+        "^build"
       ],
       "outputs": [
         "coverage/**"
+      ]
+    },
+    "@nativra/cli#test": {
+      "dependsOn": [
+        "^build",
+        "build"
       ]
     },
     "dev": {

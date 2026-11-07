@@ -1,3 +1,4 @@
+import ts from "typescript";
 import {
   ScreenDocumentSchema,
   type ScreenDocument,
@@ -11,9 +12,87 @@ import {
 
 export type PropValues = Record<string, string | boolean | number>;
 
-/** Convert "use-disclosure" / "button" to a JSX component name. */
+/** Validate whether a string is a valid JavaScript/TypeScript identifier. */
+export function isValidIdentifier(id: string): boolean {
+  return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(id);
+}
+
+/** Assert that an identifier is valid, throwing a descriptive error if not. */
+export function assertValidIdentifier(id: string, context = "identifier"): void {
+  if (!isValidIdentifier(id)) {
+    throw new Error(`Invalid ${context}: "${id}". Must match /^[a-zA-Z_$][a-zA-Z0-9_$]*$/`);
+  }
+}
+
+/**
+ * Escapes text intended for JSX children.
+ * If text contains JSX delimiters (<, >, {, }) or newlines, it wraps it in an expression {"..."}.
+ */
+export function escapeJsxText(text: string): string {
+  if (typeof text !== "string") return String(text);
+  if (/[<>{}\n\r]/.test(text)) {
+    return `{${JSON.stringify(text)}}`;
+  }
+  return text;
+}
+
+/**
+ * Escapes an attribute value for JSX.
+ * If the value contains double quotes, newlines, or backslashes, wraps it in expression {"..."}.
+ */
+export function escapeJsxAttr(attrValue: string): string {
+  if (typeof attrValue !== "string") return String(attrValue);
+  if (/["\n\r\\]/.test(attrValue)) {
+    return `{${JSON.stringify(attrValue)}}`;
+  }
+  return `"${attrValue}"`;
+}
+
+/**
+ * Validates TSX / TS source code using TypeScript's compiler parser diagnostics.
+ */
+export function validateTSX(content: string, fileName = "generated.tsx"): { valid: boolean; errors: string[] } {
+  const isTsx = fileName.endsWith(".tsx");
+  const sf = ts.createSourceFile(
+    fileName,
+    content,
+    ts.ScriptTarget.Latest,
+    true,
+    isTsx ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+  );
+  const parseDiagnostics = (sf as unknown as { parseDiagnostics?: ts.Diagnostic[] }).parseDiagnostics || [];
+  if (parseDiagnostics.length === 0) {
+    return { valid: true, errors: [] };
+  }
+  const errors = parseDiagnostics.map((d) => {
+    const msg = typeof d.messageText === "string" ? d.messageText : d.messageText.messageText;
+    const start = d.start ?? 0;
+    const pos = sf.getLineAndCharacterOfPosition(start);
+    return `Line ${pos.line + 1}, Col ${pos.character + 1}: ${msg}`;
+  });
+  return { valid: false, errors };
+}
+
+/**
+ * Asserts that generated TypeScript / TSX code parses cleanly.
+ */
+export function assertValidTSX(content: string, fileName = "generated.tsx"): void {
+  const res = validateTSX(content, fileName);
+  if (!res.valid) {
+    throw new Error(`Failed to generate valid TSX for "${fileName}":\n${res.errors.join("\n")}`);
+  }
+}
+
+/** Convert "use-disclosure" / "button" to a safe PascalCase JSX component name. */
 export function componentName(name: string): string {
-  return name.replace(/(^|[-_ ])(\w)/g, (_, __, c: string) => c.toUpperCase());
+  const sanitized = name
+    .trim()
+    .replace(/(^|[-_ ])+(\w)/g, (_, __, c: string) => c.toUpperCase())
+    .replace(/[^a-zA-Z0-9]/g, "");
+  if (/^[0-9]/.test(sanitized)) {
+    return "_" + sanitized;
+  }
+  return sanitized || "Component";
 }
 
 /**
@@ -22,14 +101,27 @@ export function componentName(name: string): string {
  */
 export function generateUsage(name: string, props: PropValues): string {
   const tag = componentName(name);
+  assertValidIdentifier(tag, "component tag");
+
   const attrs = Object.entries(props)
     .filter(([k, v]) => k !== "children" && v !== "" && v !== false)
-    .map(([k, v]) => (v === true ? k : typeof v === "number" ? `${k}={${v}}` : `${k}="${v}"`));
+    .map(([k, v]) => {
+      assertValidIdentifier(k, "prop key");
+      if (v === true) return k;
+      if (typeof v === "number" || typeof v === "boolean") return `${k}={${v}}`;
+      return `${k}=${escapeJsxAttr(String(v))}`;
+    });
+
   const open = [tag, ...attrs].join(" ");
   const children = props["children"];
-  return children !== undefined && children !== ""
-    ? `<${open}>${children}</${tag}>`
-    : `<${open} />`;
+  const childrenStr =
+    children !== undefined && children !== ""
+      ? typeof children === "string"
+        ? escapeJsxText(children)
+        : String(children)
+      : "";
+
+  return childrenStr !== "" ? `<${open}>${childrenStr}</${tag}>` : `<${open} />`;
 }
 
 export function generateInstallCommand(ids: string | string[], registry?: string): string {
@@ -67,16 +159,21 @@ export class ScreenGenerator implements Generator<ScreenDocument, GeneratorResul
     await this.validate(input);
     const target = input.canvas.target ?? "nativewind";
     const screenName = componentName(input.name.replace(/Screen$/, "")) + "Screen";
+    assertValidIdentifier(screenName, "screen component name");
+
     const isNW = target === "nativewind";
 
     const content = isNW
       ? this.generateNativeWind(screenName, input.nodes)
       : this.generateStyleSheet(screenName, input.nodes);
 
+    const filePath = `screens/${screenName}.tsx`;
+    assertValidTSX(content, filePath);
+
     return {
       files: [
         {
-          path: `screens/${screenName}.tsx`,
+          path: filePath,
           content,
         },
       ],
@@ -112,19 +209,22 @@ export class ScreenGenerator implements Generator<ScreenDocument, GeneratorResul
   }
 
   private renderNodeNW(node: ScreenBlockNode): string {
+    const title = escapeJsxText(node.title ?? "Title");
+    const subtitle = escapeJsxText(node.subtitle ?? "Subtitle");
+
     switch (node.type) {
       case "header":
-        return `        <View className="mb-2">\n          <Text className="text-2xl font-bold text-white">${node.title ?? "Title"}</Text>\n          <Text className="text-sm text-zinc-400 mt-1">${node.subtitle ?? "Subtitle"}</Text>\n        </View>`;
+        return `        <View className="mb-2">\n          <Text className="text-2xl font-bold text-white">${title}</Text>\n          <Text className="text-sm text-zinc-400 mt-1">${subtitle}</Text>\n        </View>`;
       case "search":
-        return `        <View className="flex-row items-center gap-2 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800">\n          <Search size={16} color="#71717a" />\n          <Text className="text-sm text-zinc-500">${node.title ?? "Search..."}</Text>\n        </View>`;
+        return `        <View className="flex-row items-center gap-2 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800">\n          <Search size={16} color="#71717a" />\n          <Text className="text-sm text-zinc-500">${title}</Text>\n        </View>`;
       case "metric-card":
-        return `        <View className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex-row items-center justify-between">\n          <View>\n            <Text className="text-xs text-zinc-400 font-medium">${node.title ?? "Metric"}</Text>\n            <Text className="text-2xl font-bold text-white mt-1">${node.subtitle ?? "$0.00"}</Text>\n          </View>\n          <View className="p-2.5 rounded-xl bg-emerald-500/10">\n            <Sparkles size={20} color="#10b981" />\n          </View>\n        </View>`;
+        return `        <View className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex-row items-center justify-between">\n          <View>\n            <Text className="text-xs text-zinc-400 font-medium">${title}</Text>\n            <Text className="text-2xl font-bold text-white mt-1">${subtitle}</Text>\n          </View>\n          <View className="p-2.5 rounded-xl bg-emerald-500/10">\n            <Sparkles size={20} color="#10b981" />\n          </View>\n        </View>`;
       case "button-action":
-        return `        <TouchableOpacity className="h-12 rounded-xl bg-sky-500 items-center justify-center flex-row gap-2 active:opacity-90">\n          <Text className="font-semibold text-white text-base">${node.title ?? "Continue"}</Text>\n          <ArrowRight size={18} color="#ffffff" />\n        </TouchableOpacity>`;
+        return `        <TouchableOpacity className="h-12 rounded-xl bg-sky-500 items-center justify-center flex-row gap-2 active:opacity-90">\n          <Text className="font-semibold text-white text-base">${title}</Text>\n          <ArrowRight size={18} color="#ffffff" />\n        </TouchableOpacity>`;
       case "divider":
         return `        <View className="h-px bg-zinc-800 my-1" />`;
       default:
-        return `        <View className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">\n          <Text className="text-base font-semibold text-white">${node.title ?? node.type}</Text>\n        </View>`;
+        return `        <View className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">\n          <Text className="text-base font-semibold text-white">${title}</Text>\n        </View>`;
     }
   }
 
@@ -173,19 +273,22 @@ export class ScreenGenerator implements Generator<ScreenDocument, GeneratorResul
   }
 
   private renderNodeSS(node: ScreenBlockNode): string {
+    const title = escapeJsxText(node.title ?? "Title");
+    const subtitle = escapeJsxText(node.subtitle ?? "Subtitle");
+
     switch (node.type) {
       case "header":
-        return `        <View style={styles.header}>\n          <Text style={styles.title}>${node.title ?? "Title"}</Text>\n          <Text style={styles.subtitle}>${node.subtitle ?? "Subtitle"}</Text>\n        </View>`;
+        return `        <View style={styles.header}>\n          <Text style={styles.title}>${title}</Text>\n          <Text style={styles.subtitle}>${subtitle}</Text>\n        </View>`;
       case "search":
-        return `        <View style={styles.searchBar}>\n          <Search size={16} color="#71717a" />\n          <Text style={styles.searchText}>${node.title ?? "Search..."}</Text>\n        </View>`;
+        return `        <View style={styles.searchBar}>\n          <Search size={16} color="#71717a" />\n          <Text style={styles.searchText}>${title}</Text>\n        </View>`;
       case "metric-card":
-        return `        <View style={styles.card}>\n          <View>\n            <Text style={styles.metricLabel}>${node.title ?? "Metric"}</Text>\n            <Text style={styles.metricValue}>${node.subtitle ?? "$0.00"}</Text>\n          </View>\n          <Sparkles size={20} color="#10b981" />\n        </View>`;
+        return `        <View style={styles.card}>\n          <View>\n            <Text style={styles.metricLabel}>${title}</Text>\n            <Text style={styles.metricValue}>${subtitle}</Text>\n          </View>\n          <Sparkles size={20} color="#10b981" />\n        </View>`;
       case "button-action":
-        return `        <TouchableOpacity style={styles.button} activeOpacity={0.85}>\n          <Text style={styles.buttonText}>${node.title ?? "Continue"}</Text>\n          <ArrowRight size={18} color="#ffffff" />\n        </TouchableOpacity>`;
+        return `        <TouchableOpacity style={styles.button} activeOpacity={0.85}>\n          <Text style={styles.buttonText}>${title}</Text>\n          <ArrowRight size={18} color="#ffffff" />\n        </TouchableOpacity>`;
       case "divider":
         return `        <View style={styles.divider} />`;
       default:
-        return `        <View style={styles.card}>\n          <Text style={styles.title}>${node.title ?? node.type}</Text>\n        </View>`;
+        return `        <View style={styles.card}>\n          <Text style={styles.title}>${title}</Text>\n        </View>`;
     }
   }
 }
@@ -227,13 +330,14 @@ function renderIRNodeNativeWind(node: ScreenIRNode, indent = 8): string {
   }
 
   if (node.name === "Text") {
-    const textContent = String(props["children"] ?? props["text"] ?? "Text");
+    const raw = String(props["children"] ?? props["text"] ?? "Text");
+    const textContent = escapeJsxText(raw);
     return `${sp}<Text className="text-base text-zinc-100">${textContent}</Text>`;
   }
 
   if (node.name === "Button") {
-    const label = String(props["children"] ?? props["label"] ?? "Button");
-    const variant = String(props["variant"] ?? "primary");
+    const raw = String(props["children"] ?? props["label"] ?? "Button");
+    const label = escapeJsxText(raw);
     return `${sp}<TouchableOpacity className="h-11 px-5 rounded-xl bg-sky-500 items-center justify-center active:opacity-90">\n${sp}  <Text className="font-semibold text-white">${label}</Text>\n${sp}</TouchableOpacity>`;
   }
 
@@ -246,12 +350,14 @@ function renderIRNodeNativeWind(node: ScreenIRNode, indent = 8): string {
   }
 
   // Fallback generic component
-  return `${sp}<View className="p-3 rounded-xl bg-zinc-900 border border-zinc-800">\n${sp}  <Text className="text-zinc-300 font-medium">${node.name}</Text>\n${sp}</View>`;
+  const safeName = escapeJsxText(node.name);
+  return `${sp}<View className="p-3 rounded-xl bg-zinc-900 border border-zinc-800">\n${sp}  <Text className="text-zinc-300 font-medium">${safeName}</Text>\n${sp}</View>`;
 }
 
 function renderIRNodeStyleSheet(node: ScreenIRNode, indent = 8, styleNames: Set<string>): string {
   const sp = " ".repeat(indent);
-  const styleKey = (node.name.toLowerCase() + "Style") as string;
+  const rawKey = node.name.toLowerCase().replace(/[^a-zA-Z0-9_$]/g, "") + "Style";
+  const styleKey = isValidIdentifier(rawKey) ? rawKey : "boxStyle";
   styleNames.add(styleKey);
 
   if (node.name === "VStack" || node.name === "HStack" || node.name === "Box") {
@@ -269,12 +375,14 @@ function renderIRNodeStyleSheet(node: ScreenIRNode, indent = 8, styleNames: Set<
   }
 
   if (node.name === "Text") {
-    const textContent = String(props["children"] ?? props["text"] ?? "Text");
+    const raw = String(props["children"] ?? props["text"] ?? "Text");
+    const textContent = escapeJsxText(raw);
     return `${sp}<Text style={styles.text}>${textContent}</Text>`;
   }
 
   if (node.name === "Button") {
-    const label = String(props["children"] ?? props["label"] ?? "Button");
+    const raw = String(props["children"] ?? props["label"] ?? "Button");
+    const label = escapeJsxText(raw);
     return `${sp}<TouchableOpacity style={styles.button} activeOpacity={0.85}>\n${sp}  <Text style={styles.buttonText}>${label}</Text>\n${sp}</TouchableOpacity>`;
   }
 
@@ -286,12 +394,14 @@ function renderIRNodeStyleSheet(node: ScreenIRNode, indent = 8, styleNames: Set<
     return `${sp}<View style={styles.card}>\n${childrenStr}\n${sp}</View>`;
   }
 
-  return `${sp}<View style={styles.box}>\n${sp}  <Text style={styles.text}>${node.name}</Text>\n${sp}</View>`;
+  const safeName = escapeJsxText(node.name);
+  return `${sp}<View style={styles.box}>\n${sp}  <Text style={styles.text}>${safeName}</Text>\n${sp}</View>`;
 }
 
 export function generateFromScreenIR(doc: ScreenIRDocument): GeneratorResult {
   ScreenIRDocumentSchema.parse(doc);
   const screenName = componentName(doc.name.replace(/Screen$/, "")) + "Screen";
+  assertValidIdentifier(screenName, "screen component name");
   const isNW = doc.target === "nativewind";
 
   let content: string;
@@ -347,10 +457,13 @@ export function generateFromScreenIR(doc: ScreenIRDocument): GeneratorResult {
     ].join("\n");
   }
 
+  const filePath = `screens/${screenName}.tsx`;
+  assertValidTSX(content, filePath);
+
   return {
     files: [
       {
-        path: `screens/${screenName}.tsx`,
+        path: filePath,
         content,
       },
     ],
@@ -385,23 +498,23 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
         `  return (`,
         `    <NavigationContainer>`,
         `      <Tab.Navigator`,
-        `        initialRouteName="${input.initialRouteName}"`,
+        `        initialRouteName=${JSON.stringify(input.initialRouteName)}`,
         `        screenOptions={{`,
-        `          headerStyle: { backgroundColor: "${input.backgroundColor}" },`,
+        `          headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
         `          headerTintColor: "#ffffff",`,
-        `          tabBarStyle: { backgroundColor: "${input.backgroundColor}", borderTopColor: "#27272a" },`,
-        `          tabBarActiveTintColor: "${input.activeTintColor}",`,
-        `          tabBarInactiveTintColor: "${input.inactiveTintColor}",`,
+        `          tabBarStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)}, borderTopColor: "#27272a" },`,
+        `          tabBarActiveTintColor: ${JSON.stringify(input.activeTintColor)},`,
+        `          tabBarInactiveTintColor: ${JSON.stringify(input.inactiveTintColor)},`,
         `        }}`,
         `      >`,
       );
       for (const route of input.routes) {
         navCode.push(
           `        <Tab.Screen`,
-          `          name="${route.name}"`,
+          `          name=${JSON.stringify(route.name)}`,
           `          component={${route.component}}`,
           `          options={{`,
-          `            title: "${route.title}",`,
+          `            title: ${JSON.stringify(route.title)},`,
           `            headerShown: ${route.headerShown},`,
           `            tabBarIcon: ({ color, size }) => <${route.icon} color={color} size={size} />,`,
           `          }}`,
@@ -417,9 +530,9 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
         `  return (`,
         `    <NavigationContainer>`,
         `      <Stack.Navigator`,
-        `        initialRouteName="${input.initialRouteName}"`,
+        `        initialRouteName=${JSON.stringify(input.initialRouteName)}`,
         `        screenOptions={{`,
-        `          headerStyle: { backgroundColor: "${input.backgroundColor}" },`,
+        `          headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
         `          headerTintColor: "#ffffff",`,
         `        }}`,
         `      >`,
@@ -427,9 +540,9 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
       for (const route of input.routes) {
         navCode.push(
           `        <Stack.Screen`,
-          `          name="${route.name}"`,
+          `          name=${JSON.stringify(route.name)}`,
           `          component={${route.component}}`,
-          `          options={{ title: "${route.title}", headerShown: ${route.headerShown} }}`,
+          `          options={{ title: ${JSON.stringify(route.title)}, headerShown: ${route.headerShown} }}`,
           `        />`
         );
       }
@@ -442,22 +555,22 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
         `  return (`,
         `    <NavigationContainer>`,
         `      <Drawer.Navigator`,
-        `        initialRouteName="${input.initialRouteName}"`,
+        `        initialRouteName=${JSON.stringify(input.initialRouteName)}`,
         `        screenOptions={{`,
-        `          headerStyle: { backgroundColor: "${input.backgroundColor}" },`,
+        `          headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
         `          headerTintColor: "#ffffff",`,
-        `          drawerStyle: { backgroundColor: "${input.backgroundColor}" },`,
-        `          drawerActiveTintColor: "${input.activeTintColor}",`,
-        `          drawerInactiveTintColor: "${input.inactiveTintColor}",`,
+        `          drawerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
+        `          drawerActiveTintColor: ${JSON.stringify(input.activeTintColor)},`,
+        `          drawerInactiveTintColor: ${JSON.stringify(input.inactiveTintColor)},`,
         `        }}`,
         `      >`,
       );
       for (const route of input.routes) {
         navCode.push(
           `        <Drawer.Screen`,
-          `          name="${route.name}"`,
+          `          name=${JSON.stringify(route.name)}`,
           `          component={${route.component}}`,
-          `          options={{ title: "${route.title}", headerShown: ${route.headerShown} }}`,
+          `          options={{ title: ${JSON.stringify(route.title)}, headerShown: ${route.headerShown} }}`,
           `        />`
         );
       }
@@ -467,9 +580,13 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
     const typesCode = [
       `/** Strictly typed React Navigation parameters */`,
       `export type RootNavParamList = {`,
-      ...input.routes.map((r: { name: string }) => `  ${r.name}: undefined;`),
+      ...input.routes.map((r: { name: string }) => `  ${JSON.stringify(r.name)}: undefined;`),
       `};`,
     ].join("\n");
+
+    const rootNavContent = navCode.join("\n");
+    assertValidTSX(rootNavContent, "navigation/root-navigator.tsx");
+    assertValidTSX(typesCode, "navigation/types.ts");
 
     const packageMap: Record<string, string> = {
       tabs: "@react-navigation/bottom-tabs",
@@ -479,7 +596,7 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
 
     return {
       files: [
-        { path: "navigation/root-navigator.tsx", content: navCode.join("\n") },
+        { path: "navigation/root-navigator.tsx", content: rootNavContent },
         { path: "navigation/types.ts", content: typesCode },
       ],
       dependencies: [
@@ -491,9 +608,7 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
       ],
     };
   }
-}
-
-// ---------------------------------------------------------------------------
+}// ---------------------------------------------------------------------------
 // V3 AI Context Exporter (Section 7.4)
 // ---------------------------------------------------------------------------
 
@@ -526,3 +641,5 @@ export function exportAIContext(params: AIContextParams): string {
 
   return JSON.stringify(payload, null, 2);
 }
+
+

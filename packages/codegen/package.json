@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@nativra/studio-schema": "workspace:*",
-    "@nativra/registry-schema": "workspace:*"
+    "@nativra/registry-schema": "workspace:*",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
