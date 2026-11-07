@@ -1,0 +1,38 @@
+{
+  "id": "ecommerce-flow",
+  "name": "eCommerce Flow",
+  "description": "Production mobile retail and eCommerce storefront template with product catalog, search filters, detail sheet, cart, and order summary.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/EcommerceFlow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/EcommerceFlow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "order-summary", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["template", "ecommerce", "store", "cart", "checkout", "metronic"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

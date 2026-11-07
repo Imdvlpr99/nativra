@@ -1,0 +1,37 @@
+{
+  "id": "fintech-wallet",
+  "name": "Fintech Wallet",
+  "description": "High-impact mobile finance and crypto wallet screen with total balance card, quick action pills, asset allocation list, and recent transactions.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/FintechWallet.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/FintechWallet.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["template", "finance", "wallet", "crypto", "banking", "metronic"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

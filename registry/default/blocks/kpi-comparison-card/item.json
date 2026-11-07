@@ -1,0 +1,34 @@
+{
+  "id": "kpi-comparison-card",
+  "name": "KPI Comparison Card",
+  "description": "Enterprise dual-metric comparison card featuring current vs target performance, progress indicators, and trend badges.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/KPIComparisonCard.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/KPIComparisonCard.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "kpi", "comparison", "analytics", "dashboard", "metronic"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

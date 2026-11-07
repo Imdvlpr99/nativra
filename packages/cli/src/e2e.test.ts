@@ -86,6 +86,18 @@ describe("nativra CLI (local registry)", () => {
     expect(existsSync(join(cwd, "components/ui/AuthFlow.tsx"))).toBe(true);
   });
 
+  it("add enterprise Metronic block (transaction-row)", () => {
+    runReg("add", "transaction-row", "--yes");
+    expect(existsSync(join(cwd, "components/ui/TransactionRow.tsx"))).toBe(true);
+  });
+
+  it("add Metronic-grade analytics-dashboard template with dependencies", () => {
+    runReg("add", "analytics-dashboard", "--yes");
+    expect(existsSync(join(cwd, "components/ui/AnalyticsDashboard.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/MetricCard.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/Separator.tsx"))).toBe(true);
+  });
+
   it("diff command inspects differences against upstream registry", () => {
     const file = join(cwd, "components/ui/Button.tsx");
     writeFileSync(file, "// custom diff change");

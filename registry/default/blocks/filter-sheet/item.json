@@ -1,0 +1,36 @@
+{
+  "id": "filter-sheet",
+  "name": "Filter Sheet",
+  "description": "Enterprise slide-up filter sheet with multi-select category chips, price range slider, status toggles, and CTA controls.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/FilterSheet.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/FilterSheet.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "bottom-sheet", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "slider", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "filter", "sheet", "drawer", "modal", "metronic"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

@@ -20,6 +20,51 @@ interface ScreenTemplate {
 
 const TEMPLATES: ScreenTemplate[] = [
   {
+    id: "analytics-dashboard",
+    name: "Executive Analytics Dashboard",
+    category: "SaaS & Dashboards",
+    description:
+      "Metronic-inspired executive analytics screen featuring 2x2 KPI metrics, 7d/30d filter pills, acquisition channel progress bars, and recent financial activity ledger.",
+    componentsUsed: ["card", "badge", "button", "separator", "tabs", "text", "metric-card"],
+    installCommand: "npx nativra add analytics-dashboard",
+    previewHighlights: [
+      "Revenue, Active Users, Conversion & Churn KPI cards",
+      "Interactive 24h / 7d / 30d / YTD time window switcher",
+      "Channel distribution bars with percentages",
+      "Recent financial audit ledger with status coloring",
+    ],
+  },
+  {
+    id: "ecommerce-flow",
+    name: "eCommerce Storefront & Cart",
+    category: "Retail & Commerce",
+    description:
+      "Curated mobile storefront with promotional hero banner, category pills, product grid cards with star ratings, and floating cart drawer.",
+    componentsUsed: ["card", "badge", "button", "separator", "text", "order-summary"],
+    installCommand: "npx nativra add ecommerce-flow",
+    previewHighlights: [
+      "Featured hero showcase with limited edition badge",
+      "Dynamic category filtering pills",
+      "Product cards with customer rating stars",
+      "Interactive cart counter with instant add action",
+    ],
+  },
+  {
+    id: "fintech-wallet",
+    name: "Fintech & Crypto Multi-Chain Vault",
+    category: "Finance & Banking",
+    description:
+      "High-impact personal finance wallet featuring total net worth header, Send/Receive/Swap action pills, multi-asset allocation cards, and recent ledger.",
+    componentsUsed: ["card", "badge", "button", "separator", "text"],
+    installCommand: "npx nativra add fintech-wallet",
+    previewHighlights: [
+      "Total valuation card with privacy hide/reveal balance toggle",
+      "One-tap quick action bar for Send, Receive, and Swap",
+      "Portfolio crypto/fiat asset allocation cards",
+      "Filterable recent transaction history",
+    ],
+  },
+  {
     id: "auth-flow",
     name: "Authentication Flow",
     category: "Onboarding & Auth",

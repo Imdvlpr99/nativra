@@ -1,0 +1,33 @@
+{
+  "id": "transaction-row",
+  "name": "Transaction Row",
+  "description": "High-density enterprise financial ledger item with counterparty icon, status badge, and monetary values.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/TransactionRow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/TransactionRow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "badge", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "finance", "transaction", "ledger", "metronic", "row"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+
