@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
 import { getFixtures } from "@nativra/preview-runtime";
-import { PreviewCanvas } from "../components/PreviewCanvas";
+import { PreviewCanvas, type CanvasViewportPreset } from "../components/PreviewCanvas";
 
 function WorkbenchLoader({ name }: { name: string }) {
   return (
@@ -84,6 +84,8 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [categoryFilter, setCategoryFilter] = useState<"all" | "component" | "block" | "hook">("all");
   const [zoom, setZoom] = useState<number>(100);
   const [canvasMode, setCanvasMode] = useState<"light" | "dark" | "dots">("dots");
+  const [canvasPreset, setCanvasPreset] = useState<CanvasViewportPreset>("fit");
+  const [showSafeArea, setShowSafeArea] = useState<boolean>(false);
   const [activeTheme, setActiveTheme] = useState<ThemeKey>("zinc");
   const [activeTab, setActiveTab] = useState<"props" | "code" | "usage" | "events">("props");
   const [events, setEvents] = useState<EventLogEntry[]>([]);
@@ -93,6 +95,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [buttonPressedCount, setButtonPressedCount] = useState(0);
   const [interactiveInputText, setInteractiveInputText] = useState("");
   const [disclosureOpen, setDisclosureOpen] = useState(false);
+  const [avatarStatus, setAvatarStatus] = useState<"online" | "away" | "busy">("online");
 
   const item = useMemo(() => items.find((i) => i.id === id) ?? items[0], [items, id]);
 
@@ -456,19 +459,73 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       const cur = sMap[size] ?? { box: "h-11 w-11", font: "text-sm", dot: "h-2.5 w-2.5" };
 
       return (
-        <div className="flex flex-col items-center justify-center gap-3 py-8">
-          <div className="relative">
+        <div className="flex flex-col items-center justify-center gap-4 py-4">
+          <div
+            onClick={() => {
+              const nextStatus = avatarStatus === "online" ? "away" : avatarStatus === "away" ? "busy" : "online";
+              setAvatarStatus(nextStatus);
+              logEvent("onPress", `Avatar status toggled to "${nextStatus}"`);
+            }}
+            className="relative cursor-pointer group transition-transform active:scale-95"
+            title="Click avatar to toggle online status"
+          >
             <div
-              style={{ backgroundColor: "#f4f4f5", color: "#18181b" }}
-              className={`flex items-center justify-center rounded-full font-bold shadow-inner ${cur.box} ${cur.font}`}
+              style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+              className={`flex items-center justify-center rounded-full font-bold shadow-lg transition-all duration-200 ${cur.box} ${cur.font}`}
             >
               {fallback.slice(0, 2).toUpperCase()}
             </div>
             <span
-              className={`absolute bottom-0 right-0 rounded-full bg-emerald-500 ring-2 ring-white ${cur.dot}`}
+              className={`absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-zinc-900 transition-colors ${cur.dot} ${
+                avatarStatus === "busy"
+                  ? "bg-rose-500"
+                  : avatarStatus === "away"
+                  ? "bg-amber-500"
+                  : "bg-emerald-500"
+              }`}
             />
           </div>
-          <span className="text-xs text-zinc-500">Avatar with online status</span>
+
+          <div className="flex flex-col items-center gap-1 text-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{fallback} User</span>
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${
+                  avatarStatus === "busy"
+                    ? "bg-rose-500/15 text-rose-600 dark:text-rose-400"
+                    : avatarStatus === "away"
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                    : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                }`}
+              >
+                ● {avatarStatus}
+              </span>
+            </div>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              Size: {size.toUpperCase()} • Click avatar to toggle status
+            </span>
+          </div>
+
+          {/* Quick Size Switcher */}
+          <div className="flex items-center gap-2 pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60">
+            {(["sm", "md", "lg", "xl"] as const).map((sz) => (
+              <button
+                key={sz}
+                type="button"
+                onClick={() => {
+                  set("size", sz);
+                  logEvent("onSizeChange", `Avatar size set to ${sz}`);
+                }}
+                className={`text-[11px] font-mono px-2 py-0.5 rounded transition-colors ${
+                  size === sz
+                    ? "bg-zinc-200 dark:bg-zinc-800 text-sky-500 dark:text-sky-400 font-bold"
+                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                }`}
+              >
+                {sz.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       );
     }
@@ -1454,9 +1511,9 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           </div>
         </aside>
 
-        {/* Center Mobile Canvas */}
+        {/* Center Visual Canvas Workbench */}
         <main
-          className={`flex-1 flex flex-col items-center justify-center relative overflow-hidden p-6 transition-colors duration-200 ${
+          className={`flex-1 flex flex-col relative overflow-hidden transition-colors duration-200 ${
             canvasMode === "light"
               ? "bg-zinc-100 bg-dot-grid-light"
               : canvasMode === "dark"
@@ -1464,42 +1521,28 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
               : "bg-zinc-950 bg-dot-grid"
           }`}
         >
-          {/* Floating Canvas Zoom Bar */}
-          <div className="absolute top-4 left-6 z-10 flex items-center gap-2">
-            <span className="px-2 text-zinc-400 text-[11px] font-semibold">{item?.name}</span>
-            <div className="h-3 w-px bg-zinc-800" />
-            <div className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
-              {[75, 100, 125].map((z) => (
-                <button
-                  key={z}
-                  onClick={() => setZoom(z)}
-                  className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
-                    zoom === z ? "bg-zinc-800 text-sky-400" : "text-zinc-500 hover:text-zinc-300"
-                  }`}
-                >
-                  {z}%
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Clean Interactive Visual Canvas */}
           <PreviewCanvas
+            preset={canvasPreset}
+            onPresetChange={setCanvasPreset}
             zoom={zoom}
+            onZoomChange={setZoom}
             canvasMode={canvasMode}
+            onCanvasModeChange={setCanvasMode}
             appName={item?.name ?? "Component Preview"}
+            category={item?.type}
+            showSafeArea={showSafeArea}
+            onToggleSafeArea={() => setShowSafeArea((prev) => !prev)}
+            onResetProps={() => {
+              setValues({});
+              logEvent("Reset", "Component props reset to defaults");
+            }}
             onEvent={logEvent}
+            lastEvent={events[0] ? { name: events[0].event, detail: events[0].detail, time: events[0].time } : null}
+            targetFramework={target === "nativewind" ? "NativeWind v4" : "StyleSheet"}
           >
             {renderHarness()}
           </PreviewCanvas>
-
-          {/* Canvas Bottom Feedback Pill */}
-          <div className="absolute bottom-4 flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400 shadow-md backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Interactive Visual Canvas</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-zinc-500">Dual NativeWind v4 & StyleSheet ready</span>
-          </div>
         </main>
 
         {/* Right Sidebar: Props Inspector, Code, Usage, and Events */}
