@@ -596,7 +596,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       const sheetTitle = String(merged.sheetTitle || "Interactive Sheet");
 
       return (
-        <div className="relative w-full max-w-sm min-h-[380px] flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/60 p-6 overflow-hidden">
+        <div className="relative w-full max-w-sm min-h-[500px] flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/60 p-6 overflow-hidden">
           {/* Central Trigger Card */}
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-zinc-800 shadow-sm border border-zinc-200/80">
