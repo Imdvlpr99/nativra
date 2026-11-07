@@ -3,3 +3,8 @@ export * from "./PhoneMockup";
 export * from "./PreviewCanvas";
 export * from "./StudioLayout";
 export * from "./ThemeSwitcher";
+export * from "./ScreenBuilder";
+export * from "./NavigationGenerator";
+export * from "./ThemeStudio";
+export * from "./IconExplorer";
+export * from "./TemplatesExplorer";

@@ -5,6 +5,11 @@ import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
 import { getFixtures } from "@nativra/preview-runtime";
 import { PreviewCanvas } from "../components/PreviewCanvas";
+import { ScreenBuilder } from "../components/ScreenBuilder";
+import { NavigationGenerator } from "../components/NavigationGenerator";
+import { ThemeStudio } from "../components/ThemeStudio";
+import { IconExplorer } from "../components/IconExplorer";
+import { TemplatesExplorer } from "../components/TemplatesExplorer";
 import {
   Smartphone,
   Tablet,
@@ -26,6 +31,8 @@ import {
   X,
   FolderOpen,
   ShieldCheck,
+  Compass,
+  Palette,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -65,6 +72,7 @@ const DEVICE_DIMENSIONS = {
 type DeviceKey = keyof typeof DEVICE_DIMENSIONS;
 
 export default function StudioClient({ items }: { items: StudioItem[] }) {
+  const [studioMode, setStudioMode] = useState<"components" | "screens" | "navigation" | "themes" | "icons" | "templates">("components");
   const [id, setId] = useState(items[0]?.id ?? "button");
   const [target, setTarget] = useState<"nativewind" | "stylesheet">("nativewind");
   const [values, setValues] = useState<Values>({});
@@ -974,32 +982,31 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           </div>
         </div>
 
-        {/* Center Device Bar Controls */}
-        <div className="hidden lg:flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
-          {(["iphone", "android", "compact", "tablet"] as const).map((d) => (
+        {/* Center Studio Tool Switcher */}
+        <nav className="hidden md:flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
+          {[
+            { id: "components" as const, label: "Components", icon: Layers },
+            { id: "screens" as const, label: "Screen Builder", icon: Smartphone },
+            { id: "navigation" as const, label: "Navigation", icon: Compass },
+            { id: "themes" as const, label: "Theme Studio", icon: Palette },
+            { id: "icons" as const, label: "Icon Explorer", icon: Sparkles },
+            { id: "templates" as const, label: "Templates", icon: FolderOpen },
+          ].map(({ id: mId, label, icon: Icon }) => (
             <button
-              key={d}
-              onClick={() => setDevice(d)}
+              key={mId}
+              type="button"
+              onClick={() => setStudioMode(mId)}
               className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
-                device === d ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                studioMode === mId
+                  ? "bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700/60"
+                  : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              {d === "tablet" ? <Tablet className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}
-              <span>{DEVICE_DIMENSIONS[d].name}</span>
+              <Icon className="h-3.5 w-3.5" />
+              <span>{label}</span>
             </button>
           ))}
-          <div className="h-4 w-px bg-zinc-800 mx-1" />
-          <button
-            onClick={() => setIsLandscape(!isLandscape)}
-            title="Rotate Orientation"
-            className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs ${
-              isLandscape ? "bg-zinc-800 text-sky-400" : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <RotateCw className="h-3.5 w-3.5" />
-            <span>{isLandscape ? "Landscape" : "Portrait"}</span>
-          </button>
-        </div>
+        </nav>
 
         {/* Right Action Bar */}
         <div className="flex items-center gap-3">
@@ -1072,7 +1079,8 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       </header>
 
       {/* Main Workspace Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      {studioMode === "components" && (
+        <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar: Components Explorer */}
         <aside className="w-64 shrink-0 flex flex-col border-r border-zinc-800 bg-zinc-900/60">
           {/* Search Input */}
@@ -1160,21 +1168,47 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
               : "bg-zinc-950 bg-dot-grid"
           }`}
         >
-          {/* Floating Canvas Zoom Bar */}
-          <div className="absolute top-4 left-6 z-10 flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
-            <span className="px-2 text-zinc-400 text-[11px]">{item?.name}</span>
+          {/* Floating Canvas Zoom & Device Presets Bar */}
+          <div className="absolute top-4 left-6 z-10 flex items-center gap-2">
+            <span className="px-2 text-zinc-400 text-[11px] font-semibold">{item?.name}</span>
             <div className="h-3 w-px bg-zinc-800" />
-            {[75, 100, 125].map((z) => (
-              <button
-                key={z}
-                onClick={() => setZoom(z)}
-                className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
-                  zoom === z ? "bg-zinc-800 text-sky-400" : "text-zinc-500 hover:text-zinc-300"
-                }`}
-              >
-                {z}%
-              </button>
-            ))}
+            <div className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
+              {(["iphone", "android", "compact", "tablet"] as const).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDevice(d)}
+                  className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                    device === d ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {d === "tablet" ? <Tablet className="h-3 w-3" /> : <Smartphone className="h-3 w-3" />}
+                  <span>{DEVICE_DIMENSIONS[d].name}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsLandscape(!isLandscape)}
+              title="Rotate Orientation"
+              className={`flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 px-2 text-xs backdrop-blur shadow-lg ${
+                isLandscape ? "text-sky-400" : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              <RotateCw className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
+              {[75, 100, 125].map((z) => (
+                <button
+                  key={z}
+                  onClick={() => setZoom(z)}
+                  className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
+                    zoom === z ? "bg-zinc-800 text-sky-400" : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {z}%
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Clean Interactive Visual Canvas */}
@@ -1502,6 +1536,13 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           )}
         </aside>
       </div>
+      )}
+
+      {studioMode === "screens" && <ScreenBuilder target={target} />}
+      {studioMode === "navigation" && <NavigationGenerator />}
+      {studioMode === "themes" && <ThemeStudio />}
+      {studioMode === "icons" && <IconExplorer />}
+      {studioMode === "templates" && <TemplatesExplorer target={target} />}
     </div>
   );
 }
