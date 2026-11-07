@@ -1,0 +1,33 @@
+{
+  "id": "stat-progress-card",
+  "name": "Stat Progress Card",
+  "description": "Mobile goal KPI card with target value, percent indicator, and embedded progress bar with milestone indicators.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/StatProgressCard.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/StatProgressCard.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "stat", "progress", "goal", "kpi", "fitness", "budget"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

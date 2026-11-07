@@ -98,6 +98,40 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
     { name: "Closed", props: { defaultIsOpen: false, triggerLabel: "Open Bottom Sheet" } },
     { name: "Open", props: { defaultIsOpen: true, triggerLabel: "Sheet Active" } },
   ],
+  alert: [
+    { name: "Info Notice", props: { variant: "info", title: "Update Available", description: "A new version of Nativra is ready to install." } },
+    { name: "Success Alert", props: { variant: "success", title: "Payment Processed", description: "Your subscription has been renewed." } },
+    { name: "Destructive Alert", props: { variant: "destructive", title: "Session Expired", description: "Please sign in again to continue." } },
+    { name: "Warning Notice", props: { variant: "warning", title: "Storage Warning", description: "You have used 85% of your quota." } },
+  ],
+  progress: [
+    { name: "Initial 25%", props: { value: 25, variant: "primary", size: "md" } },
+    { name: "Halfway 50%", props: { value: 50, variant: "primary", size: "md" } },
+    { name: "Complete 100%", props: { value: 100, variant: "success", size: "lg" } },
+    { name: "Warning 75%", props: { value: 75, variant: "destructive", size: "sm" } },
+  ],
+  slider: [
+    { name: "Midpoint 50", props: { value: 50, min: 0, max: 100 } },
+    { name: "High Value 85", props: { value: 85, min: 0, max: 100 } },
+    { name: "Low Value 15", props: { value: 15, min: 0, max: 100 } },
+    { name: "Disabled", props: { value: 40, disabled: true } },
+  ],
+  tabs: [
+    { name: "Pill Style", props: { value: "overview", variant: "pill" } },
+    { name: "Underline Style", props: { value: "activity", variant: "underline" } },
+  ],
+  "order-summary": [
+    { name: "Standard Checkout", props: { orderNumber: "#NV-88219", subtotal: "$108.00", discount: "-$20.00", total: "$96.80" } },
+    { name: "No Discount", props: { orderNumber: "#NV-99014", subtotal: "$149.00", discount: "", total: "$149.00" } },
+  ],
+  "notification-item": [
+    { name: "Unread Alert", props: { senderName: "Marcus Vance", actionText: "requested feedback on", targetResource: "Design System Spec", unread: true, timeAgo: "12m ago" } },
+    { name: "Read Notification", props: { senderName: "Sophia Martinez", actionText: "approved your pull request in", targetResource: "mobile-core", unread: false, timeAgo: "2h ago" } },
+  ],
+  "stat-progress-card": [
+    { name: "High Progress 80%", props: { goalTitle: "Weekly Workout Goal", currentValue: "4", targetValue: "5 sessions", progressPercent: 80, streakDays: 14 } },
+    { name: "Goal Completed 100%", props: { goalTitle: "Savings Target", currentValue: "$5,000", targetValue: "$5,000", progressPercent: 100, streakDays: 30 } },
+  ],
 };
 
 export function getFixtures(id: string): PreviewFixture[] {

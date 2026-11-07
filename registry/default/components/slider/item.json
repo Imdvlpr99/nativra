@@ -1,0 +1,30 @@
+{
+  "id": "slider",
+  "name": "Slider",
+  "description": "A touch-friendly continuous input control for selecting a value within a range.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Slider.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Slider.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["slider", "range", "input", "volume", "scrubber"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

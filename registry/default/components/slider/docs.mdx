@@ -1,0 +1,25 @@
+---
+title: Slider
+description: A touch-friendly continuous input control for selecting a value within a range.
+---
+
+# Slider
+
+Continuous or stepped range slider for React Native.
+
+## Usage
+
+```tsx
+import { Slider } from "@/components/ui/Slider";
+
+export default function Example() {
+  return (
+    <Slider
+      value={50}
+      min={0}
+      max={100}
+      onValueChange={(val) => console.log(val)}
+    />
+  );
+}
+```

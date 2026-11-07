@@ -1,0 +1,34 @@
+{
+  "id": "notification-item",
+  "name": "Notification Item",
+  "description": "Interactive mobile notification card with user avatar, timestamp, unread indicator dot, and action buttons.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/NotificationItem.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/NotificationItem.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "avatar", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "notification", "inbox", "activity", "alert", "feed"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

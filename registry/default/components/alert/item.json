@@ -1,0 +1,30 @@
+{
+  "id": "alert",
+  "name": "Alert",
+  "description": "Displays a callout banner for user attention with icons and status variants.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Alert.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Alert.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["alert", "callout", "banner", "notice", "feedback"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

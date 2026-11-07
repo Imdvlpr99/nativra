@@ -1,0 +1,30 @@
+---
+title: Tabs
+description: Segmented mobile navigation tabs for switching between views.
+---
+
+# Tabs
+
+A segmented tab switcher designed for touch navigation.
+
+## Usage
+
+```tsx
+import { Tabs } from "@/components/ui/Tabs";
+
+export default function Example() {
+  const [tab, setTab] = useState("overview");
+
+  return (
+    <Tabs
+      value={tab}
+      onValueChange={setTab}
+      items={[
+        { value: "overview", label: "Overview" },
+        { value: "activity", label: "Activity" },
+        { value: "settings", label: "Settings" },
+      ]}
+    />
+  );
+}
+```

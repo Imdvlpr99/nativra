@@ -1,0 +1,35 @@
+{
+  "id": "order-summary",
+  "name": "Order Summary",
+  "description": "Complete mobile e-commerce checkout invoice summary with line items, voucher discount, and checkout button.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/OrderSummary.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/OrderSummary.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "checkout", "ecommerce", "order", "invoice", "payment", "cart"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
