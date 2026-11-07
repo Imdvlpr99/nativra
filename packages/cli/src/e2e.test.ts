@@ -63,6 +63,23 @@ describe("nativra CLI (local registry)", () => {
     expect(existsSync(join(cwd, "components/ui/Text.tsx"))).toBe(true);
   });
 
+  it("add multiple items simultaneously", () => {
+    runReg("add", "input", "badge", "--yes");
+    expect(existsSync(join(cwd, "components/ui/Input.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/Badge.tsx"))).toBe(true);
+  });
+
+  it("add full template flow", () => {
+    runReg("add", "auth-flow", "--yes");
+    expect(existsSync(join(cwd, "components/ui/AuthFlow.tsx"))).toBe(true);
+  });
+
+  it("rollback command safely reports or restores", () => {
+    const out = run("rollback", "button");
+    expect(out).toMatch(/backup/i);
+  });
+
+
   it("theme add writes the theme file", () => {
     runReg("theme", "add", "dark-slate");
     expect(existsSync(join(cwd, "lib/themes/theme.ts"))).toBe(true);

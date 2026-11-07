@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import type { ScreenIRDocument, ScreenIRNode } from "@nativra/studio-schema";
 import { generateFromScreenIR } from "@nativra/codegen";
 import {
@@ -14,6 +14,8 @@ import {
   Sliders,
   Smartphone,
   RotateCcw,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 
 export const DEFAULT_SCREEN_DOC: ScreenIRDocument = {
@@ -63,11 +65,57 @@ export const DEFAULT_SCREEN_DOC: ScreenIRDocument = {
 };
 
 export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target?: "nativewind" | "stylesheet" }) {
-  const [doc, setDoc] = useState<ScreenIRDocument>(DEFAULT_SCREEN_DOC);
+  const [doc, setDocState] = useState<ScreenIRDocument>(DEFAULT_SCREEN_DOC);
+  const [history, setHistory] = useState<ScreenIRDocument[]>([]);
+  const [future, setFuture] = useState<ScreenIRDocument[]>([]);
   const [target, setTarget] = useState<"nativewind" | "stylesheet">(initialTarget);
   const [selectedNodeId, setSelectedNodeId] = useState<string>("node-card");
   const [activeTab, setActiveTab] = useState<"canvas" | "code">("canvas");
   const [copied, setCopied] = useState(false);
+
+  const pushDocChange = (updater: (prev: ScreenIRDocument) => ScreenIRDocument) => {
+    setDocState((current) => {
+      const next = updater(current);
+      setHistory((prev) => [...prev.slice(-30), current]);
+      setFuture([]);
+      return next;
+    });
+  };
+
+  const handleUndo = () => {
+    if (history.length === 0) return;
+    const previous = history[history.length - 1]!;
+    setHistory((prev) => prev.slice(0, -1));
+    setFuture((prev) => [doc, ...prev]);
+    setDocState(previous);
+  };
+
+  const handleRedo = () => {
+    if (future.length === 0) return;
+    const next = future[0]!;
+    setFuture((prev) => prev.slice(1));
+    setHistory((prev) => [...prev, doc]);
+    setDocState(next);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        if (e.shiftKey) {
+          e.preventDefault();
+          handleRedo();
+        } else {
+          e.preventDefault();
+          handleUndo();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   const activeDoc: ScreenIRDocument = useMemo(() => ({
     ...doc,
@@ -105,7 +153,7 @@ export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target
         children: node.children ? node.children.map(updateRecursive) : undefined,
       };
     };
-    setDoc((prev) => ({ ...prev, root: updateRecursive(prev.root) }));
+    pushDocChange((prev) => ({ ...prev, root: updateRecursive(prev.root) }));
   };
 
   // Add child node
@@ -139,7 +187,7 @@ export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target
       };
     };
 
-    setDoc((prev) => ({ ...prev, root: addRecursive(prev.root) }));
+    pushDocChange((prev) => ({ ...prev, root: addRecursive(prev.root) }));
     setSelectedNodeId(newNode.id);
   };
 
@@ -154,7 +202,7 @@ export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target
           : undefined,
       };
     };
-    setDoc((prev) => ({ ...prev, root: deleteRecursive(prev.root) }));
+    pushDocChange((prev) => ({ ...prev, root: deleteRecursive(prev.root) }));
     setSelectedNodeId(doc.root.id);
   };
 
@@ -318,7 +366,7 @@ export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target
             <span className="text-xs font-bold text-zinc-200">Screen IR Tree</span>
           </div>
           <button
-            onClick={() => setDoc(DEFAULT_SCREEN_DOC)}
+            onClick={() => pushDocChange(() => DEFAULT_SCREEN_DOC)}
             title="Reset tree"
             className="p-1 rounded text-zinc-500 hover:text-zinc-300"
           >
@@ -364,6 +412,28 @@ export function ScreenBuilder({ target: initialTarget = "nativewind" }: { target
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Undo / Redo controls */}
+            <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-xs">
+              <button
+                onClick={handleUndo}
+                disabled={history.length === 0}
+                title="Undo (Ctrl+Z)"
+                className="flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-zinc-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+                <span>Undo</span>
+              </button>
+              <button
+                onClick={handleRedo}
+                disabled={future.length === 0}
+                title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
+                className="flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-zinc-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              >
+                <Redo2 className="h-3.5 w-3.5" />
+                <span>Redo</span>
+              </button>
+            </div>
+
             {/* Target Switcher */}
             <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-xs">
               <button

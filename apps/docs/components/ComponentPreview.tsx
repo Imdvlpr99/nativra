@@ -2,7 +2,25 @@
 
 import React, { useState } from "react";
 import type { RegistryItem } from "@nativra/registry-schema";
-import { Check, Copy, RefreshCw, Terminal, Sparkles, Mail, Lock, ShieldCheck } from "lucide-react";
+import {
+  Check,
+  Copy,
+  RefreshCw,
+  Terminal,
+  Sparkles,
+  Mail,
+  Lock,
+  ShieldCheck,
+  Heart,
+  Plus,
+  Bell,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  CheckCircle2,
+  X,
+} from "lucide-react";
 
 interface ComponentPreviewProps {
   item: RegistryItem;
@@ -131,6 +149,14 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
 
   // Hook disclosure demo state
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(true);
+
+  // Additional component states
+  const [sliderVal, setSliderVal] = useState(65);
+  const [progressVal] = useState(72);
+  const [activeTabId, setActiveTabId] = useState("account");
+  const [activeAccordion, setActiveAccordion] = useState<string | null>("acc-1");
+  const [radioVal, setRadioVal] = useState("starter");
+  const [textareaVal, setTextareaVal] = useState("Designed with clean typography and balanced mobile padding.");
 
   const copyCommand = () => {
     navigator.clipboard.writeText(`npx nativra add ${item.id}`);
@@ -601,6 +627,318 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
             <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
               <span>vs last month</span>
               <span className="font-medium text-emerald-600">High organic retention</span>
+            </div>
+          </div>
+        );
+
+      case "icon-button":
+        return (
+          <div className="flex items-center justify-center gap-4">
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 shadow-sm active:scale-95 transition-all"
+            >
+              <Heart className="h-5 w-5 fill-current" />
+            </button>
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20 active:scale-95 transition-all"
+            >
+              <Bell className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted/50 active:scale-95 transition-all"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+          </div>
+        );
+
+      case "fab":
+        return (
+          <div className="relative h-44 w-full max-w-sm rounded-2xl border border-dashed border-border bg-muted/20 p-4 flex flex-col justify-between">
+            <p className="text-xs text-muted-foreground">Mobile Viewport Canvas</p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="flex items-center gap-2 rounded-full bg-sky-600 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-sky-600/30 hover:bg-sky-500 active:scale-95 transition-all"
+              >
+                <Plus className="h-4 w-4 stroke-[3]" />
+                <span>Create New</span>
+              </button>
+            </div>
+          </div>
+        );
+
+      case "otp-input":
+        return (
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex gap-2.5">
+              {["2", "0", "4", "8"].map((digit, i) => (
+                <div
+                  key={i}
+                  className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-sky-500 bg-background text-lg font-bold text-foreground shadow-sm"
+                >
+                  {digit}
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground font-medium">Auto-focusing PIN entry box</p>
+          </div>
+        );
+
+      case "progress":
+        return (
+          <div className="w-full max-w-sm space-y-2">
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className="text-foreground">Syncing Database</span>
+              <span className="text-sky-600 dark:text-sky-400">{progressVal}%</span>
+            </div>
+            <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full bg-sky-600 transition-all duration-300 rounded-full"
+                style={{ width: `${progressVal}%` }}
+              />
+            </div>
+          </div>
+        );
+
+      case "alert":
+        return (
+          <div className="w-full max-w-sm rounded-xl border border-sky-200 bg-sky-50 p-4 text-sky-900 dark:border-sky-900/50 dark:bg-sky-950/40 dark:text-sky-200">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-sky-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <h5 className="text-xs font-bold">New Update Available</h5>
+                <p className="text-xs opacity-90 leading-relaxed">
+                  Version 4.2 of your design token bundle is ready to sync.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "tabs":
+        return (
+          <div className="w-full max-w-sm space-y-3">
+            <div className="flex rounded-xl bg-muted p-1 text-xs font-semibold">
+              {[
+                { id: "account", label: "Account" },
+                { id: "security", label: "Security" },
+                { id: "billing", label: "Billing" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={`flex-1 rounded-lg py-1.5 transition-all text-center ${
+                    activeTabId === tab.id
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
+              Active tab view: <strong className="text-foreground capitalize">{activeTabId}</strong>
+            </div>
+          </div>
+        );
+
+      case "accordion":
+        return (
+          <div className="w-full max-w-sm rounded-xl border border-border divide-y divide-border overflow-hidden bg-card text-xs">
+            {[
+              { id: "acc-1", title: "Can I customize NativeWind classes?", text: "Yes! All components are source-first, so you can freely modify any Tailwind class directly in your project." },
+              { id: "acc-2", title: "Does it work with React Native StyleSheet?", text: "Nativra provides 100% parity across both NativeWind v4 and React Native StyleSheet targets." },
+            ].map((acc) => (
+              <div key={acc.id} className="p-3">
+                <button
+                  onClick={() => setActiveAccordion(activeAccordion === acc.id ? null : acc.id)}
+                  className="flex w-full items-center justify-between font-semibold text-foreground text-left"
+                >
+                  <span>{acc.title}</span>
+                  {activeAccordion === acc.id ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                </button>
+                {activeAccordion === acc.id && (
+                  <p className="mt-2 text-muted-foreground leading-relaxed pt-1 border-t border-border/50">
+                    {acc.text}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+
+      case "bottom-sheet":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
+            <div className="flex justify-center pt-2.5 pb-1">
+              <div className="h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-sm text-foreground">Select Payment Method</h4>
+                <span className="text-[10px] text-muted-foreground">Swipe down to dismiss</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-2.5 text-xs">
+                  <span>Apple Pay / Google Wallet</span>
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-2.5 text-xs text-muted-foreground">
+                  <span>Credit Card (••• 4242)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "stack":
+        return (
+          <div className="w-full max-w-sm rounded-xl border border-dashed border-border p-4 space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+              VStack Layout (gap-3)
+            </span>
+            <div className="flex flex-col gap-2.5">
+              <div className="h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-xs font-semibold text-sky-600 dark:text-sky-400">
+                Item 1 (VStack child)
+              </div>
+              <div className="h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-xs font-semibold text-sky-600 dark:text-sky-400">
+                Item 2 (VStack child)
+              </div>
+            </div>
+          </div>
+        );
+
+      case "safe-area":
+        return (
+          <div className="relative h-44 w-full max-w-sm rounded-2xl border-2 border-border bg-zinc-950 p-2 overflow-hidden flex flex-col justify-between text-zinc-100">
+            <div className="flex justify-between items-center px-2 py-1 text-[10px] font-mono text-zinc-400 border-b border-zinc-800">
+              <span>9:41</span>
+              <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[9px]">Top Inset: 44pt</span>
+              <span>100%</span>
+            </div>
+            <div className="flex-1 flex items-center justify-center">
+              <span className="text-xs text-zinc-400 font-medium">Safe Protected Content Zone</span>
+            </div>
+            <div className="flex justify-center pb-1">
+              <div className="h-1 w-24 rounded-full bg-zinc-600" />
+            </div>
+          </div>
+        );
+
+      case "textarea":
+        return (
+          <div className="w-full max-w-sm space-y-1.5">
+            <label className="text-xs font-semibold text-foreground block">Project Notes</label>
+            <textarea
+              rows={3}
+              value={textareaVal}
+              onChange={(e) => setTextareaVal(e.target.value)}
+              className="w-full rounded-xl border border-border bg-background p-3 text-xs text-foreground outline-none focus:ring-2 focus:ring-sky-500 transition-all resize-none"
+            />
+            <div className="flex justify-end text-[10px] text-muted-foreground">
+              {textareaVal.length} characters
+            </div>
+          </div>
+        );
+
+      case "radio-group":
+        return (
+          <div className="w-full max-w-sm space-y-2">
+            {[
+              { id: "starter", title: "Free Community Tier", desc: "Core mobile components" },
+              { id: "pro", title: "Enterprise & Team Pro", desc: "Advanced templates and generators" },
+            ].map((opt) => (
+              <div
+                key={opt.id}
+                onClick={() => setRadioVal(opt.id)}
+                className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-colors ${
+                  radioVal === opt.id
+                    ? "border-sky-500 bg-sky-50/50 dark:bg-sky-950/20"
+                    : "border-border hover:bg-muted/40"
+                }`}
+              >
+                <div
+                  className={`mt-0.5 flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
+                    radioVal === opt.id ? "border-sky-500 bg-sky-500" : "border-muted-foreground"
+                  }`}
+                >
+                  {radioVal === opt.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                </div>
+                <div className="space-y-0.5 text-xs">
+                  <p className="font-semibold text-foreground">{opt.title}</p>
+                  <p className="text-muted-foreground text-[11px]">{opt.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "select":
+        return (
+          <div className="w-full max-w-sm space-y-1.5">
+            <label className="text-xs font-semibold text-foreground block">Country / Region</label>
+            <div className="flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground shadow-sm cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
+              <span>United States (US)</span>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+        );
+
+      case "slider":
+        return (
+          <div className="w-full max-w-sm space-y-3">
+            <div className="flex justify-between text-xs font-semibold">
+              <span className="text-foreground">Haptic Intensity</span>
+              <span className="text-sky-600 dark:text-sky-400 font-mono">{sliderVal}%</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={sliderVal}
+              onChange={(e) => setSliderVal(Number(e.target.value))}
+              className="w-full accent-sky-500 cursor-pointer"
+            />
+          </div>
+        );
+
+      case "toast":
+        return (
+          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-3 shadow-lg flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+              <div>
+                <p className="font-bold text-foreground">File exported successfully</p>
+                <p className="text-[11px] text-muted-foreground">Saved to /components/ui/</p>
+              </div>
+            </div>
+            <button className="text-muted-foreground hover:text-foreground p-1">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        );
+
+      case "dialog":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl space-y-4">
+            <div className="space-y-1">
+              <h4 className="font-bold text-base text-foreground">Confirm File Deletion</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Are you sure you want to delete this component? This action will remove the source file from your local workspace.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2 pt-1">
+              <button className="rounded-xl border border-border px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted">
+                Cancel
+              </button>
+              <button className="rounded-xl bg-red-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-red-500">
+                Delete
+              </button>
             </div>
           </div>
         );
