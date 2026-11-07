@@ -26,7 +26,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "A complete sign-in and account creation screen with input validation, password reveal state, social provider separator, and primary press actions.",
     componentsUsed: ["button", "input", "card", "separator", "text"],
-    installCommand: "npx nativra add button input card separator text",
+    installCommand: "npx nativra add auth-flow",
     previewHighlights: [
       "Auto-capitalization and keyboardType presets",
       "Inline error validation and helper messages",
@@ -34,45 +34,31 @@ const TEMPLATES: ScreenTemplate[] = [
     ],
   },
   {
-    id: "profile-settings",
-    name: "Account & Settings",
-    category: "User Profile",
+    id: "onboarding-flow",
+    name: "Onboarding Flow",
+    category: "Welcome & Onboarding",
     description:
-      "User settings dashboard featuring profile avatar, notification toggle switches, dark mode preference, and security options.",
+      "Multi-step walkthrough carousel with pagination indicator dots, rich feature highlights, skip action, and final get started CTA.",
+    componentsUsed: ["button", "card", "badge", "text"],
+    installCommand: "npx nativra add onboarding-flow",
+    previewHighlights: [
+      "Step pagination with animated dot indicator",
+      "Feature highlights with icon badges",
+      "Skip and Next/Finish navigation controls",
+    ],
+  },
+  {
+    id: "settings-flow",
+    name: "Settings & Profile Flow",
+    category: "User Preferences",
+    description:
+      "Comprehensive mobile settings screen featuring user profile card, notification toggle switches, dark mode preference, and security options.",
     componentsUsed: ["avatar", "badge", "card", "switch", "separator", "button"],
-    installCommand: "npx nativra add avatar badge card switch separator button",
+    installCommand: "npx nativra add settings-flow",
     previewHighlights: [
       "Avatar with fallback initials",
       "Accessible toggle switches for push alerts",
       "Destructive logout action with confirmation state",
-    ],
-  },
-  {
-    id: "metrics-dashboard",
-    name: "Mobile Activity Dashboard",
-    category: "Analytics & Stats",
-    description:
-      "Executive overview with elevated metric summary cards, recent activity feed with status badges, and quick action buttons.",
-    componentsUsed: ["card", "badge", "button", "text", "skeleton"],
-    installCommand: "npx nativra add card badge button text skeleton",
-    previewHighlights: [
-      "Elevated depth cards with customizable padding",
-      "Skeleton pulse placeholders for loading state",
-      "Status indicator badges for completed tasks",
-    ],
-  },
-  {
-    id: "empty-workspace",
-    name: "Zero-Data Empty State",
-    category: "Feedback & Guidance",
-    description:
-      "Friendly empty state card with vector icon placeholder, helpful onboarding copy, and primary action to create the first resource.",
-    componentsUsed: ["card", "button", "text"],
-    installCommand: "npx nativra add card button text",
-    previewHighlights: [
-      "Clean dashed surface container",
-      "Guided call-to-action button",
-      "Semantic muted helper typography",
     ],
   },
 ];

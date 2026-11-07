@@ -40,3 +40,9 @@ export async function getThemes(): Promise<RegistryItemSummary[]> {
   const manifest = await getManifest();
   return manifest.items.filter((i) => i.type === "theme");
 }
+
+export async function getTemplates(): Promise<RegistryItemSummary[]> {
+  const manifest = await getManifest();
+  return manifest.items.filter((i) => i.type === "template");
+}
+

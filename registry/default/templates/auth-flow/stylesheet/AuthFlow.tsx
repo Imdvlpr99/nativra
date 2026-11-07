@@ -257,3 +257,4 @@ const styles = StyleSheet.create({
   footerText: { fontSize: 13, color: "#71717A" },
   switchAuthText: { fontSize: 13, fontWeight: "700", color: "#0284C7" },
 });
+

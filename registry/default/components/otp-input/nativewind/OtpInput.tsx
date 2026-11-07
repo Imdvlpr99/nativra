@@ -86,3 +86,4 @@ export function OtpInput({
     </View>
   );
 }
+

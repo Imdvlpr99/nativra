@@ -35,3 +35,4 @@ export function SafeAreaInsetSpacer({ edge = "top" }: { edge?: "top" | "bottom" 
   const height = edge === "top" ? insets.top : insets.bottom;
   return <View style={{ height }} />;
 }
+

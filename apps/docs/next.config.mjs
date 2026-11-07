@@ -1,10 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  pageExtensions: ["ts", "tsx", "mdx"],
-  experimental: {
-    mdxRs: true,
-  },
   // Ensure PostCSS processes globals.css
   webpack: (config) => {
     config.watchOptions = {
@@ -16,5 +12,6 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
 
 
