@@ -20,6 +20,10 @@
     "test": "vitest run",
     "clean": "rimraf dist"
   },
+  "dependencies": {
+    "@nativra/studio-schema": "workspace:*",
+    "@nativra/registry-schema": "workspace:*"
+  },
   "devDependencies": {
     "@nativra/config": "workspace:*",
     "tsup": "^8.3.5",

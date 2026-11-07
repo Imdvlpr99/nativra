@@ -8,3 +8,6 @@ export * from "./NavigationGenerator";
 export * from "./ThemeStudio";
 export * from "./IconExplorer";
 export * from "./TemplatesExplorer";
+export * from "./AccessibilityInspector";
+export * from "./ComponentPlayground";
+export * from "./DeveloperTooling";

@@ -148,3 +148,52 @@ export const RegistryManifestSchema = z.object({
   ),
 });
 export type RegistryManifest = z.infer<typeof RegistryManifestSchema>;
+
+// ---------------------------------------------------------------------------
+// Compatibility Matrix Contract (Section 3.2 & Section 3.3)
+// ---------------------------------------------------------------------------
+
+export const CompatibilityMatrixSchema = z.object({
+  reactNative: z.object({
+    min: z.string(),
+    tested: z.array(z.string()),
+  }),
+  expo: z.object({
+    minSdk: z.number(),
+    testedSdks: z.array(z.number()),
+  }),
+  react: z.object({
+    min: z.string(),
+    tested: z.array(z.string()),
+  }),
+  typescript: z.object({
+    min: z.string(),
+    tested: z.array(z.string()),
+  }),
+  nativewind: z.object({
+    supportedVersions: z.array(z.string()),
+  }),
+  reactNavigation: z.object({
+    supportedVersions: z.array(z.string()),
+  }),
+  android: z.object({
+    minSdk: z.number(),
+    targetSdk: z.number(),
+  }),
+  ios: z.object({
+    minDeploymentTarget: z.string(),
+  }),
+});
+export type CompatibilityMatrix = z.infer<typeof CompatibilityMatrixSchema>;
+
+export const DEFAULT_COMPATIBILITY_MATRIX: CompatibilityMatrix = {
+  reactNative: { min: "0.74.0", tested: ["0.74.5", "0.76.0", "0.76.3"] },
+  expo: { minSdk: 51, testedSdks: [51, 52] },
+  react: { min: "18.2.0", tested: ["18.2.0", "18.3.1", "19.0.0"] },
+  typescript: { min: "5.0.0", tested: ["5.3.3", "5.4.5", "5.9.3"] },
+  nativewind: { supportedVersions: ["^4.0.1", "^4.1.0"] },
+  reactNavigation: { supportedVersions: ["^6.0.0", "^7.0.0"] },
+  android: { minSdk: 24, targetSdk: 35 },
+  ios: { minDeploymentTarget: "15.1" },
+};
+

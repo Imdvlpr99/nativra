@@ -6,6 +6,7 @@ import { registerInfoCommand } from "./commands/info.js";
 import { registerDiffCommand } from "./commands/diff.js";
 import { registerDoctorCommand } from "./commands/doctor.js";
 import { registerUpdateCommand } from "./commands/update.js";
+import { registerRollbackCommand } from "./commands/rollback.js";
 import { registerSearchCommand } from "./commands/search.js";
 import { registerThemeCommand, registerRegistryCommand } from "./commands/theme-registry.js";
 
@@ -21,6 +22,7 @@ registerInfoCommand(program);
 registerDiffCommand(program);
 registerDoctorCommand(program);
 registerUpdateCommand(program);
+registerRollbackCommand(program);
 registerSearchCommand(program);
 registerThemeCommand(program);
 registerRegistryCommand(program);

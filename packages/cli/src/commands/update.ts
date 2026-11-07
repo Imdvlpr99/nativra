@@ -1,5 +1,6 @@
 import type { Command } from "commander";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 import chalk from "chalk";
 import { sha256 } from "@nativra/utils";
 import { createClient } from "../client.js";
@@ -50,6 +51,19 @@ export function registerUpdateCommand(program: Command) {
             console.log(chalk.yellow(`  ! ${dest} has local changes — skipped (use --force, or 'nativra diff ${id}')`));
             continue;
           }
+
+          // Safety backup before update (Section 6.3 & 6.4)
+          if (local !== null) {
+            try {
+              const backupDir = join(options.cwd, ".nativra", "backups", id);
+              await mkdir(backupDir, { recursive: true });
+              const filename = dest.split("/").pop()?.split("\\").pop() ?? "backup.tsx";
+              await writeFile(join(backupDir, `${filename}.bak`), local, "utf8");
+            } catch {
+              // ignore backup write errors
+            }
+          }
+
           entry.files[dest] = await writeInstalledFile(dest, next);
           console.log(chalk.green(`  ✓ Updated ${dest}`));
         }
@@ -60,4 +74,5 @@ export function registerUpdateCommand(program: Command) {
       console.log();
     });
 }
+
 

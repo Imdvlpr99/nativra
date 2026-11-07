@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Layers,
   Plus,
@@ -12,6 +12,11 @@ import {
   Eye,
   Code2,
   Sliders,
+  Undo2,
+  Redo2,
+  FileDown,
+  FileUp,
+  CopyPlus,
 } from 'lucide-react';
 
 export interface ScreenNode {
@@ -86,9 +91,62 @@ export function ScreenBuilder({
   };
 
   const [nodes, setNodes] = useState<ScreenNode[]>(DEFAULT_NODES);
+  const [history, setHistory] = useState<ScreenNode[][]>([DEFAULT_NODES]);
+  const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedId, setSelectedId] = useState<string>(fallbackNode.id);
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [copied, setCopied] = useState(false);
+
+  const pushHistory = (newNodes: ScreenNode[]) => {
+    const nextHistory = history.slice(0, historyIndex + 1);
+    nextHistory.push(newNodes);
+    setHistory(nextHistory);
+    setHistoryIndex(nextHistory.length - 1);
+    setNodes(newNodes);
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      const nextIdx = historyIndex - 1;
+      setHistoryIndex(nextIdx);
+      const prev = history[nextIdx];
+      if (prev) {
+        setNodes(prev);
+        if (prev[0]) setSelectedId(prev[0].id);
+      }
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const nextIdx = historyIndex + 1;
+      setHistoryIndex(nextIdx);
+      const next = history[nextIdx];
+      if (next) {
+        setNodes(next);
+        if (next[0]) setSelectedId(next[0].id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          redo();
+        } else {
+          e.preventDefault();
+          undo();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [historyIndex, history]);
 
   const selectedNode = nodes.find((n) => n.id === selectedId) ?? nodes[0] ?? fallbackNode;
 
@@ -123,36 +181,105 @@ export function ScreenBuilder({
         break;
     }
 
-    setNodes((prev) => [...prev, newNode]);
+    pushHistory([...nodes, newNode]);
     setSelectedId(id);
   };
 
   const removeNode = (id: string) => {
-    setNodes((prev) => prev.filter((n) => n.id !== id));
-    if (selectedId === id && nodes.length > 1 && nodes[0]) {
-      setSelectedId(nodes[0].id);
+    const next = nodes.filter((n) => n.id !== id);
+    pushHistory(next);
+    if (selectedId === id && next.length > 0 && next[0]) {
+      setSelectedId(next[0].id);
     }
+  };
+
+  const duplicateNode = (id: string) => {
+    const targetIdx = nodes.findIndex((n) => n.id === id);
+    if (targetIdx === -1) return;
+    const targetNode = nodes[targetIdx];
+    if (!targetNode) return;
+    const newId = `${targetNode.type}-${Date.now().toString(36).substring(4)}`;
+    const cloned: ScreenNode = { ...targetNode, id: newId };
+    const next = [...nodes];
+    next.splice(targetIdx + 1, 0, cloned);
+    pushHistory(next);
+    setSelectedId(newId);
   };
 
   const moveNode = (index: number, direction: 'up' | 'down') => {
     const newIdx = direction === 'up' ? index - 1 : index + 1;
     if (newIdx < 0 || newIdx >= nodes.length) return;
-    setNodes((prev) => {
-      const copy = [...prev];
-      const fromNode = copy[index];
-      const toNode = copy[newIdx];
-      if (fromNode && toNode) {
-        copy[index] = toNode;
-        copy[newIdx] = fromNode;
-      }
-      return copy;
-    });
+    const copy = [...nodes];
+    const fromNode = copy[index];
+    const toNode = copy[newIdx];
+    if (fromNode && toNode) {
+      copy[index] = toNode;
+      copy[newIdx] = fromNode;
+      pushHistory(copy);
+    }
   };
 
   const updateSelectedNode = (updates: Partial<ScreenNode>) => {
-    setNodes((prev) =>
-      prev.map((n) => (n.id === selectedId ? { ...n, ...updates } : n))
-    );
+    const next = nodes.map((n) => (n.id === selectedId ? { ...n, ...updates } : n));
+    pushHistory(next);
+  };
+
+  const exportSchema = () => {
+    const doc = {
+      schemaVersion: '3.0.0',
+      id: 'custom-screen',
+      name: 'CustomScreen',
+      canvas: {
+        device: 'iphone',
+        isLandscape: false,
+        zoom: 100,
+        target,
+        colorScheme: 'dark',
+      },
+      nodes: nodes.map((n) => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        subtitle: n.subtitle,
+        props: { placeholder: n.placeholder, label: n.label },
+      })),
+    };
+    const jsonStr = JSON.stringify(doc, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'screen.nativra.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportSchema = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (Array.isArray(parsed.nodes)) {
+          const importedNodes: ScreenNode[] = parsed.nodes.map((n: { id?: string; type?: ScreenNode['type']; title?: string; subtitle?: string; props?: { placeholder?: string; label?: string } }) => ({
+            id: n.id || `node-${Math.random().toString(36).substring(6)}`,
+            type: n.type || 'header',
+            title: n.title,
+            subtitle: n.subtitle,
+            placeholder: n.props?.placeholder,
+            label: n.props?.label,
+          }));
+          if (importedNodes.length > 0) {
+            pushHistory(importedNodes);
+            if (importedNodes[0]) setSelectedId(importedNodes[0].id);
+          }
+        }
+      } catch {
+        alert('Invalid JSON screen document');
+      }
+    };
+    reader.readAsText(file);
   };
 
   // Generate complete React Native Screen TSX
@@ -482,6 +609,65 @@ const styles = StyleSheet.create({
               <span>Export Code</span>
             </button>
           </div>
+
+          {/* Undo / Redo Stack Controls */}
+          <div className="flex items-center gap-0.5 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs backdrop-blur shadow-lg">
+            <button
+              type="button"
+              disabled={historyIndex === 0}
+              onClick={undo}
+              title="Undo (Ctrl+Z)"
+              className="p-1 rounded text-zinc-400 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-400 transition-colors"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              disabled={historyIndex >= history.length - 1}
+              onClick={redo}
+              title="Redo (Ctrl+Y)"
+              className="p-1 rounded text-zinc-400 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-400 transition-colors"
+            >
+              <Redo2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Block Duplication */}
+          <button
+            type="button"
+            onClick={() => duplicateNode(selectedId)}
+            title="Duplicate Selected Block"
+            className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white shadow-sm backdrop-blur transition-colors"
+          >
+            <CopyPlus className="h-3.5 w-3.5 text-sky-400" />
+            <span>Duplicate</span>
+          </button>
+
+          {/* Export Schema */}
+          <button
+            type="button"
+            onClick={exportSchema}
+            title="Export ScreenDocument JSON"
+            className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white shadow-sm backdrop-blur transition-colors"
+          >
+            <FileDown className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Export JSON</span>
+          </button>
+
+          {/* Import Schema */}
+          <label
+            title="Import ScreenDocument JSON"
+            className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white shadow-sm backdrop-blur cursor-pointer transition-colors"
+          >
+            <FileUp className="h-3.5 w-3.5 text-purple-400" />
+            <span>Import JSON</span>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportSchema}
+              className="hidden"
+            />
+          </label>
 
           <span className="rounded-xl border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-400 font-mono shadow-sm">
             Target: {target === 'nativewind' ? 'NativeWind v4' : 'StyleSheet'}

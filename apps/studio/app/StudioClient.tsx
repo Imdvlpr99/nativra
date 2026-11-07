@@ -10,6 +10,9 @@ import { NavigationGenerator } from "../components/NavigationGenerator";
 import { ThemeStudio } from "../components/ThemeStudio";
 import { IconExplorer } from "../components/IconExplorer";
 import { TemplatesExplorer } from "../components/TemplatesExplorer";
+import { AccessibilityInspector } from "../components/AccessibilityInspector";
+import { ComponentPlayground } from "../components/ComponentPlayground";
+import { DeveloperTooling } from "../components/DeveloperTooling";
 import {
   Smartphone,
   Tablet,
@@ -33,6 +36,8 @@ import {
   ShieldCheck,
   Compass,
   Palette,
+  Play,
+  Wrench,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -72,7 +77,9 @@ const DEVICE_DIMENSIONS = {
 type DeviceKey = keyof typeof DEVICE_DIMENSIONS;
 
 export default function StudioClient({ items }: { items: StudioItem[] }) {
-  const [studioMode, setStudioMode] = useState<"components" | "screens" | "navigation" | "themes" | "icons" | "templates">("components");
+  const [studioMode, setStudioMode] = useState<
+    "components" | "playground" | "screens" | "navigation" | "themes" | "icons" | "templates" | "a11y" | "tooling"
+  >("components");
   const [id, setId] = useState(items[0]?.id ?? "button");
   const [target, setTarget] = useState<"nativewind" | "stylesheet">("nativewind");
   const [values, setValues] = useState<Values>({});
@@ -983,14 +990,17 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
         </div>
 
         {/* Center Studio Tool Switcher */}
-        <nav className="hidden md:flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
+        <nav className="hidden lg:flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
           {[
             { id: "components" as const, label: "Components", icon: Layers },
-            { id: "screens" as const, label: "Screen Builder", icon: Smartphone },
+            { id: "playground" as const, label: "Playground", icon: Play },
+            { id: "screens" as const, label: "Screens", icon: Smartphone },
             { id: "navigation" as const, label: "Navigation", icon: Compass },
-            { id: "themes" as const, label: "Theme Studio", icon: Palette },
-            { id: "icons" as const, label: "Icon Explorer", icon: Sparkles },
+            { id: "themes" as const, label: "Themes", icon: Palette },
+            { id: "icons" as const, label: "Icons", icon: Sparkles },
             { id: "templates" as const, label: "Templates", icon: FolderOpen },
+            { id: "a11y" as const, label: "A11y", icon: ShieldCheck },
+            { id: "tooling" as const, label: "Dev Tools", icon: Wrench },
           ].map(({ id: mId, label, icon: Icon }) => (
             <button
               key={mId}
@@ -1538,11 +1548,14 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       </div>
       )}
 
+      {studioMode === "playground" && <ComponentPlayground target={target} />}
       {studioMode === "screens" && <ScreenBuilder target={target} />}
       {studioMode === "navigation" && <NavigationGenerator />}
       {studioMode === "themes" && <ThemeStudio />}
       {studioMode === "icons" && <IconExplorer />}
       {studioMode === "templates" && <TemplatesExplorer target={target} />}
+      {studioMode === "a11y" && <AccessibilityInspector />}
+      {studioMode === "tooling" && <DeveloperTooling />}
     </div>
   );
 }

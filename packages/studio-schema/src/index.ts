@@ -141,3 +141,99 @@ export const LOADING_CONTROL: BooleanControl = {
   defaultValue: false,
 };
 
+// ---------------------------------------------------------------------------
+// V3 Screen Builder Document Contract (Section 2.4 & Section 4)
+// ---------------------------------------------------------------------------
+
+export const ScreenBlockTypeSchema = z.enum([
+  "header",
+  "search",
+  "user-profile",
+  "metric-card",
+  "pricing-card",
+  "settings-list",
+  "button-action",
+  "divider",
+  "custom",
+]);
+export type ScreenBlockType = z.infer<typeof ScreenBlockTypeSchema>;
+
+export interface ScreenBlockNode {
+  id: string;
+  type: ScreenBlockType;
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  variant?: string | undefined;
+  color?: string | undefined;
+  props?: Record<string, unknown> | undefined;
+  children?: ScreenBlockNode[] | undefined;
+}
+
+export const ScreenBlockNodeSchema: z.ZodType<ScreenBlockNode> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    type: ScreenBlockTypeSchema,
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+    variant: z.string().optional(),
+    color: z.string().optional(),
+    props: z.record(z.string(), z.unknown()).optional(),
+    children: z.lazy(() => z.array(ScreenBlockNodeSchema)).optional(),
+  })
+);
+
+export const CanvasConfigSchema = z.object({
+  device: z.enum(["iphone", "android", "compact", "tablet"]).default("iphone"),
+  isLandscape: z.boolean().default(false),
+  zoom: z.number().default(100),
+  target: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
+  colorScheme: z.enum(["light", "dark"]).default("light"),
+});
+export type CanvasConfig = z.infer<typeof CanvasConfigSchema>;
+
+export const ScreenDocumentSchema = z.object({
+  schemaVersion: z.literal("3.0.0").default("3.0.0"),
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  canvas: CanvasConfigSchema,
+  nodes: z.array(ScreenBlockNodeSchema),
+  themeRef: z.string().optional(),
+  createdAt: z.string().datetime().optional(),
+  updatedAt: z.string().datetime().optional(),
+});
+export type ScreenDocument = z.infer<typeof ScreenDocumentSchema>;
+
+// ---------------------------------------------------------------------------
+// V3 Navigation Document Contract (Section 2.5 & Section 13)
+// ---------------------------------------------------------------------------
+
+export const NavigationTypeSchema = z.enum(["tabs", "stack", "drawer"]);
+export type NavigationType = z.infer<typeof NavigationTypeSchema>;
+
+export const NavigationRouteSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  title: z.string(),
+  icon: z.string(),
+  component: z.string(),
+  headerShown: z.boolean().default(true),
+  badge: z.string().optional(),
+  params: z.record(z.string(), z.string()).optional(),
+});
+export type NavigationRoute = z.infer<typeof NavigationRouteSchema>;
+
+export const NavigationDocumentSchema = z.object({
+  schemaVersion: z.literal("3.0.0").default("3.0.0"),
+  id: z.string(),
+  name: z.string(),
+  type: NavigationTypeSchema,
+  initialRouteName: z.string(),
+  routes: z.array(NavigationRouteSchema).min(1),
+  activeTintColor: z.string().default("#3b82f6"),
+  inactiveTintColor: z.string().default("#71717a"),
+  backgroundColor: z.string().default("#09090b"),
+});
+export type NavigationDocument = z.infer<typeof NavigationDocumentSchema>;
+
+
