@@ -1,0 +1,41 @@
+---
+title: Dialog
+description: An accessible modal dialog with backdrop, title, description, and action buttons.
+---
+
+# Dialog
+
+The `Dialog` component provides an accessible modal alert dialog for mobile apps with backdrop blur, customizable confirmation actions, and dark mode support.
+
+## Installation
+
+```bash
+npx nativra add dialog
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { Button, View } from "react-native";
+import { Dialog } from "@/components/ui/dialog";
+
+export function DeleteConfirmation() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <View>
+      <Button title="Delete Account" color="#ef4444" onPress={() => setOpen(true)} />
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Are you absolutely sure?"
+        description="This action cannot be undone. This will permanently delete your account."
+        confirmText="Delete"
+        destructive
+        onConfirm={() => console.log("Deleted")}
+      />
+    </View>
+  );
+}
+```

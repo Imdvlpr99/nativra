@@ -98,6 +98,12 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [interactiveInputText, setInteractiveInputText] = useState("");
   const [disclosureOpen, setDisclosureOpen] = useState(false);
   const [avatarStatus, setAvatarStatus] = useState<"online" | "away" | "busy">("online");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectValue, setSelectValue] = useState("id");
+  const [radioValue, setRadioValue] = useState("pro");
+  const [textareaText, setTextareaText] = useState("");
+  const [toastVisible, setToastVisible] = useState(true);
+  const [accordionOpenIds, setAccordionOpenIds] = useState<Set<string>>(new Set(["1"]));
 
   const item = useMemo(() => items.find((i) => i.id === id) ?? items[0], [items, id]);
 
@@ -1306,6 +1312,333 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           <div className="mt-3 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2 text-[11px] text-zinc-500">
             <span>Sessions completed</span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400">On track for target</span>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "textarea") {
+      const label = String(merged.label || "Your Feedback");
+      const placeholder = String(merged.placeholder || "Write your feedback or description here...");
+      const disabled = Boolean(merged.disabled);
+      const error = Boolean(merged.error);
+      const errorMsg = String(merged.errorMessage || "Input cannot be empty");
+
+      return (
+        <div className="w-full max-w-sm space-y-2">
+          {label && (
+            <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              {label}
+            </label>
+          )}
+          <textarea
+            disabled={disabled}
+            value={textareaText}
+            onChange={(e) => {
+              setTextareaText(e.target.value);
+              logEvent("onChangeText", `Length: ${e.target.value.length}`);
+            }}
+            placeholder={placeholder}
+            rows={4}
+            className={`w-full rounded-xl border p-3 text-sm outline-none transition-all ${
+              error
+                ? "border-red-500 bg-red-50/50 dark:bg-red-950/20 text-red-900 dark:text-red-100"
+                : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:border-sky-500"
+            } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          />
+          <div className="flex justify-between text-[11px] text-zinc-500">
+            {error ? <span className="text-red-500">{errorMsg}</span> : <span />}
+            <span>{textareaText.length} chars</span>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "dialog") {
+      const title = String(merged.title || "Confirm Deletion");
+      const description = String(merged.description || "Are you sure you want to proceed? This action cannot be undone.");
+      const destructive = Boolean(merged.destructive ?? true);
+
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <button
+            type="button"
+            onClick={() => {
+              setDialogOpen(true);
+              logEvent("onOpen", "Dialog opened");
+            }}
+            className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+          >
+            Open Modal Dialog
+          </button>
+
+          {dialogOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+              <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">{title}</h3>
+                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{description}</p>
+                <div className="mt-6 flex justify-end gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDialogOpen(false);
+                      logEvent("onCancel", "Dialog cancelled");
+                    }}
+                    className="rounded-xl border border-zinc-300 px-4 py-2 text-xs font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDialogOpen(false);
+                      logEvent("onConfirm", "Dialog confirmed action");
+                    }}
+                    className={`rounded-xl px-4 py-2 text-xs font-semibold text-white ${destructive ? "bg-red-600" : "bg-sky-600"}`}
+                  >
+                    Confirm Action
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "toast") {
+      const title = String(merged.title || "Success Notification");
+      const description = String(merged.description || "Your transaction has been confirmed on-chain.");
+      const variant = (typeof merged.variant === "string" ? merged.variant : "success") as
+        | "default"
+        | "success"
+        | "error"
+        | "warning";
+
+      return (
+        <div className="flex flex-col items-center gap-4 py-6 w-full max-w-sm">
+          {!toastVisible && (
+            <button
+              type="button"
+              onClick={() => {
+                setToastVisible(true);
+                logEvent("onShow", "Toast shown");
+              }}
+              className="text-xs text-sky-400 underline font-medium"
+            >
+              Reopen Toast
+            </button>
+          )}
+          {toastVisible && (
+            <div className={`w-full flex items-start justify-between rounded-2xl border p-4 shadow-xl backdrop-blur ${
+              variant === "success"
+                ? "border-emerald-600/50 bg-emerald-950/90 text-emerald-100"
+                : variant === "error"
+                ? "border-red-600/50 bg-red-950/90 text-red-100"
+                : "border-zinc-800 bg-zinc-900 text-zinc-100"
+            }`}>
+              <div className="flex items-start gap-3 flex-1">
+                <span className={`mt-1 h-2 w-2 rounded-full ${variant === "success" ? "bg-emerald-400" : variant === "error" ? "bg-red-400" : "bg-sky-400"}`} />
+                <div>
+                  <h4 className="text-xs font-bold text-white">{title}</h4>
+                  <p className="text-[11px] text-zinc-300 mt-0.5">{description}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setToastVisible(false);
+                  logEvent("onDismiss", "Toast dismissed");
+                }}
+                className="rounded-lg bg-white/10 p-1 text-[10px] font-bold text-zinc-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "radio-group") {
+      const options = [
+        { label: "Free Tier", value: "free", desc: "Basic components for indie apps" },
+        { label: "Pro Membership", value: "pro", desc: "Full block compositions & templates" },
+        { label: "Team Enterprise", value: "enterprise", desc: "Private registry & priority updates" },
+      ];
+
+      return (
+        <div className="w-full max-w-sm space-y-2.5">
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Subscription Plan</span>
+          <div className="space-y-2">
+            {options.map((opt) => {
+              const isSelected = radioValue === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    setRadioValue(opt.value);
+                    logEvent("onValueChange", `Selected ${opt.label}`);
+                  }}
+                  className={`w-full flex items-start gap-3 rounded-xl border p-3 text-left transition-all ${
+                    isSelected
+                      ? "border-sky-500 bg-sky-500/10 dark:border-sky-400 dark:bg-sky-950/20"
+                      : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 hover:border-zinc-300"
+                  }`}
+                >
+                  <div className={`mt-0.5 h-4 w-4 rounded-full border flex items-center justify-center ${
+                    isSelected ? "border-sky-500" : "border-zinc-400"
+                  }`}>
+                    {isSelected && <div className="h-2 w-2 rounded-full bg-sky-500" />}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-50">{opt.label}</span>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">{opt.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "select") {
+      const options = [
+        { label: "United States", value: "us" },
+        { label: "Indonesia", value: "id" },
+        { label: "United Kingdom", value: "uk" },
+        { label: "Germany", value: "de" },
+        { label: "Japan", value: "jp" },
+      ];
+      const selected = options.find((o) => o.value === selectValue);
+
+      return (
+        <div className="w-full max-w-sm space-y-2">
+          <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Target Region</label>
+          <div className="relative">
+            <select
+              value={selectValue}
+              onChange={(e) => {
+                setSelectValue(e.target.value);
+                logEvent("onValueChange", `Selected region: ${e.target.value}`);
+              }}
+              className="w-full appearance-none rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-3 pr-8 text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none focus:border-sky-500"
+            >
+              {options.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400">▼</span>
+          </div>
+          <span className="text-[11px] text-zinc-500">Selected value: <strong className="text-sky-500 font-mono">{selectValue}</strong> ({selected?.label})</span>
+        </div>
+      );
+    }
+
+    if (item.id === "accordion") {
+      const accItems = [
+        { id: "1", title: "Is Nativra source-first?", content: "Yes! When you install a component, pure editable TypeScript source is copied directly into your repository." },
+        { id: "2", title: "Does it support NativeWind v4?", content: "Every component is verified in both NativeWind v4 with Tailwind utility classes and standard React Native StyleSheet." },
+        { id: "3", title: "Is there any runtime overhead?", content: "Zero runtime lock-in. No runtime nativra package is required in production apps." },
+      ];
+
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden divide-y divide-zinc-200 dark:divide-zinc-800">
+          {accItems.map((acc) => {
+            const isOpen = accordionOpenIds.has(acc.id);
+            return (
+              <div key={acc.id} className="w-full">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = new Set(accordionOpenIds);
+                    if (isOpen) next.delete(acc.id);
+                    else next.add(acc.id);
+                    setAccordionOpenIds(next);
+                    logEvent("onToggle", `Accordion ${acc.id} ${!isOpen ? "opened" : "closed"}`);
+                  }}
+                  className="w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                >
+                  <span>{acc.title}</span>
+                  <span className={`text-[10px] text-zinc-400 transition-transform ${isOpen ? "rotate-180" : ""}`}>▼</span>
+                </button>
+                {isOpen && (
+                  <div className="px-4 pb-3 pt-1 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    {acc.content}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (item.id === "use-haptics") {
+      return (
+        <div className="flex flex-col items-center gap-3 p-6 text-center max-w-sm">
+          <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-lg">📳</div>
+          <h4 className="text-sm font-bold text-zinc-100">useHaptics Simulator</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">Triggers tactile vibration patterns on real mobile devices with safe fallback on web.</p>
+          <div className="flex flex-wrap gap-2 justify-center mt-2">
+            {(["light", "medium", "heavy", "success", "error"] as const).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => logEvent("trigger", `Haptic impact: ${type}`)}
+                className="rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-700 capitalize"
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "use-keyboard") {
+      return (
+        <div className="flex flex-col items-center gap-3 p-6 text-center max-w-sm">
+          <div className="h-10 w-10 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-400 text-lg">⌨️</div>
+          <h4 className="text-sm font-bold text-zinc-100">useKeyboard Observer</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">Subscribes to software keyboard height and visibility events on iOS/Android.</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 w-full font-mono text-xs text-zinc-300 space-y-1 text-left">
+            <div className="flex justify-between"><span>isVisible:</span><span className="text-emerald-400 font-bold">false</span></div>
+            <div className="flex justify-between"><span>keyboardHeight:</span><span className="text-sky-400 font-bold">0 px</span></div>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "use-color-scheme") {
+      return (
+        <div className="flex flex-col items-center gap-3 p-6 text-center max-w-sm">
+          <div className="h-10 w-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg">🌓</div>
+          <h4 className="text-sm font-bold text-zinc-100">useColorScheme Hook</h4>
+          <p className="text-xs text-zinc-400 leading-relaxed">Provides system color scheme state with manual light/dark toggle override.</p>
+          <div className="flex gap-2 mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setCanvasMode("light");
+                logEvent("setColorScheme", "Switched to Light mode");
+              }}
+              className="rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-700"
+            >
+              Set Light
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCanvasMode("dark");
+                logEvent("setColorScheme", "Switched to Dark mode");
+              }}
+              className="rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-700"
+            >
+              Set Dark
+            </button>
           </div>
         </div>
       );

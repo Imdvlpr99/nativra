@@ -1,0 +1,14 @@
+{
+  "id": "use-color-scheme",
+  "name": "useColorScheme",
+  "description": "Theme mode hook supporting system theme synchronization with manual light/dark toggle override.",
+  "type": "hook",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-color-scheme.ts" }],
+  "npmDependencies": [],
+  "tags": ["hook", "theme", "darkmode", "colors"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

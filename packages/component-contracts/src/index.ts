@@ -315,3 +315,97 @@ export interface TabsBaseProps extends AccessibleProps {
   /** Visual variant */
   variant?: "default" | "pills" | "underline";
 }
+
+// ---------------------------------------------------------------------------
+// Textarea contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface TextareaBaseProps extends AccessibleProps {
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  onChangeText?: (text: string) => void;
+  error?: boolean;
+  errorMessage?: string;
+  disabled?: boolean;
+  rows?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Dialog contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface DialogBaseProps extends AccessibleProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  destructive?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Toast contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface ToastBaseProps extends AccessibleProps {
+  title: string;
+  description?: string;
+  variant?: "default" | "success" | "error" | "warning";
+  onDismiss?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// RadioGroup contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface RadioOptionContract {
+  label: string;
+  value: string;
+  description?: string;
+  disabled?: boolean;
+}
+
+export interface RadioGroupBaseProps extends AccessibleProps {
+  options: RadioOptionContract[];
+  value: string;
+  onValueChange: (value: string) => void;
+  disabled?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Select contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface SelectOptionContract {
+  label: string;
+  value: string;
+}
+
+export interface SelectBaseProps extends AccessibleProps {
+  label?: string;
+  placeholder?: string;
+  options: SelectOptionContract[];
+  value?: string;
+  onValueChange: (value: string) => void;
+  disabled?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Accordion contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface AccordionItemContract {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface AccordionBaseProps extends AccessibleProps {
+  items: AccordionItemContract[];
+  allowMultiple?: boolean;
+}
+

@@ -1,0 +1,16 @@
+{
+  "id": "use-haptics",
+  "name": "useHaptics",
+  "description": "Safe tactile feedback hook supporting light, medium, heavy, and notification haptics with web/unsupported fallback.",
+  "type": "hook",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-haptics.ts" }],
+  "npmDependencies": [
+    { "package": "expo-haptics", "version": "^13.0.0", "peer": true }
+  ],
+  "tags": ["hook", "haptics", "feedback", "tactile"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

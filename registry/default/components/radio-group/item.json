@@ -1,0 +1,19 @@
+{
+  "id": "radio-group",
+  "name": "RadioGroup",
+  "description": "An accessible group of radio buttons with keyboard and screen reader support.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/RadioGroup.tsx", "target": "nativewind" },
+    { "path": "stylesheet/RadioGroup.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["radio", "radiogroup", "form", "selection"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

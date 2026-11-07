@@ -1,0 +1,39 @@
+---
+title: Accordion
+description: An interactive collapsible accordion component supporting single and multiple open items.
+---
+
+# Accordion
+
+The `Accordion` component organizes content into collapsible disclosure sections, ideal for FAQs, product details, settings, and multi-step forms.
+
+## Installation
+
+```bash
+npx nativra add accordion
+```
+
+## Usage
+
+```tsx
+import { Accordion } from "@/components/ui/accordion";
+
+export function FAQSection() {
+  return (
+    <Accordion
+      items={[
+        {
+          id: "1",
+          title: "Is Nativra free and open source?",
+          content: "Yes, Nativra provides pure source-first React Native components with zero runtime lock-in.",
+        },
+        {
+          id: "2",
+          title: "Does it support both NativeWind and StyleSheet?",
+          content: "Yes, every component has verified implementations in both NativeWind v4 and pure React Native StyleSheet.",
+        },
+      ]}
+    />
+  );
+}
+```

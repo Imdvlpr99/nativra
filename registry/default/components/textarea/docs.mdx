@@ -1,0 +1,30 @@
+---
+title: Textarea
+description: A multiline text input with character counting and error state.
+---
+
+# Textarea
+
+The `Textarea` component provides a multiline text area with configurable rows, auto-scrolling, error messaging, and theme awareness.
+
+## Installation
+
+```bash
+npx nativra add textarea
+```
+
+## Usage
+
+```tsx
+import { Textarea } from "@/components/ui/textarea";
+
+export function FeedbackForm() {
+  return (
+    <Textarea
+      label="Your Message"
+      placeholder="Type your feedback here..."
+      rows={4}
+    />
+  );
+}
+```

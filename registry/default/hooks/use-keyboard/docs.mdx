@@ -1,0 +1,33 @@
+---
+title: useKeyboard
+description: React Native software keyboard observer tracking height, visibility, and dismissal.
+---
+
+# useKeyboard
+
+The `useKeyboard` hook subscribes to native software keyboard events on iOS and Android, providing live visibility state, current keyboard height in points, and a convenient `dismiss()` method.
+
+## Installation
+
+```bash
+npx nativra add use-keyboard
+```
+
+## Usage
+
+```tsx
+import { View, Text, TextInput, Button } from "react-native";
+import { useKeyboard } from "@/hooks/use-keyboard";
+
+export function FormWithKeyboard() {
+  const { isVisible, keyboardHeight, dismiss } = useKeyboard();
+
+  return (
+    <View className="p-4 gap-3">
+      <TextInput placeholder="Tap to open keyboard" className="border p-3 rounded" />
+      <Text>Keyboard is {isVisible ? `Open (${keyboardHeight}px)` : "Closed"}</Text>
+      {isVisible && <Button title="Dismiss" onPress={dismiss} />}
+    </View>
+  );
+}
+```

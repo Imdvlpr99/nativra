@@ -1,0 +1,11 @@
+{
+  "id": "amber",
+  "name": "Amber",
+  "description": "A rich warm amber theme token set.",
+  "type": "theme",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true },
+  "files": [{ "path": "theme.ts" }],
+  "tags": ["theme", "amber", "warm", "tokens"]
+}

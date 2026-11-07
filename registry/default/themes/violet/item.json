@@ -1,0 +1,11 @@
+{
+  "id": "violet",
+  "name": "Violet",
+  "description": "An electric purple theme token set for creative interfaces.",
+  "type": "theme",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true },
+  "files": [{ "path": "theme.ts" }],
+  "tags": ["theme", "violet", "purple", "creative", "tokens"]
+}

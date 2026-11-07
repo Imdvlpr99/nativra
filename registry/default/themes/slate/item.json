@@ -1,0 +1,11 @@
+{
+  "id": "slate",
+  "name": "Slate",
+  "description": "A cool corporate slate-blue theme token set.",
+  "type": "theme",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true },
+  "files": [{ "path": "theme.ts" }],
+  "tags": ["theme", "slate", "corporate", "tokens"]
+}

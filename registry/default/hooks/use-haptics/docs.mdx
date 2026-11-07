@@ -1,0 +1,34 @@
+---
+title: useHaptics
+description: Safe tactile feedback hook supporting light, medium, heavy, and notification haptics with web/unsupported fallback.
+---
+
+# useHaptics
+
+The `useHaptics` hook triggers tactile haptic vibrations on iOS and Android devices via `expo-haptics`. It gracefully falls back to a no-op on Web or in environments where hardware vibration is unsupported.
+
+## Installation
+
+```bash
+npx nativra add use-haptics
+```
+
+## Usage
+
+```tsx
+import { Pressable, Text } from "react-native";
+import { useHaptics } from "@/hooks/use-haptics";
+
+export function HapticButton() {
+  const { trigger } = useHaptics();
+
+  return (
+    <Pressable
+      onPress={() => trigger("medium")}
+      className="h-11 px-5 rounded-xl bg-zinc-900 items-center justify-center"
+    >
+      <Text className="text-white font-medium">Tap with Haptics</Text>
+    </Pressable>
+  );
+}
+```

@@ -1,0 +1,41 @@
+---
+title: Select
+description: A native mobile dropdown/modal picker component with search and selection state.
+---
+
+# Select
+
+The `Select` component provides an idiomatic mobile selection picker opening an iOS/Android bottom modal sheet with selectable rows and clear check indicators.
+
+## Installation
+
+```bash
+npx nativra add select
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { Select } from "@/components/ui/select";
+
+export function CountryPicker() {
+  const [country, setCountry] = useState("id");
+
+  return (
+    <Select
+      label="Country"
+      placeholder="Choose country"
+      value={country}
+      onValueChange={setCountry}
+      options={[
+        { label: "United States", value: "us" },
+        { label: "Indonesia", value: "id" },
+        { label: "United Kingdom", value: "uk" },
+        { label: "Germany", value: "de" },
+        { label: "Japan", value: "jp" },
+      ]}
+    />
+  );
+}
+```

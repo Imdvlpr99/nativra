@@ -1,0 +1,39 @@
+---
+title: useColorScheme
+description: Theme mode hook supporting system theme synchronization with manual light/dark toggle override.
+---
+
+# useColorScheme
+
+The `useColorScheme` hook wraps React Native's `useColorScheme` with optional user override state, enabling instant switching between light, dark, and system themes.
+
+## Installation
+
+```bash
+npx nativra add use-color-scheme
+```
+
+## Usage
+
+```tsx
+import { Pressable, Text, View } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+
+export function ThemeToggler() {
+  const { colorScheme, isDark, toggle } = useColorScheme();
+
+  return (
+    <View className="p-4 items-center gap-3">
+      <Text>Active theme: {colorScheme}</Text>
+      <Pressable
+        onPress={toggle}
+        className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100"
+      >
+        <Text className="text-white dark:text-zinc-900 font-medium">
+          Toggle {isDark ? "Light" : "Dark"}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+```

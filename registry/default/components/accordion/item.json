@@ -1,0 +1,19 @@
+{
+  "id": "accordion",
+  "name": "Accordion",
+  "description": "An interactive collapsible accordion component supporting single and multiple open items.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Accordion.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Accordion.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["accordion", "collapse", "disclosure", "faq"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

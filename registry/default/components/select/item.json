@@ -1,0 +1,19 @@
+{
+  "id": "select",
+  "name": "Select",
+  "description": "A native mobile dropdown/modal picker component with search and selection state.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Select.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Select.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["select", "picker", "dropdown", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

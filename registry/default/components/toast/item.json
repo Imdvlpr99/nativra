@@ -1,0 +1,19 @@
+{
+  "id": "toast",
+  "name": "Toast",
+  "description": "A floating toast notification with success, error, and info variants.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Toast.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Toast.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["toast", "notification", "feedback", "banner"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

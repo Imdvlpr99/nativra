@@ -1,0 +1,31 @@
+---
+title: Toast
+description: A floating toast notification with success, error, and info variants.
+---
+
+# Toast
+
+The `Toast` component displays brief, floating notifications to provide immediate feedback on actions (saving, network errors, success messages).
+
+## Installation
+
+```bash
+npx nativra add toast
+```
+
+## Usage
+
+```tsx
+import { Toast } from "@/components/ui/toast";
+
+export function NotificationDemo() {
+  return (
+    <Toast
+      title="Changes Saved"
+      description="Your profile updates are now live."
+      variant="success"
+      onDismiss={() => console.log("dismissed")}
+    />
+  );
+}
+```

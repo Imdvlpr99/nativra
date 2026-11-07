@@ -1,0 +1,11 @@
+{
+  "id": "rose",
+  "name": "Rose",
+  "description": "A warm coral rose theme token set for lifestyle interfaces.",
+  "type": "theme",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true },
+  "files": [{ "path": "theme.ts" }],
+  "tags": ["theme", "rose", "coral", "lifestyle", "tokens"]
+}

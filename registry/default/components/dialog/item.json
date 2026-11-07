@@ -1,0 +1,19 @@
+{
+  "id": "dialog",
+  "name": "Dialog",
+  "description": "An accessible modal dialog with backdrop, title, description, and action buttons.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/Dialog.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Dialog.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [{ "id": "button" }],
+  "npmDependencies": [],
+  "tags": ["dialog", "modal", "overlay", "alertdialog"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

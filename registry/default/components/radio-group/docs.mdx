@@ -1,0 +1,37 @@
+---
+title: RadioGroup
+description: An accessible group of radio buttons with keyboard and screen reader support.
+---
+
+# RadioGroup
+
+The `RadioGroup` component manages single-selection lists with accessible mobile touch targets, optional secondary descriptions, and theme-adaptive selected states.
+
+## Installation
+
+```bash
+npx nativra add radio-group
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { RadioGroup } from "@/components/ui/radio-group";
+
+export function PlanSelector() {
+  const [plan, setPlan] = useState("pro");
+
+  return (
+    <RadioGroup
+      value={plan}
+      onValueChange={setPlan}
+      options={[
+        { label: "Free", value: "free", description: "Basic features for personal apps" },
+        { label: "Pro", value: "pro", description: "Advanced tools, unlimited components" },
+        { label: "Enterprise", value: "enterprise", description: "Dedicated SLA & design reviews" },
+      ]}
+    />
+  );
+}
+```
