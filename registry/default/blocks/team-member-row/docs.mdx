@@ -1,0 +1,32 @@
+---
+title: Team Member Row
+description: Enterprise team member row with avatar, identity details, role selector pill, and action menu.
+---
+
+# Team Member Row
+
+A member list row component for organization administration, role assignment, and team directory views.
+
+## Installation
+
+```bash
+npx nativra add team-member-row
+```
+
+## Usage
+
+```tsx
+import { TeamMemberRow } from "@/components/ui/team-member-row";
+
+export function Example() {
+  return (
+    <TeamMemberRow
+      name="Alex Morgan"
+      email="alex.morgan@acme.corp"
+      role="Admin"
+      onOptionsPress={() => console.log("Open options")}
+    />
+  );
+}
+```
+

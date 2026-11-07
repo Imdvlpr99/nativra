@@ -1,0 +1,44 @@
+{
+  "id": "team-member-row",
+  "name": "Team Member Row",
+  "description": "Enterprise team member row with avatar, identity details, role selector pill, and action menu.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/TeamMemberRow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/TeamMemberRow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "avatar",
+      "registry": "default"
+    }
+  ],
+  "npmDependencies": [
+    {
+      "package": "lucide-react-native",
+      "version": "^0.460.0"
+    }
+  ],
+  "tags": ["team", "member", "organization", "roles", "enterprise", "metronic"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

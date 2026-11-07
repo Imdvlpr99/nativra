@@ -1,0 +1,34 @@
+---
+title: Rating Stars
+description: Accessible tap-to-rate star component supporting custom sizes, ratings, and read-only display.
+---
+
+# Rating Stars
+
+An accessible star rating component for customer reviews, feedback forms, and product rating indicators.
+
+## Installation
+
+```bash
+npx nativra add rating-stars
+```
+
+## Usage
+
+```tsx
+import { RatingStars } from "@/components/ui/rating-stars";
+import { useState } from "react";
+
+export function Example() {
+  const [rating, setRating] = useState(4);
+
+  return (
+    <RatingStars
+      rating={rating}
+      onRatingChange={setRating}
+      size="md"
+    />
+  );
+}
+```
+

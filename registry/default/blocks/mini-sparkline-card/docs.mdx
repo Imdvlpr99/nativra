@@ -1,0 +1,33 @@
+---
+title: Mini Sparkline Card
+description: Executive KPI metric card with integrated zero-dependency trend sparkline curve.
+---
+
+# Mini Sparkline Card
+
+A high-density KPI metric card with a zero-dependency trend sparkline indicating performance over time.
+
+## Installation
+
+```bash
+npx nativra add mini-sparkline-card
+```
+
+## Usage
+
+```tsx
+import { MiniSparklineCard } from "@/components/ui/mini-sparkline-card";
+
+export function Example() {
+  return (
+    <MiniSparklineCard
+      title="Daily Volume"
+      value="$128,450"
+      change="+14.8%"
+      isPositive
+      data={[10, 18, 14, 25, 20, 32, 28, 40, 36, 48]}
+    />
+  );
+}
+```
+

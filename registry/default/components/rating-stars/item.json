@@ -1,0 +1,30 @@
+{
+  "id": "rating-stars",
+  "name": "Rating Stars",
+  "description": "Accessible tap-to-rate star component supporting custom sizes, ratings, and read-only display.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/RatingStars.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/RatingStars.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["rating", "stars", "feedback", "review", "ecommerce"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "payment-method-card",
+  "name": "Payment Method Card",
+  "description": "Visual credit card and digital payment method card with card brand logo, masked PAN, and default selector.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/PaymentMethodCard.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/PaymentMethodCard.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    {
+      "id": "badge",
+      "registry": "default"
+    }
+  ],
+  "npmDependencies": [
+    {
+      "package": "lucide-react-native",
+      "version": "^0.460.0"
+    }
+  ],
+  "tags": ["payment", "card", "billing", "checkout", "fintech", "metronic"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

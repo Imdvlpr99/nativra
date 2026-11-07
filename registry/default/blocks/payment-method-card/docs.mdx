@@ -1,0 +1,38 @@
+---
+title: Payment Method Card
+description: Visual credit card and digital payment method card with card brand logo, masked PAN, and default selector.
+---
+
+# Payment Method Card
+
+A visual payment method selection card for checkout flows, billing management, and wallet interfaces.
+
+## Installation
+
+```bash
+npx nativra add payment-method-card
+```
+
+## Usage
+
+```tsx
+import { PaymentMethodCard } from "@/components/ui/payment-method-card";
+import { useState } from "react";
+
+export function Example() {
+  const [selectedId, setSelectedId] = useState("card-1");
+
+  return (
+    <PaymentMethodCard
+      brand="visa"
+      last4="4242"
+      expiry="09/28"
+      cardholderName="Jane Doe"
+      isDefault
+      selected={selectedId === "card-1"}
+      onSelect={() => setSelectedId("card-1")}
+    />
+  );
+}
+```
+

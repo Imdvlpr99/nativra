@@ -80,6 +80,21 @@ const TEMPLATES: ScreenTemplate[] = [
     ],
   },
   {
+    id: "chat-flow",
+    name: "In-App Customer Messaging & Support Flow",
+    category: "Communication & Support",
+    description:
+      "Full-featured mobile messaging flow featuring multi-tab inbox threads, message speech bubbles, online indicator status, and keyboard-aware input bar.",
+    componentsUsed: ["card", "badge", "button", "separator", "text", "avatar"],
+    installCommand: "npx nativra add chat-flow",
+    previewHighlights: [
+      "Filterable inbox threads (All / Support / Direct)",
+      "Sent vs received speech bubbles with read-receipt checkmarks",
+      "Integrated KeyboardAvoidingView text composer with attachment actions",
+      "Agent online status pills and unread badge counters",
+    ],
+  },
+  {
     id: "auth-flow",
     name: "Authentication Flow",
     category: "Onboarding & Auth",

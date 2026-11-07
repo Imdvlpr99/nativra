@@ -1,0 +1,42 @@
+{
+  "id": "chat-flow",
+  "name": "Chat & Messaging Flow",
+  "description": "In-app support and customer messaging template with conversation threads, speech bubbles, and keyboard-avoiding input bar.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/ChatFlow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/ChatFlow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "avatar", "registry": "default" }
+  ],
+  "npmDependencies": [
+    {
+      "package": "lucide-react-native",
+      "version": "^0.460.0"
+    }
+  ],
+  "tags": ["template", "chat", "messaging", "support", "inbox", "metronic", "screen"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

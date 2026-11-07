@@ -26,6 +26,10 @@ import {
   Star,
   Eye,
   EyeOff,
+  Send,
+  Paperclip,
+  Shield,
+  TrendingUp,
 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 
@@ -171,6 +175,8 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
   const [cartCount, setCartCount] = useState(2);
   const [filterCategory, setFilterCategory] = useState("All");
   const [accountTab, setAccountTab] = useState<"profile" | "team" | "security" | "billing">("profile");
+  const [ratingStarsVal, setRatingStarsVal] = useState(4);
+  const [chatDemoText, setChatDemoText] = useState("");
 
   const copyCommand = () => {
     navigator.clipboard.writeText(`npx nativra add ${item.id}`);
@@ -1434,6 +1440,172 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
             </div>
           </DeviceFrame>
         );
+      case "rating-stars":
+        return (
+          <div className="flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center gap-1.5">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setRatingStarsVal(s)}
+                  className="p-1 transition-transform active:scale-125"
+                  aria-label={`Rate ${s} stars`}
+                >
+                  <Star
+                    className={`h-7 w-7 transition-colors ${
+                      ratingStarsVal >= s
+                        ? "fill-amber-400 text-amber-400"
+                        : "fill-transparent text-muted-foreground/40"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground font-medium">
+              Rated: <span className="text-foreground font-bold">{ratingStarsVal} of 5 stars</span>
+            </p>
+          </div>
+        );
+
+      case "payment-method-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-13 items-center justify-center rounded-lg bg-zinc-950 font-black text-white text-[11px] uppercase tracking-wider px-2">
+                  VISA
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-foreground">•••• 4242</span>
+                    <span className="rounded-full bg-muted px-2 py-0.2 text-[10px] font-semibold text-muted-foreground">
+                      Default
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Expires 09/28</p>
+                </div>
+              </div>
+              <CheckCircle2 className="h-5 w-5 text-sky-500" />
+            </div>
+            <div className="border-t border-border pt-2 text-[11px] font-semibold text-muted-foreground">
+              JANE DOE
+            </div>
+          </div>
+        );
+
+      case "team-member-row":
+        return (
+          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-3.5 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 font-bold text-xs text-foreground">
+                AM
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Alex Morgan</p>
+                <p className="text-xs text-muted-foreground">alex.morgan@acme.corp</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full bg-sky-500/10 px-2.5 py-1 text-xs font-semibold text-sky-600 dark:text-sky-400">
+              <Shield className="h-3 w-3" />
+              <span>Admin</span>
+            </div>
+          </div>
+        );
+
+      case "mini-sparkline-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Daily Revenue
+              </span>
+              <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                <TrendingUp className="h-3 w-3" />
+                <span>+18.4%</span>
+              </span>
+            </div>
+            <div className="mt-3 flex items-end justify-between">
+              <span className="text-2xl font-black text-foreground">$14,250</span>
+              <div className="flex items-end gap-1.5 h-9">
+                {[12, 16, 14, 22, 19, 28, 25, 34, 30, 42].map((val, i) => (
+                  <div
+                    key={i}
+                    style={{ height: `${(val / 42) * 100}%` }}
+                    className={`w-1 rounded-full ${
+                      i === 9 ? "bg-emerald-500" : "bg-emerald-500/35"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "chat-flow":
+        return (
+          <DeviceFrame title="Support & Messaging">
+            <div className="flex flex-col h-[620px] bg-zinc-950 text-white">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="h-9 w-9 rounded-full bg-sky-600 flex items-center justify-center font-bold text-xs text-white">
+                      SD
+                    </div>
+                    <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-zinc-900" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">Enterprise Support</p>
+                    <p className="text-[10px] text-emerald-400">Online • Replies in 5m</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-2xl rounded-bl-xs bg-zinc-900 border border-zinc-800 p-3 text-xs leading-relaxed text-zinc-200">
+                    Hi Jane! Welcome to Nativra Enterprise Support. How can we help today?
+                    <span className="text-[9px] text-zinc-500 block text-right mt-1">10:14 AM</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <div className="max-w-[80%] rounded-2xl rounded-br-xs bg-sky-600 p-3 text-xs leading-relaxed text-white">
+                    Hello! We are configuring custom webhooks and want to confirm retry limits.
+                    <span className="text-[9px] text-sky-200 block text-right mt-1">10:15 AM</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-2xl rounded-bl-xs bg-zinc-900 border border-zinc-800 p-3 text-xs leading-relaxed text-zinc-200">
+                    Webhooks retry up to 5 times with exponential backoff before routing to the DLQ.
+                    <span className="text-[9px] text-zinc-500 block text-right mt-1">10:17 AM</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input Bar */}
+              <div className="border-t border-zinc-800 bg-zinc-900 p-3 flex items-center gap-2">
+                <button className="p-2 rounded-xl bg-zinc-800 text-zinc-400 hover:text-white">
+                  <Paperclip className="h-4 w-4" />
+                </button>
+                <input
+                  type="text"
+                  value={chatDemoText}
+                  onChange={(e) => setChatDemoText(e.target.value)}
+                  placeholder="Type a message..."
+                  className="flex-1 rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 text-xs text-white placeholder-zinc-500 outline-none"
+                />
+                <button className="p-2 rounded-xl bg-sky-600 text-white">
+                  <Send className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      default:
         return (
           <div className="text-center text-sm text-muted-foreground">
             {item.name} component preview

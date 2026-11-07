@@ -109,6 +109,13 @@ describe("nativra CLI (local registry)", () => {
     expect(existsSync(join(cwd, "components/ui/AccountSettingsFlow.tsx"))).toBe(true);
   });
 
+  it("add Metronic-grade chat-flow template and payment-method-card block", () => {
+    runReg("add", "chat-flow", "payment-method-card", "rating-stars", "--yes");
+    expect(existsSync(join(cwd, "components/ui/ChatFlow.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/PaymentMethodCard.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/RatingStars.tsx"))).toBe(true);
+  });
+
   it("diff command inspects differences against upstream registry", () => {
     const file = join(cwd, "components/ui/Button.tsx");
     writeFileSync(file, "// custom diff change");
