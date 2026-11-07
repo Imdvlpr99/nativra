@@ -23,33 +23,9 @@ const ComponentPlayground = dynamic(
   () => import("../components/ComponentPlayground").then((mod) => mod.ComponentPlayground),
   { loading: () => <WorkbenchLoader name="Component Playground" /> }
 );
-const ScreenBuilder = dynamic(
-  () => import("../components/ScreenBuilder").then((mod) => mod.ScreenBuilder),
-  { loading: () => <WorkbenchLoader name="Screen Builder" /> }
-);
-const NavigationGenerator = dynamic(
-  () => import("../components/NavigationGenerator").then((mod) => mod.NavigationGenerator),
-  { loading: () => <WorkbenchLoader name="Navigation Generator" /> }
-);
-const ThemeStudio = dynamic(
-  () => import("../components/ThemeStudio").then((mod) => mod.ThemeStudio),
-  { loading: () => <WorkbenchLoader name="Theme Studio" /> }
-);
 const IconExplorer = dynamic(
   () => import("../components/IconExplorer").then((mod) => mod.IconExplorer),
   { loading: () => <WorkbenchLoader name="Icon Explorer" /> }
-);
-const TemplatesExplorer = dynamic(
-  () => import("../components/TemplatesExplorer").then((mod) => mod.TemplatesExplorer),
-  { loading: () => <WorkbenchLoader name="Starter Templates" /> }
-);
-const AccessibilityInspector = dynamic(
-  () => import("../components/AccessibilityInspector").then((mod) => mod.AccessibilityInspector),
-  { loading: () => <WorkbenchLoader name="Accessibility Inspector" /> }
-);
-const DeveloperTooling = dynamic(
-  () => import("../components/DeveloperTooling").then((mod) => mod.DeveloperTooling),
-  { loading: () => <WorkbenchLoader name="Developer Tooling" /> }
 );
 import {
   Smartphone,
@@ -72,10 +48,7 @@ import {
   X,
   FolderOpen,
   ShieldCheck,
-  Compass,
-  Palette,
   Play,
-  Wrench,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -115,9 +88,7 @@ const DEVICE_DIMENSIONS = {
 type DeviceKey = keyof typeof DEVICE_DIMENSIONS;
 
 export default function StudioClient({ items }: { items: StudioItem[] }) {
-  const [studioMode, setStudioMode] = useState<
-    "components" | "playground" | "screens" | "navigation" | "themes" | "icons" | "templates" | "a11y" | "tooling"
-  >("components");
+  const [studioMode, setStudioMode] = useState<"components" | "playground" | "icons">("components");
   const [id, setId] = useState(items[0]?.id ?? "button");
   const [target, setTarget] = useState<"nativewind" | "stylesheet">("nativewind");
   const [values, setValues] = useState<Values>({});
@@ -1031,23 +1002,17 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
         </div>
 
         {/* Center Studio Tool Switcher */}
-        <nav className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1 overflow-x-auto no-scrollbar shrink max-w-fit">
+        <nav className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1 shrink-0">
           {[
             { id: "components" as const, label: "Components", icon: Layers },
             { id: "playground" as const, label: "Playground", icon: Play },
-            { id: "screens" as const, label: "Screens", icon: Smartphone },
-            { id: "navigation" as const, label: "Navigation", icon: Compass },
-            { id: "themes" as const, label: "Themes", icon: Palette },
             { id: "icons" as const, label: "Icons", icon: Sparkles },
-            { id: "templates" as const, label: "Templates", icon: FolderOpen },
-            { id: "a11y" as const, label: "A11y", icon: ShieldCheck },
-            { id: "tooling" as const, label: "Dev Tools", icon: Wrench },
           ].map(({ id: mId, label, icon: Icon }) => (
             <button
               key={mId}
               type="button"
               onClick={() => setStudioMode(mId)}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
                 studioMode === mId
                   ? "bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700/60"
                   : "text-zinc-400 hover:text-zinc-200"
@@ -1589,13 +1554,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       )}
 
       {studioMode === "playground" && <ComponentPlayground target={target} />}
-      {studioMode === "screens" && <ScreenBuilder target={target} />}
-      {studioMode === "navigation" && <NavigationGenerator />}
-      {studioMode === "themes" && <ThemeStudio />}
       {studioMode === "icons" && <IconExplorer />}
-      {studioMode === "templates" && <TemplatesExplorer target={target} />}
-      {studioMode === "a11y" && <AccessibilityInspector />}
-      {studioMode === "tooling" && <DeveloperTooling />}
     </div>
   );
 }
