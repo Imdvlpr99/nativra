@@ -70,3 +70,4 @@ export function NotificationItem({
     </Pressable>
   );
 }
+

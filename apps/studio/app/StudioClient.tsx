@@ -28,9 +28,6 @@ const IconExplorer = dynamic(
   { loading: () => <WorkbenchLoader name="Icon Explorer" /> }
 );
 import {
-  Smartphone,
-  Tablet,
-  RotateCw,
   Sun,
   Moon,
   Copy,
@@ -78,15 +75,6 @@ const THEME_PALETTES = {
 
 type ThemeKey = keyof typeof THEME_PALETTES;
 
-const DEVICE_DIMENSIONS = {
-  iphone: { width: 393, height: 780, name: "iPhone 16 Pro" },
-  android: { width: 412, height: 800, name: "Pixel 8" },
-  compact: { width: 360, height: 680, name: "Compact Phone" },
-  tablet: { width: 620, height: 780, name: "Tablet" },
-} as const;
-
-type DeviceKey = keyof typeof DEVICE_DIMENSIONS;
-
 export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [studioMode, setStudioMode] = useState<"components" | "playground" | "icons">("components");
   const [id, setId] = useState(items[0]?.id ?? "button");
@@ -94,8 +82,6 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [values, setValues] = useState<Values>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"all" | "component" | "block" | "hook">("all");
-  const [device, setDevice] = useState<DeviceKey>("iphone");
-  const [isLandscape, setIsLandscape] = useState(false);
   const [zoom, setZoom] = useState<number>(100);
   const [canvasMode, setCanvasMode] = useState<"light" | "dark" | "dots">("dots");
   const [activeTheme, setActiveTheme] = useState<ThemeKey>("zinc");
@@ -1478,34 +1464,10 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
               : "bg-zinc-950 bg-dot-grid"
           }`}
         >
-          {/* Floating Canvas Zoom & Device Presets Bar */}
+          {/* Floating Canvas Zoom Bar */}
           <div className="absolute top-4 left-6 z-10 flex items-center gap-2">
             <span className="px-2 text-zinc-400 text-[11px] font-semibold">{item?.name}</span>
             <div className="h-3 w-px bg-zinc-800" />
-            <div className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
-              {(["iphone", "android", "compact", "tablet"] as const).map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDevice(d)}
-                  className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
-                    device === d ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
-                  }`}
-                >
-                  {d === "tablet" ? <Tablet className="h-3 w-3" /> : <Smartphone className="h-3 w-3" />}
-                  <span>{DEVICE_DIMENSIONS[d].name}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsLandscape(!isLandscape)}
-              title="Rotate Orientation"
-              className={`flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 px-2 text-xs backdrop-blur shadow-lg ${
-                isLandscape ? "text-sky-400" : "text-zinc-500 hover:text-zinc-300"
-              }`}
-            >
-              <RotateCw className="h-3.5 w-3.5" />
-            </button>
             <div className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
               {[75, 100, 125].map((z) => (
                 <button
@@ -1523,13 +1485,10 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
 
           {/* Clean Interactive Visual Canvas */}
           <PreviewCanvas
-            device={device}
-            isLandscape={isLandscape}
             zoom={zoom}
             canvasMode={canvasMode}
             appName={item?.name ?? "Component Preview"}
             onEvent={logEvent}
-            onRotate={() => setIsLandscape(!isLandscape)}
           >
             {renderHarness()}
           </PreviewCanvas>
