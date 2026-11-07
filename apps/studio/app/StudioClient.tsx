@@ -973,24 +973,27 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   return (
     <div className="flex h-screen flex-col bg-zinc-950 text-zinc-100 font-sans selection:bg-zinc-800">
       {/* Top Header Bar */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-4 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-white font-black text-sm border border-zinc-700">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-3 lg:px-4 backdrop-blur gap-2 lg:gap-4 overflow-hidden">
+        {/* Brand Left */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-white font-black text-sm border border-zinc-700 shrink-0 shadow-sm">
             N
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold tracking-tight">Nativra Studio</span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
-                Live Workbench
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-2 leading-tight">
+              <span className="text-sm font-bold tracking-tight whitespace-nowrap text-white">Nativra Studio</span>
+              <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 border border-emerald-500/20 whitespace-nowrap hidden sm:inline-block">
+                Live
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400 hidden sm:block">Source-First React Native Visual Inspector</p>
+            <p className="text-[10px] text-zinc-400 whitespace-nowrap hidden xl:block leading-none mt-0.5">
+              Source-First React Native Workbench
+            </p>
           </div>
         </div>
 
         {/* Center Studio Tool Switcher */}
-        <nav className="hidden lg:flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
+        <nav className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1 overflow-x-auto no-scrollbar shrink max-w-fit">
           {[
             { id: "components" as const, label: "Components", icon: Layers },
             { id: "playground" as const, label: "Playground", icon: Play },
@@ -1006,25 +1009,25 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
               key={mId}
               type="button"
               onClick={() => setStudioMode(mId)}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
                 studioMode === mId
                   ? "bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700/60"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-3.5 w-3.5 shrink-0" />
               <span>{label}</span>
             </button>
           ))}
         </nav>
 
         {/* Right Action Bar */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 lg:gap-3 shrink-0">
           {/* Target Switcher */}
-          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-xs">
+          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-xs shrink-0 whitespace-nowrap">
             <button
               onClick={() => setTarget("nativewind")}
-              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors whitespace-nowrap ${
                 target === "nativewind" ? "bg-sky-500/20 text-sky-300 border border-sky-500/30" : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
@@ -1032,7 +1035,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             </button>
             <button
               onClick={() => setTarget("stylesheet")}
-              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors whitespace-nowrap ${
                 target === "stylesheet" ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
@@ -1044,7 +1047,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           <select
             value={activeTheme}
             onChange={(e) => setActiveTheme(e.target.value as ThemeKey)}
-            className="rounded-lg border border-zinc-800 bg-zinc-800 px-2.5 py-1 text-xs text-zinc-200 outline-none hover:border-zinc-700"
+            className="rounded-lg border border-zinc-800 bg-zinc-800 px-2 py-1 text-xs text-zinc-200 outline-none hover:border-zinc-700 shrink-0"
           >
             <option value="zinc">Theme: Zinc</option>
             <option value="dark-slate">Theme: Dark Slate</option>
@@ -1052,7 +1055,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
           </select>
 
           {/* Canvas Mode Toggle */}
-          <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 p-0.5">
+          <div className="flex items-center gap-0.5 rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 shrink-0">
             <button
               onClick={() => setCanvasMode("light")}
               title="Light Canvas"
@@ -1080,7 +1083,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             href="http://localhost:3000"
             target="_blank"
             rel="noreferrer"
-            className="hidden md:flex items-center gap-1 rounded-lg border border-zinc-800 px-2.5 py-1 text-xs text-zinc-300 hover:bg-zinc-800"
+            className="hidden xl:flex items-center gap-1 rounded-lg border border-zinc-800 px-2.5 py-1 text-xs text-zinc-300 hover:bg-zinc-800 shrink-0 whitespace-nowrap"
           >
             <span>Docs</span>
             <ExternalLink className="h-3 w-3" />
