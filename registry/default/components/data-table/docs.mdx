@@ -1,0 +1,54 @@
+---
+title: Data Table
+description: Mobile-optimized horizontally scrollable data grid with columns, sorting indicators, and striped rows.
+---
+
+# Data Table
+
+A responsive, touch-friendly native data table component built for mobile screens. It enables horizontal panning across dense tabular data, custom column cell renderers, striped alternating rows, and footer summaries.
+
+## Installation
+
+```bash
+npx nativra add data-table
+```
+
+## Usage
+
+```tsx
+import { DataTable, type ColumnDef } from "@/components/ui/data-table";
+
+interface UserRecord {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  spent: string;
+}
+
+const columns: ColumnDef<UserRecord>[] = [
+  { key: "name", title: "Customer", width: 140 },
+  { key: "role", title: "Role", width: 100 },
+  { key: "status", title: "Status", width: 100 },
+  { key: "spent", title: "Total Spent", width: 100, align: "right" },
+];
+
+const data: UserRecord[] = [
+  { id: "1", name: "Alex Morgan", role: "Owner", status: "Active", spent: "$12,450" },
+  { id: "2", name: "Sarah Connor", role: "Admin", status: "Active", spent: "$4,200" },
+  { id: "3", name: "James Holden", role: "Viewer", status: "Pending", spent: "$850" },
+];
+
+export function Example() {
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      striped
+      keyExtractor={(item) => item.id}
+      onRowPress={(item) => console.log("Pressed", item.name)}
+    />
+  );
+}
+```
+

@@ -1,0 +1,40 @@
+{
+  "id": "account-settings-flow",
+  "name": "Account Settings Flow",
+  "description": "Enterprise SaaS account, organization seats, security sessions, and billing management flow.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/AccountSettingsFlow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/AccountSettingsFlow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "segmented-control", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "switch", "registry": "default" },
+    { "id": "avatar", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["template", "account", "settings", "security", "billing", "metronic", "enterprise", "screen"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

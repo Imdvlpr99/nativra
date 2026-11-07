@@ -98,6 +98,17 @@ describe("nativra CLI (local registry)", () => {
     expect(existsSync(join(cwd, "components/ui/Separator.tsx"))).toBe(true);
   });
 
+  it("add Wave 2 enterprise primitives (segmented-control and data-table)", () => {
+    runReg("add", "segmented-control", "data-table", "--yes");
+    expect(existsSync(join(cwd, "components/ui/SegmentedControl.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/DataTable.tsx"))).toBe(true);
+  });
+
+  it("add Metronic-grade account-settings-flow template with dependencies", () => {
+    runReg("add", "account-settings-flow", "--yes");
+    expect(existsSync(join(cwd, "components/ui/AccountSettingsFlow.tsx"))).toBe(true);
+  });
+
   it("diff command inspects differences against upstream registry", () => {
     const file = join(cwd, "components/ui/Button.tsx");
     writeFileSync(file, "// custom diff change");

@@ -20,7 +20,14 @@ import {
   Info,
   CheckCircle2,
   X,
+  ArrowUpRight,
+  ArrowDownLeft,
+  ShoppingCart,
+  Star,
+  Eye,
+  EyeOff,
 } from "lucide-react";
+import { DeviceFrame } from "./DeviceFrame";
 
 interface ComponentPreviewProps {
   item: RegistryItem;
@@ -157,6 +164,13 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>("acc-1");
   const [radioVal, setRadioVal] = useState("starter");
   const [textareaVal, setTextareaVal] = useState("Designed with clean typography and balanced mobile padding.");
+
+  // Metronic Enterprise states
+  const [segmentedTab, setSegmentedTab] = useState("overview");
+  const [walletHideBalance, setWalletHideBalance] = useState(false);
+  const [cartCount, setCartCount] = useState(2);
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [accountTab, setAccountTab] = useState<"profile" | "team" | "security" | "billing">("profile");
 
   const copyCommand = () => {
     navigator.clipboard.writeText(`npx nativra add ${item.id}`);
@@ -943,7 +957,483 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
           </div>
         );
 
-      default:
+      case "segmented-control":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4">
+            <div className="relative flex rounded-xl border border-border bg-muted/60 p-1">
+              {[
+                { id: "overview", label: "Overview" },
+                { id: "analytics", label: "Analytics", badge: 3 },
+                { id: "settings", label: "Settings" },
+              ].map((tab) => {
+                const active = segmentedTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setSegmentedTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      active
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span className="rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 px-1.5 py-0.2 text-[10px] font-bold">
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-3 text-center text-xs text-muted-foreground">
+              Active View: <span className="font-semibold text-foreground capitalize">{segmentedTab}</span>
+            </div>
+          </div>
+        );
+
+      case "data-table":
+        return (
+          <div className="w-full max-w-md overflow-hidden rounded-xl border border-border bg-card shadow-sm text-xs">
+            <div className="flex border-b border-border bg-muted/50 px-4 py-2.5 font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="w-2/5">Customer</span>
+              <span className="w-1/4">Role</span>
+              <span className="w-1/4">Status</span>
+              <span className="w-1/6 text-right">Spent</span>
+            </div>
+            {[
+              { name: "Alex Morgan", role: "Owner", status: "Active", spent: "$12,450" },
+              { name: "Sarah Connor", role: "Admin", status: "Active", spent: "$4,200" },
+              { name: "James Holden", role: "Viewer", status: "Pending", spent: "$850" },
+            ].map((row, i) => (
+              <div
+                key={row.name}
+                className={`flex items-center px-4 py-2.5 border-b border-border/60 ${
+                  i % 2 === 1 ? "bg-muted/20" : ""
+                }`}
+              >
+                <span className="w-2/5 font-semibold text-foreground">{row.name}</span>
+                <span className="w-1/4 text-muted-foreground">{row.role}</span>
+                <span className="w-1/4">
+                  <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    {row.status}
+                  </span>
+                </span>
+                <span className="w-1/6 text-right font-medium text-foreground">{row.spent}</span>
+              </div>
+            ))}
+            <div className="flex justify-between bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground">
+              <span>Showing 3 of 24 records</span>
+              <span className="font-medium">Page 1 of 8</span>
+            </div>
+          </div>
+        );
+
+      case "transaction-row":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <ArrowDownLeft className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-foreground">Stripe Payout Cleared</h4>
+                  <p className="text-xs text-muted-foreground">Today, 14:28 • Deposit</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">+$8,420.00</p>
+                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  Completed
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-border/60 pt-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <ArrowUpRight className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-foreground">AWS Cloud Hosting</h4>
+                  <p className="text-xs text-muted-foreground">Yesterday, 19:00 • Infrastructure</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-sm text-foreground">-$1,240.50</p>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                  Processed
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "activity-timeline":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 space-y-4">
+            <h4 className="font-bold text-sm text-foreground">Audit Activity Log</h4>
+            <div className="space-y-4 relative pl-5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+              {[
+                { title: "Production deployment v2.4", time: "10m ago", dot: "bg-sky-500", desc: "Deployed 18 microservices" },
+                { title: "API Gateway rate-limit modified", time: "2h ago", dot: "bg-amber-500", desc: "Increased tier to 50k req/min" },
+                { title: "Organization member invited", time: "5h ago", dot: "bg-emerald-500", desc: "Added alex@company.corp" },
+              ].map((ev, i) => (
+                <div key={i} className="relative">
+                  <div className={`absolute -left-5 top-1 h-2.5 w-2.5 rounded-full ${ev.dot} ring-4 ring-card`} />
+                  <p className="font-semibold text-xs text-foreground">{ev.title}</p>
+                  <p className="text-[11px] text-muted-foreground">{ev.desc}</p>
+                  <span className="text-[10px] text-muted-foreground/75 mt-0.5 block">{ev.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "kpi-comparison-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Quarterly Revenue Target</span>
+              <span className="rounded-full bg-sky-500/10 px-2 py-0.5 text-[11px] font-bold text-sky-600 dark:text-sky-400">
+                82% Achieved
+              </span>
+            </div>
+            <div className="flex items-baseline justify-between pt-1">
+              <div>
+                <span className="text-[11px] text-muted-foreground">Current Gross</span>
+                <p className="text-2xl font-black text-foreground">$412,850</p>
+              </div>
+              <div className="text-right">
+                <span className="text-[11px] text-muted-foreground">Target Goal</span>
+                <p className="text-lg font-bold text-muted-foreground">$500,000</p>
+              </div>
+            </div>
+            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-full w-[82%] rounded-full bg-sky-500" />
+            </div>
+          </div>
+        );
+
+      case "filter-sheet":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h4 className="font-bold text-sm text-foreground">Filter Catalog</h4>
+              <button className="text-xs font-semibold text-muted-foreground hover:text-foreground">Reset All</button>
+            </div>
+            <div className="space-y-2">
+              <span className="text-xs font-medium text-muted-foreground">Categories</span>
+              <div className="flex flex-wrap gap-1.5">
+                {["All", "SaaS", "Mobile", "Enterprise", "Hardware"].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setFilterCategory(c)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                      filterCategory === c
+                        ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950"
+                        : "border border-border bg-muted/40 text-muted-foreground"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2 pt-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Budget Cap</span>
+                <span className="font-bold text-foreground">$2,500</span>
+              </div>
+              <input type="range" className="w-full accent-sky-500 cursor-pointer" defaultValue={60} />
+            </div>
+            <button className="w-full rounded-xl bg-sky-600 py-2.5 text-xs font-bold text-white shadow hover:bg-sky-500">
+              Apply Filters (18 Results)
+            </button>
+          </div>
+        );
+
+      case "analytics-dashboard":
+        return (
+          <DeviceFrame title="Executive Analytics">
+            <div className="p-4 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-black text-white">Analytics</h3>
+                  <p className="text-[11px] text-zinc-400">Executive Performance</p>
+                </div>
+                <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-zinc-300">
+                  Live
+                </span>
+              </div>
+
+              {/* 2x2 Metric Grid */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { title: "MRR", val: "$48.2k", delta: "+14.2%", isPos: true },
+                  { title: "Active Users", val: "18,420", delta: "+8.9%", isPos: true },
+                  { title: "Conversion", val: "3.42%", delta: "-0.4%", isPos: false },
+                  { title: "Avg LTV", val: "$1,290", delta: "+22.5%", isPos: true },
+                ].map((m) => (
+                  <div key={m.title} className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-3">
+                    <p className="text-[10px] font-semibold text-zinc-400 uppercase">{m.title}</p>
+                    <p className="text-base font-black text-white mt-1">{m.val}</p>
+                    <span className={`text-[10px] font-bold ${m.isPos ? "text-emerald-400" : "text-rose-400"}`}>
+                      {m.delta}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Channel Distribution */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3">
+                <p className="text-xs font-bold text-white">Traffic Acquisition</p>
+                {[
+                  { name: "Direct Traffic", pct: 45, color: "bg-sky-500" },
+                  { name: "Organic Search", pct: 32, color: "bg-emerald-500" },
+                  { name: "Referrals", pct: 23, color: "bg-purple-500" },
+                ].map((ch) => (
+                  <div key={ch.name} className="space-y-1">
+                    <div className="flex justify-between text-[11px]">
+                      <span className="text-zinc-300">{ch.name}</span>
+                      <span className="font-bold text-white">{ch.pct}%</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+                      <div className={`h-full ${ch.color}`} style={{ width: `${ch.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "ecommerce-flow":
+        return (
+          <DeviceFrame title="Storefront">
+            <div className="p-4 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-black text-white">Storefront</h3>
+                  <p className="text-[11px] text-zinc-400">Curated Collection</p>
+                </div>
+                <div className="relative flex items-center justify-center h-9 w-9 rounded-full bg-zinc-900 border border-zinc-800">
+                  <ShoppingCart className="h-4 w-4 text-white" />
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[9px] font-bold text-white">
+                    {cartCount}
+                  </span>
+                </div>
+              </div>
+
+              {/* Hero Banner */}
+              <div className="rounded-2xl border border-zinc-800 bg-gradient-to-tr from-sky-600/30 to-indigo-900/40 p-4 space-y-2">
+                <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-400">
+                  NEW SEASON
+                </span>
+                <p className="text-base font-bold text-white">Minimalist Mobile Essentials</p>
+                <p className="text-[11px] text-zinc-300">Save 20% with code NATIVRA20</p>
+              </div>
+
+              {/* Product Cards */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { name: "Pro Headset", price: "$249.00", rating: 4.9 },
+                  { name: "MagSafe Stand", price: "$79.00", rating: 4.8 },
+                ].map((p) => (
+                  <div key={p.name} className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-3 space-y-2">
+                    <div className="h-20 w-full rounded-lg bg-zinc-800/80 flex items-center justify-center text-zinc-500 text-xs">
+                      Product Image
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-white">{p.name}</p>
+                      <div className="flex items-center gap-1 text-amber-400 text-[10px]">
+                        <Star className="h-3 w-3 fill-current" />
+                        <span>{p.rating}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-bold text-white">{p.price}</span>
+                      <button
+                        onClick={() => setCartCount((c) => c + 1)}
+                        className="rounded-lg bg-sky-600 px-2 py-1 text-[10px] font-bold text-white"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "fintech-wallet":
+        return (
+          <DeviceFrame title="Fintech Vault">
+            <div className="p-4 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-black text-white">Wallet</h3>
+                  <p className="text-[11px] text-zinc-400">Multi-Chain Vault</p>
+                </div>
+                <button
+                  onClick={() => setWalletHideBalance((h) => !h)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-300"
+                >
+                  {walletHideBalance ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+
+              {/* Net Worth Card */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-5 space-y-1">
+                <span className="text-[10px] font-semibold text-zinc-400 uppercase">Total Valuation</span>
+                <p className="text-3xl font-black text-white">
+                  {walletHideBalance ? "••••••••" : "$160,523.00"}
+                </p>
+                <span className="text-xs font-bold text-emerald-400">+$12,410.80 (24h)</span>
+
+                <div className="flex gap-2 pt-4">
+                  {["Send", "Receive", "Swap"].map((act) => (
+                    <button key={act} className="flex-1 rounded-xl bg-zinc-800 py-2 text-xs font-bold text-white hover:bg-zinc-700">
+                      {act}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Assets */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3">
+                <p className="text-xs font-bold text-white">Allocated Assets</p>
+                {[
+                  { name: "Bitcoin", symbol: "BTC", val: "$94,248.00", change: "+4.2%" },
+                  { name: "Ethereum", symbol: "ETH", val: "$38,400.00", change: "+6.8%" },
+                  { name: "USD Coin", symbol: "USDC", val: "$15,200.00", change: "0.0%" },
+                ].map((a) => (
+                  <div key={a.symbol} className="flex items-center justify-between text-xs">
+                    <div>
+                      <p className="font-bold text-white">{a.name}</p>
+                      <span className="text-[10px] text-zinc-400">{a.symbol}</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-white">{a.val}</p>
+                      <span className="text-[10px] font-bold text-emerald-400">{a.change}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "account-settings-flow":
+        return (
+          <DeviceFrame title="Account Hub">
+            <div className="p-4 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-600 font-bold text-white text-sm">
+                  JD
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-white">Jane Doe</h3>
+                    <span className="rounded-full bg-zinc-800 px-2 py-0.2 text-[9px] font-bold text-zinc-300">
+                      Enterprise
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">jane.doe@enterprise.corp</p>
+                </div>
+              </div>
+
+              {/* Section Tabs */}
+              <div className="flex rounded-xl border border-zinc-800 bg-zinc-900 p-1 text-xs">
+                {(["profile", "team", "security", "billing"] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setAccountTab(t)}
+                    className={`flex-1 py-1.5 rounded-lg font-semibold capitalize transition-all ${
+                      accountTab === t ? "bg-zinc-800 text-white" : "text-zinc-400"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Contents */}
+              {accountTab === "profile" && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 text-xs">
+                  <p className="font-bold text-white">Organization Details</p>
+                  <div className="rounded-lg bg-zinc-950 p-2.5 border border-zinc-800 text-zinc-300">
+                    Acme Global Technologies Ltd.
+                  </div>
+                  <div className="rounded-lg bg-zinc-950 p-2.5 border border-zinc-800 text-zinc-300">
+                    UTC-05:00 (Eastern Time)
+                  </div>
+                </div>
+              )}
+
+              {accountTab === "team" && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 text-xs">
+                  <div className="flex justify-between font-bold text-white">
+                    <span>Seats Quota</span>
+                    <span className="text-sky-400">8 / 10 Used</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                    <div className="h-full w-4/5 rounded-full bg-sky-500" />
+                  </div>
+                  <div className="space-y-2 pt-2">
+                    {["Jane Doe (Owner)", "Alex River (Admin)", "Carlos Gomez (Billing)"].map((m) => (
+                      <div key={m} className="rounded-lg bg-zinc-950 p-2 border border-zinc-800 text-zinc-300 text-[11px]">
+                        {m}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {accountTab === "security" && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 text-xs">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-white">Two-Factor Auth</p>
+                      <p className="text-[10px] text-zinc-400">TOTP Authenticator</p>
+                    </div>
+                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                      Enabled
+                    </span>
+                  </div>
+                  <div className="border-t border-zinc-800 pt-2 space-y-2">
+                    <p className="text-[10px] text-zinc-400 font-semibold uppercase">Active Devices</p>
+                    <div className="rounded-lg bg-zinc-950 p-2 border border-zinc-800 text-[11px]">
+                      <p className="font-bold text-white">iPhone 16 Pro • Current</p>
+                      <p className="text-[10px] text-zinc-400">New York, USA</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {accountTab === "billing" && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 text-xs">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-white">Enterprise Tier</p>
+                      <p className="text-[10px] text-zinc-400">$499 / month</p>
+                    </div>
+                    <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-400">
+                      Active
+                    </span>
+                  </div>
+                  <div className="rounded-lg bg-zinc-950 p-2 border border-zinc-800 flex justify-between items-center">
+                    <span className="font-bold text-white">VISA •••• 4242</span>
+                    <span className="text-[10px] text-zinc-400">Exp 09/28</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DeviceFrame>
+        );
         return (
           <div className="text-center text-sm text-muted-foreground">
             {item.name} component preview

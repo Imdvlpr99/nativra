@@ -1,0 +1,38 @@
+---
+title: Segmented Control
+description: iOS and Material style sliding segmented pill switcher with animated selection indicator.
+---
+
+# Segmented Control
+
+Segmented controls offer a native pill-switching experience with smooth native-driver animations, customizable sizes, icons, and notification badges.
+
+## Installation
+
+```bash
+npx nativra add segmented-control
+```
+
+## Usage
+
+```tsx
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { useState } from "react";
+
+export function Example() {
+  const [tab, setTab] = useState("overview");
+
+  return (
+    <SegmentedControl
+      value={tab}
+      onValueChange={setTab}
+      options={[
+        { value: "overview", label: "Overview" },
+        { value: "analytics", label: "Analytics", badge: 3 },
+        { value: "settings", label: "Settings" },
+      ]}
+    />
+  );
+}
+```
+

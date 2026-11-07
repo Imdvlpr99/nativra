@@ -65,6 +65,21 @@ const TEMPLATES: ScreenTemplate[] = [
     ],
   },
   {
+    id: "account-settings-flow",
+    name: "Account Settings & Org Security Hub",
+    category: "SaaS & Account Hub",
+    description:
+      "Enterprise SaaS account management hub featuring profile administration, organization seat quota tracking, active device session revocation, and invoice history ledger.",
+    componentsUsed: ["card", "badge", "button", "separator", "segmented-control", "text", "switch"],
+    installCommand: "npx nativra add account-settings-flow",
+    previewHighlights: [
+      "Profile & organization details management",
+      "Team seat utilization progress bar (8/10 active)",
+      "Two-Factor Authentication & active device revocation",
+      "Enterprise subscription card with default payment method & invoice history",
+    ],
+  },
+  {
     id: "auth-flow",
     name: "Authentication Flow",
     category: "Onboarding & Auth",
