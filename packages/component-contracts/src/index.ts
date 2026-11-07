@@ -42,6 +42,8 @@ export interface AccessibleProps {
   accessibilityHint?: string;
   /** Whether this element is accessible */
   accessible?: boolean;
+  /** Accessibility role */
+  accessibilityRole?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -57,6 +59,10 @@ export interface ComponentMeta {
   id: string;
   /** Display name */
   name: string;
+  /** Full title */
+  title?: string;
+  /** Category, e.g. "actions", "layout", "forms", "feedback" */
+  category?: string;
   /** Short description */
   description: string;
   /** Styling target this implementation file serves */
@@ -237,4 +243,75 @@ export interface AvatarBaseProps extends AccessibleProps {
   size?: "sm" | "md" | "lg" | "xl";
 }
 
+// ---------------------------------------------------------------------------
+// Alert contract (V4 §3)
+// ---------------------------------------------------------------------------
 
+export type AlertVariant = "default" | "info" | "success" | "warning" | "destructive";
+
+export interface AlertBaseProps extends AccessibleProps {
+  /** Alert status variant */
+  variant?: AlertVariant;
+  /** Alert title */
+  title?: string;
+  /** Alert message or body */
+  children?: unknown;
+  /** Callback when alert dismiss button is pressed */
+  onClose?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// Progress contract (V4 §3)
+// ---------------------------------------------------------------------------
+
+export interface ProgressBaseProps extends AccessibleProps {
+  /** Current progress value (0 to 100) */
+  value: number;
+  /** Maximum progress value (default 100) */
+  max?: number;
+  /** Size preset */
+  size?: "sm" | "md" | "lg";
+  /** Optional track color indicator */
+  color?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Slider contract (V4 §3)
+// ---------------------------------------------------------------------------
+
+export interface SliderBaseProps extends AccessibleProps {
+  /** Current numerical value */
+  value: number;
+  /** Callback when slider value changes */
+  onValueChange: (value: number) => void;
+  /** Minimum range value (default 0) */
+  min?: number;
+  /** Maximum range value (default 100) */
+  max?: number;
+  /** Step increment (default 1) */
+  step?: number;
+  /** Disables interaction */
+  disabled?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Tabs contract (V4 §3)
+// ---------------------------------------------------------------------------
+
+export interface TabItem {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  badge?: string | number;
+}
+
+export interface TabsBaseProps extends AccessibleProps {
+  /** Currently active tab value */
+  value: string;
+  /** Callback when active tab changes */
+  onValueChange: (value: string) => void;
+  /** List of tab options */
+  tabs: TabItem[];
+  /** Visual variant */
+  variant?: "default" | "pills" | "underline";
+}

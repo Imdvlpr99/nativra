@@ -6,6 +6,8 @@ import { z } from "zod";
 export const CONFIG_FILENAME = "nativra.json";
 
 export const NativraConfigSchema = z.object({
+  /** Schema specification version */
+  version: z.number().optional().default(4),
   /** Registry sources configured for this project */
   registries: z
     .array(
@@ -32,8 +34,28 @@ export type NativraConfig = z.infer<typeof NativraConfigSchema>;
 export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
   const configPath = join(projectRoot, CONFIG_FILENAME);
   try {
-    const raw = await readFile(configPath, "utf8");
-    const parsed = NativraConfigSchema.safeParse(JSON.parse(raw));
+    const raw = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
+
+    // Normalize V4 format if present (V4 §5)
+    if (raw["components"] && typeof raw["components"] === "object") {
+      const comp = raw["components"] as Record<string, unknown>;
+      if (comp["directory"] && !raw["componentsDir"]) {
+        raw["componentsDir"] = comp["directory"];
+      }
+    }
+    if (raw["styling"] && !raw["stylingTarget"]) {
+      raw["stylingTarget"] = raw["styling"];
+    }
+    if (raw["registry"] && typeof raw["registry"] === "object" && !raw["registries"]) {
+      raw["registries"] = Object.entries(raw["registry"] as Record<string, string>).map(
+        ([name, url]) => ({
+          name,
+          url,
+        })
+      );
+    }
+
+    const parsed = NativraConfigSchema.safeParse(raw);
     if (!parsed.success) {
       throw new Error(
         `Invalid ${CONFIG_FILENAME}: ${parsed.error.issues
@@ -56,4 +78,3 @@ export async function saveConfig(projectRoot: string, config: NativraConfig): Pr
   const configPath = join(projectRoot, CONFIG_FILENAME);
   await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
 }
-

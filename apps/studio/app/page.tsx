@@ -11,7 +11,9 @@ export default async function StudioPage() {
     items.push({
       id: item.id,
       name: item.name,
+      ...(item.title ? { title: item.title } : {}),
       type: item.type,
+      ...(item.category ? { category: item.category } : {}),
       description: item.description,
       stylingTargets: item.stylingTargets,
       files: item.files,

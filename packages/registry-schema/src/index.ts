@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
-// Primitive enums
+// Primitive enums & constants
 // ---------------------------------------------------------------------------
 
 export const StylingTargetSchema = z.enum(["nativewind", "stylesheet"]);
@@ -22,6 +22,38 @@ export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>;
 
 export const ItemStatusSchema = z.enum(["stable", "beta", "experimental", "deprecated"]);
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
+
+// ---------------------------------------------------------------------------
+// Accessibility metadata contract (V4 §3 & §15)
+// ---------------------------------------------------------------------------
+
+export const AccessibilityMetadataSchema = z.object({
+  /** Whether accessibility props or screen-reader labels are mandatory */
+  required: z.boolean().default(false),
+  /** Standard accessibility role, e.g. "button", "header", "checkbox" */
+  role: z.string().optional(),
+  /** Whether component implements accessibilityLabel prop */
+  supportsAccessibilityLabel: z.boolean().default(true),
+  /** Whether component implements accessibilityHint prop */
+  supportsAccessibilityHint: z.boolean().optional(),
+  /** Recommended touch target size in dp (e.g. 44 or 48) */
+  minTouchTarget: z.number().optional(),
+  /** Additional guidance or screen reader notes */
+  notes: z.string().optional(),
+});
+export type AccessibilityMetadata = z.infer<typeof AccessibilityMetadataSchema>;
+
+// ---------------------------------------------------------------------------
+// Testing metadata contract (V4 §3 & §15)
+// ---------------------------------------------------------------------------
+
+export const TestingMetadataSchema = z.object({
+  hasUnitTests: z.boolean().default(false),
+  hasE2eTests: z.boolean().default(false),
+  testedFrameworks: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+});
+export type TestingMetadata = z.infer<typeof TestingMetadataSchema>;
 
 // ---------------------------------------------------------------------------
 // Dependency schemas
@@ -79,19 +111,25 @@ export const PlatformCompatibilitySchema = z.object({
 export type PlatformCompatibility = z.infer<typeof PlatformCompatibilitySchema>;
 
 // ---------------------------------------------------------------------------
-// Registry item (the core entity)
+// Registry item (the core unified entity - V4 §3)
 // ---------------------------------------------------------------------------
 
 export const RegistryItemSchema = z.object({
+  /** Optional JSON schema URI */
+  $schema: z.string().optional(),
   /** Unique identifier within the registry, e.g. "button" */
   id: z.string().regex(/^[a-z][a-z0-9-]*$/, {
     message: "ID must be lowercase letters, numbers and hyphens, starting with a letter",
   }),
-  /** Display name */
+  /** Display name (e.g. "Button") */
   name: z.string().min(1),
+  /** Optional full title */
+  title: z.string().optional(),
   /** Short description shown in catalogs */
   description: z.string().min(1),
   type: RegistryItemTypeSchema,
+  /** High-level category, e.g. "actions", "layout", "forms", "feedback" */
+  category: z.string().optional(),
   status: ItemStatusSchema.default("stable"),
   /** Semver version for this item */
   version: z.string().regex(/^\d+\.\d+\.\d+/, {
@@ -107,6 +145,14 @@ export const RegistryItemSchema = z.object({
   registryDependencies: z.array(RegistryDependencySchema).optional(),
   /** npm packages this item requires */
   npmDependencies: z.array(NpmDependencySchema).optional(),
+  /** Peer dependencies (e.g. { "react": "*", "react-native": "*" }) */
+  peerDependencies: z.record(z.string(), z.string()).optional(),
+  /** Component usage examples IDs */
+  examples: z.array(z.string()).optional(),
+  /** Accessibility requirements & metadata */
+  accessibility: AccessibilityMetadataSchema.optional(),
+  /** Testing metadata & status */
+  testing: TestingMetadataSchema.optional(),
   /** Tags for search/filter */
   tags: z.array(z.string()).optional(),
   /** Relative path to preview image or gif */
@@ -138,8 +184,10 @@ export const RegistryManifestSchema = z.object({
     z.object({
       id: z.string(),
       name: z.string(),
+      title: z.string().optional(),
       description: z.string(),
       type: RegistryItemTypeSchema,
+      category: z.string().optional(),
       status: ItemStatusSchema,
       version: z.string(),
       stylingTargets: z.array(StylingTargetSchema),
@@ -150,7 +198,7 @@ export const RegistryManifestSchema = z.object({
 export type RegistryManifest = z.infer<typeof RegistryManifestSchema>;
 
 // ---------------------------------------------------------------------------
-// Compatibility Matrix Contract (Section 3.2 & Section 3.3)
+// Compatibility Matrix Contract (V4 §16)
 // ---------------------------------------------------------------------------
 
 export const CompatibilityMatrixSchema = z.object({
@@ -197,3 +245,108 @@ export const DEFAULT_COMPATIBILITY_MATRIX: CompatibilityMatrix = {
   ios: { minDeploymentTarget: "15.1" },
 };
 
+export interface ProjectEnvironment {
+  reactNative?: string;
+  expoSdk?: number;
+  react?: string;
+  typescript?: string;
+  nativewind?: string;
+}
+
+export interface CompatibilityCheckResult {
+  compatible: boolean;
+  warnings: string[];
+  errors: string[];
+}
+
+/**
+ * Validates consumer project dependencies against the versioned compatibility matrix.
+ */
+export function checkProjectCompatibility(
+  env: ProjectEnvironment,
+  matrix: CompatibilityMatrix = DEFAULT_COMPATIBILITY_MATRIX
+): CompatibilityCheckResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (env.expoSdk !== undefined && env.expoSdk < matrix.expo.minSdk) {
+    errors.push(
+      `Installed Expo SDK (${env.expoSdk}) is below minimum supported SDK ${matrix.expo.minSdk}.`
+    );
+  }
+
+  if (env.reactNative) {
+    const minRN = matrix.reactNative.min.replace(/^[~^]/, "");
+    if (env.reactNative < minRN) {
+      warnings.push(
+        `React Native version ${env.reactNative} is below tested minimum ${matrix.reactNative.min}.`
+      );
+    }
+  }
+
+  return {
+    compatible: errors.length === 0,
+    warnings,
+    errors,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// V4 Project Configuration Contract (V4 §5)
+// ---------------------------------------------------------------------------
+
+export const ProjectAliasesSchema = z.object({
+  components: z.string().default("@/components"),
+  utils: z.string().default("@/lib/utils"),
+  hooks: z.string().optional(),
+  themes: z.string().optional(),
+});
+export type ProjectAliases = z.infer<typeof ProjectAliasesSchema>;
+
+export const ComponentsConfigSchema = z.object({
+  directory: z.string().default("src/components/ui"),
+  aliases: ProjectAliasesSchema.default({
+    components: "@/components",
+    utils: "@/lib/utils",
+  }),
+});
+export type ComponentsConfig = z.infer<typeof ComponentsConfigSchema>;
+
+export const NativraConfigV4Schema = z.object({
+  $schema: z.string().optional(),
+  version: z.number().default(4),
+  typescript: z.boolean().default(true),
+  framework: z.enum(["expo", "bare"]).default("expo"),
+  styling: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
+  components: ComponentsConfigSchema.default({
+    directory: "src/components/ui",
+    aliases: {
+      components: "@/components",
+      utils: "@/lib/utils",
+    },
+  }),
+  registry: z.record(z.string(), z.string()).default({
+    default: "https://registry.nativra.dev",
+  }),
+  theme: z
+    .object({
+      default: z.string().default("default"),
+    })
+    .default({ default: "default" }),
+
+  // Backward compatibility fields for legacy v1-v3 configurations
+  registries: z
+    .array(
+      z.object({
+        name: z.string().default("default"),
+        url: z.string(),
+      })
+    )
+    .optional(),
+  componentsDir: z.string().optional(),
+  hooksDir: z.string().optional(),
+  utilsDir: z.string().optional(),
+  stylingTarget: z.enum(["nativewind", "stylesheet"]).optional(),
+  aliasPrefix: z.string().optional(),
+});
+export type NativraConfigV4 = z.infer<typeof NativraConfigV4Schema>;

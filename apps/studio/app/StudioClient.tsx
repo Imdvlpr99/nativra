@@ -51,7 +51,9 @@ import {
 export interface StudioItem {
   id: string;
   name: string;
+  title?: string;
   type: string;
+  category?: string;
   description?: string;
   stylingTargets: string[];
   files: { path: string; target?: string | undefined; content?: string | undefined }[];
@@ -1530,7 +1532,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             canvasMode={canvasMode}
             onCanvasModeChange={setCanvasMode}
             appName={item?.name ?? "Component Preview"}
-            category={item?.type}
+            category={item?.category ?? item?.type}
             showSafeArea={showSafeArea}
             onToggleSafeArea={() => setShowSafeArea((prev) => !prev)}
             onResetProps={() => {

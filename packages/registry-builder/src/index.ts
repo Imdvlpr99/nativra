@@ -133,8 +133,10 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
     items: items.map((item) => ({
       id: item.id,
       name: item.name,
+      ...(item.title ? { title: item.title } : {}),
       description: item.description,
       type: item.type,
+      ...(item.category ? { category: item.category } : {}),
       status: item.status,
       version: item.version,
       stylingTargets: item.stylingTargets,
