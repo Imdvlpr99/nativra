@@ -17,12 +17,14 @@
     "@nativra/registry-schema": "workspace:*",
     "@nativra/registry-client": "workspace:*",
     "@nativra/studio-schema": "workspace:*",
+    "@nativra/preview-runtime": "workspace:*",
     "@nativra/theme-engine": "workspace:*",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^3.23.8",
-    "@nativra/codegen": "workspace:*"
+    "@nativra/codegen": "workspace:*",
+    "lucide-react": "^1.70.0"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",

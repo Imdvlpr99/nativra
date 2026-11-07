@@ -121,5 +121,22 @@ export const STUDIO_CONTROLS: Record<string, Control[]> = {
       ],
     },
   ],
+  "empty-state": [
+    { type: "text", label: "Title", propKey: "title", defaultValue: "No Projects Found" },
+    { type: "text", label: "Description", propKey: "description", defaultValue: "You have not created any mobile projects yet. Tap below to begin." },
+    { type: "text", label: "Action Label", propKey: "actionLabel", defaultValue: "Create Project" },
+    { type: "boolean", label: "Show Action", propKey: "showAction", defaultValue: true },
+  ],
+  "login-form": [
+    { type: "text", label: "Title", propKey: "title", defaultValue: "Welcome back" },
+    { type: "text", label: "Subtitle", propKey: "subtitle", defaultValue: "Enter your credentials to access your account" },
+    { type: "text", label: "Button Label", propKey: "submitLabel", defaultValue: "Sign In" },
+    LOADING_CONTROL,
+    DISABLED_CONTROL,
+  ],
+  "use-disclosure": [
+    { type: "boolean", label: "Open by Default", propKey: "defaultIsOpen", defaultValue: false },
+    { type: "text", label: "Trigger Text", propKey: "triggerLabel", defaultValue: "Open Sheet" },
+    { type: "text", label: "Sheet Title", propKey: "sheetTitle", defaultValue: "Interactive Sheet" },
+  ],
 };
-

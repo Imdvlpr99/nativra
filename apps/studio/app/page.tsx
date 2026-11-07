@@ -8,7 +8,15 @@ export default async function StudioPage() {
     const controls = STUDIO_CONTROLS[entry.id];
     if (!controls) continue; // only schema-defined, editable items appear in Studio
     const item = await getItem(entry.id);
-    items.push({ id: item.id, name: item.name, stylingTargets: item.stylingTargets, files: item.files, controls });
+    items.push({
+      id: item.id,
+      name: item.name,
+      type: item.type,
+      description: item.description,
+      stylingTargets: item.stylingTargets,
+      files: item.files,
+      controls,
+    });
   }
   return <StudioClient items={items} />;
 }

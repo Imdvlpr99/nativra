@@ -3,253 +3,1212 @@
 import { useMemo, useState } from "react";
 import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
+import { getFixtures } from "@nativra/preview-runtime";
+import {
+  Smartphone,
+  Tablet,
+  RotateCw,
+  Sun,
+  Moon,
+  Copy,
+  Check,
+  Code2,
+  Sliders,
+  Terminal,
+  Activity,
+  Layers,
+  Search,
+  ExternalLink,
+  ChevronRight,
+  Sparkles,
+  Trash2,
+  X,
+  FolderOpen,
+} from "lucide-react";
 
 export interface StudioItem {
   id: string;
   name: string;
+  type: string;
+  description?: string;
   stylingTargets: string[];
   files: { path: string; target?: string | undefined; content?: string | undefined }[];
   controls: Control[];
 }
 
-type Values = Record<string, string | boolean>;
+type Values = Record<string, string | boolean | number>;
 
-const BTN_BG: Record<string, string> = {
-  default: "#171717", primary: "#0284c7", secondary: "#f4f4f5", destructive: "#ef4444",
-  outline: "transparent", ghost: "transparent", link: "transparent",
-};
-const BTN_FG: Record<string, string> = {
-  default: "#fff", primary: "#fff", secondary: "#171717", destructive: "#fff",
-  outline: "#171717", ghost: "#171717", link: "#0284c7",
-};
-const BADGE_BG: Record<string, string> = {
-  default: "#171717", primary: "#e0f2fe", secondary: "#f4f4f5", destructive: "#fee2e2", outline: "transparent",
-};
-const BADGE_FG: Record<string, string> = {
-  default: "#fff", primary: "#0369a1", secondary: "#3f3f46", destructive: "#b91c1c", outline: "#3f3f46",
-};
-const PAD: Record<string, string> = { xs: "4px 10px", sm: "6px 12px", md: "10px 16px", lg: "12px 20px", xl: "14px 24px" };
-
-function Harness({ id, v }: { id: string; v: Values }) {
-  const variant = String(v.variant ?? "default");
-  if (id === "input") {
-    const err = Boolean(v.error);
-    return (
-      <div style={{ width: 240, opacity: v.disabled ? 0.5 : 1, color: "#18181b", fontSize: 14 }}>
-        <div style={{ fontWeight: 500, marginBottom: 6 }}>{String(v.label ?? "")}</div>
-        <div style={{ border: `1px solid ${err ? "#ef4444" : "#d4d4d8"}`, borderRadius: 8, padding: "10px 12px", color: "#a1a1aa" }}>
-          {String(v.placeholder ?? "")}
-        </div>
-        {err && v.errorMessage ? <div style={{ color: "#ef4444", fontSize: 12, marginTop: 6 }}>{String(v.errorMessage)}</div> : null}
-      </div>
-    );
-  }
-  if (id === "card") {
-    const pad = { sm: 12, md: 16, lg: 24 }[String(v.padding ?? "md") as "sm" | "md" | "lg"];
-    return (
-      <div style={{
-        border: "1px solid #e4e4e7", borderRadius: 12, padding: pad, width: 220, color: "#18181b", fontSize: 14,
-        boxShadow: v.elevated ? "0 4px 12px rgba(0,0,0,.15)" : "none",
-      }}>Card content</div>
-    );
-  }
-  if (id === "separator") {
-    const vertical = v.orientation === "vertical";
-    return (
-      <div style={{ width: 200, height: 80, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={vertical ? { width: 1, height: "100%", background: "#e4e4e7" } : { height: 1, width: "100%", background: "#e4e4e7" }} />
-      </div>
-    );
-  }
-  if (id === "text") {
-    const textVariant = String(v.variant ?? "p");
-    const styleMap: Record<string, React.CSSProperties> = {
-      h1: { fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", color: "#09090b" },
-      h2: { fontSize: 22, fontWeight: 600, letterSpacing: "-0.01em", color: "#09090b" },
-      h3: { fontSize: 18, fontWeight: 600, color: "#09090b" },
-      h4: { fontSize: 16, fontWeight: 600, color: "#09090b" },
-      p: { fontSize: 15, lineHeight: 1.6, color: "#27272a" },
-      lead: { fontSize: 18, color: "#52525b" },
-      muted: { fontSize: 13, color: "#71717a" },
-      code: { fontSize: 13, fontFamily: "monospace", background: "#f4f4f5", padding: "2px 6px", borderRadius: 4, color: "#27272a" },
-    };
-    return (
-      <div style={{ maxWidth: 300, textAlign: "center", ...(styleMap[textVariant] ?? styleMap.p) }}>
-        {String(v.children ?? "")}
-      </div>
-    );
-  }
-  if (id === "label") {
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: 4, opacity: v.disabled ? 0.5 : 1, fontSize: 14, fontWeight: 500, color: "#18181b" }}>
-        <span>{String(v.children ?? "Label")}</span>
-        {v.required ? <span style={{ color: "#ef4444", fontWeight: 700 }}>*</span> : null}
-      </div>
-    );
-  }
-  if (id === "checkbox") {
-    const checked = Boolean(v.checked);
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: 8, opacity: v.disabled ? 0.5 : 1, cursor: "pointer", fontSize: 14, color: "#18181b" }}>
-        <div style={{
-          width: 20, height: 20, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center",
-          background: checked ? "#18181b" : "transparent", border: `1.5px solid ${checked ? "#18181b" : "#a1a1aa"}`,
-          color: "#fff", fontSize: 12, fontWeight: 700,
-        }}>
-          {checked ? "✓" : ""}
-        </div>
-        <span>{String(v.label ?? "")}</span>
-      </div>
-    );
-  }
-  if (id === "switch") {
-    const on = Boolean(v.value);
-    return (
-      <div style={{
-        width: 44, height: 24, borderRadius: 999, background: on ? "#18181b" : "#e4e4e7",
-        padding: 2, display: "flex", alignItems: "center", opacity: v.disabled ? 0.5 : 1,
-        justifyContent: on ? "flex-end" : "flex-start", transition: "all 0.2s",
-      }}>
-        <div style={{ width: 20, height: 20, borderRadius: 999, background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-      </div>
-    );
-  }
-  if (id === "skeleton") {
-    const rMap: Record<string, number> = { none: 0, sm: 4, md: 8, lg: 12, full: 999 };
-    return (
-      <div style={{
-        width: Number(v.width) || 180, height: Number(v.height) || 24,
-        borderRadius: rMap[String(v.radius ?? "md")] ?? 8, background: "#e4e4e7",
-        animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-      }} />
-    );
-  }
-  if (id === "spinner") {
-    const sMap: Record<string, number> = { sm: 16, md: 24, lg: 32 };
-    const dim = sMap[String(v.size ?? "md")] ?? 24;
-    return (
-      <div style={{
-        width: dim, height: dim, border: "2px solid #e4e4e7", borderTopColor: "#18181b",
-        borderRadius: "50%", animation: "spin 1s linear infinite",
-      }} />
-    );
-  }
-  if (id === "avatar") {
-    const sMap: Record<string, number> = { sm: 32, md: 40, lg: 56, xl: 80 };
-    const fMap: Record<string, number> = { sm: 12, md: 14, lg: 18, xl: 24 };
-    const dim = sMap[String(v.size ?? "md")] ?? 40;
-    const font = fMap[String(v.size ?? "md")] ?? 14;
-    return (
-      <div style={{
-        width: dim, height: dim, borderRadius: "50%", background: "#e4e4e7",
-        color: "#3f3f46", display: "flex", alignItems: "center", justifyContent: "center",
-        fontWeight: 600, fontSize: font,
-      }}>
-        {String(v.fallback ?? "NV").slice(0, 2).toUpperCase()}
-      </div>
-    );
-  }
-  if (id === "badge") {
-    return (
-      <span style={{
-        background: BADGE_BG[variant], color: BADGE_FG[variant], padding: PAD[String(v.size ?? "md")],
-        borderRadius: 999, fontSize: 12, fontWeight: 500, border: variant === "outline" ? "1px solid #d4d4d8" : "none",
-      }}>{String(v.label ?? "Badge")}</span>
-    );
-  }
-  return (
-    <button disabled style={{
-      background: BTN_BG[variant], color: BTN_FG[variant], padding: PAD[String(v.size ?? "md")], borderRadius: 8,
-      fontWeight: 600, fontSize: 14, border: variant === "outline" ? "1px solid #d4d4d8" : "none",
-      textDecoration: variant === "link" ? "underline" : "none", opacity: v.disabled || v.loading ? 0.5 : 1,
-    }}>{v.loading ? "⏳ " : ""}{String(v.children ?? "Button")}</button>
-  );
+interface EventLogEntry {
+  id: string;
+  time: string;
+  event: string;
+  detail: string;
 }
 
+const THEME_PALETTES = {
+  zinc: { primary: "#18181b", primaryFg: "#ffffff", accent: "#3b82f6", name: "Zinc" },
+  "dark-slate": { primary: "#0284c7", primaryFg: "#ffffff", accent: "#38bdf8", name: "Dark Slate" },
+  midnight: { primary: "#7c3aed", primaryFg: "#ffffff", accent: "#c084fc", name: "Midnight" },
+} as const;
+
+type ThemeKey = keyof typeof THEME_PALETTES;
+
+const DEVICE_DIMENSIONS = {
+  iphone: { width: 393, height: 780, name: "iPhone 16 Pro" },
+  android: { width: 412, height: 800, name: "Pixel 8" },
+  compact: { width: 360, height: 680, name: "Compact Phone" },
+  tablet: { width: 620, height: 780, name: "Tablet" },
+} as const;
+
+type DeviceKey = keyof typeof DEVICE_DIMENSIONS;
+
 export default function StudioClient({ items }: { items: StudioItem[] }) {
-  const [id, setId] = useState(items[0]?.id ?? "");
-  const [target, setTarget] = useState("nativewind");
+  const [id, setId] = useState(items[0]?.id ?? "button");
+  const [target, setTarget] = useState<"nativewind" | "stylesheet">("nativewind");
   const [values, setValues] = useState<Values>({});
-  const item = items.find((i) => i.id === id);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "component" | "block" | "hook">("all");
+  const [device, setDevice] = useState<DeviceKey>("iphone");
+  const [isLandscape, setIsLandscape] = useState(false);
+  const [zoom, setZoom] = useState<number>(100);
+  const [canvasMode, setCanvasMode] = useState<"light" | "dark" | "dots">("dots");
+  const [activeTheme, setActiveTheme] = useState<ThemeKey>("zinc");
+  const [activeTab, setActiveTab] = useState<"props" | "code" | "usage" | "events">("props");
+  const [events, setEvents] = useState<EventLogEntry[]>([]);
+  const [copiedType, setCopiedType] = useState<string | null>(null);
+
+  // Interactive component local states
+  const [buttonPressedCount, setButtonPressedCount] = useState(0);
+  const [interactiveInputText, setInteractiveInputText] = useState("");
+  const [disclosureOpen, setDisclosureOpen] = useState(false);
+
+  const item = items.find((i) => i.id === id) ?? items[0];
+
+  const logEvent = (event: string, detail: string) => {
+    const entry: EventLogEntry = {
+      id: Math.random().toString(36).substring(2, 9),
+      time: new Date().toLocaleTimeString(),
+      event,
+      detail,
+    };
+    setEvents((prev) => [entry, ...prev.slice(0, 49)]);
+  };
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedType(type);
+    logEvent("Clipboard", `Copied ${type} to clipboard`);
+    setTimeout(() => setCopiedType(null), 2000);
+  };
+
+  const currentTheme = THEME_PALETTES[activeTheme] ?? THEME_PALETTES.zinc;
 
   const merged = useMemo<Values>(() => {
     const out: Values = {};
     for (const c of item?.controls ?? []) {
       if (c.type === "color") continue;
-      out[c.propKey] = (values[c.propKey] ?? c.defaultValue ?? (c.type === "boolean" ? false : "")) as string | boolean;
+      out[c.propKey] = (values[c.propKey] ?? c.defaultValue ?? (c.type === "boolean" ? false : "")) as string | boolean | number;
     }
     return out;
   }, [item, values]);
 
   const file = item?.files.find((f) => !f.target || f.target === target) ?? item?.files[0];
-  const set = (k: string, val: string | boolean) => setValues((p) => ({ ...p, [k]: val }));
+  const set = (k: string, val: string | boolean | number) => setValues((p) => ({ ...p, [k]: val }));
 
   const usage = item ? generateUsage(item.id, merged) : "";
+  const installCmd = item ? generateInstallCommand(item.id) : "";
+  const fixtures = item ? getFixtures(item.id) : [];
+
+  const filteredItems = useMemo(() => {
+    return items.filter((i) => {
+      const matchesSearch = i.name.toLowerCase().includes(searchQuery.toLowerCase()) || i.id.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = categoryFilter === "all" || i.type === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [items, searchQuery, categoryFilter]);
+
+  const currentDeviceDim = DEVICE_DIMENSIONS[device] ?? DEVICE_DIMENSIONS.iphone;
+  const deviceWidth = isLandscape ? currentDeviceDim.height : currentDeviceDim.width;
+  const deviceHeight = isLandscape ? currentDeviceDim.width : currentDeviceDim.height;
+
+  // Render Component in simulated mobile screen
+  function renderHarness() {
+    if (!item) return null;
+    const variant = String(merged.variant ?? "default");
+
+    if (item.id === "button") {
+      const disabled = Boolean(merged.disabled);
+      const loading = Boolean(merged.loading);
+      const size = String(merged.size ?? "md");
+      const label = String(merged.children || "Button");
+
+      const sizePadding: Record<string, string> = {
+        xs: "py-1 px-2.5 text-xs",
+        sm: "py-1.5 px-3 text-xs",
+        md: "py-2.5 px-4 text-sm",
+        lg: "py-3 px-5 text-base",
+        xl: "py-3.5 px-6 text-lg",
+      };
+
+      const defaultVariantStyle: { bg: string; text: string; border?: string | undefined } = {
+        bg: currentTheme.primary,
+        text: currentTheme.primaryFg,
+      };
+      const variantStyles: Record<string, { bg: string; text: string; border?: string | undefined }> = {
+        default: defaultVariantStyle,
+        primary: { bg: currentTheme.accent, text: "#ffffff" },
+        secondary: { bg: "#f4f4f5", text: "#18181b", border: "border border-zinc-200" },
+        destructive: { bg: "#ef4444", text: "#ffffff" },
+        outline: { bg: "transparent", text: "#18181b", border: "border border-zinc-300" },
+        ghost: { bg: "transparent", text: "#18181b" },
+        link: { bg: "transparent", text: currentTheme.accent },
+      };
+
+      const currentStyle = variantStyles[variant] ?? defaultVariantStyle;
+
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <button
+            type="button"
+            disabled={disabled || loading}
+            onClick={() => {
+              setButtonPressedCount((c) => c + 1);
+              logEvent("onPress", `Button clicked (${variant}, count: ${buttonPressedCount + 1})`);
+            }}
+            style={{ backgroundColor: currentStyle.bg, color: currentStyle.text }}
+            className={`flex items-center justify-center gap-2 rounded-xl font-semibold shadow-sm transition-all duration-150 active:scale-95 disabled:pointer-events-none disabled:opacity-50 ${
+              sizePadding[size] ?? sizePadding.md
+            } ${currentStyle.border ?? ""}`}
+          >
+            {loading && (
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            )}
+            <span>{label}</span>
+          </button>
+          {buttonPressedCount > 0 && (
+            <span className="text-xs text-zinc-500">
+              Simulated presses: <strong className="text-zinc-700">{buttonPressedCount}</strong>
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "badge") {
+      const size = String(merged.size ?? "md");
+      const label = String(merged.label || "Badge");
+      const defaultBadgeStyle: { bg: string; text: string; border?: string | undefined } = {
+        bg: currentTheme.primary,
+        text: currentTheme.primaryFg,
+      };
+      const badgeStyles: Record<string, { bg: string; text: string; border?: string | undefined }> = {
+        default: defaultBadgeStyle,
+        primary: { bg: "#e0f2fe", text: "#0369a1" },
+        secondary: { bg: "#f4f4f5", text: "#3f3f46" },
+        destructive: { bg: "#fee2e2", text: "#b91c1c" },
+        outline: { bg: "transparent", text: "#3f3f46", border: "border border-zinc-300" },
+      };
+      const sizeStyles: Record<string, string> = {
+        sm: "px-2 py-0.5 text-[10px]",
+        md: "px-2.5 py-1 text-xs",
+        lg: "px-3 py-1.5 text-sm",
+      };
+      const cur = badgeStyles[variant] ?? defaultBadgeStyle;
+
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <span
+            style={{ backgroundColor: cur.bg, color: cur.text }}
+            className={`inline-flex items-center gap-1.5 rounded-full font-medium ${sizeStyles[size] ?? sizeStyles.md} ${
+              cur.border ?? ""
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-75" />
+            <span>{label}</span>
+          </span>
+        </div>
+      );
+    }
+
+    if (item.id === "input") {
+      const err = Boolean(merged.error);
+      const disabled = Boolean(merged.disabled);
+      const label = String(merged.label || "Email");
+      const placeholder = String(merged.placeholder || "you@example.com");
+      const errMsg = String(merged.errorMessage || "Invalid email address");
+
+      return (
+        <div className="w-full max-w-xs space-y-1.5 py-4">
+          <label className="text-xs font-medium text-zinc-700">{label}</label>
+          <div className="relative">
+            <input
+              type="text"
+              disabled={disabled}
+              value={interactiveInputText}
+              placeholder={placeholder}
+              onChange={(e) => {
+                setInteractiveInputText(e.target.value);
+                logEvent("onChangeText", `Value: "${e.target.value}"`);
+              }}
+              className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition-all duration-150 disabled:bg-zinc-100 disabled:opacity-60 ${
+                err
+                  ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                  : "border-zinc-300 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-100"
+              }`}
+            />
+            {interactiveInputText && (
+              <button
+                type="button"
+                onClick={() => {
+                  setInteractiveInputText("");
+                  logEvent("onClear", "Input cleared");
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          {err && <p className="text-xs text-red-500">{errMsg}</p>}
+        </div>
+      );
+    }
+
+    if (item.id === "card") {
+      const elevated = Boolean(merged.elevated);
+      const padding = String(merged.padding ?? "md");
+      const padClass = { sm: "p-3", md: "p-5", lg: "p-6" }[padding] ?? "p-5";
+
+      return (
+        <div
+          className={`w-full max-w-sm rounded-2xl border border-zinc-200 bg-white transition-all duration-200 ${
+            elevated ? "shadow-xl shadow-zinc-200/60" : "shadow-sm"
+          } ${padClass}`}
+        >
+          <div className="flex items-center justify-between pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
+                <FolderOpen className="h-4 w-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-zinc-900">Project Card</h4>
+                <p className="text-xs text-zinc-500">Updated 2 minutes ago</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+              Active
+            </span>
+          </div>
+          <p className="py-2 text-xs leading-relaxed text-zinc-600">
+            Card component with native elevation shadow and structured layout.
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-3">
+            <button
+              type="button"
+              onClick={() => logEvent("onPress", "Card cancel pressed")}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => logEvent("onPress", "Card submit pressed")}
+              style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm hover:opacity-90"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "checkbox") {
+      const checked = Boolean(merged.checked);
+      const disabled = Boolean(merged.disabled);
+      const label = String(merged.label || "I agree to the terms");
+
+      return (
+        <div
+          onClick={() => {
+            if (disabled) return;
+            set("checked", !checked);
+            logEvent("onCheckedChange", `Checked: ${!checked}`);
+          }}
+          className={`flex cursor-pointer items-center gap-3 py-4 ${disabled ? "pointer-events-none opacity-50" : ""}`}
+        >
+          <div
+            style={{
+              backgroundColor: checked ? currentTheme.primary : "transparent",
+              borderColor: checked ? currentTheme.primary : "#d4d4d8",
+            }}
+            className="flex h-5 w-5 items-center justify-center rounded-md border transition-colors duration-150"
+          >
+            {checked && <Check className="h-3.5 w-3.5 text-white stroke-[2.5]" />}
+          </div>
+          <span className="text-sm font-medium text-zinc-800">{label}</span>
+        </div>
+      );
+    }
+
+    if (item.id === "switch") {
+      const value = Boolean(merged.value);
+      const disabled = Boolean(merged.disabled);
+
+      return (
+        <div className="flex flex-col items-center gap-3 py-8">
+          <div
+            onClick={() => {
+              if (disabled) return;
+              set("value", !value);
+              logEvent("onValueChange", `Switch: ${!value}`);
+            }}
+            style={{ backgroundColor: value ? currentTheme.accent : "#e4e4e7" }}
+            className={`flex h-7 w-12 cursor-pointer items-center rounded-full p-1 transition-colors duration-200 ${
+              disabled ? "pointer-events-none opacity-50" : ""
+            } ${value ? "justify-end" : "justify-start"}`}
+          >
+            <div className="h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200" />
+          </div>
+          <span className="text-xs text-zinc-500">Status: {value ? "Enabled (true)" : "Disabled (false)"}</span>
+        </div>
+      );
+    }
+
+    if (item.id === "separator") {
+      const vertical = merged.orientation === "vertical";
+      return (
+        <div className="flex h-40 w-full items-center justify-center p-6">
+          {vertical ? (
+            <div className="flex h-full items-center gap-3">
+              <span className="text-xs text-zinc-400">Left</span>
+              <div className="h-full w-px bg-zinc-200" />
+              <span className="text-xs text-zinc-400">Right</span>
+            </div>
+          ) : (
+            <div className="w-full space-y-3">
+              <span className="text-xs text-zinc-400">Top Content</span>
+              <div className="h-px w-full bg-zinc-200" />
+              <span className="text-xs text-zinc-400">Bottom Content</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "skeleton") {
+      const w = Number(merged.width) || 200;
+      const h = Number(merged.height) || 24;
+      const radius = String(merged.radius ?? "md");
+      const rMap: Record<string, string> = {
+        none: "rounded-none",
+        sm: "rounded-sm",
+        md: "rounded-md",
+        lg: "rounded-xl",
+        full: "rounded-full",
+      };
+
+      return (
+        <div className="space-y-4 py-8">
+          <div
+            style={{ width: `${w}px`, height: `${h}px` }}
+            className={`animate-pulse bg-zinc-200 ${rMap[radius] ?? "rounded-md"}`}
+          />
+          <div className="space-y-2">
+            <div className="h-3 w-48 animate-pulse rounded bg-zinc-200/70" />
+            <div className="h-3 w-36 animate-pulse rounded bg-zinc-200/50" />
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "spinner") {
+      const size = String(merged.size ?? "md");
+      const sMap: Record<string, string> = { sm: "h-5 w-5 border-2", md: "h-8 w-8 border-3", lg: "h-12 w-12 border-4" };
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-8">
+          <div
+            style={{ borderTopColor: currentTheme.primary }}
+            className={`animate-spin rounded-full border-zinc-200 ${sMap[size] ?? sMap.md}`}
+          />
+          <span className="text-xs text-zinc-500">Loading spinner ({size})</span>
+        </div>
+      );
+    }
+
+    if (item.id === "avatar") {
+      const size = String(merged.size ?? "md");
+      const fallback = String(merged.fallback || "NV");
+      const sMap: Record<string, { box: string; font: string; dot: string }> = {
+        sm: { box: "h-8 w-8", font: "text-xs", dot: "h-2 w-2" },
+        md: { box: "h-11 w-11", font: "text-sm", dot: "h-2.5 w-2.5" },
+        lg: { box: "h-16 w-16", font: "text-lg", dot: "h-3.5 w-3.5" },
+        xl: { box: "h-20 w-20", font: "text-xl", dot: "h-4 w-4" },
+      };
+      const cur = sMap[size] ?? { box: "h-11 w-11", font: "text-sm", dot: "h-2.5 w-2.5" };
+
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-8">
+          <div className="relative">
+            <div
+              style={{ backgroundColor: "#f4f4f5", color: "#18181b" }}
+              className={`flex items-center justify-center rounded-full font-bold shadow-inner ${cur.box} ${cur.font}`}
+            >
+              {fallback.slice(0, 2).toUpperCase()}
+            </div>
+            <span
+              className={`absolute bottom-0 right-0 rounded-full bg-emerald-500 ring-2 ring-white ${cur.dot}`}
+            />
+          </div>
+          <span className="text-xs text-zinc-500">Avatar with online status</span>
+        </div>
+      );
+    }
+
+    if (item.id === "text") {
+      const textVariant = String(merged.variant ?? "p");
+      const content = String(merged.children || "The quick brown fox jumps over the lazy dog.");
+      const styleClasses: Record<string, string> = {
+        h1: "text-2xl font-bold tracking-tight text-zinc-900",
+        h2: "text-xl font-bold tracking-tight text-zinc-900",
+        h3: "text-lg font-semibold text-zinc-900",
+        p: "text-sm text-zinc-700 leading-relaxed",
+        lead: "text-base font-normal text-zinc-600",
+        muted: "text-xs text-zinc-500",
+        code: "text-xs font-mono bg-zinc-100 text-zinc-800 p-2 rounded-lg border border-zinc-200",
+      };
+
+      return (
+        <div className="max-w-xs text-center py-6">
+          <p className={styleClasses[textVariant] ?? styleClasses.p}>{content}</p>
+        </div>
+      );
+    }
+
+    if (item.id === "label") {
+      const labelText = String(merged.children || "Email address");
+      const required = Boolean(merged.required);
+      const disabled = Boolean(merged.disabled);
+
+      return (
+        <div className={`flex items-center gap-1.5 py-4 ${disabled ? "opacity-50" : ""}`}>
+          <span className="text-sm font-semibold text-zinc-800">{labelText}</span>
+          {required && <span className="text-sm font-bold text-red-500">*</span>}
+        </div>
+      );
+    }
+
+    if (item.id === "empty-state") {
+      const title = String(merged.title || "No Projects Found");
+      const desc = String(merged.description || "Get started by creating your first project item.");
+      const actionLabel = String(merged.actionLabel || "Create Project");
+      const showAction = Boolean(merged.showAction !== false);
+
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/70 p-8 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-zinc-600 shadow-sm">
+            <FolderOpen className="h-6 w-6" />
+          </div>
+          <h3 className="text-base font-semibold text-zinc-900">{title}</h3>
+          <p className="mt-1 text-xs text-zinc-500 leading-relaxed">{desc}</p>
+          {showAction && (
+            <button
+              type="button"
+              onClick={() => logEvent("onPress", `Empty state CTA pressed: "${actionLabel}"`)}
+              style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-medium shadow-sm transition-transform active:scale-95"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>{actionLabel}</span>
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "login-form") {
+      const title = String(merged.title || "Welcome back");
+      const subtitle = String(merged.subtitle || "Enter your credentials to access your account");
+      const submitLabel = String(merged.submitLabel || "Sign In");
+      const loading = Boolean(merged.loading);
+      const disabled = Boolean(merged.disabled);
+
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-md">
+          <div className="mb-4 text-center">
+            <h2 className="text-lg font-bold text-zinc-900">{title}</h2>
+            <p className="mt-1 text-xs text-zinc-500">{subtitle}</p>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-zinc-700">Email</label>
+              <input
+                type="email"
+                defaultValue="developer@nativra.dev"
+                disabled={disabled}
+                className="mt-1 w-full rounded-xl border border-zinc-300 px-3 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-100"
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-zinc-700">Password</label>
+                <a href="#forgot" onClick={(e) => { e.preventDefault(); logEvent("onPress", "Forgot password clicked"); }} className="text-[11px] text-sky-600 hover:underline">
+                  Forgot?
+                </a>
+              </div>
+              <input
+                type="password"
+                defaultValue="••••••••"
+                disabled={disabled}
+                className="mt-1 w-full rounded-xl border border-zinc-300 px-3 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-100"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={disabled || loading}
+              onClick={() => logEvent("onSubmit", "Login form submitted")}
+              style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-50"
+            >
+              {loading && <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />}
+              <span>{submitLabel}</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "use-disclosure") {
+      const triggerLabel = String(merged.triggerLabel || "Open Bottom Sheet");
+      const sheetTitle = String(merged.sheetTitle || "Interactive Sheet");
+
+      return (
+        <div className="relative flex flex-col items-center justify-center gap-4 py-8">
+          <button
+            type="button"
+            onClick={() => {
+              setDisclosureOpen(true);
+              logEvent("onOpen", "useDisclosure opened modal sheet");
+            }}
+            style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-sm transition-transform active:scale-95"
+          >
+            <Layers className="h-4 w-4" />
+            <span>{triggerLabel}</span>
+          </button>
+          {disclosureOpen && (
+            <div className="absolute inset-0 z-30 flex flex-col justify-end rounded-3xl bg-black/40 p-4 transition-all duration-300">
+              <div className="rounded-2xl bg-white p-5 shadow-2xl">
+                <div className="mb-3 flex items-center justify-between border-b pb-2">
+                  <h4 className="text-sm font-bold text-zinc-900">{sheetTitle}</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDisclosureOpen(false);
+                      logEvent("onClose", "useDisclosure closed");
+                    }}
+                    className="text-zinc-400 hover:text-zinc-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <p className="text-xs text-zinc-600">
+                  This bottom drawer was triggered via the <code>useDisclosure()</code> hook state.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDisclosureOpen(false);
+                    logEvent("onConfirm", "Sheet action completed");
+                  }}
+                  style={{ backgroundColor: currentTheme.accent }}
+                  className="mt-4 w-full rounded-xl py-2 text-xs font-semibold text-white"
+                >
+                  Confirm & Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-8 text-center text-xs text-zinc-500">
+        Preview renderer for <strong>{item.name}</strong>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex h-12 items-center justify-between border-b border-zinc-800 px-4">
-        <span className="text-sm font-bold">Nativra Studio <span className="ml-2 rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400">MVP</span></span>
-        <label className="flex items-center gap-2 text-xs text-zinc-400">
-          Target
-          <select value={target} onChange={(e) => setTarget(e.target.value)} className="rounded bg-zinc-800 px-2 py-1 text-zinc-200">
-            <option value="nativewind">NativeWind</option>
-            <option value="stylesheet">StyleSheet</option>
-          </select>
-        </label>
-      </header>
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-56 overflow-y-auto border-r border-zinc-800 bg-zinc-900 p-3">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Components</p>
-          {items.map((i) => (
-            <button key={i.id} onClick={() => { setId(i.id); setValues({}); }}
-              className={`mb-1 w-full rounded px-3 py-1.5 text-left text-sm ${i.id === id ? "bg-zinc-800 text-zinc-50" : "text-zinc-300 hover:bg-zinc-800"}`}>
-              {i.name}
+    <div className="flex h-screen flex-col bg-zinc-950 text-zinc-100 font-sans selection:bg-zinc-800">
+      {/* Top Header Bar */}
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-4 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-white font-black text-sm border border-zinc-700">
+            N
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold tracking-tight">Nativra Studio</span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+                Live Workbench
+              </span>
+            </div>
+            <p className="text-[11px] text-zinc-400 hidden sm:block">Source-First React Native Visual Inspector</p>
+          </div>
+        </div>
+
+        {/* Center Device Bar Controls */}
+        <div className="hidden lg:flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1">
+          {(["iphone", "android", "compact", "tablet"] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => setDevice(d)}
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                device === d ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              {d === "tablet" ? <Tablet className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}
+              <span>{DEVICE_DIMENSIONS[d].name}</span>
             </button>
           ))}
-        </aside>
-        <main className="flex flex-1 flex-col overflow-hidden bg-zinc-950">
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8">
-            <p className="text-xs text-zinc-500">Deterministic web harness — verify real behavior in apps/native-preview (Expo)</p>
-            <div className="rounded-xl bg-white p-12">{item && <Harness id={item.id} v={merged} />}</div>
+          <div className="h-4 w-px bg-zinc-800 mx-1" />
+          <button
+            onClick={() => setIsLandscape(!isLandscape)}
+            title="Rotate Orientation"
+            className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs ${
+              isLandscape ? "bg-zinc-800 text-sky-400" : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <RotateCw className="h-3.5 w-3.5" />
+            <span>{isLandscape ? "Landscape" : "Portrait"}</span>
+          </button>
+        </div>
+
+        {/* Right Action Bar */}
+        <div className="flex items-center gap-3">
+          {/* Target Switcher */}
+          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-xs">
+            <button
+              onClick={() => setTarget("nativewind")}
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                target === "nativewind" ? "bg-sky-500/20 text-sky-300 border border-sky-500/30" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              NativeWind v4
+            </button>
+            <button
+              onClick={() => setTarget("stylesheet")}
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                target === "stylesheet" ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              StyleSheet
+            </button>
           </div>
-          <div className="h-64 overflow-auto border-t border-zinc-800 p-4">
-            <p className="mb-1 text-xs text-zinc-500">{file?.path}</p>
-            <pre className="text-xs text-zinc-300"><code>{file?.content}</code></pre>
+
+          {/* Theme Preset Selector */}
+          <select
+            value={activeTheme}
+            onChange={(e) => setActiveTheme(e.target.value as ThemeKey)}
+            className="rounded-lg border border-zinc-800 bg-zinc-800 px-2.5 py-1 text-xs text-zinc-200 outline-none hover:border-zinc-700"
+          >
+            <option value="zinc">Theme: Zinc</option>
+            <option value="dark-slate">Theme: Dark Slate</option>
+            <option value="midnight">Theme: Midnight</option>
+          </select>
+
+          {/* Canvas Mode Toggle */}
+          <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 p-0.5">
+            <button
+              onClick={() => setCanvasMode("light")}
+              title="Light Canvas"
+              className={`p-1 rounded ${canvasMode === "light" ? "bg-zinc-800 text-amber-400" : "text-zinc-500"}`}
+            >
+              <Sun className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setCanvasMode("dark")}
+              title="Dark Canvas"
+              className={`p-1 rounded ${canvasMode === "dark" ? "bg-zinc-800 text-sky-400" : "text-zinc-500"}`}
+            >
+              <Moon className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setCanvasMode("dots")}
+              title="Dot Matrix Canvas"
+              className={`p-1 rounded ${canvasMode === "dots" ? "bg-zinc-800 text-emerald-400" : "text-zinc-500"}`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+            </button>
           </div>
-        </main>
-        <aside className="w-72 overflow-y-auto border-l border-zinc-800 bg-zinc-900 p-4">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">Properties</p>
-          <div className="space-y-4">
-            {item?.controls.map((c) => {
-              if (c.type === "color") return null;
-              const val = merged[c.propKey];
+
+          <a
+            href="http://localhost:3000"
+            target="_blank"
+            rel="noreferrer"
+            className="hidden md:flex items-center gap-1 rounded-lg border border-zinc-800 px-2.5 py-1 text-xs text-zinc-300 hover:bg-zinc-800"
+          >
+            <span>Docs</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+      </header>
+
+      {/* Main Workspace Layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Sidebar: Components Explorer */}
+        <aside className="w-64 shrink-0 flex flex-col border-r border-zinc-800 bg-zinc-900/60">
+          {/* Search Input */}
+          <div className="p-3 border-b border-zinc-800/80">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search catalog..."
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950/80 pl-8 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-zinc-700"
+              />
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1 mt-2">
+              {(["all", "component", "block", "hook"] as const).map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`rounded px-2 py-0.5 text-[10px] font-medium capitalize transition-colors ${
+                    categoryFilter === cat ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {cat === "all" ? "All" : cat + "s"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Component List */}
+          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 flex items-center justify-between">
+              <span>Components</span>
+              <span className="rounded bg-zinc-800 px-1 text-[9px] text-zinc-400">{filteredItems.length}</span>
+            </div>
+
+            {filteredItems.map((i) => {
+              const isSelected = i.id === id;
               return (
-                <div key={c.propKey} className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-400">{c.label}</label>
-                  {c.type === "select" && (
-                    <select value={String(val)} onChange={(e) => set(c.propKey, e.target.value)} className="rounded bg-zinc-800 px-2 py-1.5 text-sm">
-                      {c.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  )}
-                  {c.type === "boolean" && <input type="checkbox" checked={Boolean(val)} onChange={(e) => set(c.propKey, e.target.checked)} className="h-4 w-4" />}
-                  {c.type === "text" && <input value={String(val)} onChange={(e) => set(c.propKey, e.target.value)} className="rounded bg-zinc-800 px-2 py-1.5 text-sm" />}
-                  {c.type === "slider" && <input type="range" min={c.min} max={c.max} step={c.step} value={Number(val) || c.min} onChange={(e) => set(c.propKey, e.target.value)} />}
-                </div>
+                <button
+                  key={i.id}
+                  onClick={() => {
+                    setId(i.id);
+                    setValues({});
+                    logEvent("Select", `Inspecting ${i.name} (${i.id})`);
+                  }}
+                  className={`group flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-xs transition-all ${
+                    isSelected
+                      ? "bg-zinc-800 text-white font-medium shadow-sm ring-1 ring-zinc-700/60"
+                      : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        isSelected ? "bg-emerald-400" : "bg-zinc-600 group-hover:bg-zinc-400"
+                      }`}
+                    />
+                    <span className="truncate">{i.name}</span>
+                  </div>
+                  <span className="text-[10px] text-zinc-500 uppercase rounded bg-zinc-950/60 px-1 py-0.5 font-mono">
+                    {i.type === "block" ? "blk" : i.type === "hook" ? "hook" : "ui"}
+                  </span>
+                </button>
               );
             })}
           </div>
-          <div className="mt-6 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Usage</p>
-            <code className="block rounded bg-zinc-800 p-2 font-mono text-xs text-emerald-400">{usage}</code>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Install</p>
-            <code className="block rounded bg-zinc-800 p-2 font-mono text-xs text-sky-400">{generateInstallCommand(id)}</code>
-            <button onClick={() => navigator.clipboard.writeText(file?.content ?? "")} className="w-full rounded bg-zinc-800 py-1.5 text-xs hover:bg-zinc-700">Copy source</button>
-            <button onClick={() => navigator.clipboard.writeText(generateInstallCommand(id))} className="w-full rounded bg-zinc-800 py-1.5 text-xs hover:bg-zinc-700">Copy command</button>
+
+          {/* Left Footer Info */}
+          <div className="p-3 border-t border-zinc-800 text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Platform Target</span>
+            <span className="font-mono text-zinc-400">RN 0.76+ Expo</span>
           </div>
+        </aside>
+
+        {/* Center Mobile Canvas */}
+        <main
+          className={`flex-1 flex flex-col items-center justify-center relative overflow-hidden p-6 transition-colors duration-200 ${
+            canvasMode === "light"
+              ? "bg-zinc-100 bg-dot-grid-light"
+              : canvasMode === "dark"
+              ? "bg-zinc-950"
+              : "bg-zinc-950 bg-dot-grid"
+          }`}
+        >
+          {/* Floating Canvas Zoom Bar */}
+          <div className="absolute top-4 left-6 z-10 flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1 text-xs shadow-lg backdrop-blur">
+            <span className="px-2 text-zinc-400 text-[11px]">{item?.name}</span>
+            <div className="h-3 w-px bg-zinc-800" />
+            {[75, 100, 125].map((z) => (
+              <button
+                key={z}
+                onClick={() => setZoom(z)}
+                className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
+                  zoom === z ? "bg-zinc-800 text-sky-400" : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {z}%
+              </button>
+            ))}
+          </div>
+
+          {/* Device Mockup Frame */}
+          <div
+            style={{
+              width: `${deviceWidth}px`,
+              height: `${deviceHeight}px`,
+              transform: `scale(${zoom / 100})`,
+              transformOrigin: "center center",
+            }}
+            className="relative flex flex-col rounded-[44px] border-[10px] border-zinc-900 bg-white shadow-2xl shadow-black/80 ring-1 ring-zinc-800 transition-all duration-300 overflow-hidden"
+          >
+            {/* Mobile Status Bar */}
+            <div className="flex h-11 shrink-0 items-center justify-between px-6 bg-white text-zinc-900 select-none z-20">
+              <span className="text-xs font-semibold tracking-tight">9:41</span>
+              {/* Dynamic Island Pill */}
+              <div className="flex h-6 w-24 items-center justify-center rounded-full bg-black">
+                <div className="h-2 w-2 rounded-full bg-zinc-900 ring-1 ring-zinc-800" />
+              </div>
+              <div className="flex items-center gap-1.5 text-zinc-900">
+                <span className="text-[10px] font-semibold">5G</span>
+                <div className="h-2.5 w-4 rounded-sm border border-zinc-900 p-0.5">
+                  <div className="h-full w-2.5 rounded-2xs bg-zinc-900" />
+                </div>
+              </div>
+            </div>
+
+            {/* Simulated App Viewport */}
+            <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col items-center justify-center bg-white text-zinc-900">
+              {renderHarness()}
+            </div>
+
+            {/* Mobile Home Indicator */}
+            <div className="flex h-6 shrink-0 items-center justify-center bg-white z-20">
+              <div className="h-1 w-32 rounded-full bg-zinc-300" />
+            </div>
+          </div>
+
+          {/* Canvas Bottom Feedback Pill */}
+          <div className="absolute bottom-4 flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400 shadow-md backdrop-blur">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Interactive Simulated Harness</span>
+            <span className="text-zinc-600">•</span>
+            <span className="text-zinc-500">Dual NativeWind v4 & StyleSheet ready</span>
+          </div>
+        </main>
+
+        {/* Right Sidebar: Props Inspector, Code, Usage, and Events */}
+        <aside className="w-80 shrink-0 flex flex-col border-l border-zinc-800 bg-zinc-900/95">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-zinc-800 bg-zinc-900 p-1 text-xs">
+            <button
+              onClick={() => setActiveTab("props")}
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 font-medium transition-colors ${
+                activeTab === "props" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <Sliders className="h-3.5 w-3.5" />
+              <span>Props</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("code")}
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 font-medium transition-colors ${
+                activeTab === "code" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <Code2 className="h-3.5 w-3.5" />
+              <span>Code</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("usage")}
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 font-medium transition-colors ${
+                activeTab === "usage" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <Terminal className="h-3.5 w-3.5" />
+              <span>Usage</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("events")}
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 font-medium transition-colors relative ${
+                activeTab === "events" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <Activity className="h-3.5 w-3.5" />
+              <span>Log</span>
+              {events.length > 0 && (
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              )}
+            </button>
+          </div>
+
+          {/* TAB 1: PROPERTIES INSPECTOR */}
+          {activeTab === "props" && (
+            <div className="flex-1 overflow-y-auto p-4 space-y-5">
+              {/* Presets Bar */}
+              {fixtures.length > 0 && (
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Quick Presets</span>
+                    <button
+                      onClick={() => {
+                        setValues({});
+                        logEvent("Reset", "Props reset to defaults");
+                      }}
+                      className="text-[10px] text-zinc-400 hover:text-zinc-200"
+                    >
+                      Reset Defaults
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {fixtures.map((f) => (
+                      <button
+                        key={f.name}
+                        onClick={() => {
+                          setValues(f.props);
+                          logEvent("Preset", `Applied preset: "${f.name}"`);
+                        }}
+                        className="rounded-md border border-zinc-800 bg-zinc-950 px-2 py-1 text-[11px] text-zinc-300 hover:border-zinc-700 hover:text-white transition-colors"
+                      >
+                        {f.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Editable Controls */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Properties</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">{item?.id}.schema</span>
+                </div>
+
+                {item?.controls.map((c) => {
+                  if (c.type === "color") return null;
+                  const val = merged[c.propKey];
+
+                  return (
+                    <div key={c.propKey} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-medium text-zinc-300">{c.label}</label>
+                        <span className="text-[10px] font-mono text-zinc-500">{c.propKey}</span>
+                      </div>
+
+                      {c.type === "select" && (
+                        <div className="relative">
+                          <select
+                            value={String(val)}
+                            onChange={(e) => {
+                              set(c.propKey, e.target.value);
+                              logEvent("PropChange", `${c.propKey} = "${e.target.value}"`);
+                            }}
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-200 outline-none hover:border-zinc-700 focus:border-zinc-600 appearance-none"
+                          >
+                            {c.options.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.label}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronRight className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 rotate-90 text-zinc-500" />
+                        </div>
+                      )}
+
+                      {c.type === "boolean" && (
+                        <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 p-2">
+                          <span className="text-xs text-zinc-400">{Boolean(val) ? "Enabled" : "Disabled"}</span>
+                          <input
+                            type="checkbox"
+                            checked={Boolean(val)}
+                            onChange={(e) => {
+                              set(c.propKey, e.target.checked);
+                              logEvent("PropChange", `${c.propKey} = ${e.target.checked}`);
+                            }}
+                            className="h-4 w-4 rounded border-zinc-700 bg-zinc-800 text-sky-500 focus:ring-0 focus:ring-offset-0"
+                          />
+                        </div>
+                      )}
+
+                      {c.type === "text" && (
+                        <input
+                          type="text"
+                          value={String(val ?? "")}
+                          placeholder={c.placeholder}
+                          onChange={(e) => {
+                            set(c.propKey, e.target.value);
+                            logEvent("PropChange", `${c.propKey} = "${e.target.value}"`);
+                          }}
+                          className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none focus:border-zinc-600"
+                        />
+                      )}
+
+                      {c.type === "slider" && (
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] text-zinc-400">
+                            <span>{c.min}</span>
+                            <span className="font-mono text-sky-400">{Number(val) || c.min}</span>
+                            <span>{c.max}</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={c.min}
+                            max={c.max}
+                            step={c.step}
+                            value={Number(val) || c.min}
+                            onChange={(e) => {
+                              set(c.propKey, Number(e.target.value));
+                              logEvent("PropChange", `${c.propKey} = ${e.target.value}`);
+                            }}
+                            className="w-full accent-sky-500"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Dynamic Usage Preview */}
+              <div className="pt-2 border-t border-zinc-800 space-y-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Live JSX</span>
+                <code className="block rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 font-mono text-xs text-emerald-400 break-all leading-relaxed">
+                  {usage}
+                </code>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: CODE SOURCE */}
+          {activeTab === "code" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 bg-zinc-950/50">
+                <span className="text-xs font-mono text-zinc-400 truncate">{file?.path}</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => copyToClipboard(file?.content ?? "", "source")}
+                    className="flex items-center gap-1 rounded bg-zinc-800 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-700"
+                  >
+                    {copiedType === "source" ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                    <span>Copy source</span>
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto p-4 bg-zinc-950">
+                <pre className="font-mono text-xs leading-relaxed text-zinc-300">
+                  <code>{file?.content}</code>
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: USAGE & CLI COMMANDS */}
+          {activeTab === "usage" && (
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">JSX Invocation</span>
+                <div className="mt-1.5 relative">
+                  <code className="block rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-xs text-emerald-400 break-all leading-relaxed">
+                    {usage}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(usage, "usage")}
+                    className="absolute right-2 top-2 rounded bg-zinc-800 p-1 text-zinc-400 hover:text-white"
+                  >
+                    {copiedType === "usage" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Install via CLI</span>
+                <div className="mt-1.5 relative">
+                  <code className="block rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-xs text-sky-400 break-all">
+                    {installCmd}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(installCmd, "command")}
+                    className="absolute right-2 top-2 rounded bg-zinc-800 p-1 text-zinc-400 hover:text-white"
+                  >
+                    {copiedType === "command" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 space-y-2">
+                <span className="text-xs font-semibold text-zinc-300">Source-First Ownership</span>
+                <p className="text-xs text-zinc-500 leading-relaxed">
+                  Installing places the raw TSX file directly into your codebase under <code>components/ui/</code>. You own the code without external package bloat.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <button
+                  onClick={() => copyToClipboard(file?.content ?? "", "source")}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-zinc-800 py-2 text-xs font-medium text-zinc-200 hover:bg-zinc-700"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  <span>Copy Source Code</span>
+                </button>
+                <button
+                  onClick={() => copyToClipboard(installCmd, "command")}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-900"
+                >
+                  <Terminal className="h-3.5 w-3.5" />
+                  <span>Copy CLI Command</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: EVENT CONSOLE */}
+          {activeTab === "events" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 bg-zinc-950/50">
+                <span className="text-xs text-zinc-400">Interaction Stream ({events.length})</span>
+                {events.length > 0 && (
+                  <button
+                    onClick={() => setEvents([])}
+                    className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                    <span>Clear</span>
+                  </button>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 font-mono text-xs">
+                {events.length === 0 ? (
+                  <div className="py-12 text-center text-zinc-600">
+                    <Activity className="h-6 w-6 mx-auto mb-2 opacity-50" />
+                    <p>No interactions recorded yet.</p>
+                    <p className="text-[11px] text-zinc-700 mt-1">Interact with the component in the device canvas to log events.</p>
+                  </div>
+                ) : (
+                  events.map((e) => (
+                    <div key={e.id} className="rounded border border-zinc-800/80 bg-zinc-950 p-2 space-y-1">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="text-emerald-400 font-semibold">{e.event}</span>
+                        <span className="text-zinc-600">{e.time}</span>
+                      </div>
+                      <p className="text-zinc-300 text-[11px] break-all">{e.detail}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </aside>
       </div>
     </div>
   );
 }
-
