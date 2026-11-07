@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
 import { getFixtures } from "@nativra/preview-runtime";
+import { PhoneMockup } from "../components/PhoneMockup";
 import {
   Smartphone,
   Tablet,
@@ -127,10 +128,6 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       return matchesSearch && matchesCategory;
     });
   }, [items, searchQuery, categoryFilter]);
-
-  const currentDeviceDim = DEVICE_DIMENSIONS[device] ?? DEVICE_DIMENSIONS.iphone;
-  const deviceWidth = isLandscape ? currentDeviceDim.height : currentDeviceDim.width;
-  const deviceHeight = isLandscape ? currentDeviceDim.width : currentDeviceDim.height;
 
   // Render Component in simulated mobile screen
   function renderHarness() {
@@ -1137,48 +1134,25 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             ))}
           </div>
 
-          {/* Device Mockup Frame */}
-          <div
-            style={{
-              width: `${deviceWidth}px`,
-              height: `${deviceHeight}px`,
-              transform: `scale(${zoom / 100})`,
-              transformOrigin: "center center",
-            }}
-            className="relative flex flex-col rounded-[44px] border-[10px] border-zinc-900 bg-white shadow-2xl shadow-black/80 ring-1 ring-zinc-800 transition-all duration-300 overflow-hidden"
+          {/* Real Physical Phone Hardware Mockup Frame */}
+          <PhoneMockup
+            device={device}
+            isLandscape={isLandscape}
+            zoom={zoom}
+            canvasMode={canvasMode}
+            appName={item?.name ?? "Nativra App"}
+            themePrimary={currentTheme.primary}
+            onEvent={logEvent}
           >
-            {/* Mobile Status Bar */}
-            <div className="flex h-11 shrink-0 items-center justify-between px-6 bg-white text-zinc-900 select-none z-20">
-              <span className="text-xs font-semibold tracking-tight">9:41</span>
-              {/* Dynamic Island Pill */}
-              <div className="flex h-6 w-24 items-center justify-center rounded-full bg-black">
-                <div className="h-2 w-2 rounded-full bg-zinc-900 ring-1 ring-zinc-800" />
-              </div>
-              <div className="flex items-center gap-1.5 text-zinc-900">
-                <span className="text-[10px] font-semibold">5G</span>
-                <div className="h-2.5 w-4 rounded-sm border border-zinc-900 p-0.5">
-                  <div className="h-full w-2.5 rounded-2xs bg-zinc-900" />
-                </div>
-              </div>
-            </div>
-
-            {/* Simulated App Viewport */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col items-center justify-center bg-white text-zinc-900">
-              {renderHarness()}
-            </div>
-
-            {/* Mobile Home Indicator */}
-            <div className="flex h-6 shrink-0 items-center justify-center bg-white z-20">
-              <div className="h-1 w-32 rounded-full bg-zinc-300" />
-            </div>
-          </div>
+            {renderHarness()}
+          </PhoneMockup>
 
           {/* Canvas Bottom Feedback Pill */}
           <div className="absolute bottom-4 flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400 shadow-md backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Interactive Simulated Harness</span>
+            <span>Real Phone Hardware Harness</span>
             <span className="text-zinc-600">•</span>
-            <span className="text-zinc-500">Dual NativeWind v4 & StyleSheet ready</span>
+            <span className="text-zinc-500">Interactive Dynamic Island, Side Buttons & Soft Keyboard</span>
           </div>
         </main>
 
