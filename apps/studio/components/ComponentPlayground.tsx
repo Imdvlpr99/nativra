@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Play,
   Copy,
@@ -26,6 +26,17 @@ export type ComponentState =
 
 export type PlaygroundComponent = 'button' | 'input' | 'badge' | 'card' | 'switch' | 'avatar';
 
+const STATES: { id: ComponentState; label: string; desc: string }[] = [
+  { id: 'default', label: 'Default', desc: 'Standard interactive rest state' },
+  { id: 'pressed', label: 'Pressed / Active', desc: 'Active press down visual feedback' },
+  { id: 'disabled', label: 'Disabled', desc: 'Non-interactive diminished state' },
+  { id: 'loading', label: 'Loading', desc: 'In-progress spinner indicator' },
+  { id: 'focused', label: 'Focused', desc: 'Accessibility focus ring or cursor active' },
+  { id: 'selected', label: 'Selected', desc: 'Checked or active item highlight' },
+  { id: 'error', label: 'Error', desc: 'Form validation failure / alert state' },
+  { id: 'empty', label: 'Empty', desc: 'Zero data / placeholder blank state' },
+];
+
 export function ComponentPlayground({
   target = 'nativewind',
 }: {
@@ -37,19 +48,8 @@ export function ComponentPlayground({
   const [isDark, setIsDark] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const STATES: { id: ComponentState; label: string; desc: string }[] = [
-    { id: 'default', label: 'Default', desc: 'Standard interactive rest state' },
-    { id: 'pressed', label: 'Pressed / Active', desc: 'Active press down visual feedback' },
-    { id: 'disabled', label: 'Disabled', desc: 'Non-interactive diminished state' },
-    { id: 'loading', label: 'Loading', desc: 'In-progress spinner indicator' },
-    { id: 'focused', label: 'Focused', desc: 'Accessibility focus ring or cursor active' },
-    { id: 'selected', label: 'Selected', desc: 'Checked or active item highlight' },
-    { id: 'error', label: 'Error', desc: 'Form validation failure / alert state' },
-    { id: 'empty', label: 'Empty', desc: 'Zero data / placeholder blank state' },
-  ];
-
   // Generate code snippet for active state
-  const getCodeSnippet = () => {
+  const codeSnippet = useMemo(() => {
     const isNW = target === 'nativewind';
     if (component === 'button') {
       if (isNW) {
@@ -96,13 +96,13 @@ export function ComponentPlayground({
       }
     }
     return `// <${component.toUpperCase()} state="${activeState}" target="${target}" />`;
-  };
+  }, [component, activeState, target]);
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(getCodeSnippet());
+  const copyCode = useCallback(() => {
+    navigator.clipboard.writeText(codeSnippet);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [codeSnippet]);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
@@ -393,7 +393,7 @@ export function ComponentPlayground({
             </button>
           </div>
           <pre className="p-4 text-xs font-mono text-zinc-300 overflow-x-auto flex-1 bg-zinc-950/70">
-            <code>{getCodeSnippet()}</code>
+            <code>{codeSnippet}</code>
           </pre>
         </footer>
       </main>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Search,
   Copy,
@@ -117,11 +117,11 @@ export function IconExplorer() {
     );
   }, [search]);
 
-  const copyToClipboard = (text: string, type: string) => {
+  const copyToClipboard = useCallback((text: string, type: string) => {
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2000);
-  };
+  }, []);
 
   const SelectedIconComp = selectedIcon.icon;
 

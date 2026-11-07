@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Layers,
   Plus,
@@ -283,7 +283,7 @@ export function ScreenBuilder({
   };
 
   // Generate complete React Native Screen TSX
-  const generateScreenCode = () => {
+  const screenCode = useMemo(() => {
     const isNW = target === 'nativewind';
 
     if (isNW) {
@@ -488,13 +488,13 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
 });`;
-  };
+  }, [nodes, target]);
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(generateScreenCode());
+  const copyCode = useCallback(() => {
+    navigator.clipboard.writeText(screenCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [screenCode]);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
               </button>
             </div>
             <pre className="flex-1 overflow-auto p-4 text-xs font-mono text-zinc-300 leading-relaxed bg-zinc-950/60">
-              <code>{generateScreenCode()}</code>
+              <code>{screenCode}</code>
             </pre>
           </div>
         )}

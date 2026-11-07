@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   ShieldCheck,
   AlertTriangle,
@@ -65,27 +65,30 @@ const DEFAULT_ISSUES: A11yIssue[] = [
   },
 ];
 
+const CRITICAL_COUNT = DEFAULT_ISSUES.filter((i) => i.severity === 'critical').length;
+const WARNING_COUNT = DEFAULT_ISSUES.filter((i) => i.severity === 'warning').length;
+const INFO_COUNT = DEFAULT_ISSUES.filter((i) => i.severity === 'info').length;
+
 export function AccessibilityInspector() {
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'info'>('all');
   const [selectedIssueId, setSelectedIssueId] = useState<string>(DEFAULT_ISSUES[0]?.id ?? 'a11y-1');
   const [copied, setCopied] = useState(false);
 
-  const filteredIssues = DEFAULT_ISSUES.filter(
-    (issue) => filter === 'all' || issue.severity === filter
-  );
+  const filteredIssues = useMemo(() => {
+    return DEFAULT_ISSUES.filter(
+      (issue) => filter === 'all' || issue.severity === filter
+    );
+  }, [filter]);
 
-  const selectedIssue =
-    DEFAULT_ISSUES.find((i) => i.id === selectedIssueId) ?? DEFAULT_ISSUES[0]!;
+  const selectedIssue = useMemo(() => {
+    return DEFAULT_ISSUES.find((i) => i.id === selectedIssueId) ?? DEFAULT_ISSUES[0]!;
+  }, [selectedIssueId]);
 
-  const copySnippet = (code: string) => {
+  const copySnippet = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const criticalCount = DEFAULT_ISSUES.filter((i) => i.severity === 'critical').length;
-  const warningCount = DEFAULT_ISSUES.filter((i) => i.severity === 'warning').length;
-  const infoCount = DEFAULT_ISSUES.filter((i) => i.severity === 'info').length;
+  }, []);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
@@ -113,7 +116,7 @@ export function AccessibilityInspector() {
                   : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'
               }`}
             >
-              <div className="text-base font-bold text-red-400">{criticalCount}</div>
+              <div className="text-base font-bold text-red-400">{CRITICAL_COUNT}</div>
               <div className="text-[10px] text-zinc-400">Critical</div>
             </button>
             <button
@@ -124,7 +127,7 @@ export function AccessibilityInspector() {
                   : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'
               }`}
             >
-              <div className="text-base font-bold text-amber-400">{warningCount}</div>
+              <div className="text-base font-bold text-amber-400">{WARNING_COUNT}</div>
               <div className="text-[10px] text-zinc-400">Warnings</div>
             </button>
             <button
@@ -135,7 +138,7 @@ export function AccessibilityInspector() {
                   : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'
               }`}
             >
-              <div className="text-base font-bold text-sky-400">{infoCount}</div>
+              <div className="text-base font-bold text-sky-400">{INFO_COUNT}</div>
               <div className="text-[10px] text-zinc-400">Notices</div>
             </button>
           </div>

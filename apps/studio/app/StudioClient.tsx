@@ -1,18 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
 import { getFixtures } from "@nativra/preview-runtime";
 import { PreviewCanvas } from "../components/PreviewCanvas";
-import { ScreenBuilder } from "../components/ScreenBuilder";
-import { NavigationGenerator } from "../components/NavigationGenerator";
-import { ThemeStudio } from "../components/ThemeStudio";
-import { IconExplorer } from "../components/IconExplorer";
-import { TemplatesExplorer } from "../components/TemplatesExplorer";
-import { AccessibilityInspector } from "../components/AccessibilityInspector";
-import { ComponentPlayground } from "../components/ComponentPlayground";
-import { DeveloperTooling } from "../components/DeveloperTooling";
+
+function WorkbenchLoader({ name }: { name: string }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-8 text-zinc-500 bg-zinc-950 font-mono text-xs">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="h-2 w-2 rounded-full bg-sky-400 animate-ping" />
+        <span className="text-zinc-300 font-semibold">Loading {name}...</span>
+      </div>
+      <p className="text-[11px] text-zinc-600">Initializing workbench modules</p>
+    </div>
+  );
+}
+
+const ComponentPlayground = dynamic(
+  () => import("../components/ComponentPlayground").then((mod) => mod.ComponentPlayground),
+  { loading: () => <WorkbenchLoader name="Component Playground" /> }
+);
+const ScreenBuilder = dynamic(
+  () => import("../components/ScreenBuilder").then((mod) => mod.ScreenBuilder),
+  { loading: () => <WorkbenchLoader name="Screen Builder" /> }
+);
+const NavigationGenerator = dynamic(
+  () => import("../components/NavigationGenerator").then((mod) => mod.NavigationGenerator),
+  { loading: () => <WorkbenchLoader name="Navigation Generator" /> }
+);
+const ThemeStudio = dynamic(
+  () => import("../components/ThemeStudio").then((mod) => mod.ThemeStudio),
+  { loading: () => <WorkbenchLoader name="Theme Studio" /> }
+);
+const IconExplorer = dynamic(
+  () => import("../components/IconExplorer").then((mod) => mod.IconExplorer),
+  { loading: () => <WorkbenchLoader name="Icon Explorer" /> }
+);
+const TemplatesExplorer = dynamic(
+  () => import("../components/TemplatesExplorer").then((mod) => mod.TemplatesExplorer),
+  { loading: () => <WorkbenchLoader name="Starter Templates" /> }
+);
+const AccessibilityInspector = dynamic(
+  () => import("../components/AccessibilityInspector").then((mod) => mod.AccessibilityInspector),
+  { loading: () => <WorkbenchLoader name="Accessibility Inspector" /> }
+);
+const DeveloperTooling = dynamic(
+  () => import("../components/DeveloperTooling").then((mod) => mod.DeveloperTooling),
+  { loading: () => <WorkbenchLoader name="Developer Tooling" /> }
+);
 import {
   Smartphone,
   Tablet,
@@ -99,9 +137,9 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [interactiveInputText, setInteractiveInputText] = useState("");
   const [disclosureOpen, setDisclosureOpen] = useState(false);
 
-  const item = items.find((i) => i.id === id) ?? items[0];
+  const item = useMemo(() => items.find((i) => i.id === id) ?? items[0], [items, id]);
 
-  const logEvent = (event: string, detail: string) => {
+  const logEvent = useCallback((event: string, detail: string) => {
     const entry: EventLogEntry = {
       id: Math.random().toString(36).substring(2, 9),
       time: new Date().toLocaleTimeString(),
@@ -109,14 +147,14 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       detail,
     };
     setEvents((prev) => [entry, ...prev.slice(0, 49)]);
-  };
+  }, []);
 
-  const copyToClipboard = (text: string, type: string) => {
+  const copyToClipboard = useCallback((text: string, type: string) => {
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     logEvent("Clipboard", `Copied ${type} to clipboard`);
     setTimeout(() => setCopiedType(null), 2000);
-  };
+  }, [logEvent]);
 
   const currentTheme = THEME_PALETTES[activeTheme] ?? THEME_PALETTES.zinc;
 
@@ -129,12 +167,12 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
     return out;
   }, [item, values]);
 
-  const file = item?.files.find((f) => !f.target || f.target === target) ?? item?.files[0];
-  const set = (k: string, val: string | boolean | number) => setValues((p) => ({ ...p, [k]: val }));
+  const file = useMemo(() => item?.files.find((f) => !f.target || f.target === target) ?? item?.files[0], [item, target]);
+  const set = useCallback((k: string, val: string | boolean | number) => setValues((p) => ({ ...p, [k]: val })), []);
 
-  const usage = item ? generateUsage(item.id, merged) : "";
-  const installCmd = item ? generateInstallCommand(item.id) : "";
-  const fixtures = item ? getFixtures(item.id) : [];
+  const usage = useMemo(() => item ? generateUsage(item.id, merged) : "", [item, merged]);
+  const installCmd = useMemo(() => item ? generateInstallCommand(item.id) : "", [item]);
+  const fixtures = useMemo(() => item ? getFixtures(item.id) : [], [item]);
 
   const filteredItems = useMemo(() => {
     return items.filter((i) => {
@@ -1231,7 +1269,6 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             zoom={zoom}
             canvasMode={canvasMode}
             appName={item?.name ?? "Component Preview"}
-            themePrimary={currentTheme.primary}
             onEvent={logEvent}
             onRotate={() => setIsLandscape(!isLandscape)}
           >

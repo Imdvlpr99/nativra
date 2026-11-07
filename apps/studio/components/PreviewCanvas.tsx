@@ -10,10 +10,8 @@ export interface PreviewCanvasProps {
   children: React.ReactNode;
   canvasMode?: 'light' | 'dark' | 'dots';
   appName?: string;
-  themePrimary?: string;
   onEvent?: (event: string, detail: string) => void;
   onRotate?: () => void;
-  onZoomChange?: (zoom: number) => void;
 }
 
 const VIEWPORT_SPECS = {

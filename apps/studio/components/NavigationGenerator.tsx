@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Compass,
   Plus,
@@ -54,7 +54,7 @@ export function NavigationGenerator() {
   };
 
   // Generate React Navigation Code
-  const generateNavigationCode = () => {
+  const navigationCode = useMemo(() => {
     if (navType === 'bottom-tabs') {
       return `import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
@@ -198,11 +198,11 @@ ${routes
       </Drawer.Navigator>
     </NavigationContainer>
   );
-}`;
-  };
+}`
+  }, [navType, routes, initialRoute]);
 
   // Generate TypeScript Parameter List
-  const generateTypesCode = () => {
+  const typesCode = useMemo(() => {
     const typeName =
       navType === 'bottom-tabs'
         ? 'RootTabParamList'
@@ -219,13 +219,13 @@ ${routes.map((r) => `  ${r.name}: undefined;`).join('\n')}
 
 export type ScreenProps<T extends keyof ${typeName}> = NativeStackScreenProps<${typeName}, T>;
 `;
-  };
+  }, [navType, routes]);
 
-  const copyCode = (code: string) => {
+  const copyCode = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, []);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
@@ -455,7 +455,7 @@ export type ScreenProps<T extends keyof ${typeName}> = NativeStackScreenProps<${
               <button
                 type="button"
                 onClick={() =>
-                  copyCode(activeTab === 'code' ? generateNavigationCode() : generateTypesCode())
+                  copyCode(activeTab === 'code' ? navigationCode : typesCode)
                 }
                 className="flex items-center gap-1.5 rounded-lg bg-zinc-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-zinc-700 transition-colors"
               >
@@ -464,7 +464,7 @@ export type ScreenProps<T extends keyof ${typeName}> = NativeStackScreenProps<${
               </button>
             </div>
             <pre className="flex-1 overflow-auto p-4 text-xs font-mono text-zinc-300 leading-relaxed bg-zinc-950/60">
-              <code>{activeTab === 'code' ? generateNavigationCode() : generateTypesCode()}</code>
+              <code>{activeTab === 'code' ? navigationCode : typesCode}</code>
             </pre>
           </div>
         )}

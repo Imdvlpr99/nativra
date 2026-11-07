@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   Sparkles,
@@ -360,19 +360,23 @@ export function TemplatesExplorer({
   const [selectedId, setSelectedId] = useState(DEFAULT_TEMPLATE.id);
   const [copied, setCopied] = useState(false);
 
-  const selectedTemplate = TEMPLATES.find((t) => t.id === selectedId) ?? DEFAULT_TEMPLATE;
+  const selectedTemplate = useMemo(() => {
+    return TEMPLATES.find((t) => t.id === selectedId) ?? DEFAULT_TEMPLATE;
+  }, [selectedId]);
+
   const IconComp = selectedTemplate.icon;
 
-  const currentCode =
-    target === 'nativewind'
+  const currentCode = useMemo(() => {
+    return target === 'nativewind'
       ? selectedTemplate.nativeWindCode
       : selectedTemplate.styleSheetCode;
+  }, [selectedTemplate, target]);
 
-  const copyCode = () => {
+  const copyCode = useCallback(() => {
     navigator.clipboard.writeText(currentCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [currentCode]);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">

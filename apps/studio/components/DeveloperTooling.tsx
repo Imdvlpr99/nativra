@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Wrench,
   Package,
@@ -14,63 +14,65 @@ import {
 import { defaultTheme } from '@nativra/theme-engine';
 import { exportAIContext } from '@nativra/codegen';
 
+const DIAGNOSTIC_CHECKS = [
+  {
+    name: 'Nativra Project Configuration',
+    status: 'pass',
+    detail: 'nativra.json located with stylingTarget="nativewind"',
+  },
+  {
+    name: 'Expo SDK Compatibility',
+    status: 'pass',
+    detail: 'Target SDK 52 detected. Supports react-native 0.76.x with New Architecture',
+  },
+  {
+    name: 'NativeWind & Tailwind Configuration',
+    status: 'pass',
+    detail: 'tailwind.config.js detected with nativra content glob & presets',
+  },
+  {
+    name: 'React Native Peer Dependencies',
+    status: 'pass',
+    detail: 'react-native-reanimated, react-native-safe-area-context, lucide-react-native active',
+  },
+  {
+    name: 'Deterministic Source Integrity',
+    status: 'pass',
+    detail: 'All 22 registry items hashes verified against registry.json manifest',
+  },
+];
+
+const DEPENDENCY_ITEMS = [
+  { name: 'react-native', installed: '0.76.5', required: '>=0.74.0', status: 'pass' },
+  { name: 'expo', installed: '52.0.0', required: '>=51.0.0', status: 'pass' },
+  { name: 'react', installed: '18.3.1', required: '>=18.2.0', status: 'pass' },
+  { name: 'nativewind', installed: '4.1.23', required: '^4.0.1', status: 'pass' },
+  { name: 'lucide-react-native', installed: '0.460.0', required: '>=0.400.0', status: 'pass' },
+  { name: 'typescript', installed: '5.9.3', required: '>=5.0.0', status: 'pass' },
+];
+
 export function DeveloperTooling() {
   const [activeTab, setActiveTab] = useState<'diagnostics' | 'dependencies' | 'tokens' | 'ai-context'>('diagnostics');
   const [copied, setCopied] = useState(false);
 
-  const copyText = (text: string) => {
+  const copyText = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, []);
 
-  const aiContextOutput = exportAIContext({
-    framework: 'expo-sdk-52',
-    stylingSystem: 'nativewind',
-    installedComponents: ['button', 'input', 'badge', 'card', 'avatar', 'separator', 'switch', 'skeleton'],
-    themeTokens: {
-      preset: 'zinc',
-      primary: defaultTheme.light.primary,
-      background: defaultTheme.dark.background,
-    },
-  });
-
-  const DIAGNOSTIC_CHECKS = [
-    {
-      name: 'Nativra Project Configuration',
-      status: 'pass',
-      detail: 'nativra.json located with stylingTarget="nativewind"',
-    },
-    {
-      name: 'Expo SDK Compatibility',
-      status: 'pass',
-      detail: 'Target SDK 52 detected. Supports react-native 0.76.x with New Architecture',
-    },
-    {
-      name: 'NativeWind & Tailwind Configuration',
-      status: 'pass',
-      detail: 'tailwind.config.js detected with nativra content glob & presets',
-    },
-    {
-      name: 'React Native Peer Dependencies',
-      status: 'pass',
-      detail: 'react-native-reanimated, react-native-safe-area-context, lucide-react-native active',
-    },
-    {
-      name: 'Deterministic Source Integrity',
-      status: 'pass',
-      detail: 'All 22 registry items hashes verified against registry.json manifest',
-    },
-  ];
-
-  const DEPENDENCY_ITEMS = [
-    { name: 'react-native', installed: '0.76.5', required: '>=0.74.0', status: 'pass' },
-    { name: 'expo', installed: '52.0.0', required: '>=51.0.0', status: 'pass' },
-    { name: 'react', installed: '18.3.1', required: '>=18.2.0', status: 'pass' },
-    { name: 'nativewind', installed: '4.1.23', required: '^4.0.1', status: 'pass' },
-    { name: 'lucide-react-native', installed: '0.460.0', required: '>=0.400.0', status: 'pass' },
-    { name: 'typescript', installed: '5.9.3', required: '>=5.0.0', status: 'pass' },
-  ];
+  const aiContextOutput = useMemo(() => {
+    return exportAIContext({
+      framework: 'expo-sdk-52',
+      stylingSystem: 'nativewind',
+      installedComponents: ['button', 'input', 'badge', 'card', 'avatar', 'separator', 'switch', 'skeleton'],
+      themeTokens: {
+        preset: 'zinc',
+        primary: defaultTheme.light.primary,
+        background: defaultTheme.dark.background,
+      },
+    });
+  }, []);
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
