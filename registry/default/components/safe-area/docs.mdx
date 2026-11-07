@@ -1,0 +1,18 @@
+# Safe Area
+
+A container component that applies safe area insets to avoid physical hardware cutouts (notches, dynamic islands) and system navigation bars.
+
+## Usage
+
+```tsx
+import { SafeArea } from "@/components/ui/safe-area";
+import { Text } from "react-native";
+
+export default function Example() {
+  return (
+    <SafeArea edges={["top", "bottom"]}>
+      <Text>Screen content padded inside safe bounds</Text>
+    </SafeArea>
+  );
+}
+```

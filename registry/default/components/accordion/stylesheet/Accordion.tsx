@@ -80,3 +80,4 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 4 },
   content: { fontSize: 14, lineHeight: 20 },
 });
+

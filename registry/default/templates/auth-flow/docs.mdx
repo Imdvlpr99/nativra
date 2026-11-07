@@ -1,0 +1,18 @@
+# Auth Flow Template
+
+A full multi-step mobile authentication flow supporting Login, Registration, Password Reset, and OTP Code verification.
+
+## Usage
+
+```tsx
+import { AuthFlow } from "@/components/templates/auth-flow";
+
+export default function AuthScreen() {
+  return (
+    <AuthFlow
+      onSuccess={(user) => console.log("Authenticated", user)}
+      appName="Nativra App"
+    />
+  );
+}
+```

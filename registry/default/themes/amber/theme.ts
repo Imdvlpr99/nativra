@@ -22,3 +22,4 @@ export const amber = {
 } as const;
 
 export type AmberTheme = typeof amber;
+

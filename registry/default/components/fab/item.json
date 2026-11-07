@@ -1,0 +1,30 @@
+{
+  "id": "fab",
+  "name": "Floating Action Button",
+  "description": "An elevated circular action button anchored above screen content.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Fab.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Fab.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["fab", "floating", "action", "button", "elevated"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

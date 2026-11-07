@@ -1,0 +1,18 @@
+# Onboarding Flow Template
+
+A multi-step interactive intro walkthrough with illustration slots, slide pagination, and quick skip.
+
+## Usage
+
+```tsx
+import { OnboardingFlow } from "@/components/templates/onboarding-flow";
+
+export default function OnboardingScreen() {
+  return (
+    <OnboardingFlow
+      onComplete={() => console.log("Onboarding completed")}
+      onSkip={() => console.log("Skipped")}
+    />
+  );
+}
+```

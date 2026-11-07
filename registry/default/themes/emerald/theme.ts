@@ -22,3 +22,4 @@ export const emerald = {
 } as const;
 
 export type EmeraldTheme = typeof emerald;
+

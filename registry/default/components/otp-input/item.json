@@ -1,0 +1,30 @@
+{
+  "id": "otp-input",
+  "name": "OTP Input",
+  "description": "A discrete multi-cell numeric pin input for one-time passwords and verification codes.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/OtpInput.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/OtpInput.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["input", "otp", "pin", "verification", "code", "security"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

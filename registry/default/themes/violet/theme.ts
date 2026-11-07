@@ -22,3 +22,4 @@ export const violet = {
 } as const;
 
 export type VioletTheme = typeof violet;
+

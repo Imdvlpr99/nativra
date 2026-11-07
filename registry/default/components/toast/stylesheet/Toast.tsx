@@ -70,3 +70,4 @@ const styles = StyleSheet.create({
   closeBtn: { width: 24, height: 24, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   closeText: { fontSize: 11, fontWeight: "700", color: "#d4d4d8" },
 });
+

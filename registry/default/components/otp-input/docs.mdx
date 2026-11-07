@@ -1,0 +1,22 @@
+# OTP Input
+
+A mobile-friendly segmented pin input for 4 to 6-digit verification codes.
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { OtpInput } from "@/components/ui/otp-input";
+
+export default function Example() {
+  const [code, setCode] = useState("");
+
+  return (
+    <OtpInput
+      length={6}
+      value={code}
+      onChangeText={setCode}
+    />
+  );
+}
+```

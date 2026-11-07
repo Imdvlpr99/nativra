@@ -27,6 +27,18 @@ const IconExplorer = dynamic(
   () => import("../components/IconExplorer").then((mod) => mod.IconExplorer),
   { loading: () => <WorkbenchLoader name="Icon Explorer" /> }
 );
+const ScreenBuilder = dynamic(
+  () => import("../components/ScreenBuilder").then((mod) => mod.ScreenBuilder),
+  { loading: () => <WorkbenchLoader name="Screen Builder" /> }
+);
+const NavigationBuilder = dynamic(
+  () => import("../components/NavigationBuilder").then((mod) => mod.NavigationBuilder),
+  { loading: () => <WorkbenchLoader name="Navigation Builder" /> }
+);
+const ThemeStudio = dynamic(
+  () => import("../components/ThemeStudio").then((mod) => mod.ThemeStudio),
+  { loading: () => <WorkbenchLoader name="Theme Studio" /> }
+);
 import {
   Sun,
   Moon,
@@ -46,6 +58,10 @@ import {
   FolderOpen,
   ShieldCheck,
   Play,
+  Compass,
+  Palette,
+  Smartphone,
+  Plus,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -78,12 +94,12 @@ const THEME_PALETTES = {
 type ThemeKey = keyof typeof THEME_PALETTES;
 
 export default function StudioClient({ items }: { items: StudioItem[] }) {
-  const [studioMode, setStudioMode] = useState<"components" | "playground" | "icons">("components");
+  const [studioMode, setStudioMode] = useState<"components" | "builder" | "navigation" | "theme" | "playground" | "icons">("components");
   const [id, setId] = useState(items[0]?.id ?? "button");
   const [target, setTarget] = useState<"nativewind" | "stylesheet">("nativewind");
   const [values, setValues] = useState<Values>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<"all" | "component" | "block" | "hook">("all");
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "component" | "block" | "template" | "hook">("all");
   const [zoom, setZoom] = useState<number>(100);
   const [canvasMode, setCanvasMode] = useState<"light" | "dark" | "dots">("dots");
   const [canvasPreset, setCanvasPreset] = useState<CanvasViewportPreset>("fit");
@@ -104,6 +120,10 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [textareaText, setTextareaText] = useState("");
   const [toastVisible, setToastVisible] = useState(true);
   const [accordionOpenIds, setAccordionOpenIds] = useState<Set<string>>(new Set(["1"]));
+  const [otpValue, setOtpValue] = useState("4928");
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [fabCount, setFabCount] = useState(0);
+  const [iconBtnCount, setIconBtnCount] = useState(0);
 
   const item = useMemo(() => items.find((i) => i.id === id) ?? items[0], [items, id]);
 
@@ -1644,6 +1664,274 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       );
     }
 
+    if (item.id === "icon-button") {
+      const size = String(merged.size ?? "md");
+      const disabled = Boolean(merged.disabled);
+      const loading = Boolean(merged.loading);
+      const sizeDims: Record<string, string> = {
+        sm: "h-9 w-9",
+        md: "h-11 w-11",
+        lg: "h-13 w-13",
+      };
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <button
+            type="button"
+            disabled={disabled || loading}
+            onClick={() => {
+              setIconBtnCount((c) => c + 1);
+              logEvent("onPress", `IconButton pressed (count: ${iconBtnCount + 1})`);
+            }}
+            className={`flex items-center justify-center rounded-xl bg-sky-500 text-white shadow-md shadow-sky-500/25 active:scale-90 transition-all ${
+              sizeDims[size] ?? sizeDims.md
+            } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            {loading ? (
+              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+            ) : (
+              <Sparkles className="h-5 w-5" />
+            )}
+          </button>
+          <span className="text-xs text-zinc-500 font-mono">Presses: {iconBtnCount}</span>
+        </div>
+      );
+    }
+
+    if (item.id === "fab") {
+      const label = String(merged.label || "");
+      const size = String(merged.size ?? "md");
+      const pos = String(merged.position ?? "bottom-right");
+      return (
+        <div className="relative w-full h-80 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 p-4 overflow-hidden">
+          <p className="text-xs text-zinc-500 text-center mt-12">Floating Action Button preview stage</p>
+          <button
+            type="button"
+            onClick={() => {
+              setFabCount((c) => c + 1);
+              logEvent("onPress", `FAB clicked (count: ${fabCount + 1})`);
+            }}
+            className={`absolute z-10 flex items-center justify-center rounded-full bg-sky-500 text-white font-bold shadow-xl shadow-sky-500/30 active:scale-95 transition-all ${
+              pos === "bottom-left"
+                ? "bottom-4 left-4"
+                : pos === "bottom-center"
+                ? "bottom-4 left-1/2 -translate-x-1/2"
+                : "bottom-4 right-4"
+            } ${label ? "px-5 py-3 gap-2" : size === "sm" ? "h-10 w-10" : size === "lg" ? "h-16 w-16" : "h-14 w-14"}`}
+          >
+            <Plus className="h-6 w-6" />
+            {label && <span className="text-xs">{label}</span>}
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "otp-input") {
+      const len = Number(merged.length) || 6;
+      const isMasked = Boolean(merged.secureTextEntry);
+      const isError = Boolean(merged.error);
+      const digits = Array.from({ length: len }, (_, i) => otpValue[i] ?? "");
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8 w-full max-w-sm">
+          <div className="flex gap-2">
+            {digits.map((d, i) => (
+              <div
+                key={i}
+                className={`h-12 w-10 rounded-xl border-2 flex items-center justify-center text-lg font-bold font-mono ${
+                  isError
+                    ? "border-red-500 bg-red-50/20 text-red-400"
+                    : d
+                    ? "border-sky-500 bg-sky-500/10 text-white"
+                    : "border-zinc-800 bg-zinc-950 text-zinc-600"
+                }`}
+              >
+                {d ? (isMasked ? "•" : d) : ""}
+              </div>
+            ))}
+          </div>
+          <input
+            type="text"
+            maxLength={len}
+            value={otpValue}
+            onChange={(e) => {
+              const val = e.target.value.replace(/[^0-9]/g, "").slice(0, len);
+              setOtpValue(val);
+              logEvent("onChangeText", `OTP code: "${val}"`);
+            }}
+            placeholder="Type pin..."
+            className="w-36 text-center rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 font-mono text-xs text-zinc-200 outline-none focus:border-sky-500"
+          />
+        </div>
+      );
+    }
+
+    if (item.id === "bottom-sheet") {
+      const title = String(merged.title || "Quick Actions");
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <button
+            type="button"
+            onClick={() => {
+              setBottomSheetOpen(true);
+              logEvent("onOpen", "Bottom sheet opened");
+            }}
+            className="rounded-xl bg-zinc-900 border border-zinc-700 px-5 py-2.5 text-xs font-semibold text-white shadow hover:bg-zinc-800"
+          >
+            Trigger Bottom Sheet
+          </button>
+          {bottomSheetOpen && (
+            <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60">
+              <div
+                onClick={() => {
+                  setBottomSheetOpen(false);
+                  logEvent("onClose", "Dismissed backdrop");
+                }}
+                className="flex-1"
+              />
+              <div className="w-full rounded-t-3xl border-t border-zinc-800 bg-zinc-900 p-6 pb-10 shadow-2xl space-y-4">
+                <div className="mx-auto h-1.5 w-12 rounded-full bg-zinc-700" />
+                <h3 className="text-base font-bold text-white">{title}</h3>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBottomSheetOpen(false);
+                      logEvent("onAction", "Share Link clicked");
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-zinc-800 text-xs text-white hover:bg-zinc-700"
+                  >
+                    Share Profile Link
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBottomSheetOpen(false);
+                      logEvent("onClose", "Cancel clicked");
+                    }}
+                    className="w-full py-2.5 rounded-xl border border-zinc-800 text-xs text-zinc-400 hover:text-white"
+                  >
+                    Close Sheet
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (item.id === "stack") {
+      const dir = String(merged.direction ?? "column");
+      const align = String(merged.align ?? "stretch");
+      return (
+        <div className="w-full max-w-sm p-4 space-y-4">
+          <div className="flex items-center justify-between text-xs text-zinc-400">
+            <span>Stack Direction: <strong className="text-white">{dir}</strong></span>
+            <span>Align: <strong className="text-sky-400">{align}</strong></span>
+          </div>
+          <div
+            className={`w-full p-4 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 flex ${
+              dir === "row" ? "flex-row items-center" : "flex-col"
+            } gap-3`}
+          >
+            <div className="flex-1 py-3 px-4 rounded-xl bg-sky-500/20 border border-sky-500/40 text-center text-xs font-semibold text-sky-300">Item 1</div>
+            <div className="flex-1 py-3 px-4 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-center text-xs font-semibold text-indigo-300">Item 2</div>
+            <div className="flex-1 py-3 px-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-center text-xs font-semibold text-emerald-300">Item 3</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "safe-area") {
+      return (
+        <div className="w-full max-w-sm h-72 rounded-3xl border-2 border-dashed border-emerald-500/40 bg-zinc-950 p-4 flex flex-col justify-between">
+          <div className="w-full py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-[11px] font-mono text-emerald-400">
+            Top Safe Area Inset (Status Bar + Notch)
+          </div>
+          <div className="text-center space-y-1">
+            <h4 className="text-sm font-bold text-white">Safe Content Zone</h4>
+            <p className="text-xs text-zinc-500">Cross-platform insets guaranteed</p>
+          </div>
+          <div className="w-full py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-[11px] font-mono text-emerald-400">
+            Bottom Safe Area Inset (Home Bar)
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "auth-flow") {
+      const app = String(merged.appName || "Nativra App");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl space-y-4">
+          <div className="text-center space-y-1">
+            <div className="h-10 w-10 rounded-xl bg-sky-500 mx-auto flex items-center justify-center font-black text-white text-sm">NV</div>
+            <h3 className="text-base font-bold text-white">Welcome to {app}</h3>
+            <p className="text-xs text-zinc-500">Multi-step authentication flow template</p>
+          </div>
+          <div className="space-y-3">
+            <input type="email" placeholder="you@example.com" className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 text-xs text-zinc-200 outline-none" />
+            <input type="password" placeholder="••••••••" className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 text-xs text-zinc-200 outline-none" />
+            <button
+              type="button"
+              onClick={() => logEvent("onAuthSubmit", `Logged in to ${app}`)}
+              className="w-full py-2.5 rounded-xl bg-sky-500 font-bold text-white text-xs shadow-md shadow-sky-500/20 active:scale-95"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "onboarding-flow") {
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl text-center space-y-4">
+          <div className="h-16 w-16 rounded-2xl bg-zinc-800 mx-auto flex items-center justify-center text-3xl">🚀</div>
+          <h3 className="text-base font-bold text-white">You Own The Code</h3>
+          <p className="text-xs text-zinc-400 leading-relaxed">Source-first mobile primitives ready to copy into your repository.</p>
+          <div className="flex justify-center gap-1.5 py-2">
+            <span className="h-1.5 w-6 rounded-full bg-sky-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-zinc-700" />
+            <span className="h-1.5 w-1.5 rounded-full bg-zinc-700" />
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onNextSlide", "Next walkthrough slide clicked")}
+            className="w-full py-2.5 rounded-xl bg-sky-500 font-bold text-white text-xs shadow-md shadow-sky-500/20 active:scale-95"
+          >
+            Continue Walkthrough
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "settings-flow") {
+      const uName = String(merged.userName || "Sophia Martinez");
+      const uEmail = String(merged.userEmail || "sophia@nativra.dev");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-xl space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-xl bg-sky-500 flex items-center justify-center font-bold text-white text-sm">SM</div>
+            <div>
+              <h4 className="text-sm font-bold text-white">{uName}</h4>
+              <p className="text-xs text-zinc-500">{uEmail}</p>
+            </div>
+          </div>
+          <div className="divide-y divide-zinc-800 border-y border-zinc-800 py-1 text-xs">
+            <div className="flex justify-between py-2 text-zinc-300"><span>Push Notifications</span><span className="text-emerald-400 font-semibold">Enabled</span></div>
+            <div className="flex justify-between py-2 text-zinc-300"><span>Biometric Auth</span><span className="text-emerald-400 font-semibold">Active</span></div>
+            <div className="flex justify-between py-2 text-zinc-300"><span>Local Cache</span><span className="text-zinc-500">Offline Ready</span></div>
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onLogout", "User logged out")}
+            className="w-full py-2 rounded-xl bg-red-600/15 border border-red-500/30 font-bold text-red-400 text-xs"
+          >
+            Sign Out
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div className="p-8 text-center text-xs text-zinc-500">
         Preview renderer for <strong>{item.name}</strong>
@@ -1677,6 +1965,9 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
         <nav className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/70 p-1 shrink-0">
           {[
             { id: "components" as const, label: "Components", icon: Layers },
+            { id: "builder" as const, label: "Screen Builder", icon: Smartphone },
+            { id: "navigation" as const, label: "Navigation", icon: Compass },
+            { id: "theme" as const, label: "Theme Studio", icon: Palette },
             { id: "playground" as const, label: "Playground", icon: Play },
             { id: "icons" as const, label: "Icons", icon: Sparkles },
           ].map(({ id: mId, label, icon: Icon }) => (
@@ -1786,7 +2077,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
 
             {/* Category Filter Pills */}
             <div className="flex items-center gap-1 mt-2">
-              {(["all", "component", "block", "hook"] as const).map((cat) => (
+              {(["all", "component", "block", "template", "hook"] as const).map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
@@ -1832,7 +2123,7 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
                     <span className="truncate">{i.name}</span>
                   </div>
                   <span className="text-[10px] text-zinc-500 uppercase rounded bg-zinc-950/60 px-1 py-0.5 font-mono">
-                    {i.type === "block" ? "blk" : i.type === "hook" ? "hook" : "ui"}
+                    {i.type === "block" ? "blk" : i.type === "hook" ? "hook" : i.type === "template" ? "tmpl" : "ui"}
                   </span>
                 </button>
               );
@@ -2184,6 +2475,9 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       </div>
       )}
 
+      {studioMode === "builder" && <ScreenBuilder target={target} />}
+      {studioMode === "navigation" && <NavigationBuilder />}
+      {studioMode === "theme" && <ThemeStudio />}
       {studioMode === "playground" && <ComponentPlayground target={target} />}
       {studioMode === "icons" && <IconExplorer />}
     </div>

@@ -1,0 +1,36 @@
+{
+  "id": "safe-area",
+  "name": "Safe Area",
+  "description": "Cross-platform viewport safe area container respecting notch and navigation bar insets.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/SafeArea.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/SafeArea.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [
+    {
+      "package": "react-native-safe-area-context",
+      "version": "^4.10.0",
+      "peer": true
+    }
+  ],
+  "tags": ["layout", "safe-area", "insets", "notch", "container"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

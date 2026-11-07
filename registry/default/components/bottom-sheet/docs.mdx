@@ -1,0 +1,25 @@
+# Bottom Sheet
+
+A sliding modal surface anchored to the bottom of the screen.
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Button } from "@/components/ui/button";
+import { Text } from "react-native";
+
+export default function Example() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button onPress={() => setOpen(true)}>Open Sheet</Button>
+      <BottomSheet isOpen={open} onClose={() => setOpen(false)} title="Quick Actions">
+        <Text>Content inside the bottom sheet</Text>
+      </BottomSheet>
+    </>
+  );
+}
+```

@@ -119,3 +119,4 @@ const styles = StyleSheet.create({
   rowText: { fontSize: 16 },
   check: { fontSize: 14, fontWeight: "700", color: "#0284c7" },
 });
+

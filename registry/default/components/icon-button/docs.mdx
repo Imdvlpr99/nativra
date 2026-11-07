@@ -1,0 +1,23 @@
+# Icon Button
+
+An accessible, circular or rounded touchable icon button satisfying mobile touch target standards (44x44pt).
+
+## Usage
+
+```tsx
+import { IconButton } from "@/components/ui/icon-button";
+import { Plus } from "lucide-react-native";
+
+export default function Example() {
+  return (
+    <IconButton
+      accessibilityLabel="Add new item"
+      variant="primary"
+      size="md"
+      onPress={() => console.log("Pressed")}
+    >
+      <Plus size={20} color="#FFFFFF" />
+    </IconButton>
+  );
+}
+```

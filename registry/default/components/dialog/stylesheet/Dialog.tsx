@@ -103,3 +103,4 @@ const styles = StyleSheet.create({
   confirmBtn: { height: 40, paddingHorizontal: 16, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   confirmText: { fontSize: 14, fontWeight: "600" },
 });
+

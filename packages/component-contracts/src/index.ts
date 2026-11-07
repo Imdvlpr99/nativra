@@ -409,3 +409,75 @@ export interface AccordionBaseProps extends AccessibleProps {
   allowMultiple?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// IconButton contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface IconButtonBaseProps extends AccessibleProps {
+  variant?: Extract<ComponentVariant, "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost">;
+  size?: Extract<ComponentSize, "sm" | "md" | "lg">;
+  disabled?: boolean;
+  loading?: boolean;
+  onPress?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// FAB (Floating Action Button) contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface FabBaseProps extends AccessibleProps {
+  variant?: "primary" | "secondary" | "accent";
+  size?: "sm" | "md" | "lg";
+  position?: "bottom-right" | "bottom-left" | "bottom-center";
+  disabled?: boolean;
+  label?: string;
+  onPress?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// OtpInput contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface OtpInputBaseProps extends AccessibleProps {
+  length?: number;
+  value: string;
+  onChangeText: (value: string) => void;
+  disabled?: boolean;
+  error?: boolean;
+  secureTextEntry?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// BottomSheet contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface BottomSheetBaseProps extends AccessibleProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  snapPoints?: string[];
+  children?: unknown;
+}
+
+// ---------------------------------------------------------------------------
+// Stack contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface StackBaseProps {
+  direction?: "row" | "column";
+  align?: "start" | "center" | "end" | "stretch";
+  justify?: "start" | "center" | "end" | "between" | "around";
+  gap?: number | ComponentSize;
+  wrap?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// SafeArea contract (V4 Master Catalog)
+// ---------------------------------------------------------------------------
+
+export interface SafeAreaBaseProps {
+  edges?: Array<"top" | "bottom" | "left" | "right">;
+  backgroundColor?: string;
+}
+
+

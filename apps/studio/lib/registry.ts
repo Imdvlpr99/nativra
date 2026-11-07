@@ -262,4 +262,116 @@ export const STUDIO_CONTROLS: Record<string, Control[]> = {
     { type: "text", label: "Progress %", propKey: "progressPercent", defaultValue: "80" },
     { type: "text", label: "Streak Days", propKey: "streakDays", defaultValue: "14" },
   ],
+  "icon-button": [
+    VARIANT_CONTROL,
+    SIZE_CONTROL,
+    DISABLED_CONTROL,
+    LOADING_CONTROL,
+  ],
+  fab: [
+    {
+      type: "select",
+      label: "Variant",
+      propKey: "variant",
+      defaultValue: "primary",
+      options: [
+        { label: "Primary", value: "primary" },
+        { label: "Secondary", value: "secondary" },
+        { label: "Accent", value: "accent" },
+      ],
+    },
+    {
+      type: "select",
+      label: "Size",
+      propKey: "size",
+      defaultValue: "md",
+      options: [
+        { label: "SM", value: "sm" },
+        { label: "MD", value: "md" },
+        { label: "LG", value: "lg" },
+      ],
+    },
+    {
+      type: "select",
+      label: "Position",
+      propKey: "position",
+      defaultValue: "bottom-right",
+      options: [
+        { label: "Bottom Right", value: "bottom-right" },
+        { label: "Bottom Left", value: "bottom-left" },
+        { label: "Bottom Center", value: "bottom-center" },
+      ],
+    },
+    { type: "text", label: "Optional Label", propKey: "label", defaultValue: "" },
+    DISABLED_CONTROL,
+  ],
+  "otp-input": [
+    { type: "text", label: "Digits Length", propKey: "length", defaultValue: "6" },
+    { type: "boolean", label: "Error State", propKey: "error", defaultValue: false },
+    { type: "boolean", label: "Masked (Pin)", propKey: "secureTextEntry", defaultValue: false },
+    DISABLED_CONTROL,
+  ],
+  "bottom-sheet": [
+    { type: "text", label: "Sheet Title", propKey: "title", defaultValue: "Quick Sheet Actions" },
+  ],
+  stack: [
+    {
+      type: "select",
+      label: "Direction",
+      propKey: "direction",
+      defaultValue: "column",
+      options: [
+        { label: "Column (VStack)", value: "column" },
+        { label: "Row (HStack)", value: "row" },
+      ],
+    },
+    {
+      type: "select",
+      label: "Align",
+      propKey: "align",
+      defaultValue: "stretch",
+      options: [
+        { label: "Start", value: "start" },
+        { label: "Center", value: "center" },
+        { label: "End", value: "end" },
+        { label: "Stretch", value: "stretch" },
+      ],
+    },
+    {
+      type: "select",
+      label: "Gap",
+      propKey: "gap",
+      defaultValue: "md",
+      options: [
+        { label: "None", value: "none" },
+        { label: "SM", value: "sm" },
+        { label: "MD", value: "md" },
+        { label: "LG", value: "lg" },
+        { label: "XL", value: "xl" },
+      ],
+    },
+  ],
+  "safe-area": [
+    { type: "text", label: "Background", propKey: "backgroundColor", defaultValue: "#ffffff" },
+  ],
+  "auth-flow": [
+    { type: "text", label: "App Name", propKey: "appName", defaultValue: "Nativra App" },
+    {
+      type: "select",
+      label: "Initial Step",
+      propKey: "initialStep",
+      defaultValue: "login",
+      options: [
+        { label: "Login", value: "login" },
+        { label: "Sign Up", value: "signup" },
+        { label: "Forgot Password", value: "forgot" },
+        { label: "Verify OTP", value: "otp" },
+      ],
+    },
+  ],
+  "onboarding-flow": [],
+  "settings-flow": [
+    { type: "text", label: "User Name", propKey: "userName", defaultValue: "Sophia Martinez" },
+    { type: "text", label: "User Email", propKey: "userEmail", defaultValue: "sophia@nativra.dev" },
+  ],
 };

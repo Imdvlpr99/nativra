@@ -1,0 +1,24 @@
+# Floating Action Button (FAB)
+
+A primary elevated circular button that floats in a fixed position on mobile viewports.
+
+## Usage
+
+```tsx
+import { Fab } from "@/components/ui/fab";
+import { Plus } from "lucide-react-native";
+
+export default function Example() {
+  return (
+    <Fab
+      position="bottom-right"
+      variant="primary"
+      size="md"
+      accessibilityLabel="Create post"
+      onPress={() => console.log("FAB Pressed")}
+    >
+      <Plus size={24} color="#FFFFFF" />
+    </Fab>
+  );
+}
+```

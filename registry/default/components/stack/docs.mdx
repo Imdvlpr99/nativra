@@ -1,0 +1,21 @@
+# Stack Layout Primitives
+
+`VStack`, `HStack`, and `ZStack` provide ergonomic flexbox layouts with consistent spacing and alignment across platforms.
+
+## Usage
+
+```tsx
+import { VStack, HStack } from "@/components/ui/stack";
+import { Text } from "react-native";
+
+export default function Example() {
+  return (
+    <VStack gap="md" align="stretch">
+      <HStack justify="between" align="center">
+        <Text>Left Item</Text>
+        <Text>Right Item</Text>
+      </HStack>
+    </VStack>
+  );
+}
+```

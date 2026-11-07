@@ -1,0 +1,19 @@
+# Settings Flow Template
+
+A full mobile settings template with user profile banner, preferences switches, and destructive action triggers.
+
+## Usage
+
+```tsx
+import { SettingsFlow } from "@/components/templates/settings-flow";
+
+export default function SettingsScreen() {
+  return (
+    <SettingsFlow
+      userName="Marcus Vance"
+      userEmail="marcus@nativra.dev"
+      onLogout={() => console.log("Logged out")}
+    />
+  );
+}
+```

@@ -1,0 +1,32 @@
+{
+  "id": "onboarding-flow",
+  "name": "Onboarding Flow",
+  "description": "A multi-step walkthrough walkthrough template with slides, pagination indicators, next/skip controls, and completion actions.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/OnboardingFlow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/OnboardingFlow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "button", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["template", "onboarding", "walkthrough", "slides", "carousel", "intro"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

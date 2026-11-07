@@ -60,3 +60,4 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
     </View>
   );
 }
+

@@ -562,6 +562,8 @@ export const THEME_PRESETS: Record<string, NativraThemeTokens> = {
   cyan: cyanTheme,
 };
 
+export const THEME_PALETTES = THEME_PRESETS;
+
 export function getThemePreset(id: string): NativraThemeTokens {
   return THEME_PRESETS[id.toLowerCase()] ?? zincTheme;
 }

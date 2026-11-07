@@ -22,3 +22,4 @@ export const slate = {
 } as const;
 
 export type SlateTheme = typeof slate;
+

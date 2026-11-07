@@ -22,3 +22,4 @@ export const rose = {
 } as const;
 
 export type RoseTheme = typeof rose;
+

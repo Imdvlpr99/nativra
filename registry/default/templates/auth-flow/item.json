@@ -1,0 +1,35 @@
+{
+  "id": "auth-flow",
+  "name": "Auth Flow",
+  "description": "A complete mobile authentication template with Sign In, Sign Up, Forgot Password, and OTP verification steps.",
+  "type": "template",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/AuthFlow.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/AuthFlow.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "button", "registry": "default" },
+    { "id": "input", "registry": "default" },
+    { "id": "card", "registry": "default" },
+    { "id": "otp-input", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["template", "auth", "login", "signup", "flow", "screen"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
