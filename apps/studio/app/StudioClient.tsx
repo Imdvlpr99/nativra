@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { Control } from "@nativra/studio-schema";
 import { generateInstallCommand, generateUsage } from "@nativra/codegen";
 import { getFixtures } from "@nativra/preview-runtime";
-import { PhoneMockup } from "../components/PhoneMockup";
+import { PreviewCanvas } from "../components/PreviewCanvas";
 import {
   Smartphone,
   Tablet,
@@ -581,49 +581,92 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       const sheetTitle = String(merged.sheetTitle || "Interactive Sheet");
 
       return (
-        <div className="relative flex flex-col items-center justify-center gap-4 py-8">
-          <button
-            type="button"
-            onClick={() => {
-              setDisclosureOpen(true);
-              logEvent("onOpen", "useDisclosure opened modal sheet");
-            }}
-            style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
-            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-sm transition-transform active:scale-95"
-          >
-            <Layers className="h-4 w-4" />
-            <span>{triggerLabel}</span>
-          </button>
+        <div className="relative w-full max-w-sm min-h-[380px] flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/60 p-6 overflow-hidden">
+          {/* Central Trigger Card */}
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-zinc-800 shadow-sm border border-zinc-200/80">
+              <Layers className="h-6 w-6 text-zinc-700" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-900">Modal Bottom Sheet</h3>
+              <p className="mt-1 text-xs text-zinc-500 max-w-[260px] leading-relaxed">
+                Triggered via the <code>useDisclosure()</code> hook state (isOpen: <strong className="text-zinc-700">{disclosureOpen ? "true" : "false"}</strong>)
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setDisclosureOpen(true);
+                logEvent("onOpen", "useDisclosure opened modal sheet");
+              }}
+              style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+              className="mt-2 flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-semibold shadow-sm transition-transform active:scale-95 hover:opacity-90"
+            >
+              <Layers className="h-4 w-4" />
+              <span>{triggerLabel}</span>
+            </button>
+          </div>
+
+          {/* Full-width Modal Bottom Sheet Overlay */}
           {disclosureOpen && (
-            <div className="absolute inset-0 z-30 flex flex-col justify-end rounded-3xl bg-black/40 p-4 transition-all duration-300">
-              <div className="rounded-2xl bg-white p-5 shadow-2xl">
-                <div className="mb-3 flex items-center justify-between border-b pb-2">
-                  <h4 className="text-sm font-bold text-zinc-900">{sheetTitle}</h4>
+            <div
+              onClick={() => {
+                setDisclosureOpen(false);
+                logEvent("onClose", "useDisclosure dismissed via backdrop");
+              }}
+              className="absolute inset-0 z-30 flex flex-col justify-end bg-black/50 backdrop-blur-[2px] transition-all duration-300 animate-in fade-in"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full rounded-t-3xl bg-white p-5 shadow-2xl border-t border-zinc-100 animate-in slide-in-from-bottom duration-200"
+              >
+                {/* Drag handle */}
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-zinc-300" />
+
+                <div className="mb-3 flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                  <div>
+                    <h4 className="text-sm font-bold text-zinc-900">{sheetTitle}</h4>
+                    <p className="text-[11px] text-zinc-500">useDisclosure() bottom drawer</p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
                       setDisclosureOpen(false);
-                      logEvent("onClose", "useDisclosure closed");
+                      logEvent("onClose", "useDisclosure closed via X");
                     }}
-                    className="text-zinc-400 hover:text-zinc-600"
+                    className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <p className="text-xs text-zinc-600">
-                  This bottom drawer was triggered via the <code>useDisclosure()</code> hook state.
+
+                <p className="text-xs leading-relaxed text-zinc-600">
+                  This bottom drawer was triggered via the <code>useDisclosure()</code> hook state. It provides <code>isOpen</code>, <code>onOpen()</code>, <code>onClose()</code>, and <code>onToggle()</code>.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDisclosureOpen(false);
-                    logEvent("onConfirm", "Sheet action completed");
-                  }}
-                  style={{ backgroundColor: currentTheme.accent }}
-                  className="mt-4 w-full rounded-xl py-2 text-xs font-semibold text-white"
-                >
-                  Confirm & Dismiss
-                </button>
+
+                <div className="mt-4 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDisclosureOpen(false);
+                      logEvent("onClose", "Cancelled sheet");
+                    }}
+                    className="flex-1 rounded-xl border border-zinc-200 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDisclosureOpen(false);
+                      logEvent("onConfirm", "Sheet action completed");
+                    }}
+                    style={{ backgroundColor: currentTheme.accent }}
+                    className="flex-1 rounded-xl py-2.5 text-xs font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 transition-transform"
+                  >
+                    Confirm & Dismiss
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1134,25 +1177,26 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
             ))}
           </div>
 
-          {/* Real Physical Phone Hardware Mockup Frame */}
-          <PhoneMockup
+          {/* Clean Interactive Visual Canvas */}
+          <PreviewCanvas
             device={device}
             isLandscape={isLandscape}
             zoom={zoom}
             canvasMode={canvasMode}
-            appName={item?.name ?? "Nativra App"}
+            appName={item?.name ?? "Component Preview"}
             themePrimary={currentTheme.primary}
             onEvent={logEvent}
+            onRotate={() => setIsLandscape(!isLandscape)}
           >
             {renderHarness()}
-          </PhoneMockup>
+          </PreviewCanvas>
 
           {/* Canvas Bottom Feedback Pill */}
           <div className="absolute bottom-4 flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-[11px] text-zinc-400 shadow-md backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Real Phone Hardware Harness</span>
+            <span>Interactive Visual Canvas</span>
             <span className="text-zinc-600">•</span>
-            <span className="text-zinc-500">Interactive Dynamic Island, Side Buttons & Soft Keyboard</span>
+            <span className="text-zinc-500">Dual NativeWind v4 & StyleSheet ready</span>
           </div>
         </main>
 
