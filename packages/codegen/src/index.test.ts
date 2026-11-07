@@ -4,9 +4,10 @@ import {
   generateUsage,
   ScreenGenerator,
   NavigationGenerator,
+  generateFromScreenIR,
   exportAIContext,
 } from "./index.js";
-import type { ScreenDocument, NavigationDocument } from "@nativra/studio-schema";
+import type { ScreenDocument, NavigationDocument, ScreenIRDocument } from "@nativra/studio-schema";
 
 describe("codegen", () => {
   it("generates usage with children", () => {
@@ -85,6 +86,84 @@ describe("codegen", () => {
     expect(parsed.platform).toBe("nativra-v3");
     expect(parsed.framework).toBe("expo-sdk-52");
     expect(parsed.installedComponents).toContain("button");
+  });
+
+  it("generateFromScreenIR generates deterministic NativeWind TSX from Screen IR", () => {
+    const doc: ScreenIRDocument = {
+      version: "1.0.0",
+      name: "UserProfile",
+      target: "nativewind",
+      root: {
+        id: "root-1",
+        type: "primitive",
+        name: "VStack",
+        layout: { flexDirection: "column", gap: 16 },
+        children: [
+          {
+            id: "card-1",
+            type: "component",
+            name: "Card",
+            children: [
+              {
+                id: "txt-1",
+                type: "primitive",
+                name: "Text",
+                props: { children: "Welcome Back" },
+              },
+            ],
+          },
+          {
+            id: "btn-1",
+            type: "component",
+            name: "Button",
+            props: { children: "Sign In", variant: "primary" },
+          },
+        ],
+      },
+    };
+
+    const res = generateFromScreenIR(doc);
+    expect(res.files).toHaveLength(1);
+    expect(res.files[0]?.path).toBe("screens/UserProfileScreen.tsx");
+    expect(res.files[0]?.content).toContain("export default function UserProfileScreen()");
+    expect(res.files[0]?.content).toContain("<SafeAreaView className=\"flex-1 bg-zinc-950\">");
+    expect(res.files[0]?.content).toContain("Welcome Back");
+    expect(res.files[0]?.content).toContain("Sign In");
+    expect(res.dependencies).toContain("nativewind");
+  });
+
+  it("generateFromScreenIR generates deterministic StyleSheet TSX from Screen IR", () => {
+    const doc: ScreenIRDocument = {
+      version: "1.0.0",
+      name: "Settings",
+      target: "stylesheet",
+      root: {
+        id: "root-2",
+        type: "primitive",
+        name: "VStack",
+        children: [
+          {
+            id: "txt-2",
+            type: "primitive",
+            name: "Text",
+            props: { children: "App Settings" },
+          },
+          {
+            id: "btn-2",
+            type: "component",
+            name: "Button",
+            props: { children: "Save Changes" },
+          },
+        ],
+      },
+    };
+
+    const res = generateFromScreenIR(doc);
+    expect(res.files).toHaveLength(1);
+    expect(res.files[0]?.path).toBe("screens/SettingsScreen.tsx");
+    expect(res.files[0]?.content).toContain("StyleSheet.create");
+    expect(res.files[0]?.content).toContain("App Settings");
+    expect(res.dependencies).not.toContain("nativewind");
   });
 });
 

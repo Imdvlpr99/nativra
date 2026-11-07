@@ -236,4 +236,67 @@ export const NavigationDocumentSchema = z.object({
 });
 export type NavigationDocument = z.infer<typeof NavigationDocumentSchema>;
 
+// ---------------------------------------------------------------------------
+// V4 Screen Intermediate Representation (Screen IR) Contract (Master Blueprint §8.1)
+// ---------------------------------------------------------------------------
+
+export const ScreenIRLayoutSchema = z.object({
+  flexDirection: z.enum(["row", "column"]).optional(),
+  alignItems: z.enum(["flex-start", "center", "flex-end", "stretch"]).optional(),
+  justifyContent: z.enum(["flex-start", "center", "flex-end", "space-between"]).optional(),
+  gap: z.number().optional(),
+  padding: z.union([
+    z.number(),
+    z.object({
+      top: z.number().optional(),
+      bottom: z.number().optional(),
+      left: z.number().optional(),
+      right: z.number().optional(),
+    }),
+  ]).optional(),
+  margin: z.union([
+    z.number(),
+    z.object({
+      top: z.number().optional(),
+      bottom: z.number().optional(),
+      left: z.number().optional(),
+      right: z.number().optional(),
+    }),
+  ]).optional(),
+  width: z.union([z.string(), z.number()]).optional(),
+  height: z.union([z.string(), z.number()]).optional(),
+});
+export type ScreenIRLayout = z.infer<typeof ScreenIRLayoutSchema>;
+
+export interface ScreenIRNode {
+  id: string;
+  type: "primitive" | "component" | "block";
+  name: string;
+  props?: Record<string, unknown> | undefined;
+  layout?: ScreenIRLayout | undefined;
+  styleOverrides?: Record<string, unknown> | undefined;
+  children?: ScreenIRNode[] | undefined;
+}
+
+export const ScreenIRNodeSchema: z.ZodType<ScreenIRNode> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    type: z.enum(["primitive", "component", "block"]),
+    name: z.string(),
+    props: z.record(z.string(), z.unknown()).optional(),
+    layout: ScreenIRLayoutSchema.optional(),
+    styleOverrides: z.record(z.string(), z.unknown()).optional(),
+    children: z.lazy(() => z.array(ScreenIRNodeSchema)).optional(),
+  })
+);
+
+export const ScreenIRDocumentSchema = z.object({
+  version: z.literal("1.0.0").default("1.0.0"),
+  name: z.string(),
+  target: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
+  root: ScreenIRNodeSchema,
+});
+export type ScreenIRDocument = z.infer<typeof ScreenIRDocumentSchema>;
+
+
 

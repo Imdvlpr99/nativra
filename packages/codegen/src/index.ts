@@ -4,6 +4,9 @@ import {
   type ScreenBlockNode,
   NavigationDocumentSchema,
   type NavigationDocument,
+  ScreenIRDocumentSchema,
+  type ScreenIRDocument,
+  type ScreenIRNode,
 } from "@nativra/studio-schema";
 
 export type PropValues = Record<string, string | boolean | number>;
@@ -185,6 +188,174 @@ export class ScreenGenerator implements Generator<ScreenDocument, GeneratorResul
         return `        <View style={styles.card}>\n          <Text style={styles.title}>${node.title ?? node.type}</Text>\n        </View>`;
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// V4 Screen IR Deterministic Generator (Master Blueprint §8.2 & §9)
+// ---------------------------------------------------------------------------
+
+function renderIRNodeNativeWind(node: ScreenIRNode, indent = 8): string {
+  const sp = " ".repeat(indent);
+  const layoutClasses: string[] = [];
+  if (node.layout) {
+    if (node.layout.flexDirection === "row") layoutClasses.push("flex-row");
+    if (node.layout.flexDirection === "column") layoutClasses.push("flex-col");
+    if (node.layout.alignItems === "center") layoutClasses.push("items-center");
+    if (node.layout.alignItems === "flex-start") layoutClasses.push("items-start");
+    if (node.layout.alignItems === "flex-end") layoutClasses.push("items-end");
+    if (node.layout.justifyContent === "center") layoutClasses.push("justify-center");
+    if (node.layout.justifyContent === "space-between") layoutClasses.push("justify-between");
+    if (node.layout.gap) layoutClasses.push(`gap-${Math.round(node.layout.gap / 4)}`);
+  }
+
+  const cls = layoutClasses.length > 0 ? ` className="${layoutClasses.join(" ")}"` : "";
+
+  if (node.name === "VStack" || node.name === "HStack" || node.name === "Box") {
+    const defaultCls = node.name === "HStack" ? ' className="flex-row items-center gap-3"' : ' className="flex-col gap-4"';
+    const finalCls = cls || defaultCls;
+    if (!node.children || node.children.length === 0) {
+      return `${sp}<View${finalCls} />`;
+    }
+    const childrenStr = node.children.map((c) => renderIRNodeNativeWind(c, indent + 2)).join("\n");
+    return `${sp}<View${finalCls}>\n${childrenStr}\n${sp}</View>`;
+  }
+
+  const props = node.props ?? {};
+
+  if (node.name === "Spacer") {
+    return `${sp}<View className="flex-1" />`;
+  }
+
+  if (node.name === "Text") {
+    const textContent = String(props["children"] ?? props["text"] ?? "Text");
+    return `${sp}<Text className="text-base text-zinc-100">${textContent}</Text>`;
+  }
+
+  if (node.name === "Button") {
+    const label = String(props["children"] ?? props["label"] ?? "Button");
+    const variant = String(props["variant"] ?? "primary");
+    return `${sp}<TouchableOpacity className="h-11 px-5 rounded-xl bg-sky-500 items-center justify-center active:opacity-90">\n${sp}  <Text className="font-semibold text-white">${label}</Text>\n${sp}</TouchableOpacity>`;
+  }
+
+  if (node.name === "Card") {
+    if (!node.children || node.children.length === 0) {
+      return `${sp}<View className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800" />`;
+    }
+    const childrenStr = node.children.map((c) => renderIRNodeNativeWind(c, indent + 2)).join("\n");
+    return `${sp}<View className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">\n${childrenStr}\n${sp}</View>`;
+  }
+
+  // Fallback generic component
+  return `${sp}<View className="p-3 rounded-xl bg-zinc-900 border border-zinc-800">\n${sp}  <Text className="text-zinc-300 font-medium">${node.name}</Text>\n${sp}</View>`;
+}
+
+function renderIRNodeStyleSheet(node: ScreenIRNode, indent = 8, styleNames: Set<string>): string {
+  const sp = " ".repeat(indent);
+  const styleKey = (node.name.toLowerCase() + "Style") as string;
+  styleNames.add(styleKey);
+
+  if (node.name === "VStack" || node.name === "HStack" || node.name === "Box") {
+    if (!node.children || node.children.length === 0) {
+      return `${sp}<View style={styles.${styleKey}} />`;
+    }
+    const childrenStr = node.children.map((c) => renderIRNodeStyleSheet(c, indent + 2, styleNames)).join("\n");
+    return `${sp}<View style={styles.${styleKey}}>\n${childrenStr}\n${sp}</View>`;
+  }
+
+  const props = node.props ?? {};
+
+  if (node.name === "Spacer") {
+    return `${sp}<View style={styles.spacer} />`;
+  }
+
+  if (node.name === "Text") {
+    const textContent = String(props["children"] ?? props["text"] ?? "Text");
+    return `${sp}<Text style={styles.text}>${textContent}</Text>`;
+  }
+
+  if (node.name === "Button") {
+    const label = String(props["children"] ?? props["label"] ?? "Button");
+    return `${sp}<TouchableOpacity style={styles.button} activeOpacity={0.85}>\n${sp}  <Text style={styles.buttonText}>${label}</Text>\n${sp}</TouchableOpacity>`;
+  }
+
+  if (node.name === "Card") {
+    if (!node.children || node.children.length === 0) {
+      return `${sp}<View style={styles.card} />`;
+    }
+    const childrenStr = node.children.map((c) => renderIRNodeStyleSheet(c, indent + 2, styleNames)).join("\n");
+    return `${sp}<View style={styles.card}>\n${childrenStr}\n${sp}</View>`;
+  }
+
+  return `${sp}<View style={styles.box}>\n${sp}  <Text style={styles.text}>${node.name}</Text>\n${sp}</View>`;
+}
+
+export function generateFromScreenIR(doc: ScreenIRDocument): GeneratorResult {
+  ScreenIRDocumentSchema.parse(doc);
+  const screenName = componentName(doc.name.replace(/Screen$/, "")) + "Screen";
+  const isNW = doc.target === "nativewind";
+
+  let content: string;
+  if (isNW) {
+    const body = renderIRNodeNativeWind(doc.root, 8);
+    content = [
+      `import React from "react";`,
+      `import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";`,
+      ``,
+      `export default function ${screenName}() {`,
+      `  return (`,
+      `    <SafeAreaView className="flex-1 bg-zinc-950">`,
+      `      <StatusBar barStyle="light-content" />`,
+      `      <ScrollView className="flex-1 px-4 py-6" contentContainerStyle={{ gap: 16 }}>`,
+      body,
+      `      </ScrollView>`,
+      `    </SafeAreaView>`,
+      `  );`,
+      `}`,
+    ].join("\n");
+  } else {
+    const styleNames = new Set<string>();
+    const body = renderIRNodeStyleSheet(doc.root, 8, styleNames);
+    content = [
+      `import React from "react";`,
+      `import { StyleSheet, View, Text, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";`,
+      ``,
+      `export default function ${screenName}() {`,
+      `  return (`,
+      `    <SafeAreaView style={styles.container}>`,
+      `      <StatusBar barStyle="light-content" />`,
+      `      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>`,
+      body,
+      `      </ScrollView>`,
+      `    </SafeAreaView>`,
+      `  );`,
+      `}`,
+      ``,
+      `const styles = StyleSheet.create({`,
+      `  container: { flex: 1, backgroundColor: "#09090b" },`,
+      `  scroll: { flex: 1 },`,
+      `  content: { padding: 16, gap: 16 },`,
+      `  vstackStyle: { flexDirection: "column", gap: 16 },`,
+      `  hstackStyle: { flexDirection: "row", alignItems: "center", gap: 12 },`,
+      `  boxStyle: { padding: 16, borderRadius: 16, backgroundColor: "#18181b" },`,
+      `  spacer: { flex: 1 },`,
+      `  text: { fontSize: 16, color: "#ffffff" },`,
+      `  card: { padding: 16, borderRadius: 16, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a" },`,
+      `  button: { height: 44, borderRadius: 12, backgroundColor: "#0284c7", alignItems: "center", justifyContent: "center", paddingHorizontal: 20 },`,
+      `  buttonText: { fontSize: 14, fontWeight: "600", color: "#ffffff" },`,
+      `  box: { padding: 12, borderRadius: 12, backgroundColor: "#18181b" },`,
+      `});`,
+    ].join("\n");
+  }
+
+  return {
+    files: [
+      {
+        path: `screens/${screenName}.tsx`,
+        content,
+      },
+    ],
+    dependencies: ["react", "react-native", isNW ? "nativewind" : ""].filter(Boolean),
+  };
 }
 
 export class NavigationGenerator implements Generator<NavigationDocument, GeneratorResult> {

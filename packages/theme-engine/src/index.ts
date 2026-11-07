@@ -1,8 +1,8 @@
 /**
  * @nativra/theme-engine
  *
- * Transforms semantic design tokens into NativeWind CSS variable definitions
- * and React Native StyleSheet-compatible plain objects.
+ * Transforms semantic design tokens into NativeWind CSS variable definitions,
+ * Tailwind configuration presets, and React Native StyleSheet-compatible plain objects.
  */
 
 // ---------------------------------------------------------------------------
@@ -108,42 +108,82 @@ export interface NativraThemeTokens {
 }
 
 // ---------------------------------------------------------------------------
-// Default theme
+// Standard Layout Scales
 // ---------------------------------------------------------------------------
 
-export const defaultTheme: NativraThemeTokens = {
-  id: "default",
-  name: "Default",
+export const defaultSpace: SpaceScale = {
+  "0": 0,
+  "1": 4,
+  "2": 8,
+  "3": 12,
+  "4": 16,
+  "5": 20,
+  "6": 24,
+  "8": 32,
+  "10": 40,
+  "12": 48,
+  "16": 64,
+  "20": 80,
+  "24": 96,
+};
+
+export const defaultRadius: RadiusScale = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  full: 9999,
+};
+
+export const defaultFontSize: FontSizeScale = {
+  xs: 12,
+  sm: 14,
+  base: 16,
+  lg: 18,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 30,
+  "4xl": 36,
+};
+
+// ---------------------------------------------------------------------------
+// 8 Official Mobile Palettes (Section 5.2)
+// ---------------------------------------------------------------------------
+
+export const zincTheme: NativraThemeTokens = {
+  id: "zinc",
+  name: "Zinc (Default)",
   light: {
     background: "#ffffff",
-    foreground: "#0a0a0a",
+    foreground: "#09090b",
     card: "#ffffff",
-    "card-foreground": "#0a0a0a",
+    "card-foreground": "#09090b",
     popover: "#ffffff",
-    "popover-foreground": "#0a0a0a",
-    primary: "#171717",
+    "popover-foreground": "#09090b",
+    primary: "#18181b",
     "primary-foreground": "#fafafa",
     secondary: "#f4f4f5",
-    "secondary-foreground": "#171717",
+    "secondary-foreground": "#18181b",
     muted: "#f4f4f5",
     "muted-foreground": "#71717a",
     accent: "#f4f4f5",
-    "accent-foreground": "#171717",
+    "accent-foreground": "#18181b",
     destructive: "#ef4444",
     "destructive-foreground": "#fafafa",
     border: "#e4e4e7",
     input: "#e4e4e7",
-    ring: "#a1a1aa",
+    ring: "#18181b",
   },
   dark: {
-    background: "#0a0a0a",
+    background: "#09090b",
     foreground: "#fafafa",
-    card: "#0a0a0a",
+    card: "#09090b",
     "card-foreground": "#fafafa",
-    popover: "#0a0a0a",
+    popover: "#09090b",
     "popover-foreground": "#fafafa",
     primary: "#fafafa",
-    "primary-foreground": "#171717",
+    "primary-foreground": "#18181b",
     secondary: "#27272a",
     "secondary-foreground": "#fafafa",
     muted: "#27272a",
@@ -156,40 +196,377 @@ export const defaultTheme: NativraThemeTokens = {
     input: "#27272a",
     ring: "#d4d4d8",
   },
-  space: {
-    "0": 0,
-    "1": 4,
-    "2": 8,
-    "3": 12,
-    "4": 16,
-    "5": 20,
-    "6": 24,
-    "8": 32,
-    "10": 40,
-    "12": 48,
-    "16": 64,
-    "20": 80,
-    "24": 96,
-  },
-  radius: {
-    none: 0,
-    sm: 4,
-    md: 8,
-    lg: 12,
-    xl: 16,
-    full: 9999,
-  },
-  fontSize: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    "2xl": 24,
-    "3xl": 30,
-    "4xl": 36,
-  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
 };
+
+export const slateTheme: NativraThemeTokens = {
+  id: "slate",
+  name: "Slate",
+  light: {
+    background: "#ffffff",
+    foreground: "#0f172a",
+    card: "#ffffff",
+    "card-foreground": "#0f172a",
+    popover: "#ffffff",
+    "popover-foreground": "#0f172a",
+    primary: "#0f172a",
+    "primary-foreground": "#f8fafc",
+    secondary: "#f1f5f9",
+    "secondary-foreground": "#0f172a",
+    muted: "#f1f5f9",
+    "muted-foreground": "#64748b",
+    accent: "#f1f5f9",
+    "accent-foreground": "#0f172a",
+    destructive: "#ef4444",
+    "destructive-foreground": "#f8fafc",
+    border: "#e2e8f0",
+    input: "#e2e8f0",
+    ring: "#0f172a",
+  },
+  dark: {
+    background: "#020617",
+    foreground: "#f8fafc",
+    card: "#020617",
+    "card-foreground": "#f8fafc",
+    popover: "#020617",
+    "popover-foreground": "#f8fafc",
+    primary: "#f8fafc",
+    "primary-foreground": "#0f172a",
+    secondary: "#1e293b",
+    "secondary-foreground": "#f8fafc",
+    muted: "#1e293b",
+    "muted-foreground": "#94a3b8",
+    accent: "#1e293b",
+    "accent-foreground": "#f8fafc",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#f8fafc",
+    border: "#1e293b",
+    input: "#1e293b",
+    ring: "#cbd5e1",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const emeraldTheme: NativraThemeTokens = {
+  id: "emerald",
+  name: "Emerald",
+  light: {
+    background: "#ffffff",
+    foreground: "#064e3b",
+    card: "#ffffff",
+    "card-foreground": "#064e3b",
+    popover: "#ffffff",
+    "popover-foreground": "#064e3b",
+    primary: "#059669",
+    "primary-foreground": "#ffffff",
+    secondary: "#ecfdf5",
+    "secondary-foreground": "#065f46",
+    muted: "#f0fdf4",
+    "muted-foreground": "#047857",
+    accent: "#d1fae5",
+    "accent-foreground": "#065f46",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#a7f3d0",
+    input: "#a7f3d0",
+    ring: "#059669",
+  },
+  dark: {
+    background: "#022c22",
+    foreground: "#ecfdf5",
+    card: "#064e3b",
+    "card-foreground": "#ecfdf5",
+    popover: "#064e3b",
+    "popover-foreground": "#ecfdf5",
+    primary: "#10b981",
+    "primary-foreground": "#022c22",
+    secondary: "#065f46",
+    "secondary-foreground": "#ecfdf5",
+    muted: "#065f46",
+    "muted-foreground": "#6ee7b7",
+    accent: "#047857",
+    "accent-foreground": "#ecfdf5",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#047857",
+    input: "#047857",
+    ring: "#10b981",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const violetTheme: NativraThemeTokens = {
+  id: "violet",
+  name: "Violet",
+  light: {
+    background: "#ffffff",
+    foreground: "#2e1065",
+    card: "#ffffff",
+    "card-foreground": "#2e1065",
+    popover: "#ffffff",
+    "popover-foreground": "#2e1065",
+    primary: "#7c3aed",
+    "primary-foreground": "#ffffff",
+    secondary: "#f5f3ff",
+    "secondary-foreground": "#5b21b6",
+    muted: "#f5f3ff",
+    "muted-foreground": "#6d28d9",
+    accent: "#ede9fe",
+    "accent-foreground": "#5b21b6",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#ddd6fe",
+    input: "#ddd6fe",
+    ring: "#7c3aed",
+  },
+  dark: {
+    background: "#0f0728",
+    foreground: "#f5f3ff",
+    card: "#1e103a",
+    "card-foreground": "#f5f3ff",
+    popover: "#1e103a",
+    "popover-foreground": "#f5f3ff",
+    primary: "#8b5cf6",
+    "primary-foreground": "#0f0728",
+    secondary: "#2e1065",
+    "secondary-foreground": "#f5f3ff",
+    muted: "#2e1065",
+    "muted-foreground": "#c4b5fd",
+    accent: "#3b0764",
+    "accent-foreground": "#f5f3ff",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#3b0764",
+    input: "#3b0764",
+    ring: "#8b5cf6",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const roseTheme: NativraThemeTokens = {
+  id: "rose",
+  name: "Rose",
+  light: {
+    background: "#ffffff",
+    foreground: "#4c0519",
+    card: "#ffffff",
+    "card-foreground": "#4c0519",
+    popover: "#ffffff",
+    "popover-foreground": "#4c0519",
+    primary: "#e11d48",
+    "primary-foreground": "#ffffff",
+    secondary: "#fff1f2",
+    "secondary-foreground": "#9f1239",
+    muted: "#fff1f2",
+    "muted-foreground": "#be123c",
+    accent: "#ffe4e6",
+    "accent-foreground": "#9f1239",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#fecdd3",
+    input: "#fecdd3",
+    ring: "#e11d48",
+  },
+  dark: {
+    background: "#2a040e",
+    foreground: "#fff1f2",
+    card: "#4c0519",
+    "card-foreground": "#fff1f2",
+    popover: "#4c0519",
+    "popover-foreground": "#fff1f2",
+    primary: "#f43f5e",
+    "primary-foreground": "#2a040e",
+    secondary: "#881337",
+    "secondary-foreground": "#fff1f2",
+    muted: "#881337",
+    "muted-foreground": "#fda4af",
+    accent: "#9f1239",
+    "accent-foreground": "#fff1f2",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#9f1239",
+    input: "#9f1239",
+    ring: "#f43f5e",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const amberTheme: NativraThemeTokens = {
+  id: "amber",
+  name: "Amber",
+  light: {
+    background: "#ffffff",
+    foreground: "#451a03",
+    card: "#ffffff",
+    "card-foreground": "#451a03",
+    popover: "#ffffff",
+    "popover-foreground": "#451a03",
+    primary: "#d97706",
+    "primary-foreground": "#ffffff",
+    secondary: "#fffbeb",
+    "secondary-foreground": "#92400e",
+    muted: "#fffbeb",
+    "muted-foreground": "#b45309",
+    accent: "#fef3c7",
+    "accent-foreground": "#92400e",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#fde68a",
+    input: "#fde68a",
+    ring: "#d97706",
+  },
+  dark: {
+    background: "#1c0b02",
+    foreground: "#fffbeb",
+    card: "#451a03",
+    "card-foreground": "#fffbeb",
+    popover: "#451a03",
+    "popover-foreground": "#fffbeb",
+    primary: "#f59e0b",
+    "primary-foreground": "#1c0b02",
+    secondary: "#78350f",
+    "secondary-foreground": "#fffbeb",
+    muted: "#78350f",
+    "muted-foreground": "#fcd34d",
+    accent: "#92400e",
+    "accent-foreground": "#fffbeb",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#92400e",
+    input: "#92400e",
+    ring: "#f59e0b",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const orangeTheme: NativraThemeTokens = {
+  id: "orange",
+  name: "Orange",
+  light: {
+    background: "#ffffff",
+    foreground: "#431407",
+    card: "#ffffff",
+    "card-foreground": "#431407",
+    popover: "#ffffff",
+    "popover-foreground": "#431407",
+    primary: "#ea580c",
+    "primary-foreground": "#ffffff",
+    secondary: "#fff7ed",
+    "secondary-foreground": "#9a3412",
+    muted: "#fff7ed",
+    "muted-foreground": "#c2410c",
+    accent: "#ffedd5",
+    "accent-foreground": "#9a3412",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#fed7aa",
+    input: "#fed7aa",
+    ring: "#ea580c",
+  },
+  dark: {
+    background: "#1e0903",
+    foreground: "#fff7ed",
+    card: "#431407",
+    "card-foreground": "#fff7ed",
+    popover: "#431407",
+    "popover-foreground": "#fff7ed",
+    primary: "#f97316",
+    "primary-foreground": "#1e0903",
+    secondary: "#7c2d12",
+    "secondary-foreground": "#fff7ed",
+    muted: "#7c2d12",
+    "muted-foreground": "#fdba74",
+    accent: "#9a3412",
+    "accent-foreground": "#fff7ed",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#9a3412",
+    input: "#9a3412",
+    ring: "#f97316",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const cyanTheme: NativraThemeTokens = {
+  id: "cyan",
+  name: "Cyan",
+  light: {
+    background: "#ffffff",
+    foreground: "#083344",
+    card: "#ffffff",
+    "card-foreground": "#083344",
+    popover: "#ffffff",
+    "popover-foreground": "#083344",
+    primary: "#0891b2",
+    "primary-foreground": "#ffffff",
+    secondary: "#ecfeff",
+    "secondary-foreground": "#155e75",
+    muted: "#ecfeff",
+    "muted-foreground": "#0e7490",
+    accent: "#cffafe",
+    "accent-foreground": "#155e75",
+    destructive: "#ef4444",
+    "destructive-foreground": "#ffffff",
+    border: "#a5f3fc",
+    input: "#a5f3fc",
+    ring: "#0891b2",
+  },
+  dark: {
+    background: "#031d28",
+    foreground: "#ecfeff",
+    card: "#083344",
+    "card-foreground": "#ecfeff",
+    popover: "#083344",
+    "popover-foreground": "#ecfeff",
+    primary: "#06b6d4",
+    "primary-foreground": "#031d28",
+    secondary: "#155e75",
+    "secondary-foreground": "#ecfeff",
+    muted: "#155e75",
+    "muted-foreground": "#67e8f9",
+    accent: "#164e63",
+    "accent-foreground": "#ecfeff",
+    destructive: "#7f1d1d",
+    "destructive-foreground": "#ffffff",
+    border: "#164e63",
+    input: "#164e63",
+    ring: "#06b6d4",
+  },
+  space: defaultSpace,
+  radius: defaultRadius,
+  fontSize: defaultFontSize,
+};
+
+export const THEME_PRESETS: Record<string, NativraThemeTokens> = {
+  zinc: zincTheme,
+  slate: slateTheme,
+  emerald: emeraldTheme,
+  violet: violetTheme,
+  rose: roseTheme,
+  amber: amberTheme,
+  orange: orangeTheme,
+  cyan: cyanTheme,
+};
+
+export function getThemePreset(id: string): NativraThemeTokens {
+  return THEME_PRESETS[id.toLowerCase()] ?? zincTheme;
+}
+
+export const defaultTheme: NativraThemeTokens = zincTheme;
 
 // ---------------------------------------------------------------------------
 // StyleSheet adapter
@@ -197,8 +574,6 @@ export const defaultTheme: NativraThemeTokens = {
 
 /**
  * Converts theme tokens into a React Native StyleSheet-compatible flat object.
- * Returns separate light and dark color objects so they can be used with
- * `useColorScheme()`.
  */
 export function toStyleSheetTokens(theme: NativraThemeTokens, colorScheme: "light" | "dark" = "light") {
   const colors = theme[colorScheme];
@@ -247,5 +622,57 @@ export function toCssVariables(theme: NativraThemeTokens): string {
   return lines.join("\n");
 }
 
-export { defaultTheme as default };
+/**
+ * Converts theme tokens into a Tailwind CSS theme.extend configuration object.
+ */
+export function toTailwindPreset(theme: NativraThemeTokens): Record<string, any> {
+  return {
+    theme: {
+      extend: {
+        colors: {
+          background: "var(--color-background)",
+          foreground: "var(--color-foreground)",
+          card: {
+            DEFAULT: "var(--color-card)",
+            foreground: "var(--color-card-foreground)",
+          },
+          popover: {
+            DEFAULT: "var(--color-popover)",
+            foreground: "var(--color-popover-foreground)",
+          },
+          primary: {
+            DEFAULT: "var(--color-primary)",
+            foreground: "var(--color-primary-foreground)",
+          },
+          secondary: {
+            DEFAULT: "var(--color-secondary)",
+            foreground: "var(--color-secondary-foreground)",
+          },
+          muted: {
+            DEFAULT: "var(--color-muted)",
+            foreground: "var(--color-muted-foreground)",
+          },
+          accent: {
+            DEFAULT: "var(--color-accent)",
+            foreground: "var(--color-accent-foreground)",
+          },
+          destructive: {
+            DEFAULT: "var(--color-destructive)",
+            foreground: "var(--color-destructive-foreground)",
+          },
+          border: "var(--color-border)",
+          input: "var(--color-input)",
+          ring: "var(--color-ring)",
+        },
+        borderRadius: {
+          sm: `${theme.radius.sm}px`,
+          md: `${theme.radius.md}px`,
+          lg: `${theme.radius.lg}px`,
+          xl: `${theme.radius.xl}px`,
+        },
+      },
+    },
+  };
+}
 
+export { defaultTheme as default };
