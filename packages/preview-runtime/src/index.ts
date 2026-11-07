@@ -69,9 +69,37 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
     { name: "Small avatar", props: { fallback: "NV", size: "sm" } },
     { name: "Large avatar", props: { fallback: "AB", size: "lg" } },
   ],
+  "empty-state": [
+    { name: "Default", props: { title: "No Items Found", description: "Get started by creating your first item." } },
+    { name: "No Action", props: { title: "Inbox Zero", description: "All caught up for today!", showAction: false } },
+  ],
+  "login-form": [
+    { name: "Default", props: { title: "Welcome back", submitLabel: "Sign In" } },
+    { name: "Loading", props: { title: "Signing In", loading: true } },
+    { name: "Disabled", props: { title: "Account Suspended", disabled: true } },
+  ],
+  "user-profile": [
+    { name: "Verified Pro", props: { name: "Sophia Martinez", handle: "@sophiam", verified: true, isFollowing: false } },
+    { name: "Following", props: { name: "Alex Rivers", handle: "@arivers", verified: false, isFollowing: true } },
+  ],
+  "settings-list": [
+    { name: "Standard", props: { title: "Preferences", notifications: true, darkMode: false, biometrics: true } },
+    { name: "Dark Active", props: { title: "Preferences", notifications: true, darkMode: true, biometrics: true } },
+  ],
+  "pricing-card": [
+    { name: "Popular", props: { planName: "Pro Mobile", price: "$19", popular: true } },
+    { name: "Enterprise", props: { planName: "Enterprise Tier", price: "$99", popular: false, buttonText: "Contact Sales" } },
+  ],
+  "metric-card": [
+    { name: "Positive Trend", props: { title: "Active Users", value: "48,290", change: "+24.8%", positive: true } },
+    { name: "Negative Trend", props: { title: "Churn Rate", value: "1.42%", change: "-0.8%", positive: false } },
+  ],
+  "use-disclosure": [
+    { name: "Closed", props: { defaultIsOpen: false, triggerLabel: "Open Bottom Sheet" } },
+    { name: "Open", props: { defaultIsOpen: true, triggerLabel: "Sheet Active" } },
+  ],
 };
 
 export function getFixtures(id: string): PreviewFixture[] {
   return PREVIEW_FIXTURES[id] ?? [];
 }
-

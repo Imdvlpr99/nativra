@@ -134,6 +134,33 @@ export const STUDIO_CONTROLS: Record<string, Control[]> = {
     LOADING_CONTROL,
     DISABLED_CONTROL,
   ],
+  "user-profile": [
+    { type: "text", label: "Name", propKey: "name", defaultValue: "Sophia Martinez" },
+    { type: "text", label: "Handle", propKey: "handle", defaultValue: "@sophiam" },
+    { type: "text", label: "Bio", propKey: "bio", defaultValue: "Senior Mobile Engineer building design systems & fluid React Native mobile apps." },
+    { type: "boolean", label: "Verified", propKey: "verified", defaultValue: true },
+    { type: "boolean", label: "Following", propKey: "isFollowing", defaultValue: false },
+  ],
+  "settings-list": [
+    { type: "text", label: "Group Title", propKey: "title", defaultValue: "Preferences" },
+    { type: "boolean", label: "Notifications", propKey: "notifications", defaultValue: true },
+    { type: "boolean", label: "Dark Theme", propKey: "darkMode", defaultValue: false },
+    { type: "boolean", label: "Biometrics", propKey: "biometrics", defaultValue: true },
+  ],
+  "pricing-card": [
+    { type: "text", label: "Plan Name", propKey: "planName", defaultValue: "Pro Mobile" },
+    { type: "text", label: "Price", propKey: "price", defaultValue: "$19" },
+    { type: "text", label: "Period", propKey: "period", defaultValue: "/ month, billed yearly" },
+    { type: "boolean", label: "Popular Badge", propKey: "popular", defaultValue: true },
+    { type: "text", label: "Button Text", propKey: "buttonText", defaultValue: "Start 14-Day Free Trial" },
+  ],
+  "metric-card": [
+    { type: "text", label: "Metric Title", propKey: "title", defaultValue: "Monthly Active Users" },
+    { type: "text", label: "Value", propKey: "value", defaultValue: "48,290" },
+    { type: "text", label: "Change", propKey: "change", defaultValue: "+24.8%" },
+    { type: "boolean", label: "Positive", propKey: "positive", defaultValue: true },
+    { type: "text", label: "Timeframe", propKey: "timeframe", defaultValue: "vs last month" },
+  ],
   "use-disclosure": [
     { type: "boolean", label: "Open by Default", propKey: "defaultIsOpen", defaultValue: false },
     { type: "text", label: "Trigger Text", propKey: "triggerLabel", defaultValue: "Open Sheet" },

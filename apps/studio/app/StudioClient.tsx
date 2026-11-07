@@ -24,6 +24,7 @@ import {
   Trash2,
   X,
   FolderOpen,
+  ShieldCheck,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -629,6 +630,280 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
               </div>
             </div>
           )}
+        </div>
+      );
+    }
+
+    if (item.id === "user-profile") {
+      const name = String(merged.name || "Sophia Martinez");
+      const handle = String(merged.handle || "@sophiam");
+      const bio = String(merged.bio || "Senior Mobile Engineer building design systems & fluid React Native mobile apps.");
+      const verified = Boolean(merged.verified !== false);
+      const isFollowing = Boolean(merged.isFollowing);
+
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="relative">
+              <div
+                style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+                className="flex h-14 w-14 items-center justify-center rounded-full text-base font-bold shadow-inner"
+              >
+                {name.slice(0, 2).toUpperCase()}
+              </div>
+              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+            </div>
+            {verified && (
+              <span
+                style={{ backgroundColor: "#e0f2fe", color: "#0369a1" }}
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Verified Pro</span>
+              </span>
+            )}
+          </div>
+
+          <div className="mt-3.5">
+            <h3 className="text-base font-bold text-zinc-900">{name}</h3>
+            <p className="text-xs text-zinc-500 font-mono">{handle}</p>
+            <p className="mt-2 text-xs leading-relaxed text-zinc-600">{bio}</p>
+          </div>
+
+          <div className="my-3.5 h-px w-full bg-zinc-200" />
+
+          <div className="flex items-center justify-around py-1 text-center">
+            <div>
+              <p className="text-sm font-black text-zinc-900">14.2k</p>
+              <p className="text-[10px] text-zinc-500">Followers</p>
+            </div>
+            <div className="h-6 w-px bg-zinc-200" />
+            <div>
+              <p className="text-sm font-black text-zinc-900">420</p>
+              <p className="text-[10px] text-zinc-500">Following</p>
+            </div>
+            <div className="h-6 w-px bg-zinc-200" />
+            <div>
+              <p className="text-sm font-black text-zinc-900">38</p>
+              <p className="text-[10px] text-zinc-500">Projects</p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                set("isFollowing", !isFollowing);
+                logEvent("onFollow", `Following toggled to: ${!isFollowing}`);
+              }}
+              style={
+                isFollowing
+                  ? { border: "1px solid #d4d4d8", color: "#18181b", backgroundColor: "transparent" }
+                  : { backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }
+              }
+              className="flex-1 rounded-xl py-2 text-xs font-semibold transition-all active:scale-95 shadow-sm"
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </button>
+            <button
+              type="button"
+              onClick={() => logEvent("onMessage", "Message button pressed")}
+              className="flex-1 rounded-xl border border-zinc-200 bg-zinc-100 py-2 text-xs font-semibold text-zinc-800 transition-all hover:bg-zinc-200 active:scale-95"
+            >
+              Message
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "settings-list") {
+      const title = String(merged.title || "Preferences");
+      const notifications = Boolean(merged.notifications !== false);
+      const darkMode = Boolean(merged.darkMode);
+      const biometrics = Boolean(merged.biometrics !== false);
+
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg">
+          <div className="mb-2">
+            <h3 className="text-base font-bold text-zinc-900">{title}</h3>
+            <p className="text-xs text-zinc-500">Manage your mobile app experience</p>
+          </div>
+
+          <div className="my-2 h-px w-full bg-zinc-200" />
+
+          {/* Row 1: Notifications */}
+          <div className="flex items-center justify-between py-2.5">
+            <div className="pr-2">
+              <p className="text-xs font-semibold text-zinc-900">Push Notifications</p>
+              <p className="text-[11px] text-zinc-500">Receive instant project alerts</p>
+            </div>
+            <div
+              onClick={() => {
+                set("notifications", !notifications);
+                logEvent("onToggle", `Notifications: ${!notifications}`);
+              }}
+              style={{ backgroundColor: notifications ? currentTheme.accent : "#e4e4e7" }}
+              className={`flex h-6 w-11 cursor-pointer items-center rounded-full p-0.5 transition-colors ${
+                notifications ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+            </div>
+          </div>
+
+          <div className="h-px w-full bg-zinc-100" />
+
+          {/* Row 2: Dark Mode */}
+          <div className="flex items-center justify-between py-2.5">
+            <div className="pr-2">
+              <p className="text-xs font-semibold text-zinc-900">Dark Theme</p>
+              <p className="text-[11px] text-zinc-500">Midnight dark UI palette</p>
+            </div>
+            <div
+              onClick={() => {
+                set("darkMode", !darkMode);
+                logEvent("onToggle", `Dark mode: ${!darkMode}`);
+              }}
+              style={{ backgroundColor: darkMode ? currentTheme.accent : "#e4e4e7" }}
+              className={`flex h-6 w-11 cursor-pointer items-center rounded-full p-0.5 transition-colors ${
+                darkMode ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+            </div>
+          </div>
+
+          <div className="h-px w-full bg-zinc-100" />
+
+          {/* Row 3: Biometrics */}
+          <div className="flex items-center justify-between py-2.5">
+            <div className="pr-2">
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold text-zinc-900">Face ID & Security</p>
+                <span className="rounded bg-sky-100 px-1 py-0.5 text-[9px] font-bold text-sky-700">Protected</span>
+              </div>
+              <p className="text-[11px] text-zinc-500">Biometric app lock</p>
+            </div>
+            <div
+              onClick={() => {
+                set("biometrics", !biometrics);
+                logEvent("onToggle", `Biometrics: ${!biometrics}`);
+              }}
+              style={{ backgroundColor: biometrics ? currentTheme.accent : "#e4e4e7" }}
+              className={`flex h-6 w-11 cursor-pointer items-center rounded-full p-0.5 transition-colors ${
+                biometrics ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+            </div>
+          </div>
+
+          <div className="h-px w-full bg-zinc-100" />
+
+          {/* Row 4: Account Details Navigation */}
+          <div
+            onClick={() => logEvent("onNavigate", "Account details clicked")}
+            className="flex cursor-pointer items-center justify-between py-2.5 hover:opacity-75 transition-opacity"
+          >
+            <div>
+              <p className="text-xs font-semibold text-zinc-900">Account Details</p>
+              <p className="text-[11px] text-zinc-500">Password, 2FA, session tokens</p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-zinc-400" />
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "pricing-card") {
+      const planName = String(merged.planName || "Pro Mobile");
+      const price = String(merged.price || "$19");
+      const period = String(merged.period || "/ month, billed yearly");
+      const popular = Boolean(merged.popular !== false);
+      const buttonText = String(merged.buttonText || "Start 14-Day Free Trial");
+
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-zinc-900">{planName}</h3>
+            {popular && (
+              <span
+                style={{ backgroundColor: "#e0f2fe", color: "#0369a1" }}
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+              >
+                Most Popular
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">Complete mobile UI infrastructure for production Expo & RN apps.</p>
+
+          <div className="mt-4 flex items-baseline gap-1">
+            <span className="text-3xl font-extrabold text-zinc-900">{price}</span>
+            <span className="text-xs text-zinc-500">{period}</span>
+          </div>
+
+          <div className="my-4 h-px w-full bg-zinc-200" />
+
+          <div className="space-y-2.5 text-xs text-zinc-700">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600 font-bold">✓</span>
+              <span>12 foundation mobile components</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600 font-bold">✓</span>
+              <span>Dual NativeWind v4 & StyleSheet</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600 font-bold">✓</span>
+              <span>Source-first ownership, 0 bloat</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600 font-bold">✓</span>
+              <span>Interactive studio prop inspector</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => logEvent("onSubscribe", `Subscribed to ${planName} (${price})`)}
+            style={{ backgroundColor: currentTheme.primary, color: currentTheme.primaryFg }}
+            className="mt-6 w-full rounded-xl py-2.5 text-xs font-semibold shadow-sm transition-transform active:scale-95 hover:opacity-95"
+          >
+            {buttonText}
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "metric-card") {
+      const title = String(merged.title || "Monthly Active Users");
+      const value = String(merged.value || "48,290");
+      const change = String(merged.change || "+24.8%");
+      const positive = Boolean(merged.positive !== false);
+      const timeframe = String(merged.timeframe || "vs last month");
+
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{title}</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                positive ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
+              }`}
+            >
+              {change}
+            </span>
+          </div>
+
+          <div className="mt-3">
+            <h2 className="text-3xl font-black tracking-tight text-zinc-900">{value}</h2>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-3 text-xs text-zinc-500">
+            <span>{timeframe}</span>
+            <span className="font-medium text-emerald-600">High organic retention</span>
+          </div>
         </div>
       );
     }

@@ -1,0 +1,35 @@
+{
+  "id": "pricing-card",
+  "name": "Pricing Card",
+  "description": "Ready-to-use mobile subscription tier card with features list and checkout CTA.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/PricingCard.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/PricingCard.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "separator", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "pricing", "subscription", "paywall", "tier"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

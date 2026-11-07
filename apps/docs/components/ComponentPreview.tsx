@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import type { RegistryItem } from "@nativra/registry-schema";
-import { Check, Copy, RefreshCw, Terminal, Sparkles, Mail, Lock } from "lucide-react";
+import { Check, Copy, RefreshCw, Terminal, Sparkles, Mail, Lock, ShieldCheck } from "lucide-react";
 
 interface ComponentPreviewProps {
   item: RegistryItem;
@@ -464,6 +464,144 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
                 </p>
               </div>
             )}
+          </div>
+        );
+
+      case "user-profile":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 text-white font-bold text-sm dark:bg-zinc-100 dark:text-zinc-900">
+                SM
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2.5 py-0.5 text-[11px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+                <ShieldCheck className="h-3 w-3" />
+                Verified Pro
+              </span>
+            </div>
+            <div className="mt-3">
+              <h4 className="font-bold text-base text-foreground">Sophia Martinez</h4>
+              <p className="text-xs text-muted-foreground">@sophiam</p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                Senior Mobile Engineer building design systems & fluid React Native mobile apps.
+              </p>
+            </div>
+            <div className="my-3.5 h-px w-full bg-border" />
+            <div className="flex items-center justify-around text-center py-1">
+              <div>
+                <p className="text-sm font-bold text-foreground">14.2k</p>
+                <p className="text-[10px] text-muted-foreground">Followers</p>
+              </div>
+              <div className="h-5 w-px bg-border" />
+              <div>
+                <p className="text-sm font-bold text-foreground">420</p>
+                <p className="text-[10px] text-muted-foreground">Following</p>
+              </div>
+              <div className="h-5 w-px bg-border" />
+              <div>
+                <p className="text-sm font-bold text-foreground">38</p>
+                <p className="text-[10px] text-muted-foreground">Projects</p>
+              </div>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button className="flex-1 rounded-xl bg-zinc-900 py-2 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900">
+                Follow
+              </button>
+              <button className="flex-1 rounded-xl border border-border bg-muted/40 py-2 text-xs font-semibold text-foreground hover:bg-muted">
+                Message
+              </button>
+            </div>
+          </div>
+        );
+
+      case "settings-list":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm">
+            <h4 className="font-bold text-base text-foreground">Preferences</h4>
+            <p className="text-xs text-muted-foreground mb-3">Manage your mobile app experience</p>
+            <div className="space-y-3 divide-y divide-border text-xs">
+              <div className="flex items-center justify-between pt-2">
+                <div>
+                  <p className="font-medium text-foreground">Push Notifications</p>
+                  <p className="text-[11px] text-muted-foreground">Receive instant alerts</p>
+                </div>
+                <div className="flex h-5 w-9 cursor-pointer items-center justify-end rounded-full bg-sky-600 p-0.5">
+                  <div className="h-4 w-4 rounded-full bg-white shadow-sm" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3">
+                <div>
+                  <p className="font-medium text-foreground">Dark Theme</p>
+                  <p className="text-[11px] text-muted-foreground">Midnight palette</p>
+                </div>
+                <div className="flex h-5 w-9 cursor-pointer items-center justify-start rounded-full bg-muted p-0.5">
+                  <div className="h-4 w-4 rounded-full bg-background shadow-sm" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3">
+                <div>
+                  <p className="font-medium text-foreground">Face ID & Security</p>
+                  <p className="text-[11px] text-muted-foreground">Biometric app lock</p>
+                </div>
+                <div className="flex h-5 w-9 cursor-pointer items-center justify-end rounded-full bg-sky-600 p-0.5">
+                  <div className="h-4 w-4 rounded-full bg-white shadow-sm" />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "pricing-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="font-bold text-base text-foreground">Pro Mobile</h4>
+              <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+                Most Popular
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">Complete mobile UI infrastructure for production Expo apps.</p>
+            <div className="mt-4 flex items-baseline gap-1">
+              <span className="text-3xl font-extrabold text-foreground">$19</span>
+              <span className="text-xs text-muted-foreground">/ month, billed yearly</span>
+            </div>
+            <div className="my-4 h-px w-full bg-border" />
+            <div className="space-y-2 text-xs text-foreground">
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>12 foundation mobile components</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Dual NativeWind v4 & StyleSheet</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Source-first ownership, 0 bloat</span>
+              </div>
+            </div>
+            <button className="mt-5 w-full rounded-xl bg-zinc-900 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900">
+              Start 14-Day Free Trial
+            </button>
+          </div>
+        );
+
+      case "metric-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Monthly Active Users</span>
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                +24.8%
+              </span>
+            </div>
+            <div className="mt-3">
+              <h3 className="text-3xl font-black tracking-tight text-foreground">48,290</h3>
+            </div>
+            <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
+              <span>vs last month</span>
+              <span className="font-medium text-emerald-600">High organic retention</span>
+            </div>
           </div>
         );
 

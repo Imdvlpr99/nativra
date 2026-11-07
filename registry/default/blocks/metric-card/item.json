@@ -1,0 +1,33 @@
+{
+  "id": "metric-card",
+  "name": "Metric Card",
+  "description": "Ready-to-use mobile analytics KPI stat card with positive/negative trend badges.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/MetricCard.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/MetricCard.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "text", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "metric", "stat", "analytics", "kpi"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

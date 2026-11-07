@@ -1,0 +1,36 @@
+{
+  "id": "user-profile",
+  "name": "User Profile",
+  "description": "Ready-to-use mobile profile card with avatar, verified badge, stats, and actions.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/UserProfile.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/UserProfile.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "avatar", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "separator", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "profile", "user", "card", "social"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}

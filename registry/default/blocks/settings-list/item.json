@@ -1,0 +1,35 @@
+{
+  "id": "settings-list",
+  "name": "Settings List",
+  "description": "Ready-to-use mobile settings group with switches, badges, and navigation rows.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": false,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/SettingsList.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/SettingsList.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "switch", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "badge", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "settings", "preferences", "list", "toggle"],
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
