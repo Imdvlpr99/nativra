@@ -94,7 +94,7 @@ export function Navbar() {
 
             {/* GitHub Link */}
             <a
-              href="https://github.com/nativra/nativra"
+              href="https://github.com/Imdvlpr99/nativra"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
@@ -133,7 +133,7 @@ export function Navbar() {
               ))}
               <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
                 <a
-                  href="https://github.com/nativra/nativra"
+                  href="https://github.com/Imdvlpr99/nativra"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs font-medium text-muted-foreground"

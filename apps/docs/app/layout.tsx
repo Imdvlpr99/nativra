@@ -4,7 +4,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://nativra.dev"),
+  metadataBase: new URL("https://nativra.vercel.app"),
   title: {
     default: "Nativra — Source-first React Native UI",
     template: "%s | Nativra",
@@ -91,7 +91,7 @@ function Footer() {
             CLI
           </a>
           <a
-            href="https://github.com/nativra/nativra"
+            href="https://github.com/Imdvlpr99/nativra"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-foreground transition-colors"

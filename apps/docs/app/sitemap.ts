@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getComponents } from "@/lib/registry";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://nativra.dev";
+  const baseUrl = "https://nativra.vercel.app";
   const components = await getComponents();
 
   const staticRoutes = [

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nativra.dev">
+  <a href="https://nativra.vercel.app">
     <img src="assets/logo.png" alt="Nativra Banner" width="560" />
   </a>
 </p>
@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/nativra/nativra/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square&logo=github" alt="CI Status" /></a>
+  <a href="https://github.com/Imdvlpr99/nativra/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square&logo=github" alt="CI Status" /></a>
   <a href="https://npmjs.com/package/nativra-cli"><img src="https://img.shields.io/badge/npm-v0.1.1-sky?style=flat-square&logo=npm" alt="npm package" /></a>
   <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.76+-22c55e?style=flat-square&logo=react" alt="React Native 0.76+" /></a>
   <a href="https://expo.dev"><img src="https://img.shields.io/badge/Expo-SDK%2052+-000000?style=flat-square&logo=expo" alt="Expo SDK 52+" /></a>
@@ -97,7 +97,7 @@ npx nativra-cli add analytics-dashboard fintech-wallet
 
 ```bash
 # Clone the repository
-git clone https://github.com/nativra/nativra.git
+git clone https://github.com/Imdvlpr99/nativra.git
 cd nativra
 
 # Install workspace dependencies

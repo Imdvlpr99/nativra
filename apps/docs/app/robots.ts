@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://nativra.dev/sitemap.xml",
+    sitemap: "https://nativra.vercel.app/sitemap.xml",
   };
 }
 
