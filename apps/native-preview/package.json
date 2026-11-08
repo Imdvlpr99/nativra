@@ -11,7 +11,7 @@
     "web": "expo start --web",
     "export:web": "expo export -p web",
     "sync": "node scripts/sync-components.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node scripts/sync-components.mjs && tsc --noEmit"
   },
   "dependencies": {
     "@babel/runtime": "^8.1.0",

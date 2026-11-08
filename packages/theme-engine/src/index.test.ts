@@ -42,9 +42,14 @@ describe("theme-engine", () => {
 
   it("generates tailwind theme.extend configuration object", () => {
     const preset = toTailwindPreset(emeraldTheme);
-    const themeObj = preset["theme"] as Record<string, any>;
-    expect(themeObj["extend"]["colors"]["primary"]["DEFAULT"]).toBe("var(--color-primary)");
-    expect(themeObj["extend"]["borderRadius"]["md"]).toBe("8px");
+    const themeObj = preset["theme"] as {
+      extend: {
+        colors: { primary: { DEFAULT: string } };
+        borderRadius: { md: string };
+      };
+    };
+    expect(themeObj.extend.colors.primary.DEFAULT).toBe("var(--color-primary)");
+    expect(themeObj.extend.borderRadius.md).toBe("8px");
   });
 
   it("scales typography and spacing by density and fontScale presets", () => {
@@ -58,6 +63,9 @@ describe("theme-engine", () => {
   });
 
   it("applies high-contrast accessibility overrides and resolves full theme tokens", () => {
+    const highContrastLight = applyHighContrast(defaultTheme.light, "light");
+    expect(highContrastLight.foreground).toBe("#000000");
+
     const resolved = resolveThemeTokens(defaultTheme, {
       colorScheme: "dark",
       density: "compact",
