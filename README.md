@@ -27,9 +27,9 @@ Nativra combines the discoverability, accessibility, and copy-into-your-project 
 Developers use Nativra to:
 
 - 🔍 **Discover** — 70+ high-fidelity primitives, hooks, utilities, themes, blocks, and full-screen templates.
-- 📱 **Preview & Inspect** — Interactive real-time canvas inside the documentation and visual studio.
-- 🎨 **Customize & Theme** — Tailor design tokens, radii, and semantic colors in Nativra Studio.
-- ⚡ **Install** — Add TypeScript sources to your project with `npx nativra add <item>`.
+- 📱 **Preview & Inspect** — Interactive real-time mobile canvas inside the documentation site.
+- 🎨 **Customize & Theme** — Tailor design tokens, radii, and semantic colors for NativeWind v4 and React Native StyleSheet.
+- ⚡ **Install** — Add TypeScript sources directly to your project with `npx nativra add <item>`.
 - 🛡️ **Own Your Code** — No runtime dependency lock-in; edit and maintain code directly.
 - 📱 **Verify Behavior** — Test on actual iOS/Android devices using Expo and React Native New Architecture.
 
@@ -42,16 +42,13 @@ nativra/
 ├── assets/                # Official brand logos, marks, and favicons
 ├── apps/
 │   ├── docs/              # Public documentation, interactive catalog & live preview (Next.js)
-│   ├── studio/            # Visual component editor, theme studio & screen builder (Next.js)
 │   └── native-preview/    # Expo app for native Android & iOS verification
 ├── packages/
 │   ├── cli/               # @nativra/cli — Install, diff, update, and rollback components
 │   ├── registry-schema/   # Zod validation schemas and TypeScript contracts
 │   ├── registry-client/   # Upstream registry client with HTTP caching and checksums
 │   ├── registry-builder/  # Compiles authored sources into registry distributions
-│   ├── codegen/           # Dual NativeWind & StyleSheet code generator
 │   ├── theme-engine/      # Semantic token model and CSS/StyleSheet adapters
-│   ├── studio-schema/     # Component controls and interactive prop schema
 │   ├── preview-runtime/   # Shared canvas runtime and test fixtures
 │   ├── component-contracts/ # Core component interfaces and accessibility contracts
 │   ├── config/            # Shared ESLint, Prettier, TypeScript, and Vitest configs
@@ -109,7 +106,7 @@ pnpm install
 # Build all packages & registry
 pnpm build
 
-# Run documentation & studio locally
+# Run documentation locally
 pnpm dev
 ```
 

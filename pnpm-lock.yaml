@@ -134,76 +134,6 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
-  apps/studio:
-    dependencies:
-      '@nativra/codegen':
-        specifier: workspace:*
-        version: link:../../packages/codegen
-      '@nativra/preview-runtime':
-        specifier: workspace:*
-        version: link:../../packages/preview-runtime
-      '@nativra/registry-client':
-        specifier: workspace:*
-        version: link:../../packages/registry-client
-      '@nativra/registry-schema':
-        specifier: workspace:*
-        version: link:../../packages/registry-schema
-      '@nativra/studio-schema':
-        specifier: workspace:*
-        version: link:../../packages/studio-schema
-      '@nativra/theme-engine':
-        specifier: workspace:*
-        version: link:../../packages/theme-engine
-      lucide-react:
-        specifier: ^1.70.0
-        version: 1.70.0(@types/react@19.3.0)(react@19.3.1)
-      next:
-        specifier: ^15.1.0
-        version: 15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      react:
-        specifier: ^19.0.0
-        version: 19.3.1
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.3.1(react@19.3.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.76
-    devDependencies:
-      '@nativra/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@types/node':
-        specifier: ^22.10.1
-        version: 22.20.5
-      '@types/react':
-        specifier: ^19.0.1
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.0.1
-        version: 19.3.0(@types/react@19.3.0)
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.6.2(postcss@8.5.32)
-      eslint:
-        specifier: ^9.16.0
-        version: 9.39.5(jiti@1.21.7)
-      eslint-config-next:
-        specifier: ^15.1.0
-        version: 15.5.29(eslint@9.39.5(jiti@1.21.7))(typescript@5.9.3)
-      postcss:
-        specifier: ^8.4.49
-        version: 8.5.32
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.4
-      tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.19(yaml@2.9.1)
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
   examples/expo-nativewind:
     dependencies:
       expo:
@@ -315,31 +245,6 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.5)(lightningcss@1.27.0)(terser@5.51.2)
 
-  packages/codegen:
-    dependencies:
-      '@nativra/registry-schema':
-        specifier: workspace:*
-        version: link:../registry-schema
-      '@nativra/studio-schema':
-        specifier: workspace:*
-        version: link:../studio-schema
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-    devDependencies:
-      '@nativra/config':
-        specifier: workspace:*
-        version: link:../config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.4
-      tsup:
-        specifier: ^8.3.5
-        version: 8.5.1(jiti@1.21.7)(postcss@8.5.32)(typescript@5.9.3)(yaml@2.9.1)
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@22.20.5)(lightningcss@1.27.0)(terser@5.51.2)
-
   packages/component-contracts:
     devDependencies:
       '@nativra/config':
@@ -441,22 +346,6 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.5)(lightningcss@1.27.0)(terser@5.51.2)
-
-  packages/studio-schema:
-    dependencies:
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.76
-    devDependencies:
-      '@nativra/config':
-        specifier: workspace:*
-        version: link:../config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.4
-      tsup:
-        specifier: ^8.3.5
-        version: 8.5.1(jiti@1.21.7)(postcss@8.5.32)(typescript@5.9.3)(yaml@2.9.1)
 
   packages/theme-engine:
     dependencies:

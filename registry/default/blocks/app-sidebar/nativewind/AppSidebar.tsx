@@ -95,7 +95,7 @@ export function AppSidebar({
           <Text className="text-base font-extrabold text-sky-400 font-mono">N</Text>
         </View>
         <View>
-          <Text className="text-sm font-bold text-white tracking-tight">Nativra Studio</Text>
+          <Text className="text-sm font-bold text-white tracking-tight">Nativra Workspace</Text>
           <Text className="text-[11px] text-zinc-400 font-mono">v4.0.0 Enterprise</Text>
         </View>
       </View>

@@ -117,10 +117,10 @@ export default function ChangelogPage() {
             <div>
               <h3 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-amber-500" />
-                <span>Nativra Studio</span>
+                <span>Interactive Documentation & Live Previews</span>
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Visual component customizer and code inspector running on Next.js 15, editing schema-defined properties with live hot reloading.
+                Full-fidelity mobile canvas previews for all 70 primitives, enterprise blocks, hooks, utilities, and screen templates with real-time controls.
               </p>
             </div>
           </div>

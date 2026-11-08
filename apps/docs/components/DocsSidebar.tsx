@@ -10,7 +10,6 @@ import {
   Terminal,
   Palette,
   Cpu,
-  Zap,
   GitPullRequest,
 } from "lucide-react";
 
@@ -168,20 +167,18 @@ export function DocsSidebar() {
       <div className="mt-8 border-t border-border pt-6 px-2">
         <div className="rounded-xl border border-border bg-muted/40 p-3 text-xs">
           <div className="flex items-center gap-1.5 font-semibold text-foreground">
-            <Zap className="h-3.5 w-3.5 text-sky-500" />
-            <span>Nativra Studio</span>
+            <Terminal className="h-3.5 w-3.5 text-sky-500" />
+            <span>Nativra CLI</span>
           </div>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Test live NativeWind styling with instant hot reloading.
+          <p className="mt-1 text-[11px] text-muted-foreground font-mono">
+            $ npx nativra add &lt;item&gt;
           </p>
-          <a
-            href="http://localhost:3001"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/docs/cli"
             className="mt-2.5 inline-flex items-center text-[11px] font-medium text-sky-600 hover:underline dark:text-sky-400"
           >
-            Launch Studio →
-          </a>
+            Explore CLI Guide →
+          </Link>
         </div>
       </div>
     </aside>

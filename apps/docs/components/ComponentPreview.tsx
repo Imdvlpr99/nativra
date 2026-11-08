@@ -1666,7 +1666,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
                 N
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight">Nativra Studio</h3>
+                <h3 className="text-sm font-bold text-white tracking-tight">Nativra Workspace</h3>
                 <p className="text-[10px] text-zinc-400 font-mono">v4.0.0 Enterprise</p>
               </div>
             </div>

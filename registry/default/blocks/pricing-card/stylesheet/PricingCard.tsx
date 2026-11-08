@@ -36,7 +36,7 @@ export function PricingCard({
     "12 foundation mobile components",
     "Dual NativeWind v4 & StyleSheet",
     "Source-first ownership, 0 runtime bloat",
-    "Interactive studio prop inspector",
+    "Interactive component canvas previews",
   ],
   buttonText = "Start 14-Day Free Trial",
   onSubscribe,

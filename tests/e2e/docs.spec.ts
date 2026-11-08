@@ -18,7 +18,7 @@ test.describe("Nativra Docs", () => {
     // Feature grid
     await expect(page.locator("text=Source ownership")).toBeVisible();
     await expect(page.locator("text=Native first")).toBeVisible();
-    await expect(page.locator("text=Studio")).toBeVisible();
+    await expect(page.locator("text=Intelligent CLI")).toBeVisible();
   });
 
   test("can navigate to components catalog", async ({ page }) => {

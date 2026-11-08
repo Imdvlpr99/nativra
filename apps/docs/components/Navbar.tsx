@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/app/contexts/ThemeContext";
-import { Search, Menu, X, ExternalLink } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { SearchDialog } from "./SearchDialog";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -92,18 +92,6 @@ export function Navbar() {
               </kbd>
             </button>
 
-            {/* Studio Link */}
-            <a
-              href="http://localhost:3001"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              title="Open Nativra Studio visual editor"
-            >
-              <span>Studio</span>
-              <ExternalLink className="h-3 w-3 opacity-60" />
-            </a>
-
             {/* GitHub Link */}
             <a
               href="https://github.com/nativra/nativra"
@@ -153,14 +141,13 @@ export function Navbar() {
                   <GithubIcon className="h-4 w-4" />
                   GitHub Repository
                 </a>
-                <a
-                  href="http://localhost:3001"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/docs/cli"
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-1 text-xs font-medium text-sky-600 dark:text-sky-400"
                 >
-                  Open Studio <ExternalLink className="h-3 w-3" />
-                </a>
+                  CLI Guide →
+                </Link>
               </div>
             </nav>
           </div>

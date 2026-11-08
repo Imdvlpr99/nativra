@@ -3,14 +3,12 @@ import Image from "next/image";
 import {
   ArrowRight,
   ShieldCheck,
-  Zap,
   Layers,
   Sparkles,
   Smartphone,
   Terminal,
   GitPullRequest,
   CheckCircle2,
-  ExternalLink,
   X,
 } from "lucide-react";
 import { HomeHeroPlayground } from "@/components/HomeHeroPlayground";
@@ -73,15 +71,13 @@ export default function HomePage() {
               Browse Components
             </Link>
 
-            <a
-              href="http://localhost:3001"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/docs/cli"
               className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300/60 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-800 transition-all hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
             >
-              <span>Open Studio</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+              <Terminal className="h-4 w-4" />
+              <span>CLI Guide</span>
+            </Link>
           </div>
 
           {/* Live Interactive Playground Hero Component */}
@@ -177,10 +173,10 @@ export default function HomePage() {
                 desc: "SHA-256 file hashing tracks modifications. The CLI detects local edits and ensures you never lose custom work on updates.",
               },
               {
-                icon: Zap,
+                icon: Terminal,
                 color: "text-blue-500 bg-blue-500/10",
-                title: "Nativra Studio",
-                desc: "A local visual inspector and hot-reloading property editor. Tweak variants and inspect mobile behavior with zero lag.",
+                title: "Intelligent CLI",
+                desc: "Automated dependency resolution, upstream diffing, atomic rollbacks, and environment doctor checks via npx nativra.",
               },
               {
                 icon: Sparkles,
@@ -258,9 +254,9 @@ export default function HomePage() {
                     nativra: "SHA-256 hash checks prevent overwriting",
                   },
                   {
-                    feature: "Visual Editor",
+                    feature: "Interactive Previews",
                     traditional: "External Storybook setup required",
-                    nativra: "Built-in Nativra Studio with live hot reload",
+                    nativra: "Live mobile device canvas for all 70 components in docs",
                   },
                 ].map((row) => (
                   <tr key={row.feature} className="hover:bg-muted/30 transition-colors">

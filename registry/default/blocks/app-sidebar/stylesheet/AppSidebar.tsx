@@ -95,7 +95,7 @@ export function AppSidebar({
           <Text style={styles.brandLogoText}>N</Text>
         </View>
         <View>
-          <Text style={styles.brandTitle}>Nativra Studio</Text>
+          <Text style={styles.brandTitle}>Nativra Workspace</Text>
           <Text style={styles.brandSubtitle}>v4.0.0 Enterprise</Text>
         </View>
       </View>
