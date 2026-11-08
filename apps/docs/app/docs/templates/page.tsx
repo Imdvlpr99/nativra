@@ -6,9 +6,12 @@ import { ComponentPreview } from "@/components/ComponentPreview";
 import { CodeViewer } from "@/components/CodeViewer";
 
 export const metadata: Metadata = {
-  title: "Screen Templates",
+  title: "React Native & Expo Screen Templates — Dashboards, Fintech, Chat & Auth",
   description:
-    "Full-screen composite mobile patterns and screen flows built with Nativra components",
+    "Copy full-screen React Native and Expo screen templates (Analytics Dashboard, Fintech Wallet, E-Commerce, Chat Flow, Onboarding, and Account Settings) into your app.",
+  alternates: {
+    canonical: "/docs/templates",
+  },
 };
 
 interface ScreenTemplate {

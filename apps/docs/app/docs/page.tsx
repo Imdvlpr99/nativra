@@ -3,8 +3,12 @@ import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Introduction",
-  description: "Introduction and getting started with Nativra",
+  title: "Introduction to Nativra — Source-First React Native & Expo UI",
+  description:
+    "Learn how Nativra brings the source-first philosophy of shadcn/ui to React Native and Expo with dual NativeWind v4 and StyleSheet styling parity.",
+  alternates: {
+    canonical: "/docs",
+  },
 };
 
 export default function DocsPage() {

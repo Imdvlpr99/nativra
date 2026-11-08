@@ -2,8 +2,12 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "NativeWind v4 Guide",
-  description: "Complete setup and configuration guide for using NativeWind v4 with Nativra",
+  title: "NativeWind v4 Setup Guide — Tailwind CSS for React Native & Expo",
+  description:
+    "Complete configuration guide for using Nativra UI components with NativeWind v4, Tailwind CSS variables, Metro bundler, and dark mode in Expo.",
+  alternates: {
+    canonical: "/docs/styling/nativewind",
+  },
 };
 
 export default function NativeWindGuidePage() {

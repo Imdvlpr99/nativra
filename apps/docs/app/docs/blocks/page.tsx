@@ -4,8 +4,12 @@ import { CodeViewer } from "@/components/CodeViewer";
 import { ComponentPreview } from "@/components/ComponentPreview";
 
 export const metadata: Metadata = {
-  title: "Blocks",
-  description: "Pre-composed React Native UI sections built with Nativra components",
+  title: "React Native UI Blocks — Pre-Composed Mobile Sections & Cards",
+  description:
+    "Explore 16 production-ready composite React Native UI blocks (KPI cards, login forms, filter sheets, pricing cards, and activity timelines) with automatic dependency resolution.",
+  alternates: {
+    canonical: "/docs/blocks",
+  },
 };
 
 export default async function BlocksPage() {

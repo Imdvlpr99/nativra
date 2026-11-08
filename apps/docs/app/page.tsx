@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -13,9 +14,64 @@ import {
 } from "lucide-react";
 import { HomeHeroPlayground } from "@/components/HomeHeroPlayground";
 
+export const metadata: Metadata = {
+  title:
+    "Nativra — Source-First React Native & Expo UI Components (shadcn/ui for Mobile)",
+  description:
+    "Copy production-ready React Native & Expo UI components, composite blocks, and screen templates directly into your codebase. Dual NativeWind v4 and StyleSheet parity with zero runtime lock-in.",
+  alternates: {
+    canonical: "/",
+  },
+};
+
+const homepageFaqItems = [
+  {
+    question: "What is Nativra and how does it compare to shadcn/ui for React Native?",
+    answer:
+      "Nativra brings the source-first philosophy of shadcn/ui to React Native and Expo. Instead of locking your UI inside an opaque node_modules package, running `npx nativra-cli add button` copies clean, typed TypeScript component source code directly into your repository (`components/ui/Button.tsx`) so you own and customize every line.",
+  },
+  {
+    question: "Does Nativra support both NativeWind v4 and React Native StyleSheet?",
+    answer:
+      "Yes. Every single Nativra primitive, composite block, and screen template is engineered with 1:1 visual and behavioral parity across both NativeWind v4 (Tailwind CSS for React Native) and pure React Native StyleSheet—with zero runtime styling lock-in.",
+  },
+  {
+    question: "How do I install Nativra components in an Expo or React Native project?",
+    answer:
+      "Run `npx nativra-cli init` in your Expo or React Native project to generate `nativra.json`, then install any component, block, or template with `npx nativra-cli add <name>` (for example, `npx nativra-cli add button card dialog`).",
+  },
+  {
+    question: "Is Nativra compatible with Expo SDK 52+ and React Native's New Architecture (Bridgeless / Fabric)?",
+    answer:
+      "Yes. All 31 Nativra components, 16 blocks, 8 screen templates, and 4 mobile hooks are tested for React Native 0.76+, Expo SDK 52+, Bridgeless mode, Fabric renderer, iOS VoiceOver, and Android TalkBack accessibility.",
+  },
+  {
+    question: "How does Nativra prevent overwriting my local component customizations during updates?",
+    answer:
+      "Nativra records SHA-256 checksums of installed files in `nativra.lock.json`. Before updating or removing any component, `nativra-cli` verifies whether you modified the file locally, lets you inspect changes via `npx nativra-cli diff`, and supports atomic rollback.",
+  },
+];
+
+const homepageFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: homepageFaqItems.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+
 export default function HomePage() {
   return (
     <div className="flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd) }}
+      />
       {/* ------------------------------------------------------------------- */}
       {/* Hero Section */}
       {/* ------------------------------------------------------------------- */}
@@ -279,6 +335,38 @@ export default function HomePage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------- */}
+      {/* FAQ Section (SEO & Developer Answers) */}
+      {/* ------------------------------------------------------------------- */}
+      <section className="border-t border-border px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl space-y-10">
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+              Everything you need to know about adopting Nativra in your React Native and Expo applications.
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            {homepageFaqItems.map((faq) => (
+              <div
+                key={faq.question}
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-2"
+              >
+                <h3 className="text-base font-bold text-foreground">
+                  {faq.question}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

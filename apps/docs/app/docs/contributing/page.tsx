@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contribution Guide",
+  title: "Contribution Guide — Authoring React Native Components for Nativra",
   description:
-    "How to author, test, and contribute new React Native components to the Nativra registry",
+    "Learn how to author, test, and contribute new React Native components, blocks, and templates to the open-source Nativra registry.",
+  alternates: {
+    canonical: "/docs/contributing",
+  },
 };
 
 export default function ContributingPage() {

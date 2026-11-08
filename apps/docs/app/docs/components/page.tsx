@@ -4,8 +4,12 @@ import { getManifest } from "@/lib/registry";
 import { ChevronRight, Terminal } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Components Catalog",
-  description: "Browse all 31 production-ready Nativra React Native components",
+  title: "31+ React Native & Expo UI Components Catalog (NativeWind & StyleSheet)",
+  description:
+    "Browse all 31 production-ready, accessible Nativra React Native and Expo UI primitives with interactive previews, NativeWind v4, and StyleSheet code.",
+  alternates: {
+    canonical: "/docs/components",
+  },
 };
 
 interface ComponentCategory {

@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { ThemeGallery } from "@/components/ThemeGallery";
 
 export const metadata: Metadata = {
-  title: "Theme Engine & Design Tokens",
-  description: "Semantic tokens, interactive theme gallery, and styling adapters in Nativra",
+  title: "Theme Engine & Design Tokens — Dark Mode & Presets for React Native",
+  description:
+    "Explore Nativra's 3-layer design token system, interactive theme gallery, and automatic CSS variable / StyleSheet token compilers for React Native.",
+  alternates: {
+    canonical: "/docs/theming",
+  },
 };
 
 export default function ThemingPage() {

@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Installation Guide",
-  description: "Get started with Nativra in your React Native or Expo project",
+  title: "Installation Guide — Set Up Nativra in Expo & React Native",
+  description:
+    "Step-by-step installation guide to initialize Nativra (`npx nativra-cli init`) in your Expo SDK 52+ or React Native 0.76+ project in under two minutes.",
+  alternates: {
+    canonical: "/docs/installation",
+  },
 };
 
 export default function InstallationPage() {

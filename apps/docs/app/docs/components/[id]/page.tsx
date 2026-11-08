@@ -30,9 +30,45 @@ export async function generateMetadata({
   if (!item) {
     return { title: "Component Not Found" };
   }
+  const title = `React Native ${item.name} Component (NativeWind & StyleSheet)`;
+  const description = `${item.description} Copy-paste React Native & Expo ${item.name} component source code with full NativeWind v4 and StyleSheet parity, accessibility, and TypeScript types. Install with npx nativra-cli add ${item.id}.`;
+
   return {
-    title: `${item.name} — Nativra Components`,
-    description: item.description,
+    title,
+    description,
+    keywords: [
+      item.name,
+      `React Native ${item.name}`,
+      `React Native ${item.name} component`,
+      `Expo ${item.name} component`,
+      `NativeWind ${item.name}`,
+      `React Native StyleSheet ${item.name}`,
+      `Nativra ${item.name}`,
+      ...(item.tags ?? []),
+    ],
+    alternates: {
+      canonical: `/docs/components/${item.id}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `https://nativra.vercel.app/docs/components/${item.id}`,
+      title: `${title} | Nativra`,
+      description,
+      images: [
+        {
+          url: "/nativra-banner.png",
+          width: 1024,
+          height: 576,
+          alt: `Nativra React Native ${item.name} Component`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | Nativra`,
+      description,
+      images: ["/nativra-banner.png"],
+    },
   };
 }
 
@@ -252,8 +288,65 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
 
   const propsList = COMPONENT_PROPS_MAP[item.id] || [];
 
+  const componentJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://nativra.vercel.app",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Docs",
+            item: "https://nativra.vercel.app/docs",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Components",
+            item: "https://nativra.vercel.app/docs/components",
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: item.name,
+            item: `https://nativra.vercel.app/docs/components/${item.id}`,
+          },
+        ],
+      },
+      {
+        "@type": "TechArticle",
+        headline: `React Native ${item.name} Component — Nativra`,
+        description: item.description,
+        url: `https://nativra.vercel.app/docs/components/${item.id}`,
+        author: {
+          "@type": "Organization",
+          name: "Nativra",
+          url: "https://nativra.vercel.app",
+        },
+        about: {
+          "@type": "SoftwareSourceCode",
+          name: item.name,
+          programmingLanguage: "TypeScript",
+          runtimePlatform: "React Native & Expo",
+          codeRepository: "https://github.com/Imdvlpr99/nativra",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(componentJsonLd) }}
+      />
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <Link href="/docs" className="hover:text-foreground transition-colors">

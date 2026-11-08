@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { Terminal } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "CLI Command Reference",
-  description: "Complete command-line interface reference for Nativra",
+  title: "CLI Command Reference (nativra-cli) — Init, Add, Diff & Doctor",
+  description:
+    "Complete CLI reference for `nativra-cli`: initialize projects, add React Native components, inspect SHA-256 diffs, run doctor checks, and manage themes.",
+  alternates: {
+    canonical: "/docs/cli",
+  },
 };
 
 const COMMANDS = [

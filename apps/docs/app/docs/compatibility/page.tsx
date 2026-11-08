@@ -11,9 +11,12 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Platform Compatibility Matrix",
+  title: "Platform Compatibility Matrix — iOS, Android, Expo Go & New Architecture",
   description:
-    "Comprehensive compatibility matrix for Nativra components across Android, iOS, Expo Go, and the New Architecture",
+    "Verified compatibility matrix for all Nativra components across iOS, Android, Expo Go, React Native 0.76+ New Architecture (Bridgeless & Fabric), and VoiceOver/TalkBack.",
+  alternates: {
+    canonical: "/docs/compatibility",
+  },
 };
 
 interface MatrixItem {

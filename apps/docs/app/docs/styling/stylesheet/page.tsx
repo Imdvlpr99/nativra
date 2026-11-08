@@ -2,8 +2,12 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "React Native StyleSheet Guide",
-  description: "Using Nativra components with pure React Native StyleSheet without third-party styling runtimes",
+  title: "React Native StyleSheet Guide — Zero-Dependency Native UI Styling",
+  description:
+    "Learn how to use Nativra components with pure React Native StyleSheet—zero CSS build steps, zero Babel plugins, and 100% native runtime speed.",
+  alternates: {
+    canonical: "/docs/styling/stylesheet",
+  },
 };
 
 export default function StyleSheetGuidePage() {

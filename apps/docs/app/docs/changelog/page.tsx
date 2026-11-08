@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { Sparkles, CheckCircle2, Terminal, Layers } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Changelog",
-  description: "Release history, roadmap updates, and feature changelog for Nativra",
+  title: "Changelog & Release Notes — Nativra UI & CLI Updates",
+  description:
+    "Release history, new React Native components, CLI improvements, and platform updates for Nativra and nativra-cli.",
+  alternates: {
+    canonical: "/docs/changelog",
+  },
 };
 
 export default function ChangelogPage() {

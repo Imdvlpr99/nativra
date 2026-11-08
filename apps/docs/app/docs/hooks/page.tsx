@@ -4,8 +4,12 @@ import { CodeViewer } from "@/components/CodeViewer";
 import { ComponentPreview } from "@/components/ComponentPreview";
 
 export const metadata: Metadata = {
-  title: "Hooks",
-  description: "Essential React Native hooks provided by Nativra",
+  title: "React Native Mobile Hooks — Haptics, Keyboard, Color Scheme & Disclosure",
+  description:
+    "Source-owned React Native hooks (`useHaptics`, `useKeyboard`, `useColorScheme`, `useDisclosure`) built for mobile gestures, modals, and hardware integration.",
+  alternates: {
+    canonical: "/docs/hooks",
+  },
 };
 
 export default async function HooksPage() {

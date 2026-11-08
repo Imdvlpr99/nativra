@@ -9,8 +9,12 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Principles & Architecture",
-  description: "Core architectural philosophy and design principles behind Nativra",
+  title: "Principles & Architecture — Why Source-First UI Beats Runtime Libraries",
+  description:
+    "Discover the architectural principles behind Nativra: 100% source code ownership, dual NativeWind/StyleSheet parity, SHA-256 lockfile safety, and native accessibility.",
+  alternates: {
+    canonical: "/docs/principles",
+  },
 };
 
 export default function PrinciplesPage() {
