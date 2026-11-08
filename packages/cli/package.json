@@ -1,5 +1,5 @@
 {
-  "name": "@nativra/cli",
+  "name": "nativra",
   "version": "0.1.0",
   "description": "Nativra CLI — add, update, diff, and manage UI components in your React Native project",
   "license": "MIT",

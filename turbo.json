@@ -30,7 +30,7 @@
       ],
       "outputs": []
     },
-    "@nativra/cli#test": {
+    "nativra#test": {
       "dependsOn": [
         "^build",
         "build"

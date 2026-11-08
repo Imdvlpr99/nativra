@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/nativra/nativra/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square&logo=github" alt="CI Status" /></a>
-  <a href="https://npmjs.com/package/@nativra/cli"><img src="https://img.shields.io/badge/npm-v0.1.0-sky?style=flat-square&logo=npm" alt="npm package" /></a>
+  <a href="https://npmjs.com/package/nativra"><img src="https://img.shields.io/badge/npm-v0.1.0-sky?style=flat-square&logo=npm" alt="npm package" /></a>
   <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.76+-22c55e?style=flat-square&logo=react" alt="React Native 0.76+" /></a>
   <a href="https://expo.dev"><img src="https://img.shields.io/badge/Expo-SDK%2052+-000000?style=flat-square&logo=expo" alt="Expo SDK 52+" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
@@ -44,7 +44,7 @@ nativra/
 │   ├── docs/              # Public documentation, interactive catalog & live preview (Next.js)
 │   └── native-preview/    # Expo app for native Android & iOS verification
 ├── packages/
-│   ├── cli/               # @nativra/cli — Install, diff, update, and rollback components
+│   ├── cli/               # nativra — Install, diff, update, and rollback components
 │   ├── registry-schema/   # Zod validation schemas and TypeScript contracts
 │   ├── registry-client/   # Upstream registry client with HTTP caching and checksums
 │   ├── registry-builder/  # Compiles authored sources into registry distributions
