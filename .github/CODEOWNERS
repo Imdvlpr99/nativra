@@ -1,0 +1,10 @@
+# Default owner for everything in the repository
+* @Imdvlpr99
+
+# High-sensitivity paths requiring explicit owner review
+/.github/ @Imdvlpr99
+/packages/cli/ @Imdvlpr99
+/packages/registry-builder/ @Imdvlpr99
+/packages/registry-schema/ @Imdvlpr99
+/registry/ @Imdvlpr99
+/scripts/ @Imdvlpr99
