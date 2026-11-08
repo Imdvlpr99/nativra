@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add metric-card
+ * Install: npx nativra-cli add metric-card
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";

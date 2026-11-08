@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add mini-sparkline-card
+ * Install: npx nativra-cli add mini-sparkline-card
  */
 import React from "react";
 import { View, Text, StyleSheet, type ViewProps } from "react-native";

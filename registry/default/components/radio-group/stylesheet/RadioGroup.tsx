@@ -1,4 +1,4 @@
-/** Nativra — RadioGroup (StyleSheet). Install: npx nativra add radio-group */
+/** Nativra — RadioGroup (StyleSheet). Install: npx nativra-cli add radio-group */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
 

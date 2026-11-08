@@ -1,4 +1,4 @@
-/** Nativra — Accordion (NativeWind). Install: npx nativra add accordion */
+/** Nativra — Accordion (NativeWind). Install: npx nativra-cli add accordion */
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 

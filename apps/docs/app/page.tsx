@@ -113,12 +113,12 @@ export default function HomePage() {
             <div className="pt-3 space-y-1.5 text-zinc-300">
               <div>
                 <span className="text-zinc-500">$ </span>
-                <span className="text-sky-400">npx nativra init</span>
+                <span className="text-sky-400">npx nativra-cli init</span>
               </div>
               <div className="text-zinc-400 pl-4">✓ Created nativra.json (target: NativeWind)</div>
               <div className="pt-1">
                 <span className="text-zinc-500">$ </span>
-                <span className="text-sky-400">npx nativra add button input card badge</span>
+                <span className="text-sky-400">npx nativra-cli add button input card badge</span>
               </div>
               <div className="text-emerald-400 pl-4">✓ Written: components/ui/Button.tsx</div>
               <div className="text-emerald-400 pl-4">✓ Written: components/ui/Input.tsx</div>

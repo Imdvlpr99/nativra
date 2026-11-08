@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add fintech-wallet
+ * Install: npx nativra-cli add fintech-wallet
  */
 import React, { useState } from "react";
 import {

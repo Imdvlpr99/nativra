@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/nativra/nativra/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square&logo=github" alt="CI Status" /></a>
-  <a href="https://npmjs.com/package/nativra-cli"><img src="https://img.shields.io/badge/npm-v0.1.0-sky?style=flat-square&logo=npm" alt="npm package" /></a>
+  <a href="https://npmjs.com/package/nativra-cli"><img src="https://img.shields.io/badge/npm-v0.1.1-sky?style=flat-square&logo=npm" alt="npm package" /></a>
   <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.76+-22c55e?style=flat-square&logo=react" alt="React Native 0.76+" /></a>
   <a href="https://expo.dev"><img src="https://img.shields.io/badge/Expo-SDK%2052+-000000?style=flat-square&logo=expo" alt="Expo SDK 52+" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
@@ -29,7 +29,7 @@ Developers use Nativra to:
 - 🔍 **Discover** — 70+ high-fidelity primitives, hooks, utilities, themes, blocks, and full-screen templates.
 - 📱 **Preview & Inspect** — Interactive real-time mobile canvas inside the documentation site.
 - 🎨 **Customize & Theme** — Tailor design tokens, radii, and semantic colors for NativeWind v4 and React Native StyleSheet.
-- ⚡ **Install** — Add TypeScript sources directly to your project with `npx nativra add <item>`.
+- ⚡ **Install** — Add TypeScript sources directly to your project with `npx nativra-cli add <item>`.
 - 🛡️ **Own Your Code** — No runtime dependency lock-in; edit and maintain code directly.
 - 📱 **Verify Behavior** — Test on actual iOS/Android devices using Expo and React Native New Architecture.
 
@@ -68,20 +68,20 @@ nativra/
 ### Initialize in your project
 
 ```bash
-npx nativra init
+npx nativra-cli init
 ```
 
 ### Add components
 
 ```bash
 # Add primitives
-npx nativra add button input card
+npx nativra-cli add button input card
 
 # Add composite blocks
-npx nativra add app-header order-summary stat-progress-card
+npx nativra-cli add app-header order-summary stat-progress-card
 
 # Add complete screen templates
-npx nativra add analytics-dashboard fintech-wallet
+npx nativra-cli add analytics-dashboard fintech-wallet
 ```
 
 ---

@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add empty-state
+ * Install: npx nativra-cli add empty-state
  */
 import React from "react";
 import { View } from "react-native";

@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add transaction-row
+ * Install: npx nativra-cli add transaction-row
  */
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, Text as RNText } from "react-native";

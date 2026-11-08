@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add pricing-card
+ * Install: npx nativra-cli add pricing-card
  */
 import React from "react";
 import { View } from "react-native";

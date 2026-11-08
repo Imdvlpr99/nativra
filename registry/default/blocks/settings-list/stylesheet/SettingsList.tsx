@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add settings-list
+ * Install: npx nativra-cli add settings-list
  */
 import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";

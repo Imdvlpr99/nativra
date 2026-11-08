@@ -215,7 +215,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
   }, [item]);
 
   const copyCommand = () => {
-    const textToCopy = copyMode === "cli" ? `npx nativra add ${item.id}` : importSnippet;
+    const textToCopy = copyMode === "cli" ? `npx nativra-cli add ${item.id}` : importSnippet;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -2054,7 +2054,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
               ))}
             </div>
             <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[10px] text-zinc-400 border border-zinc-800/80">
-              $ npx nativra add {item.id}
+              $ npx nativra-cli add {item.id}
             </div>
           </div>
         );
@@ -2506,7 +2506,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
             {copyMode === "cli" ? (
               <>
                 <span className="text-muted-foreground">$</span>
-                <span className="text-foreground">npx nativra add {item.id}</span>
+                <span className="text-foreground">npx nativra-cli add {item.id}</span>
               </>
             ) : (
               <span className="text-foreground font-medium">{importSnippet}</span>

@@ -1,4 +1,4 @@
-/** Nativra — useDisclosure. Install: npx nativra add use-disclosure */
+/** Nativra — useDisclosure. Install: npx nativra-cli add use-disclosure */
 import { useCallback, useState } from "react";
 
 export function useDisclosure(initial = false) {

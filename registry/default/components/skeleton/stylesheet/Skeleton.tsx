@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add skeleton
+ * Install: npx nativra-cli add skeleton
  */
 import React, { useEffect, useRef } from "react";
 import {

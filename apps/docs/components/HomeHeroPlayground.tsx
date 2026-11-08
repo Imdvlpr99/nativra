@@ -31,7 +31,7 @@ export function HomeHeroPlayground() {
   const [switchOn, setSwitchOn] = useState(true);
 
   const getCliCommand = () => {
-    return `npx nativra add ${activeTab}`;
+    return `npx nativra-cli add ${activeTab}`;
   };
 
   const copyCli = () => {

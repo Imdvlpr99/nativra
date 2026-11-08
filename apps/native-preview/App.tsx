@@ -883,7 +883,7 @@ export default function App() {
 
   // Copy CLI command helper
   const handleCopy = (id: string) => {
-    const cmd = `npx nativra add ${id}`;
+    const cmd = `npx nativra-cli add ${id}`;
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(cmd);
     }
@@ -1160,7 +1160,7 @@ export default function App() {
                     Fixture: <Text style={{ color: theme.textSecondary, fontWeight: "600" }}>{currentFixture.name}</Text>
                   </Text>
                   <Text style={[styles.footerCli, { color: theme.textMuted }]}>
-                    npx nativra add {id}
+                    npx nativra-cli add {id}
                   </Text>
                 </View>
               </View>
@@ -1302,7 +1302,7 @@ export default function App() {
         {/* Floating Copied Toast Pill */}
         {copiedId && (
           <View style={[styles.floatingToast, { backgroundColor: "#10b981" }]}>
-            <Text style={styles.floatingToastText}>✓ Copied to clipboard: npx nativra add {copiedId}</Text>
+            <Text style={styles.floatingToastText}>✓ Copied to clipboard: npx nativra-cli add {copiedId}</Text>
           </View>
         )}
 

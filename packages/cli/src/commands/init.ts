@@ -112,7 +112,7 @@ export function registerInitCommand(program: Command) {
       console.log(chalk.gray(JSON.stringify(config, null, 2)));
       console.log(
         chalk.bold("\n✅ Done! Run ") +
-          chalk.cyan("npx nativra add button") +
+          chalk.cyan("npx nativra-cli add button") +
           chalk.bold(" to install your first component.\n")
       );
     });

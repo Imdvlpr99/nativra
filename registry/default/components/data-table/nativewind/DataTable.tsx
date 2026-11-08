@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add data-table
+ * Install: npx nativra-cli add data-table
  */
 import React from "react";
 import {

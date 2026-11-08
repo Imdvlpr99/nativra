@@ -44,7 +44,7 @@ export default function PrinciplesPage() {
             When you install a traditional UI library via <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npm install &lt;library&gt;</code>, your project inherits its build setup, hidden dependencies, and rigid abstraction boundaries. When you inevitably need to tweak an Android elevation shadow, adjust touch hit-slops, or migrate to a new React Native architecture, you are stuck waiting on an upstream release.
           </p>
           <p>
-            With Nativra, you run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npx nativra add &lt;component&gt;</code> and the exact, readable TypeScript source file is copied into your repository&apos;s <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/</code> folder. You can commit it to Git, edit any line, and refactor whenever you need to.
+            With Nativra, you run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npx nativra-cli add &lt;component&gt;</code> and the exact, readable TypeScript source file is copied into your repository&apos;s <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/</code> folder. You can commit it to Git, edit any line, and refactor whenever you need to.
           </p>
         </div>
       </section>

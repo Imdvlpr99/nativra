@@ -4,7 +4,7 @@
  * @target stylesheet
  * @platforms android, ios
  *
- * Install: npx nativra add badge
+ * Install: npx nativra-cli add badge
  */
 import React from "react";
 import { View, Text, StyleSheet, useColorScheme, type ViewStyle, type TextStyle } from "react-native";

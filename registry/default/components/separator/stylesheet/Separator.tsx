@@ -1,4 +1,4 @@
-/** Nativra — Separator (StyleSheet). Install: npx nativra add separator */
+/** Nativra — Separator (StyleSheet). Install: npx nativra-cli add separator */
 import React from "react";
 import { StyleSheet, View, useColorScheme } from "react-native";
 

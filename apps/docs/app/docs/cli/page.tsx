@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const COMMANDS = [
   {
-    cmd: "npx nativra init",
+    cmd: "npx nativra-cli init",
     desc: "Initialize Nativra in an Expo or React Native project with intelligent environment auto-detection. Detects Expo SDK vs bare React Native, TypeScript, NativeWind vs StyleSheet, package managers (pnpm/yarn/bun/npm), and src/ directory structure.",
     flags: [
       "--yes (Accept detected defaults without prompting)",
@@ -16,7 +16,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra add <...components>",
+    cmd: "npx nativra-cli add <...components>",
     desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, supports atomic rollback on failure, and records exact file locations in nativra.lock.json.",
     flags: [
       "--yes (Skip interactive prompts; preserves existing files unless --overwrite is set)",
@@ -28,7 +28,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra remove <...components>",
+    cmd: "npx nativra-cli remove <...components>",
     desc: "Safely remove installed components, blocks, or hooks. Checks local file modifications against the lockfile, removes component files, prunes empty directories, and updates nativra.lock.json.",
     flags: [
       "--yes (Skip interactive prompts)",
@@ -37,7 +37,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra list",
+    cmd: "npx nativra-cli list",
     desc: "List all items available in the configured registry (components, hooks, blocks, themes, utilities).",
     flags: [
       "--type <type> (Filter by item type: component/primitive, hook, utility, block, template, theme)",
@@ -46,7 +46,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra search <query>",
+    cmd: "npx nativra-cli search <query>",
     desc: "Search registry items by keyword, tag, or component name.",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
@@ -54,7 +54,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra info <id>",
+    cmd: "npx nativra-cli info <id>",
     desc: "Display detailed metadata, version, styling targets, platform support, and file list for any registry item.",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
@@ -62,7 +62,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra diff [component]",
+    cmd: "npx nativra-cli diff [component]",
     desc: "Compare your installed local component files with the upstream registry source to inspect any modifications.",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
@@ -70,7 +70,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra update [component]",
+    cmd: "npx nativra-cli update [component]",
     desc: "Safely update installed components to their latest registry version. Automatically creates a verified backup manifest before modifying files.",
     flags: [
       "--force (Overwrite local modifications)",
@@ -79,14 +79,14 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra rollback <component>",
+    cmd: "npx nativra-cli rollback <component>",
     desc: "Restore an updated component to its previous state using the manifest-driven backup system.",
     flags: [
       "--cwd <dir> (Explicit working directory)",
     ],
   },
   {
-    cmd: "npx nativra doctor",
+    cmd: "npx nativra-cli doctor",
     desc: "Diagnose your project environment: verifies package.json, Expo setup, TypeScript, and nativra.json integrity. Supports automated configuration recovery with --fix.",
     flags: [
       "--fix (Automatically resolve or scaffold missing configurations and files)",
@@ -94,7 +94,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra theme list",
+    cmd: "npx nativra-cli theme list",
     desc: "List available theme token sets in the registry (zinc, dark-slate, midnight, cyberpunk, emerald, etc.).",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
@@ -102,7 +102,7 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra theme add <theme-id>",
+    cmd: "npx nativra-cli theme add <theme-id>",
     desc: "Install a theme into your project (e.g. lib/themes/midnight.ts or CSS variables).",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
@@ -110,21 +110,21 @@ const COMMANDS = [
     ],
   },
   {
-    cmd: "npx nativra registry add <name> <url>",
+    cmd: "npx nativra-cli registry add <name> <url>",
     desc: "Register a custom private or community registry URL.",
     flags: [
       "--cwd <dir> (Explicit working directory)",
     ],
   },
   {
-    cmd: "npx nativra registry list",
+    cmd: "npx nativra-cli registry list",
     desc: "List all configured registries.",
     flags: [
       "--cwd <dir> (Explicit working directory)",
     ],
   },
   {
-    cmd: "npx nativra registry remove <name>",
+    cmd: "npx nativra-cli registry remove <name>",
     desc: "Remove a configured registry source.",
     flags: [
       "--cwd <dir> (Explicit working directory)",

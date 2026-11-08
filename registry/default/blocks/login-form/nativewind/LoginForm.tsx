@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add login-form
+ * Install: npx nativra-cli add login-form
  */
 import React, { useState } from "react";
 import { View } from "react-native";

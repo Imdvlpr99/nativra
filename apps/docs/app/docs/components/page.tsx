@@ -93,7 +93,7 @@ export default async function ComponentsPage() {
           <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 font-mono text-xs">
             <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-muted-foreground">$</span>
-            <span className="text-foreground">npx nativra add &lt;component-name&gt;</span>
+            <span className="text-foreground">npx nativra-cli add &lt;component-name&gt;</span>
           </div>
         </div>
       </div>

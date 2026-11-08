@@ -1,4 +1,4 @@
-/** Nativra — Dialog (StyleSheet). Install: npx nativra add dialog */
+/** Nativra — Dialog (StyleSheet). Install: npx nativra-cli add dialog */
 import React from "react";
 import { Modal, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
 

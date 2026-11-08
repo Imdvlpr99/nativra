@@ -1,4 +1,4 @@
-/** Nativra — useKeyboard. Install: npx nativra add use-keyboard */
+/** Nativra — useKeyboard. Install: npx nativra-cli add use-keyboard */
 import { useEffect, useState } from "react";
 import { Keyboard, type KeyboardEvent } from "react-native";
 

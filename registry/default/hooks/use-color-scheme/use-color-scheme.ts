@@ -1,4 +1,4 @@
-/** Nativra — useColorScheme. Install: npx nativra add use-color-scheme */
+/** Nativra — useColorScheme. Install: npx nativra-cli add use-color-scheme */
 import { useEffect, useState, useCallback } from "react";
 import { useColorScheme as useRNColorScheme, Appearance } from "react-native";
 

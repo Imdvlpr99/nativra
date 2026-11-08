@@ -1,4 +1,4 @@
-/** Nativra — Toast (NativeWind). Install: npx nativra add toast */
+/** Nativra — Toast (NativeWind). Install: npx nativra-cli add toast */
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 

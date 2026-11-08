@@ -1,4 +1,4 @@
-/** Nativra — useHaptics. Install: npx nativra add use-haptics */
+/** Nativra — useHaptics. Install: npx nativra-cli add use-haptics */
 import { useCallback } from "react";
 import { Platform } from "react-native";
 

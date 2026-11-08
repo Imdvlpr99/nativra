@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add progress
+ * Install: npx nativra-cli add progress
  */
 import React from "react";
 import { View, type ViewProps } from "react-native";

@@ -29,7 +29,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Metronic-inspired executive analytics screen featuring 2x2 KPI metrics, 7d/30d filter pills, acquisition channel progress bars, and recent financial activity ledger.",
     componentsUsed: ["card", "badge", "button", "separator", "tabs", "text", "metric-card"],
-    installCommand: "npx nativra add analytics-dashboard",
+    installCommand: "npx nativra-cli add analytics-dashboard",
     previewHighlights: [
       "Revenue, Active Users, Conversion & Churn KPI cards",
       "Interactive 24h / 7d / 30d / YTD time window switcher",
@@ -44,7 +44,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Curated mobile storefront with promotional hero banner, category pills, product grid cards with star ratings, and floating cart drawer.",
     componentsUsed: ["card", "badge", "button", "separator", "text", "order-summary"],
-    installCommand: "npx nativra add ecommerce-flow",
+    installCommand: "npx nativra-cli add ecommerce-flow",
     previewHighlights: [
       "Featured hero showcase with limited edition badge",
       "Dynamic category filtering pills",
@@ -59,7 +59,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "High-impact personal finance wallet featuring total net worth header, Send/Receive/Swap action pills, multi-asset allocation cards, and recent ledger.",
     componentsUsed: ["card", "badge", "button", "separator", "text"],
-    installCommand: "npx nativra add fintech-wallet",
+    installCommand: "npx nativra-cli add fintech-wallet",
     previewHighlights: [
       "Total valuation card with privacy hide/reveal balance toggle",
       "One-tap quick action bar for Send, Receive, and Swap",
@@ -74,7 +74,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Enterprise SaaS account management hub featuring profile administration, organization seat quota tracking, active device session revocation, and invoice history ledger.",
     componentsUsed: ["card", "badge", "button", "separator", "segmented-control", "text", "switch"],
-    installCommand: "npx nativra add account-settings-flow",
+    installCommand: "npx nativra-cli add account-settings-flow",
     previewHighlights: [
       "Profile & organization details management",
       "Team seat utilization progress bar (8/10 active)",
@@ -89,7 +89,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Full-featured mobile messaging flow featuring multi-tab inbox threads, message speech bubbles, online indicator status, and keyboard-aware input bar.",
     componentsUsed: ["card", "badge", "button", "separator", "text", "avatar"],
-    installCommand: "npx nativra add chat-flow",
+    installCommand: "npx nativra-cli add chat-flow",
     previewHighlights: [
       "Filterable inbox threads (All / Support / Direct)",
       "Sent vs received speech bubbles with read-receipt checkmarks",
@@ -104,7 +104,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "A complete sign-in and account creation screen with input validation, password reveal state, social provider separator, and primary press actions.",
     componentsUsed: ["button", "input", "card", "separator", "text"],
-    installCommand: "npx nativra add auth-flow",
+    installCommand: "npx nativra-cli add auth-flow",
     previewHighlights: [
       "Auto-capitalization and keyboardType presets",
       "Inline error validation and helper messages",
@@ -118,7 +118,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Multi-step walkthrough carousel with pagination indicator dots, rich feature highlights, skip action, and final get started CTA.",
     componentsUsed: ["button", "card", "badge", "text"],
-    installCommand: "npx nativra add onboarding-flow",
+    installCommand: "npx nativra-cli add onboarding-flow",
     previewHighlights: [
       "Step pagination with animated dot indicator",
       "Feature highlights with icon badges",
@@ -132,7 +132,7 @@ const TEMPLATES: ScreenTemplate[] = [
     description:
       "Comprehensive mobile settings screen featuring user profile card, notification toggle switches, dark mode preference, and security options.",
     componentsUsed: ["avatar", "badge", "card", "switch", "separator", "button"],
-    installCommand: "npx nativra add settings-flow",
+    installCommand: "npx nativra-cli add settings-flow",
     previewHighlights: [
       "Avatar with fallback initials",
       "Accessible toggle switches for push alerts",

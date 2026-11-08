@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add notification-item --target stylesheet
+ * Install: npx nativra-cli add notification-item --target stylesheet
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";

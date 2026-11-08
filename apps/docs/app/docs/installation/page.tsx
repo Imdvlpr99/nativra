@@ -55,7 +55,7 @@ export default function InstallationPage() {
             Run the initialization command. It detects your package manager, TypeScript configuration, and prompts for your preferred styling target (NativeWind v4 or React Native StyleSheet).
           </p>
           <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-            npx nativra init
+            npx nativra-cli init
           </pre>
           <p className="text-xs text-muted-foreground">
             This creates a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra.json</code> configuration file in your project root.
@@ -76,7 +76,7 @@ export default function InstallationPage() {
             Install the components you need into your project with a single command:
           </p>
           <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-            npx nativra add button input card
+            npx nativra-cli add button input card
           </pre>
           <p className="text-xs text-muted-foreground">
             Files are written directly into <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/</code>.

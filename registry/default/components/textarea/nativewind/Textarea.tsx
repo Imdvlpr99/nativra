@@ -1,4 +1,4 @@
-/** Nativra — Textarea (NativeWind). Install: npx nativra add textarea */
+/** Nativra — Textarea (NativeWind). Install: npx nativra-cli add textarea */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 

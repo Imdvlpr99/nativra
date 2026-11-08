@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add kpi-comparison-card
+ * Install: npx nativra-cli add kpi-comparison-card
  */
 import React from "react";
 import { StyleSheet, View, Text as RNText } from "react-native";

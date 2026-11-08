@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add segmented-control
+ * Install: npx nativra-cli add segmented-control
  */
 import React, { useEffect, useRef, useState } from "react";
 import {

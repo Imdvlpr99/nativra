@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add filter-sheet
+ * Install: npx nativra-cli add filter-sheet
  */
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, ScrollView, Text as RNText } from "react-native";

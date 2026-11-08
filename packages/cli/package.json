@@ -1,6 +1,6 @@
 {
   "name": "nativra-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Nativra CLI — add, update, diff, and manage UI components in your React Native project",
   "license": "MIT",
   "type": "module",

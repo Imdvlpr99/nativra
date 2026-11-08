@@ -45,7 +45,7 @@ export function registerAddCommand(program: Command) {
 
         if (!components || components.length === 0) {
           if (!process.stdin.isTTY) {
-            console.error(chalk.red("\n✗ No components specified. Usage: npx nativra add <components...>\n"));
+            console.error(chalk.red("\n✗ No components specified. Usage: npx nativra-cli add <components...>\n"));
             process.exit(1);
           }
 

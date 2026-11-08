@@ -52,7 +52,7 @@ export default async function BlocksPage() {
 
               <div className="flex items-center gap-2 font-mono text-xs rounded-lg border border-border bg-muted/40 px-3 py-1.5">
                 <span className="text-muted-foreground">$</span>
-                <span className="text-foreground">npx nativra add {block!.id}</span>
+                <span className="text-foreground">npx nativra-cli add {block!.id}</span>
               </div>
             </div>
 

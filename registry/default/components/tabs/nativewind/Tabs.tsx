@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add tabs
+ * Install: npx nativra-cli add tabs
  */
 import React from "react";
 import { View, Text, Pressable, type ViewProps } from "react-native";

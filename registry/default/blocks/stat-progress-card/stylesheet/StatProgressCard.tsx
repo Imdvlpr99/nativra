@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add stat-progress-card --target stylesheet
+ * Install: npx nativra-cli add stat-progress-card --target stylesheet
  */
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";

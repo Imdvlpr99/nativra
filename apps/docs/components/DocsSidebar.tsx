@@ -171,7 +171,7 @@ export function DocsSidebar() {
             <span>Nativra CLI</span>
           </div>
           <p className="mt-1 text-[11px] text-muted-foreground font-mono">
-            $ npx nativra add &lt;item&gt;
+            $ npx nativra-cli add &lt;item&gt;
           </p>
           <Link
             href="/docs/cli"

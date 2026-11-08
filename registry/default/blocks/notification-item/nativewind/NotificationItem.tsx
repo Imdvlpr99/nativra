@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add notification-item
+ * Install: npx nativra-cli add notification-item
  */
 import React from "react";
 import { View, Pressable } from "react-native";

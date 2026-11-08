@@ -1,4 +1,4 @@
-/** Nativra — Dialog (NativeWind). Install: npx nativra add dialog */
+/** Nativra — Dialog (NativeWind). Install: npx nativra-cli add dialog */
 import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 

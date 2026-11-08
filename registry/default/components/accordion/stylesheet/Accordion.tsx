@@ -1,4 +1,4 @@
-/** Nativra — Accordion (StyleSheet). Install: npx nativra add accordion */
+/** Nativra — Accordion (StyleSheet). Install: npx nativra-cli add accordion */
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
 

@@ -112,7 +112,7 @@ export function ThemeGallery() {
     THEMES.find((t) => t.id === selectedTheme) ?? THEMES[0]!;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`npx nativra theme add ${activeTheme.id}`);
+    navigator.clipboard.writeText(`npx nativra-cli theme add ${activeTheme.id}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -158,7 +158,7 @@ export function ThemeGallery() {
             <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 font-mono text-xs">
               <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-muted-foreground">$</span>
-              <span className="text-foreground">npx nativra theme add {activeTheme.id}</span>
+              <span className="text-foreground">npx nativra-cli theme add {activeTheme.id}</span>
             </div>
             <button
               onClick={handleCopy}

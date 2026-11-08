@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
           Nativra provides typed theme tokens that can be imported directly into your styles:
         </p>
         <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-          npx nativra theme add midnight
+          npx nativra-cli theme add midnight
         </pre>
         <p className="text-xs text-muted-foreground">
           This writes a typed TypeScript token file into your <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">lib/themes/</code> directory.

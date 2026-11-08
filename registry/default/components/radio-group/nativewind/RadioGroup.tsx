@@ -1,4 +1,4 @@
-/** Nativra — RadioGroup (NativeWind). Install: npx nativra add radio-group */
+/** Nativra — RadioGroup (NativeWind). Install: npx nativra-cli add radio-group */
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 

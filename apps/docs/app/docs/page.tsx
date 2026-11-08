@@ -33,7 +33,7 @@ export default function DocsPage() {
             Traditional component libraries install pre-compiled code into your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">node_modules</code>. When you need to adjust touch animations, change safe area padding, or tweak accessibility props for Android TalkBack or iOS VoiceOver, you hit a brick wall.
           </p>
           <p>
-            Nativra inverts this model. You run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npx nativra add button</code>, and a clean, typed TypeScript source file is copied directly into your project&apos;s <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/Button.tsx</code>. You can customize, refactor, and commit it directly to Git.
+            Nativra inverts this model. You run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npx nativra-cli add button</code>, and a clean, typed TypeScript source file is copied directly into your project&apos;s <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/Button.tsx</code>. You can customize, refactor, and commit it directly to Git.
           </p>
         </div>
       </section>
@@ -118,11 +118,11 @@ export default function DocsPage() {
           <div className="pt-3 space-y-1.5">
             <div>
               <span className="text-zinc-500">$ </span>
-              <span className="text-sky-400">npx nativra init</span>
+              <span className="text-sky-400">npx nativra-cli init</span>
             </div>
             <div>
               <span className="text-zinc-500">$ </span>
-              <span className="text-sky-400">npx nativra add button input card</span>
+              <span className="text-sky-400">npx nativra-cli add button input card</span>
             </div>
             <div className="text-emerald-400">✓ Written: components/ui/Button.tsx</div>
             <div className="text-emerald-400">✓ Written: components/ui/Input.tsx</div>

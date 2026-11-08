@@ -37,7 +37,7 @@ test.describe("Nativra Docs", () => {
     await expect(page.locator("text=Card")).toBeVisible();
     
     // Check CLI install command
-    await expect(page.locator("text=nativra add")).toBeVisible();
+    await expect(page.locator("text=nativra-cli add")).toBeVisible();
   });
 
   test("component detail page shows metadata and source", async ({ page }) => {
@@ -49,7 +49,7 @@ test.describe("Nativra Docs", () => {
     await expect(page.locator("text=iOS")).toBeVisible();
     
     // Install command
-    await expect(page.locator("text=npx nativra add button")).toBeVisible();
+    await expect(page.locator("text=npx nativra-cli add button")).toBeVisible();
     
     // Source code display
     await expect(page.locator("code")).toContainText("export function Button");

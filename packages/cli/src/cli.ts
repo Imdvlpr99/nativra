@@ -14,7 +14,7 @@ import { registerThemeCommand, registerRegistryCommand } from "./commands/theme-
 program
   .name("nativra")
   .description("Nativra CLI — Native UI, built your way.")
-  .version("0.1.0");
+  .version("0.1.1");
 
 registerInitCommand(program);
 registerAddCommand(program);

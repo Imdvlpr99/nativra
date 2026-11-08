@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add slider
+ * Install: npx nativra-cli add slider
  */
 import React from "react";
 import { View, Pressable, type GestureResponderEvent, type ViewProps } from "react-native";

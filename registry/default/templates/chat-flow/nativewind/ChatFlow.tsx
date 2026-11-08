@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add chat-flow
+ * Install: npx nativra-cli add chat-flow
  */
 import React, { useState } from "react";
 import {

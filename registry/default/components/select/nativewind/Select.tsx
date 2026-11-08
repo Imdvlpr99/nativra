@@ -1,4 +1,4 @@
-/** Nativra — Select (NativeWind). Install: npx nativra add select */
+/** Nativra — Select (NativeWind). Install: npx nativra-cli add select */
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, Text, View } from "react-native";
 

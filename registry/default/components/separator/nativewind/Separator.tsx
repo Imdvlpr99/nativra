@@ -1,4 +1,4 @@
-/** Nativra — Separator (NativeWind). Install: npx nativra add separator */
+/** Nativra — Separator (NativeWind). Install: npx nativra-cli add separator */
 import React from "react";
 import { View } from "react-native";
 

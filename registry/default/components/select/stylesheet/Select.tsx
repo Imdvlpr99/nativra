@@ -1,4 +1,4 @@
-/** Nativra — Select (StyleSheet). Install: npx nativra add select */
+/** Nativra — Select (StyleSheet). Install: npx nativra-cli add select */
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
 

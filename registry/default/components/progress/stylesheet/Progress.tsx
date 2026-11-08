@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add progress --target stylesheet
+ * Install: npx nativra-cli add progress --target stylesheet
  */
 import React from "react";
 import { View, StyleSheet, type ViewProps } from "react-native";

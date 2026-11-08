@@ -1,4 +1,4 @@
-/** Nativra — Toast (StyleSheet). Install: npx nativra add toast */
+/** Nativra — Toast (StyleSheet). Install: npx nativra-cli add toast */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 

@@ -100,10 +100,10 @@ module.exports = {
           Run the Nativra initialization command and choose <strong className="text-foreground">NativeWind</strong>:
         </p>
         <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-          npx nativra init
+          npx nativra-cli init
         </pre>
         <p className="text-xs text-muted-foreground">
-          Now, whenever you run <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">npx nativra add button</code>, you receive class-based NativeWind components configured with your design tokens.
+          Now, whenever you run <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">npx nativra-cli add button</code>, you receive class-based NativeWind components configured with your design tokens.
         </p>
       </section>
     </div>

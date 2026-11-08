@@ -1,4 +1,4 @@
-/** Nativra — Textarea (StyleSheet). Install: npx nativra add textarea */
+/** Nativra — Textarea (StyleSheet). Install: npx nativra-cli add textarea */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
 

@@ -23,22 +23,22 @@ Run via `npx` without global installation:
 
 ```bash
 # Initialize Nativra in your Expo / React Native project
-npx nativra init
+npx nativra-cli init
 
 # Add components (resolves dependencies automatically)
-npx nativra add button input card
+npx nativra-cli add button input card
 
 # List available registry items
-npx nativra list
+npx nativra-cli list
 
 # Compare installed components with upstream registry
-npx nativra diff button
+npx nativra-cli diff button
 
 # Safely update an installed component (creates backup before modifying)
-npx nativra update button
+npx nativra-cli update button
 
 # Roll back an update if needed
-npx nativra rollback button
+npx nativra-cli rollback button
 ```
 
 ## Conflict Policy & Non-Interactive CI
@@ -54,13 +54,13 @@ By default, Nativra **never** silently overwrites existing files.
 
 ```bash
 # In CI pipelines, keep existing files safely:
-npx nativra add button --yes
+npx nativra-cli add button --yes
 
 # In CI pipelines, fail if a file conflict occurs:
-npx nativra add button --yes --on-conflict error
+npx nativra-cli add button --yes --on-conflict error
 
 # In automated scaffolding, force overwrite:
-npx nativra add button --yes --overwrite
+npx nativra-cli add button --yes --overwrite
 ```
 
 ## Compatibility Matrix

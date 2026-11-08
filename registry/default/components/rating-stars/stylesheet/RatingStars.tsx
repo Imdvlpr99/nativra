@@ -5,7 +5,7 @@
  * @platforms android, ios, web
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add rating-stars
+ * Install: npx nativra-cli add rating-stars
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";

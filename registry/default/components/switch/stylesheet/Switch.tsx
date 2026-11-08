@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add switch
+ * Install: npx nativra-cli add switch
  */
 import React from "react";
 import {

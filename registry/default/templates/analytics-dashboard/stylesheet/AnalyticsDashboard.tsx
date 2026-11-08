@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add analytics-dashboard
+ * Install: npx nativra-cli add analytics-dashboard
  */
 import React, { useState } from "react";
 import {

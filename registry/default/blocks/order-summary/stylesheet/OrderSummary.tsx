@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add order-summary --target stylesheet
+ * Install: npx nativra-cli add order-summary --target stylesheet
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
