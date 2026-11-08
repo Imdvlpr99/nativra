@@ -42,8 +42,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/theme-engine
       '@next/mdx':
-        specifier: ^15.1.0
-        version: 15.5.29(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.0.10)(react@19.3.1))
+        specifier: ^16.4.5
+        version: 16.4.5(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.0.10)(react@19.3.1))
       fumadocs-core:
         specifier: ^14.4.0
         version: 14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1831,8 +1831,8 @@ packages:
   '@next/eslint-plugin-next@15.5.29':
     resolution: {integrity: sha512-d3dH0WVbXr+W/3f/TMU6fl7vHJBuok7ugMCDPfRnHhCLl8ppAtFbfXgVHpnLrUirHN4vE5GkTMnId3Fmxv9UCQ==}
 
-  '@next/mdx@15.5.29':
-    resolution: {integrity: sha512-gguIoYQw3t9Mtmgga+n+yiByg3mEsfg/ellwzaTAAhGuSyzGogG9h4mVIjBh98VumFWllydTDDD5jzXduNerQw==}
+  '@next/mdx@16.4.5':
+    resolution: {integrity: sha512-xAwdzqam24Axqk87G1n1F7tibfi1CxVskRpk8Oi3vmTlGr8QdYmaCzOMz5A5zinXlJdEyocw0JYjXSfRb5o1vg==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
@@ -8786,7 +8786,7 @@ snapshots:
     dependencies:
       fast-glob: 3.3.1
 
-  '@next/mdx@15.5.29(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.0.10)(react@19.3.1))':
+  '@next/mdx@16.4.5(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.0.10)(react@19.3.1))':
     dependencies:
       source-map: 0.7.6
     optionalDependencies:
