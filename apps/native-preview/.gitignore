@@ -1,3 +1,6 @@
 components/nativra/
 .expo/
+dist/
+web-build/
+
 

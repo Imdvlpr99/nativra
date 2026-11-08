@@ -108,6 +108,9 @@ pnpm build
 
 # Run documentation locally
 pnpm dev
+
+# Run native preview in the browser
+pnpm --filter @nativra/native-preview web
 ```
 
 ---
