@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { SafeAreaView, ScrollView, Text, View, StyleSheet, useColorScheme, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-context";
 import { PREVIEW_FIXTURES, type PreviewProps } from "@nativra/preview-runtime";
 import {
   Accordion,
@@ -237,39 +238,79 @@ const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
   ),
 };
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallbackTitle?: string },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; fallbackTitle?: string }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Preview render error:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ padding: 10, backgroundColor: "#fef2f2", borderColor: "#fecaca", borderWidth: 1, borderRadius: 8 }}>
+          <Text style={{ fontSize: 12, color: "#991b1b", fontWeight: "600" }}>
+            Failed to render {this.props.fallbackTitle ?? "fixture"}
+          </Text>
+          <Text style={{ fontSize: 11, color: "#b91c1c", marginTop: 2 }}>
+            {this.state.error?.message}
+          </Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const DEFAULT_WEB_INSETS = {
+  frame: { x: 0, y: 0, width: 0, height: 0 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
+
 export default function App() {
   const dark = useColorScheme() === "dark";
   const fg = dark ? "#fafafa" : "#0a0a0a";
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: dark ? "#0a0a0a" : "#ffffff" }]}>
-      <StatusBar style="auto" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerRow}>
-          <Image source={require("./assets/icon.png")} style={styles.appLogo} resizeMode="contain" />
-          <View>
-            <Text style={[styles.h1, { color: fg }]}>Nativra Preview</Text>
-            <Text style={[styles.caption, { color: dark ? "#a1a1aa" : "#71717a" }]}>Native Component Harness</Text>
+    <SafeAreaProvider initialMetrics={DEFAULT_WEB_INSETS}>
+      <SafeAreaView style={[styles.root, { backgroundColor: dark ? "#0a0a0a" : "#ffffff" }]}>
+        <StatusBar style="auto" />
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.headerRow}>
+            <Image source={require("./assets/icon.png")} style={styles.appLogo} resizeMode="contain" />
+            <View>
+              <Text style={[styles.h1, { color: fg }]}>Nativra Preview</Text>
+              <Text style={[styles.caption, { color: dark ? "#a1a1aa" : "#71717a" }]}>Native Component Harness</Text>
+            </View>
           </View>
-        </View>
-        {Object.entries(PREVIEW_FIXTURES).map(([id, fixtures]) => (
-          <View key={id} style={styles.section}>
-            <Text style={[styles.h2, { color: fg }]}>{id}</Text>
-            {fixtures.map((f) => (
-              <View key={f.name} style={styles.fixture}>
-                <Text style={[styles.caption, { color: dark ? "#a1a1aa" : "#71717a" }]}>{f.name}</Text>
-                {RENDERERS[id]?.(f.props)}
-              </View>
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+          {Object.entries(PREVIEW_FIXTURES).map(([id, fixtures]) => (
+            <View key={id} style={styles.section}>
+              <Text style={[styles.h2, { color: fg }]}>{id}</Text>
+              {fixtures.map((f) => (
+                <View key={f.name} style={styles.fixture}>
+                  <Text style={[styles.caption, { color: dark ? "#a1a1aa" : "#71717a" }]}>{f.name}</Text>
+                  <ErrorBoundary fallbackTitle={`${id} (${f.name})`}>
+                    {RENDERERS[id]?.(f.props)}
+                  </ErrorBoundary>
+                </View>
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, minHeight: "100%" as any },
   content: { padding: 20, gap: 16 },
   headerRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
   appLogo: { width: 44, height: 44, borderRadius: 10 },
