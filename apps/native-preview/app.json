@@ -4,10 +4,24 @@
     "slug": "nativra-preview",
     "version": "0.0.1",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#09090b"
+    },
     "newArchEnabled": true,
-    "ios": { "supportsTablet": true, "bundleIdentifier": "dev.nativra.preview" },
-    "android": { "package": "dev.nativra.preview" }
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.nativra.preview"
+    },
+    "android": {
+      "package": "dev.nativra.preview",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#09090b"
+      }
+    }
   }
 }
-

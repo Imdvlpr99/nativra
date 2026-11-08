@@ -1,0 +1,27 @@
+---
+title: Class Names Utility (cn)
+description: Utility function for merging class names and styles.
+---
+
+### Overview
+
+The `cn` utility simplifies conditional styling. In NativeWind, it combines `clsx` and `tailwind-merge` to resolve conflicting Tailwind utility classes. In StyleSheet mode, it safely flattens nested style objects.
+
+### Installation
+
+```bash
+npx nativra add cn
+```
+
+### Usage (NativeWind)
+
+```tsx
+import { cn } from "@/lib/utils";
+
+export function Card({ className, active }: { className?: string; active?: boolean }) {
+  return (
+    <View className={cn("p-4 rounded-xl bg-zinc-900 border border-zinc-800", active && "border-sky-500", className)} />
+  );
+}
+```
+

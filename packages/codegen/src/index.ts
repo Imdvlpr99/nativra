@@ -476,9 +476,19 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
     await NavigationDocumentSchema.parseAsync(input);
   }
 
-  async generate(input: NavigationDocument): Promise<GeneratorResult> {
+  async generate(
+    input: NavigationDocument,
+    options?: { framework?: "react-navigation" | "expo-router" }
+  ): Promise<GeneratorResult> {
     await this.validate(input);
+    const framework = options?.framework ?? "react-navigation";
+    if (framework === "expo-router") {
+      return this.generateExpoRouter(input);
+    }
+    return this.generateReactNavigation(input);
+  }
 
+  generateReactNavigation(input: NavigationDocument): GeneratorResult {
     const navCode = [
       `import React from "react";`,
       `import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";`,
@@ -607,6 +617,169 @@ export class NavigationGenerator implements Generator<NavigationDocument, Genera
         "lucide-react-native",
       ],
     };
+  }
+
+  generateExpoRouter(input: NavigationDocument): GeneratorResult {
+    const rawIcons = input.routes.map((r) => r.icon).filter((ic) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(ic));
+    const icons = Array.from(new Set(rawIcons));
+    const iconImport = icons.length > 0 ? `import { ${icons.join(", ")} } from "lucide-react-native";` : `import { Home } from "lucide-react-native";`;
+
+    const files: GeneratorFileResult[] = [];
+
+    if (input.type === "tabs") {
+      const tabLayoutLines = [
+        `import React from "react";`,
+        `import { Tabs } from "expo-router";`,
+        iconImport,
+        ``,
+        `export default function TabLayout() {`,
+        `  return (`,
+        `    <Tabs`,
+        `      initialRouteName=${JSON.stringify(input.initialRouteName)}`,
+        `      screenOptions={{`,
+        `        headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
+        `        headerTintColor: "#ffffff",`,
+        `        tabBarStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)}, borderTopColor: "#27272a" },`,
+        `        tabBarActiveTintColor: ${JSON.stringify(input.activeTintColor)},`,
+        `        tabBarInactiveTintColor: ${JSON.stringify(input.inactiveTintColor)},`,
+        `      }}`,
+        `    >`,
+      ];
+
+      for (const route of input.routes) {
+        const iconComp = icons.includes(route.icon) ? route.icon : "Home";
+        tabLayoutLines.push(
+          `      <Tabs.Screen`,
+          `        name=${JSON.stringify(route.name)}`,
+          `        options={{`,
+          `          title: ${JSON.stringify(route.title)},`,
+          `          headerShown: ${route.headerShown},`,
+          `          tabBarIcon: ({ color, size }: { color: string; size: number }) => <${iconComp} color={color} size={size} />,`,
+          `        }}`,
+          `      />`
+        );
+      }
+
+      tabLayoutLines.push(`    </Tabs>`, `  );`, `}`);
+
+      const tabLayoutContent = tabLayoutLines.join("\n");
+      const rootLayoutContent = [
+        `import React from "react";`,
+        `import { Stack } from "expo-router";`,
+        ``,
+        `export default function RootLayout() {`,
+        `  return (`,
+        `    <Stack screenOptions={{ headerShown: false }}>`,
+        `      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />`,
+        `    </Stack>`,
+        `  );`,
+        `}`,
+      ].join("\n");
+
+      assertValidTSX(tabLayoutContent, "app/(tabs)/_layout.tsx");
+      assertValidTSX(rootLayoutContent, "app/_layout.tsx");
+
+      files.push(
+        { path: "app/(tabs)/_layout.tsx", content: tabLayoutContent },
+        { path: "app/_layout.tsx", content: rootLayoutContent }
+      );
+    } else if (input.type === "stack") {
+      const stackLayoutLines = [
+        `import React from "react";`,
+        `import { Stack } from "expo-router";`,
+        ``,
+        `export default function RootLayout() {`,
+        `  return (`,
+        `    <Stack`,
+        `      initialRouteName=${JSON.stringify(input.initialRouteName)}`,
+        `      screenOptions={{`,
+        `        headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
+        `        headerTintColor: "#ffffff",`,
+        `      }}`,
+        `    >`,
+      ];
+
+      for (const route of input.routes) {
+        stackLayoutLines.push(
+          `      <Stack.Screen`,
+          `        name=${JSON.stringify(route.name)}`,
+          `        options={{`,
+          `          title: ${JSON.stringify(route.title)},`,
+          `          headerShown: ${route.headerShown},`,
+          `        }}`,
+          `      />`
+        );
+      }
+
+      stackLayoutLines.push(`    </Stack>`, `  );`, `}`);
+
+      const stackLayoutContent = stackLayoutLines.join("\n");
+      assertValidTSX(stackLayoutContent, "app/_layout.tsx");
+
+      files.push({ path: "app/_layout.tsx", content: stackLayoutContent });
+    } else {
+      const drawerLayoutLines = [
+        `import React from "react";`,
+        `import { Drawer } from "expo-router/drawer";`,
+        ``,
+        `export default function DrawerLayout() {`,
+        `  return (`,
+        `    <Drawer`,
+        `      initialRouteName=${JSON.stringify(input.initialRouteName)}`,
+        `      screenOptions={{`,
+        `        headerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
+        `        headerTintColor: "#ffffff",`,
+        `        drawerStyle: { backgroundColor: ${JSON.stringify(input.backgroundColor)} },`,
+        `        drawerActiveTintColor: ${JSON.stringify(input.activeTintColor)},`,
+        `        drawerInactiveTintColor: ${JSON.stringify(input.inactiveTintColor)},`,
+        `      }}`,
+        `    >`,
+      ];
+
+      for (const route of input.routes) {
+        drawerLayoutLines.push(
+          `      <Drawer.Screen`,
+          `        name=${JSON.stringify(route.name)}`,
+          `        options={{`,
+          `          title: ${JSON.stringify(route.title)},`,
+          `          headerShown: ${route.headerShown},`,
+          `        }}`,
+          `      />`
+        );
+      }
+
+      drawerLayoutLines.push(`    </Drawer>`, `  );`, `}`);
+
+      const drawerLayoutContent = drawerLayoutLines.join("\n");
+      assertValidTSX(drawerLayoutContent, "app/_layout.tsx");
+
+      files.push({ path: "app/_layout.tsx", content: drawerLayoutContent });
+    }
+
+    const dependencies = [
+      "expo-router",
+      "react-native-safe-area-context",
+      "react-native-screens",
+      ...(input.type === "tabs" ? ["lucide-react-native"] : []),
+      ...(input.type === "drawer" ? ["@react-navigation/drawer", "react-native-gesture-handler", "react-native-reanimated"] : []),
+    ];
+
+    return {
+      files,
+      dependencies,
+    };
+  }
+}
+
+export class ExpoRouterGenerator implements Generator<NavigationDocument, GeneratorResult> {
+  private navGen = new NavigationGenerator();
+
+  async validate(input: NavigationDocument): Promise<void> {
+    await this.navGen.validate(input);
+  }
+
+  async generate(input: NavigationDocument): Promise<GeneratorResult> {
+    return this.navGen.generate(input, { framework: "expo-router" });
   }
 }// ---------------------------------------------------------------------------
 // V3 AI Context Exporter (Section 7.4)

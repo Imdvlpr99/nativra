@@ -139,8 +139,59 @@ describe("nativra CLI (local registry)", () => {
     expect(run("registry", "list")).toContain("extra");
   });
 
-  it("doctor passes", () => {
+  it("add with --dry-run simulates installation without writing files", () => {
+    const dryRunOutput = runReg("add", "toast", "--dry-run");
+    expect(dryRunOutput).toContain("[Dry Run]");
+    expect(existsSync(join(cwd, "components/ui/Toast.tsx"))).toBe(false);
+  });
+
+  it("remove deletes tracked files and updates nativra.lock.json", () => {
+    expect(existsSync(join(cwd, "components/ui/RatingStars.tsx"))).toBe(true);
+    const removeOutput = run("remove", "rating-stars", "--yes");
+    expect(removeOutput).toContain("Removed \"rating-stars\" successfully");
+    expect(existsSync(join(cwd, "components/ui/RatingStars.tsx"))).toBe(false);
+    const lock = JSON.parse(readFileSync(join(cwd, "nativra.lock.json"), "utf8"));
+    expect(lock.items["rating-stars"]).toBeUndefined();
+  });
+
+  it("remove requires --force when local modifications exist", () => {
+    // Install a component, modify it, try to remove without --force
+    runReg("add", "rating-stars", "--yes");
+    const file = join(cwd, "components/ui/RatingStars.tsx");
+    expect(existsSync(file)).toBe(true);
+    writeFileSync(file, "// custom user modification");
+    expect(() => run("remove", "rating-stars", "--yes")).toThrow();
+    // Succeeds with --force
+    const forcedOut = run("remove", "rating-stars", "--yes", "--force");
+    expect(forcedOut).toContain("Removed \"rating-stars\" successfully");
+    expect(existsSync(file)).toBe(false);
+  });
+
+  it("list filters properly with --type (including primitive alias and utility)", () => {
+    const componentList = runReg("list", "--type", "component");
+    expect(componentList).toContain("button");
+    expect(componentList).not.toContain("use-debounced-value");
+
+    const primitiveList = runReg("list", "--type", "primitive");
+    expect(primitiveList).toContain("button");
+
+    const utilityList = runReg("list", "--type", "utility");
+    expect(utilityList).toContain("cn");
+  });
+
+  it("doctor passes and doctor --fix recovers missing configuration", () => {
     expect(run("doctor")).toContain("All checks passed");
+
+    const fixDir = mkdtempSync(join(tmpdir(), "nativra-fix-test-"));
+    writeFileSync(join(fixDir, "package.json"), JSON.stringify({ name: "fix-test", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(fixDir, "app.json"), "{}");
+    const fixRun = (...args: string[]) => execFileSync("node", [CLI, ...args, "--cwd", fixDir], { encoding: "utf8" });
+
+    const fixOut = fixRun("doctor", "--fix");
+    expect(fixOut).toContain("Auto-fixed");
+    expect(existsSync(join(fixDir, "nativra.json"))).toBe(true);
+    expect(existsSync(join(fixDir, "tailwind.config.js"))).toBe(true);
+    rmSync(fixDir, { recursive: true, force: true });
   });
 });
 

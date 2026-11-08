@@ -8,10 +8,14 @@ export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraC
   switch (item.type) {
     case "hook":
       return join(cwd, config.hooksDir);
-    case "utility":
-      return join(cwd, config.utilsDir);
+    case "utility": {
+      const uDir = config.utilsDir.replace(/\.(ts|js|tsx)$/, "");
+      return join(cwd, uDir);
+    }
     case "theme":
       return join(cwd, "lib/themes");
+    case "block":
+      return join(cwd, config.blocksDir ?? config.componentsDir);
     default:
       return join(cwd, config.componentsDir);
   }

@@ -9,6 +9,7 @@ import {
   assertValidTSX,
   ScreenGenerator,
   NavigationGenerator,
+  ExpoRouterGenerator,
   generateFromScreenIR,
   exportAIContext,
 } from "./index.js";
@@ -255,6 +256,60 @@ describe("codegen", () => {
     expect(res.files[0]?.content).toContain("App Settings");
     expect(validateTSX(res.files[0]!.content).valid).toBe(true);
     expect(res.dependencies).not.toContain("nativewind");
+  });
+
+  it("NavigationGenerator generates valid Expo Router tab layout and root layout", async () => {
+    const generator = new NavigationGenerator();
+    const doc: NavigationDocument = {
+      schemaVersion: "3.0.0",
+      id: "main-tabs",
+      name: "MainTabs",
+      type: "tabs",
+      initialRouteName: "feed",
+      routes: [
+        { id: "1", name: "feed", title: "Feed", component: "FeedScreen", icon: "Home", headerShown: false },
+        { id: "2", name: "explore", title: "Explore", component: "ExploreScreen", icon: "Compass", headerShown: true },
+      ],
+      activeTintColor: "#38bdf8",
+      inactiveTintColor: "#71717a",
+      backgroundColor: "#09090b",
+    };
+
+    const res = await generator.generate(doc, { framework: "expo-router" });
+    expect(res.files).toHaveLength(2);
+    expect(res.files[0]?.path).toBe("app/(tabs)/_layout.tsx");
+    expect(res.files[1]?.path).toBe("app/_layout.tsx");
+    expect(res.files[0]?.content).toContain('<Tabs');
+    expect(res.files[0]?.content).toContain('tabBarActiveTintColor: "#38bdf8"');
+    expect(validateTSX(res.files[0]!.content).valid).toBe(true);
+    expect(validateTSX(res.files[1]!.content).valid).toBe(true);
+    expect(res.dependencies).toContain("expo-router");
+    expect(res.dependencies).toContain("lucide-react-native");
+  });
+
+  it("ExpoRouterGenerator generates valid stack navigation layout", async () => {
+    const generator = new ExpoRouterGenerator();
+    const doc: NavigationDocument = {
+      schemaVersion: "3.0.0",
+      id: "root-stack",
+      name: "RootStack",
+      type: "stack",
+      initialRouteName: "index",
+      routes: [
+        { id: "1", name: "index", title: "Welcome", component: "WelcomeScreen", icon: "Home", headerShown: true },
+        { id: "2", name: "details", title: "Details", component: "DetailsScreen", icon: "Compass", headerShown: true },
+      ],
+      activeTintColor: "#3b82f6",
+      inactiveTintColor: "#71717a",
+      backgroundColor: "#09090b",
+    };
+
+    const res = await generator.generate(doc);
+    expect(res.files).toHaveLength(1);
+    expect(res.files[0]?.path).toBe("app/_layout.tsx");
+    expect(res.files[0]?.content).toContain('<Stack');
+    expect(validateTSX(res.files[0]!.content).valid).toBe(true);
+    expect(res.dependencies).toContain("expo-router");
   });
 });
 

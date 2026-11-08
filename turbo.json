@@ -38,6 +38,12 @@
         "build"
       ]
     },
+    "@nativra/docs#build": {
+      "dependsOn": [
+        "^build",
+        "@nativra/studio#build"
+      ]
+    },
     "dev": {
       "cache": false,
       "persistent": true

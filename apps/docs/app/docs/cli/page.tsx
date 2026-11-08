@@ -9,68 +9,126 @@ export const metadata: Metadata = {
 const COMMANDS = [
   {
     cmd: "npx nativra init",
-    desc: "Initialize Nativra in an Expo or React Native project. Detects TypeScript, dependencies, and prompts for your preferred styling target (NativeWind or StyleSheet).",
-    flags: ["--yes (Accept defaults without prompting)", "--cwd <dir> (Explicit working directory)"],
+    desc: "Initialize Nativra in an Expo or React Native project with intelligent environment auto-detection. Detects Expo SDK vs bare React Native, TypeScript, NativeWind vs StyleSheet, package managers (pnpm/yarn/bun/npm), and src/ directory structure.",
+    flags: [
+      "--yes (Accept detected defaults without prompting)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra add <...components>",
-    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, and records exact file locations in nativra.lock.json.",
+    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, supports atomic rollback on failure, and records exact file locations in nativra.lock.json.",
     flags: [
       "--yes (Skip interactive prompts; preserves existing files unless --overwrite is set)",
       "--overwrite (Overwrite existing files without prompting)",
       "--on-conflict <skip|overwrite|error> (Explicit conflict strategy; defaults to skip)",
+      "--dry-run (Simulate installation and preview files and dependencies without writing to disk)",
       "--registry <url-or-name> (Specify alternate registry URL or local directory)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
+  },
+  {
+    cmd: "npx nativra remove <...components>",
+    desc: "Safely remove installed components, blocks, or hooks. Checks local file modifications against the lockfile, removes component files, prunes empty directories, and updates nativra.lock.json.",
+    flags: [
+      "--yes (Skip interactive prompts)",
+      "--force (Force removal even if local modifications are detected)",
+      "--cwd <dir> (Explicit working directory)",
     ],
   },
   {
     cmd: "npx nativra list",
-    desc: "List all items available in the configured registry (components, hooks, blocks, themes).",
-    flags: ["--registry <name>"],
+    desc: "List all items available in the configured registry (components, hooks, blocks, themes, utilities).",
+    flags: [
+      "--type <type> (Filter by item type: component/primitive, hook, utility, block, template, theme)",
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra search <query>",
     desc: "Search registry items by keyword, tag, or component name.",
-    flags: [],
+    flags: [
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra info <id>",
     desc: "Display detailed metadata, version, styling targets, platform support, and file list for any registry item.",
-    flags: [],
+    flags: [
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra diff [component]",
     desc: "Compare your installed local component files with the upstream registry source to inspect any modifications.",
-    flags: [],
+    flags: [
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra update [component]",
     desc: "Safely update installed components to their latest registry version. Automatically creates a verified backup manifest before modifying files.",
-    flags: ["--force (Overwrite local modifications)"],
+    flags: [
+      "--force (Overwrite local modifications)",
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra rollback <component>",
     desc: "Restore an updated component to its previous state using the manifest-driven backup system.",
-    flags: [],
+    flags: [
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra doctor",
-    desc: "Diagnose your project environment: verifies package.json, Expo setup, TypeScript, and nativra.json integrity.",
-    flags: [],
+    desc: "Diagnose your project environment: verifies package.json, Expo setup, TypeScript, and nativra.json integrity. Supports automated configuration recovery with --fix.",
+    flags: [
+      "--fix (Automatically resolve or scaffold missing configurations and files)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra theme list",
-    desc: "List available theme token sets in the registry (zinc, dark-slate, midnight).",
-    flags: [],
+    desc: "List available theme token sets in the registry (zinc, dark-slate, midnight, cyberpunk, emerald, etc.).",
+    flags: [
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra theme add <theme-id>",
     desc: "Install a theme into your project (e.g. lib/themes/midnight.ts or CSS variables).",
-    flags: [],
+    flags: [
+      "--registry <url-or-name> (Override registry URL)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
   {
     cmd: "npx nativra registry add <name> <url>",
     desc: "Register a custom private or community registry URL.",
-    flags: [],
+    flags: [
+      "--cwd <dir> (Explicit working directory)",
+    ],
+  },
+  {
+    cmd: "npx nativra registry list",
+    desc: "List all configured registries.",
+    flags: [
+      "--cwd <dir> (Explicit working directory)",
+    ],
+  },
+  {
+    cmd: "npx nativra registry remove <name>",
+    desc: "Remove a configured registry source.",
+    flags: [
+      "--cwd <dir> (Explicit working directory)",
+    ],
   },
 ];
 

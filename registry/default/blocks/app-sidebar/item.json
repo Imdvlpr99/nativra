@@ -1,0 +1,49 @@
+{
+  "id": "app-sidebar",
+  "name": "App Sidebar",
+  "description": "Enterprise collapsible application navigation sidebar with grouped navigation items, active route indicators, user profile card, and footer actions.",
+  "type": "block",
+  "status": "stable",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/AppSidebar.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/AppSidebar.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    {
+      "id": "avatar",
+      "registry": "default"
+    },
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "separator",
+      "registry": "default"
+    }
+  ],
+  "npmDependencies": [
+    {
+      "package": "lucide-react-native",
+      "version": "^0.460.0"
+    }
+  ],
+  "tags": ["sidebar", "navigation", "drawer", "menu", "groups", "enterprise", "metronic"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2024-01-01T00:00:00.000Z"
+}
+

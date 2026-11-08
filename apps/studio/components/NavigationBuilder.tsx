@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { NavigationGenerator, type GeneratorResult } from "@nativra/codegen";
+import type { NavigationDocument } from "@nativra/studio-schema";
 import {
   Compass,
   Plus,
@@ -36,84 +38,31 @@ export function NavigationBuilder() {
 
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
 
-  const generated = useMemo(() => {
+  const generated = useMemo((): GeneratorResult => {
+    const navGen = new NavigationGenerator();
+    const doc: NavigationDocument = {
+      schemaVersion: "3.0.0",
+      id: "app-nav",
+      name: "AppNavigator",
+      type: navType,
+      initialRouteName: routes[0]?.name ?? "index",
+      routes: routes.map((r, i) => ({
+        id: String(i + 1),
+        name: r.name,
+        title: r.title,
+        component: r.component,
+        icon: r.icon,
+        headerShown: r.headerShown,
+      })),
+      activeTintColor: "#38bdf8",
+      inactiveTintColor: "#71717a",
+      backgroundColor: "#09090b",
+    };
+
     if (framework === "expo-router") {
-      if (navType === "tabs") {
-        const content = [
-          `import { Tabs } from "expo-router";`,
-          `import { Home, Compass, Bell, User } from "lucide-react-native";`,
-          ``,
-          `export default function TabLayout() {`,
-          `  return (`,
-          `    <Tabs`,
-          `      screenOptions={{`,
-          `        tabBarActiveTintColor: "#38bdf8",`,
-          `        tabBarStyle: { backgroundColor: "#09090b", borderTopColor: "#27272a" },`,
-          `      }}`,
-          `    >`,
-          ...routes.map((r) => [
-            `      <Tabs.Screen`,
-            `        name="${r.name}"`,
-            `        options={{`,
-            `          title: "${r.title}",`,
-            `          headerShown: ${r.headerShown},`,
-            `        }}`,
-            `      />`,
-          ].join("\n")),
-          `    </Tabs>`,
-          `  );`,
-          `}`,
-        ].join("\n");
-        return { files: [{ path: "app/(tabs)/_layout.tsx", content }], dependencies: ["expo-router", "lucide-react-native"] };
-      } else {
-        const content = [
-          `import { Stack } from "expo-router";`,
-          ``,
-          `export default function RootLayout() {`,
-          `  return (`,
-          `    <Stack`,
-          `      screenOptions={{`,
-          `        headerStyle: { backgroundColor: "#09090b" },`,
-          `        headerTintColor: "#ffffff",`,
-          `      }}`,
-          `    >`,
-          ...routes.map((r) => `      <Stack.Screen name="${r.name}" options={{ title: "${r.title}", headerShown: ${r.headerShown} }} />`),
-          `    </Stack>`,
-          `  );`,
-          `}`,
-        ].join("\n");
-        return { files: [{ path: "app/_layout.tsx", content }], dependencies: ["expo-router"] };
-      }
-    } else {
-      const content = [
-        `import React from "react";`,
-        `import { NavigationContainer } from "@react-navigation/native";`,
-        navType === "tabs"
-          ? `import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";`
-          : `import { createNativeStackNavigator } from "@react-navigation/native-stack";`,
-        ``,
-        navType === "tabs"
-          ? `const Tab = createBottomTabNavigator();`
-          : `const Stack = createNativeStackNavigator();`,
-        ``,
-        `export function RootNavigator() {`,
-        `  return (`,
-        `    <NavigationContainer>`,
-        navType === "tabs"
-          ? `      <Tab.Navigator screenOptions={{ tabBarStyle: { backgroundColor: "#09090b" }, tabBarActiveTintColor: "#38bdf8" }}>`
-          : `      <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#09090b" }, headerTintColor: "#ffffff" }}>`,
-        ...routes.map((r) =>
-          navType === "tabs"
-            ? `        <Tab.Screen name="${r.name}" component={${r.component}} options={{ title: "${r.title}", headerShown: ${r.headerShown} }} />`
-            : `        <Stack.Screen name="${r.name}" component={${r.component}} options={{ title: "${r.title}", headerShown: ${r.headerShown} }} />`
-        ),
-        navType === "tabs" ? `      </Tab.Navigator>` : `      </Stack.Navigator>`,
-        `    </NavigationContainer>`,
-        `  );`,
-        `}`,
-      ].join("\n");
-      return { files: [{ path: "navigation/RootNavigator.tsx", content }], dependencies: ["@react-navigation/native"] };
+      return navGen.generateExpoRouter(doc);
     }
+    return navGen.generateReactNavigation(doc);
   }, [navType, framework, routes]);
 
   const addRoute = () => {

@@ -1,6 +1,7 @@
 import { program } from "commander";
 import { registerInitCommand } from "./commands/init.js";
 import { registerAddCommand } from "./commands/add.js";
+import { registerRemoveCommand } from "./commands/remove.js";
 import { registerListCommand } from "./commands/list.js";
 import { registerInfoCommand } from "./commands/info.js";
 import { registerDiffCommand } from "./commands/diff.js";
@@ -17,6 +18,7 @@ program
 
 registerInitCommand(program);
 registerAddCommand(program);
+registerRemoveCommand(program);
 registerListCommand(program);
 registerInfoCommand(program);
 registerDiffCommand(program);

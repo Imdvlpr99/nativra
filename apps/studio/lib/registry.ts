@@ -374,4 +374,161 @@ export const STUDIO_CONTROLS: Record<string, Control[]> = {
     { type: "text", label: "User Name", propKey: "userName", defaultValue: "Sophia Martinez" },
     { type: "text", label: "User Email", propKey: "userEmail", defaultValue: "sophia@nativra.dev" },
   ],
+  accordion: [
+    { type: "boolean", label: "Allow Multiple", propKey: "allowMultiple", defaultValue: false },
+  ],
+  "data-table": [
+    { type: "boolean", label: "Striped Rows", propKey: "striped", defaultValue: false },
+  ],
+  dialog: [
+    { type: "text", label: "Title", propKey: "title", defaultValue: "Delete Item" },
+    { type: "text", label: "Description", propKey: "description", defaultValue: "Are you sure you want to delete this record?" },
+    { type: "boolean", label: "Destructive", propKey: "destructive", defaultValue: false },
+  ],
+  "radio-group": [
+    {
+      type: "select",
+      label: "Selected Option",
+      propKey: "value",
+      defaultValue: "personal",
+      options: [
+        { label: "Personal Plan", value: "personal" },
+        { label: "Team Plan", value: "team" },
+        { label: "Enterprise Plan", value: "enterprise" },
+      ],
+    },
+    DISABLED_CONTROL,
+  ],
+  "rating-stars": [
+    { type: "slider", label: "Rating", propKey: "rating", defaultValue: 4, min: 1, max: 5, step: 1 },
+    {
+      type: "select",
+      label: "Size",
+      propKey: "size",
+      defaultValue: "md",
+      options: [
+        { label: "SM", value: "sm" },
+        { label: "MD", value: "md" },
+        { label: "LG", value: "lg" },
+      ],
+    },
+    { type: "boolean", label: "Read Only", propKey: "readOnly", defaultValue: false },
+  ],
+  "segmented-control": [
+    {
+      type: "select",
+      label: "Timeframe",
+      propKey: "value",
+      defaultValue: "week",
+      options: [
+        { label: "Day", value: "day" },
+        { label: "Week", value: "week" },
+        { label: "Month", value: "month" },
+      ],
+    },
+    DISABLED_CONTROL,
+  ],
+  select: [
+    { type: "text", label: "Label", propKey: "label", defaultValue: "Country" },
+    { type: "text", label: "Placeholder", propKey: "placeholder", defaultValue: "Select an option..." },
+    DISABLED_CONTROL,
+  ],
+  textarea: [
+    { type: "text", label: "Label", propKey: "label", defaultValue: "Bio / Feedback" },
+    { type: "text", label: "Placeholder", propKey: "placeholder", defaultValue: "Write your message here..." },
+    { type: "boolean", label: "Error State", propKey: "error", defaultValue: false },
+    DISABLED_CONTROL,
+  ],
+  toast: [
+    { type: "text", label: "Title", propKey: "title", defaultValue: "Payment Processed" },
+    { type: "text", label: "Description", propKey: "description", defaultValue: "Your receipt has been sent to your email." },
+    {
+      type: "select",
+      label: "Variant",
+      propKey: "variant",
+      defaultValue: "default",
+      options: [
+        { label: "Default", value: "default" },
+        { label: "Success", value: "success" },
+        { label: "Warning", value: "warning" },
+        { label: "Error", value: "error" },
+      ],
+    },
+  ],
+  "app-header": [
+    { type: "text", label: "Header Title", propKey: "title", defaultValue: "Dashboard" },
+    { type: "boolean", label: "Show Back", propKey: "showBack", defaultValue: true },
+  ],
+  "app-sidebar": [
+    { type: "text", label: "Workspace Name", propKey: "workspace", defaultValue: "Nativra Team" },
+  ],
+  "transaction-row": [
+    { type: "text", label: "Title", propKey: "title", defaultValue: "Stripe Payout" },
+    { type: "text", label: "Amount", propKey: "amount", defaultValue: "+$1,250.00" },
+    { type: "boolean", label: "Positive", propKey: "positive", defaultValue: true },
+  ],
+  "payment-method-card": [
+    { type: "text", label: "Card Brand", propKey: "brand", defaultValue: "Visa" },
+    { type: "text", label: "Last 4 Digits", propKey: "last4", defaultValue: "4242" },
+    { type: "boolean", label: "Default Method", propKey: "isDefault", defaultValue: true },
+  ],
+  cn: [
+    { type: "text", label: "Description", propKey: "description", defaultValue: "Conditional class / style merger" },
+  ],
+  "activity-timeline": [
+    { type: "text", label: "Timeline Title", propKey: "title", defaultValue: "System Audit Trail" },
+    { type: "boolean", label: "Show Filter", propKey: "showFilter", defaultValue: true },
+  ],
+  "filter-sheet": [
+    { type: "text", label: "Sheet Title", propKey: "title", defaultValue: "Filter Products" },
+    { type: "boolean", label: "Show Badges", propKey: "showBadges", defaultValue: true },
+  ],
+  "kpi-comparison-card": [
+    { type: "text", label: "Metric Title", propKey: "metricTitle", defaultValue: "Monthly Recurring Revenue" },
+    { type: "text", label: "Current Value", propKey: "currentValue", defaultValue: "$48,250" },
+    { type: "text", label: "Previous Value", propKey: "previousValue", defaultValue: "$41,100" },
+    { type: "text", label: "Growth Delta", propKey: "deltaPercentage", defaultValue: "+17.4%" },
+    { type: "boolean", label: "Positive Growth", propKey: "positive", defaultValue: true },
+  ],
+  "mini-sparkline-card": [
+    { type: "text", label: "Label", propKey: "label", defaultValue: "Active Daily Users" },
+    { type: "text", label: "Current Value", propKey: "value", defaultValue: "14,820" },
+    { type: "text", label: "Trend", propKey: "trend", defaultValue: "+8.2%" },
+  ],
+  "team-member-row": [
+    { type: "text", label: "Member Name", propKey: "name", defaultValue: "Sophia Martinez" },
+    { type: "text", label: "Role", propKey: "role", defaultValue: "Lead Mobile Architect" },
+    { type: "text", label: "Email", propKey: "email", defaultValue: "sophia@nativra.dev" },
+  ],
+  "account-settings-flow": [
+    { type: "text", label: "User Name", propKey: "userName", defaultValue: "Sophia Martinez" },
+    { type: "text", label: "Workspace", propKey: "workspaceName", defaultValue: "Acme Mobile Corp" },
+  ],
+  "analytics-dashboard": [
+    { type: "text", label: "Revenue Total", propKey: "totalRevenue", defaultValue: "$124,500" },
+    {
+      type: "select",
+      label: "Timeframe",
+      propKey: "timeframe",
+      defaultValue: "7d",
+      options: [
+        { label: "24h", value: "24h" },
+        { label: "7d", value: "7d" },
+        { label: "30d", value: "30d" },
+        { label: "YTD", value: "ytd" },
+      ],
+    },
+  ],
+  "chat-flow": [
+    { type: "text", label: "Chat Partner", propKey: "chatWith", defaultValue: "Engineering Support" },
+    { type: "text", label: "Status", propKey: "status", defaultValue: "Online" },
+  ],
+  "ecommerce-flow": [
+    { type: "text", label: "Store Name", propKey: "storeName", defaultValue: "Nativra Storefront" },
+    { type: "text", label: "Cart Count", propKey: "cartItemsCount", defaultValue: "3" },
+  ],
+  "fintech-wallet": [
+    { type: "text", label: "Total Balance", propKey: "totalBalance", defaultValue: "$24,850.40" },
+    { type: "text", label: "Account Tag", propKey: "accountTag", defaultValue: "Multi-Chain Vault" },
+  ],
 };

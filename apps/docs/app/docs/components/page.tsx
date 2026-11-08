@@ -5,7 +5,7 @@ import { ChevronRight, Terminal } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Components Catalog",
-  description: "Browse all 12 production-ready Nativra React Native components",
+  description: "Browse all 31 production-ready Nativra React Native components",
 };
 
 interface ComponentCategory {
@@ -17,18 +17,55 @@ interface ComponentCategory {
 const CATEGORIES: ComponentCategory[] = [
   {
     name: "Inputs & Actions",
-    description: "Interactive controls for user forms and touch gestures",
-    componentIds: ["button", "input", "checkbox", "switch"],
+    description: "Interactive controls for user forms, taps, and gestures",
+    componentIds: [
+      "button",
+      "icon-button",
+      "fab",
+      "input",
+      "textarea",
+      "select",
+      "segmented-control",
+      "slider",
+      "checkbox",
+      "switch",
+      "radio-group",
+      "otp-input",
+      "rating-stars",
+    ],
   },
   {
     name: "Data Display & Content",
-    description: "Surfaces, typography, and profile representations",
-    componentIds: ["avatar", "badge", "card", "label", "separator", "text"],
+    description: "Surfaces, typography, tables, and profile representations",
+    componentIds: [
+      "avatar",
+      "badge",
+      "card",
+      "data-table",
+      "label",
+      "separator",
+      "text",
+      "accordion",
+      "tabs",
+    ],
   },
   {
-    name: "Feedback & Status",
-    description: "Loading indicators, spinners, and skeleton placeholders",
-    componentIds: ["skeleton", "spinner"],
+    name: "Layout & Surfaces",
+    description: "Containers, safe area insets, and flexible structural layout",
+    componentIds: ["stack", "safe-area"],
+  },
+  {
+    name: "Feedback & Overlays",
+    description: "Modals, bottom sheets, alerts, toasts, and loading indicators",
+    componentIds: [
+      "dialog",
+      "bottom-sheet",
+      "alert",
+      "toast",
+      "progress",
+      "skeleton",
+      "spinner",
+    ],
   },
 ];
 

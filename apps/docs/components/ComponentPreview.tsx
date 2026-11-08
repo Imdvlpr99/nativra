@@ -30,6 +30,19 @@ import {
   Paperclip,
   Shield,
   TrendingUp,
+  ChevronLeft,
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  CreditCard,
+  LogOut,
+  Flame,
+  Keyboard,
+  Vibrate,
+  Sun,
+  Moon,
+  Code2,
+  Palette,
 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 
@@ -1603,6 +1616,423 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
               </div>
             </div>
           </DeviceFrame>
+        );
+
+      case "app-header":
+        return (
+          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-xl">
+            <div className="p-4 border-b border-zinc-800/80">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
+                    <ChevronLeft className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white tracking-tight">Analytics Overview</h3>
+                    <p className="text-[11px] text-zinc-400">Enterprise Dashboard</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="relative h-9 w-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">
+                    <Bell className="h-4 w-4" />
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-rose-500 text-[9px] font-bold text-white flex items-center justify-center border-2 border-zinc-950">
+                      3
+                    </span>
+                  </div>
+                  <div className="h-9 w-9 rounded-full bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-xs font-bold text-sky-400 font-mono">
+                    JD
+                  </div>
+                </div>
+              </div>
+
+              {/* Integrated Search Input */}
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3 py-2 text-xs">
+                <Search className="h-3.5 w-3.5 text-zinc-500" />
+                <span className="text-zinc-500">Search transactions, metrics, logs...</span>
+              </div>
+            </div>
+            <div className="p-4 bg-zinc-950/60 text-center text-xs text-zinc-500">
+              Content body viewport rendered below header
+            </div>
+          </div>
+        );
+
+      case "app-sidebar":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-xl flex flex-col">
+            <div className="p-4 border-b border-zinc-800/80 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400 font-bold font-mono">
+                N
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-tight">Nativra Studio</h3>
+                <p className="text-[10px] text-zinc-400 font-mono">v4.0.0 Enterprise</p>
+              </div>
+            </div>
+
+            <div className="p-3 space-y-3">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider px-2 block">
+                MAIN MENU
+              </span>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-sky-500/15 border border-sky-500/30 text-white font-medium text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <LayoutDashboard className="h-4 w-4 text-sky-400" />
+                    <span>Dashboard</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-sky-400 bg-sky-500/20 px-1.5 py-0.5 rounded">
+                    Active
+                  </span>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-400 hover:bg-zinc-900 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <BarChart3 className="h-4 w-4 text-zinc-400" />
+                    <span>Analytics</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded">
+                    Live
+                  </span>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl text-zinc-400 hover:bg-zinc-900 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <Users className="h-4 w-4 text-zinc-400" />
+                    <span>Team Members</span>
+                  </div>
+                  <span className="text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded">
+                    8
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-zinc-400 hover:bg-zinc-900 text-xs">
+                  <CreditCard className="h-4 w-4 text-zinc-400" />
+                  <span>Billing & Plans</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 border-t border-zinc-800/80 bg-zinc-900/40">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900/80 border border-zinc-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-8 w-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-xs font-bold text-emerald-400 font-mono">
+                    AM
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Alex Mercer</h4>
+                    <p className="text-[10px] text-zinc-400">Enterprise Admin</p>
+                  </div>
+                </div>
+                <div className="h-7 w-7 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400">
+                  <LogOut className="h-3.5 w-3.5" />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "notification-item":
+        return (
+          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-lg space-y-3">
+            <div className="flex items-start gap-3.5">
+              <div className="relative">
+                <div className="h-10 w-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-bold text-indigo-400">
+                  MV
+                </div>
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-sky-500 border-2 border-zinc-950" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-white truncate">Marcus Vance</h4>
+                  <span className="text-[10px] text-zinc-500">12m ago</span>
+                </div>
+                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">
+                  requested feedback on <span className="font-semibold text-sky-400">Design System Spec</span>
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-zinc-900 border border-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400 font-mono">
+                    v4.0.0
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-medium">Ready for review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "order-summary":
+        return (
+          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <h4 className="text-xs font-bold text-white">Order Summary</h4>
+                <p className="text-[10px] text-zinc-500 font-mono">#NV-88219</p>
+              </div>
+              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                Verified
+              </span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between text-zinc-400">
+                <span>Subtotal (3 items)</span>
+                <span className="text-zinc-200 font-mono">$108.00</span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Discount (Coupon NV20)</span>
+                <span className="text-emerald-400 font-mono">-$20.00</span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Estimated Tax (8%)</span>
+                <span className="text-zinc-200 font-mono">$8.80</span>
+              </div>
+              <div className="border-t border-zinc-800 pt-2 flex justify-between font-bold text-white">
+                <span>Total Amount</span>
+                <span className="text-sm font-mono text-sky-400">$96.80</span>
+              </div>
+            </div>
+            <button className="w-full rounded-xl bg-sky-600 hover:bg-sky-500 py-2.5 text-xs font-bold text-white transition-colors">
+              Proceed to Payment
+            </button>
+          </div>
+        );
+
+      case "stat-progress-card":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                  <Flame className="h-4 w-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Weekly Workout Goal</h4>
+                  <p className="text-[10px] text-zinc-500">4 of 5 sessions completed</p>
+                </div>
+              </div>
+              <span className="text-xs font-black font-mono text-rose-400">80%</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-rose-500 to-amber-500 rounded-full w-[80%]" />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-zinc-500 border-t border-zinc-800/80 pt-2">
+              <span>🔥 14-day streak</span>
+              <span>1 session left</span>
+            </div>
+          </div>
+        );
+
+      case "auth-flow":
+        return (
+          <DeviceFrame title="Authentication">
+            <div className="p-4 space-y-4">
+              <div className="text-center pt-2">
+                <div className="inline-flex h-12 w-12 rounded-2xl bg-sky-500/20 border border-sky-500/40 items-center justify-center text-sky-400 font-bold font-mono text-lg mb-2">
+                  NV
+                </div>
+                <h3 className="text-base font-bold text-white">Welcome back</h3>
+                <p className="text-[11px] text-zinc-400">Enter credentials to continue</p>
+              </div>
+              <div className="space-y-2.5">
+                <div>
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase">Email</label>
+                  <input
+                    type="email"
+                    value="sophia@nativra.dev"
+                    readOnly
+                    className="w-full mt-1 rounded-xl bg-zinc-900 border border-zinc-800 px-3 py-2 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase">Password</label>
+                  <input
+                    type="password"
+                    value="••••••••••••"
+                    readOnly
+                    className="w-full mt-1 rounded-xl bg-zinc-900 border border-zinc-800 px-3 py-2 text-xs text-white"
+                  />
+                </div>
+              </div>
+              <button className="w-full py-2.5 rounded-xl bg-sky-600 font-bold text-white text-xs">
+                Sign In
+              </button>
+              <div className="text-center">
+                <span className="text-[11px] text-zinc-500">Don&apos;t have an account? </span>
+                <span className="text-[11px] text-sky-400 font-semibold">Sign Up</span>
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "onboarding-flow":
+        return (
+          <DeviceFrame title="Onboarding">
+            <div className="p-4 flex flex-col justify-between h-full space-y-6">
+              <div className="text-center pt-8 space-y-3">
+                <div className="inline-flex h-16 w-16 rounded-3xl bg-sky-500/10 border border-sky-500/20 items-center justify-center text-sky-400 mb-2">
+                  <Sparkles className="h-8 w-8" />
+                </div>
+                <h3 className="text-base font-bold text-white">Pure Mobile Velocity</h3>
+                <p className="text-xs text-zinc-400 px-2 leading-relaxed">
+                  Source-first React Native components designed for smooth 120 FPS mobile experiences.
+                </p>
+              </div>
+              <div className="space-y-4 pb-2">
+                <div className="flex justify-center gap-1.5">
+                  <span className="h-1.5 w-6 rounded-full bg-sky-500" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-800" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-800" />
+                </div>
+                <button className="w-full py-2.5 rounded-xl bg-sky-600 font-bold text-white text-xs">
+                  Get Started →
+                </button>
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "settings-flow":
+        return (
+          <DeviceFrame title="Preferences">
+            <div className="p-3 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase px-2 mb-1.5 block">Account & Security</span>
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 divide-y divide-zinc-800/80">
+                  <div className="flex items-center justify-between p-3">
+                    <span className="text-xs text-white">Biometric Login</span>
+                    <span className="h-5 w-9 rounded-full bg-emerald-500 p-0.5 flex items-center justify-end">
+                      <span className="h-4 w-4 rounded-full bg-white" />
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3">
+                    <span className="text-xs text-white">Two-Factor Authentication</span>
+                    <span className="text-[10px] text-emerald-400 font-semibold">Enabled</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase px-2 mb-1.5 block">App Experience</span>
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 divide-y divide-zinc-800/80">
+                  <div className="flex items-center justify-between p-3">
+                    <span className="text-xs text-white">Push Notifications</span>
+                    <span className="h-5 w-9 rounded-full bg-emerald-500 p-0.5 flex items-center justify-end">
+                      <span className="h-4 w-4 rounded-full bg-white" />
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3">
+                    <span className="text-xs text-white">Haptic Feedback</span>
+                    <span className="h-5 w-9 rounded-full bg-emerald-500 p-0.5 flex items-center justify-end">
+                      <span className="h-4 w-4 rounded-full bg-white" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DeviceFrame>
+        );
+
+      case "cn":
+        return (
+          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-3">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Code2 className="h-4 w-4 text-sky-400" />
+                <h4 className="text-xs font-bold text-white">Class & Style Merger (cn)</h4>
+              </div>
+              <span className="rounded bg-sky-500/20 text-sky-400 text-[10px] px-2 py-0.5 font-mono">
+                clsx + twMerge
+              </span>
+            </div>
+            <div className="rounded-xl bg-zinc-900 p-3 font-mono text-[11px] text-zinc-300 space-y-1">
+              <p className="text-zinc-500">// NativeWind (Tailwind conflict resolution)</p>
+              <p className="text-emerald-400">cn(&quot;px-4 py-2 bg-red-500&quot;, &quot;bg-sky-600&quot;)</p>
+              <p className="text-zinc-400">→ &quot;px-4 py-2 bg-sky-600&quot;</p>
+              <p className="text-zinc-500 pt-2">// StyleSheet (Object flattening)</p>
+              <p className="text-emerald-400">cn(styles.base, isActive &amp;&amp; styles.active)</p>
+            </div>
+          </div>
+        );
+
+      case "use-keyboard":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-3 text-center">
+            <div className="inline-flex h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 items-center justify-center text-sky-400">
+              <Keyboard className="h-5 w-5" />
+            </div>
+            <h4 className="text-xs font-bold text-white">useKeyboard Hook</h4>
+            <p className="text-[11px] text-zinc-400">Tracks software keyboard visibility & height</p>
+            <div className="flex justify-center gap-4 text-xs font-mono pt-1">
+              <span className="text-zinc-500">isVisible: <span className="text-emerald-400 font-bold">false</span></span>
+              <span className="text-zinc-500">height: <span className="text-zinc-300 font-bold">0px</span></span>
+            </div>
+          </div>
+        );
+
+      case "use-haptics":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-3 text-center">
+            <div className="inline-flex h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 items-center justify-center text-rose-400">
+              <Vibrate className="h-5 w-5" />
+            </div>
+            <h4 className="text-xs font-bold text-white">useHaptics Hook</h4>
+            <p className="text-[11px] text-zinc-400">Triggers iOS / Android Taptic feedback</p>
+            <div className="flex justify-center gap-2 pt-1">
+              <button className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white">Light</button>
+              <button className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-white">Medium</button>
+              <button className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-emerald-400 hover:bg-emerald-950/40">Success</button>
+            </div>
+          </div>
+        );
+
+      case "use-color-scheme":
+        return (
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl space-y-3 text-center">
+            <div className="inline-flex h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 items-center justify-center text-amber-400">
+              <Sun className="h-5 w-5" />
+            </div>
+            <h4 className="text-xs font-bold text-white">useColorScheme Hook</h4>
+            <p className="text-[11px] text-zinc-400">System dark/light mode detection & overrides</p>
+            <div className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs text-zinc-300">
+              <Moon className="h-3.5 w-3.5 text-sky-400" />
+              <span>Current Scheme: <strong className="text-white">dark</strong></span>
+            </div>
+          </div>
+        );
+
+      case "amber":
+      case "dark-slate":
+      case "emerald":
+      case "midnight":
+      case "rose":
+      case "slate":
+      case "violet":
+      case "zinc":
+        return (
+          <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <h4 className="text-sm font-bold text-white capitalize">{item.name}</h4>
+                <p className="text-[11px] text-zinc-400">{item.description || "Nativra Semantic Color Palette"}</p>
+              </div>
+              <Palette className="h-4 w-4 text-sky-400" />
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { name: "Primary", bg: "bg-sky-500", text: "text-white" },
+                { name: "Accent", bg: "bg-indigo-500", text: "text-white" },
+                { name: "Surface", bg: "bg-zinc-800", text: "text-zinc-200" },
+                { name: "Muted", bg: "bg-zinc-700", text: "text-zinc-300" },
+              ].map((swatch) => (
+                <div key={swatch.name} className="flex flex-col items-center gap-1.5">
+                  <div className={`h-10 w-full rounded-xl ${swatch.bg} shadow flex items-center justify-center font-mono text-[9px] font-bold ${swatch.text}`}>
+                    {swatch.name[0]}
+                  </div>
+                  <span className="text-[10px] text-zinc-400">{swatch.name}</span>
+                </div>
+              ))}
+            </div>
+            <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[10px] text-zinc-400 border border-zinc-800/80">
+              $ npx nativra add {item.id}
+            </div>
+          </div>
         );
 
       default:

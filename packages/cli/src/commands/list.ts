@@ -29,8 +29,13 @@ export function registerListCommand(program: Command) {
         process.exit(1);
       }
 
-      const filtered = options.type
-        ? items.filter((i) => i.type === options.type)
+      const targetType =
+        options.type === "primitive"
+          ? "component"
+          : options.type?.toLowerCase();
+
+      const filtered = targetType
+        ? items.filter((i) => i.type.toLowerCase() === targetType)
         : items;
 
       if (filtered.length === 0) {

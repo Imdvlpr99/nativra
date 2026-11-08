@@ -52,6 +52,7 @@ import {
   Search,
   ExternalLink,
   ChevronRight,
+  ChevronLeft,
   Sparkles,
   Trash2,
   X,
@@ -62,6 +63,18 @@ import {
   Palette,
   Smartphone,
   Plus,
+  Bell,
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  CreditCard,
+  Star,
+  LogOut,
+  Filter,
+  ArrowUpRight,
+  ArrowDownRight,
+  ShoppingCart,
+  Send,
 } from "lucide-react";
 
 export interface StudioItem {
@@ -76,7 +89,7 @@ export interface StudioItem {
   controls: Control[];
 }
 
-type Values = Record<string, string | boolean | number>;
+type Values = Record<string, any>;
 
 interface EventLogEntry {
   id: string;
@@ -124,6 +137,15 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [fabCount, setFabCount] = useState(0);
   const [iconBtnCount, setIconBtnCount] = useState(0);
+  const [segmentedValue, setSegmentedValue] = useState("week");
+  const [ratingValue, setRatingValue] = useState(4);
+  const [headerSearchText, setHeaderSearchText] = useState("");
+  const [chatDemoText, setChatDemoText] = useState("");
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: string; text: string; time: string }>>([
+    { sender: "agent", text: "Hello Sophia! How can we assist with your Nativra project today?", time: "10:14 AM" },
+    { sender: "user", text: "We are migrating to React Native 0.76 New Architecture. Any caveats?", time: "10:15 AM" },
+    { sender: "agent", text: "Nativra components fully support TurboModule & Bridgeless mode natively!", time: "10:16 AM" },
+  ]);
 
   const item = useMemo(() => items.find((i) => i.id === id) ?? items[0], [items, id]);
 
@@ -1932,6 +1954,716 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       );
     }
 
+    if (item.id === "data-table") {
+      const striped = Boolean(merged.striped);
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden text-xs">
+          <div className="border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2.5 font-bold text-zinc-700 dark:text-zinc-200 flex justify-between items-center">
+            <span>Recent Payouts</span>
+            <span className="text-[10px] font-mono text-zinc-400">Page 1 of 4</span>
+          </div>
+          <table className="w-full text-left">
+            <thead className="border-b border-zinc-100 dark:border-zinc-800 text-[10px] uppercase text-zinc-400">
+              <tr>
+                <th className="px-3 py-2">ID</th>
+                <th className="px-3 py-2">Client</th>
+                <th className="px-3 py-2 text-right">Amount</th>
+                <th className="px-3 py-2 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+              {[
+                { id: "#TX-901", client: "Acme Corp", amount: "$2,400.00", status: "Paid", color: "emerald" },
+                { id: "#TX-902", client: "Stripe EU", amount: "$890.50", status: "Pending", color: "amber" },
+                { id: "#TX-903", client: "Vercel Inc", amount: "$3,120.00", status: "Paid", color: "emerald" },
+              ].map((row, idx) => (
+                <tr
+                  key={row.id}
+                  onClick={() => logEvent("onRowClick", `Clicked table row ${row.id}`)}
+                  className={`cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/40 ${
+                    striped && idx % 2 === 1 ? "bg-zinc-50/70 dark:bg-zinc-800/30" : ""
+                  }`}
+                >
+                  <td className="px-3 py-2.5 font-mono text-zinc-500">{row.id}</td>
+                  <td className="px-3 py-2.5 font-semibold text-zinc-800 dark:text-zinc-200">{row.client}</td>
+                  <td className="px-3 py-2.5 text-right font-mono font-medium text-zinc-900 dark:text-zinc-100">{row.amount}</td>
+                  <td className="px-3 py-2.5 text-center">
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                      row.color === "emerald" ? "bg-emerald-500/15 text-emerald-400" : "bg-amber-500/15 text-amber-400"
+                    }`}>
+                      {row.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    if (item.id === "rating-stars") {
+      const readOnly = Boolean(merged.readOnly);
+      const activeRating = Number(merged.rating ?? ratingValue);
+      const size = String(merged.size ?? "md");
+      const iconSize = size === "sm" ? "h-4 w-4" : size === "lg" ? "h-6 w-6" : "h-5 w-5";
+
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-6">
+          <div className="flex items-center gap-1.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                disabled={readOnly}
+                onClick={() => {
+                  setRatingValue(star);
+                  logEvent("onRatingChange", `Selected ${star} stars rating`);
+                }}
+                className={`transition-transform hover:scale-110 active:scale-95 disabled:pointer-events-none ${
+                  star <= activeRating ? "text-amber-400" : "text-zinc-600 dark:text-zinc-700"
+                }`}
+              >
+                <Star className={`${iconSize} fill-current`} />
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-zinc-400 font-mono">
+            Rating: <strong className="text-amber-400">{activeRating}.0</strong> / 5.0
+          </span>
+        </div>
+      );
+    }
+
+    if (item.id === "segmented-control") {
+      const selected = String(merged.value || segmentedValue);
+      const disabled = Boolean(merged.disabled);
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-6">
+          <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700/60 shadow-inner">
+            {(["day", "week", "month"] as const).map((seg) => (
+              <button
+                key={seg}
+                type="button"
+                disabled={disabled}
+                onClick={() => {
+                  setSegmentedValue(seg);
+                  logEvent("onSegmentChange", `Switched segment to ${seg}`);
+                }}
+                className={`rounded-lg px-4 py-1.5 text-xs font-semibold capitalize transition-all duration-150 ${
+                  selected === seg
+                    ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-900 dark:text-white"
+                    : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                {seg}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "cn") {
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-5 shadow-md dark:border-zinc-800 dark:bg-zinc-900 space-y-3">
+          <div className="flex items-center gap-2">
+            <Code2 className="h-4 w-4 text-sky-400" />
+            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Class & Style Merger Utility</h4>
+          </div>
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            Nativra <code className="text-sky-400 font-mono">cn(...)</code> combines <code className="font-mono">clsx</code> conditionals with <code className="font-mono">tailwind-merge</code> conflict resolution and React Native StyleSheet flattening.
+          </p>
+          <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+            <span className="text-sky-400 font-bold">cn</span>(
+            <br />
+            &nbsp;&nbsp;&quot;p-4 bg-zinc-900&quot;,
+            <br />
+            &nbsp;&nbsp;isActive &amp;&amp; &quot;bg-sky-500 text-white&quot;,
+            <br />
+            &nbsp;&nbsp;style
+            <br />
+            );
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "app-header") {
+      const headerTitle = String(merged.title || "Dashboard");
+      const showBack = Boolean(merged.showBack !== false);
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2.5">
+              {showBack && (
+                <button
+                  type="button"
+                  onClick={() => logEvent("onBack", "Navigated back")}
+                  className="rounded-lg p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+              )}
+              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{headerTitle}</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => logEvent("onNotification", "Notifications opened")}
+                className="relative rounded-lg p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+              >
+                <Bell className="h-4 w-4" />
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-sky-500 ring-2 ring-white dark:ring-zinc-900" />
+              </button>
+              <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white text-[10px]">
+                SM
+              </div>
+            </div>
+          </div>
+          <div className="p-3 bg-zinc-50/50 dark:bg-zinc-900/50">
+            <div className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/60 px-3 py-1.5 text-xs text-zinc-400">
+              <Search className="h-3.5 w-3.5" />
+              <input
+                type="text"
+                placeholder="Search resources, tokens..."
+                value={headerSearchText}
+                onChange={(e) => setHeaderSearchText(e.target.value)}
+                className="w-full bg-transparent text-zinc-800 dark:text-zinc-200 outline-none text-xs placeholder:text-zinc-500"
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "app-sidebar") {
+      const workspace = String(merged.workspace || "Nativra Team");
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden text-xs">
+          <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-sky-500 flex items-center justify-center font-bold text-white text-xs">
+                NV
+              </div>
+              <div>
+                <h4 className="font-bold text-zinc-900 dark:text-zinc-100">{workspace}</h4>
+                <p className="text-[10px] text-zinc-500">Enterprise Workspace</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-500">
+              Live
+            </span>
+          </div>
+          <div className="p-3 space-y-1">
+            {[
+              { icon: LayoutDashboard, label: "Dashboard", active: true },
+              { icon: BarChart3, label: "Analytics", active: false },
+              { icon: Users, label: "Customers", active: false },
+              { icon: CreditCard, label: "Billing & Plans", active: false },
+            ].map((link) => {
+              const IconComp = link.icon;
+              return (
+                <div
+                  key={link.label}
+                  onClick={() => logEvent("onNavigate", `Clicked ${link.label}`)}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl font-medium cursor-pointer transition-colors ${
+                    link.active
+                      ? "bg-sky-500/10 text-sky-500 font-semibold"
+                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  <IconComp className="h-4 w-4" />
+                  <span>{link.label}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-zinc-500">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-zinc-300 dark:bg-zinc-700 flex items-center justify-center font-bold text-[9px] text-zinc-800 dark:text-zinc-200">
+                SM
+              </div>
+              <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300">sophia@nativra.dev</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => logEvent("onSignOut", "Sidebar user signed out")}
+              className="p-1 hover:text-red-400 transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "transaction-row") {
+      const title = String(merged.title || "Stripe Payout");
+      const amount = String(merged.amount || "+$1,250.00");
+      const positive = Boolean(merged.positive !== false);
+      return (
+        <div
+          onClick={() => logEvent("onTransactionClick", `Clicked transaction ${title}`)}
+          className="w-full max-w-sm flex items-center justify-between p-4 rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 cursor-pointer active:scale-[0.99] transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`h-10 w-10 rounded-2xl flex items-center justify-center ${
+              positive ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"
+            }`}>
+              {positive ? <ArrowDownRight className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{title}</h4>
+              <p className="text-[10px] text-zinc-500">Today at 2:45 PM • Automated Direct</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className={`font-mono text-xs font-bold ${positive ? "text-emerald-500" : "text-zinc-900 dark:text-zinc-100"}`}>
+              {amount}
+            </span>
+            <p className="text-[9px] text-zinc-400 font-medium">Completed</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "payment-method-card") {
+      const brand = String(merged.brand || "Visa");
+      const last4 = String(merged.last4 || "4242");
+      const isDefault = Boolean(merged.isDefault !== false);
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-gradient-to-br from-zinc-900 to-zinc-950 p-5 shadow-xl text-white relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold tracking-widest text-sky-400 uppercase">{brand} Corporate</span>
+            {isDefault && (
+              <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+                Default
+              </span>
+            )}
+          </div>
+          <div className="my-6">
+            <div className="h-7 w-10 rounded-md bg-amber-400/80 mb-3" />
+            <span className="font-mono text-base tracking-widest text-zinc-200">
+              •••• •••• •••• {last4}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
+            <span>EXP 08/29</span>
+            <span>CARDHOLDER: S. MARTINEZ</span>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "activity-timeline") {
+      const title = String(merged.title || "System Audit Trail");
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{title}</h4>
+            <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-500 font-mono">
+              3 events
+            </span>
+          </div>
+          <div className="space-y-3 relative pl-4 before:absolute before:left-1 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-200 dark:before:bg-zinc-800">
+            {[
+              { title: "Production Deployment", actor: "Marcus Vance", time: "10m ago", dot: "bg-emerald-500" },
+              { title: "API Gateway Key Rotated", actor: "Security Bot", time: "1h ago", dot: "bg-sky-500" },
+              { title: "Database Migration Applied", actor: "CLI Runner", time: "3h ago", dot: "bg-indigo-500" },
+            ].map((ev, i) => (
+              <div key={i} className="relative space-y-0.5">
+                <span className={`absolute -left-[19px] top-1 h-2 w-2 rounded-full ${ev.dot} ring-4 ring-white dark:ring-zinc-900`} />
+                <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{ev.title}</p>
+                <div className="flex items-center gap-2 text-[10px] text-zinc-400">
+                  <span>{ev.actor}</span>
+                  <span>•</span>
+                  <span className="font-mono">{ev.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "filter-sheet") {
+      const title = String(merged.title || "Filter Products");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+              <Filter className="h-3.5 w-3.5 text-sky-500" />
+              {title}
+            </h4>
+            <button
+              type="button"
+              onClick={() => logEvent("onResetFilter", "Reset all filters")}
+              className="text-[10px] font-semibold text-sky-500 hover:underline"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="space-y-3 text-xs">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-400 mb-1.5 block">Status</span>
+              <div className="flex flex-wrap gap-1.5">
+                {["In Stock", "Pre-Order", "Discounted", "Featured"].map((f, i) => (
+                  <span
+                    key={f}
+                    onClick={() => logEvent("onToggleFilter", `Toggled filter ${f}`)}
+                    className={`cursor-pointer px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors ${
+                      i === 0
+                        ? "bg-sky-500 text-white font-semibold"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                    }`}
+                  >
+                    {f}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-400 mb-1.5 block">Price Range</span>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 w-full text-center">$20</span>
+                <span className="text-zinc-400">to</span>
+                <span className="px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 w-full text-center">$250</span>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onApplyFilter", "Filters applied to catalogue")}
+            className="w-full py-2.5 rounded-xl bg-sky-500 font-bold text-white text-xs shadow-md shadow-sky-500/20 active:scale-95"
+          >
+            Apply Filters (3 Active)
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "kpi-comparison-card") {
+      const metricTitle = String(merged.metricTitle || "Monthly Recurring Revenue");
+      const currentVal = String(merged.currentValue || "$48,250");
+      const prevVal = String(merged.previousValue || "$41,100");
+      const delta = String(merged.deltaPercentage || "+17.4%");
+      const positive = Boolean(merged.positive !== false);
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg dark:border-zinc-800 dark:bg-zinc-900 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{metricTitle}</span>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+              positive ? "bg-emerald-500/15 text-emerald-500" : "bg-red-500/15 text-red-500"
+            }`}>
+              {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {delta}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-black font-mono text-zinc-900 dark:text-zinc-50">{currentVal}</span>
+            <span className="text-xs text-zinc-400">vs {prevVal} last mo</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+            <div className="h-full rounded-full bg-sky-500" style={{ width: "78%" }} />
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "mini-sparkline-card") {
+      const label = String(merged.label || "Active Daily Users");
+      const val = String(merged.value || "14,820");
+      const trend = String(merged.trend || "+8.2%");
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{label}</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-xl font-black font-mono text-zinc-900 dark:text-zinc-50">{val}</span>
+              <span className="text-[10px] font-bold text-emerald-500">{trend}</span>
+            </div>
+          </div>
+          <div className="flex items-end gap-1 h-8">
+            {[40, 65, 55, 80, 70, 95, 85].map((h, i) => (
+              <span key={i} className="w-1.5 rounded-t bg-sky-500" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "team-member-row") {
+      const name = String(merged.name || "Sophia Martinez");
+      const role = String(merged.role || "Lead Mobile Architect");
+      const email = String(merged.email || "sophia@nativra.dev");
+      return (
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="h-10 w-10 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-xs">
+                SM
+              </div>
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{name}</h4>
+              <p className="text-[10px] text-zinc-500">{role}</p>
+              <p className="text-[9px] font-mono text-zinc-400">{email}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onManageMember", `Manage settings for ${name}`)}
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            Manage
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "account-settings-flow") {
+      const uName = String(merged.userName || "Sophia Martinez");
+      const ws = String(merged.workspaceName || "Acme Mobile Corp");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-white">{uName}</h3>
+              <p className="text-xs text-sky-400 font-medium">{ws}</p>
+            </div>
+            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+              Verified
+            </span>
+          </div>
+          <div className="space-y-2 text-xs">
+            <div className="rounded-xl bg-zinc-800/60 p-3 flex justify-between items-center">
+              <div>
+                <p className="font-semibold text-zinc-200">Two-Factor Authentication</p>
+                <p className="text-[10px] text-zinc-400">Hardware security key or TOTP</p>
+              </div>
+              <span className="text-emerald-400 font-bold text-[10px]">Active</span>
+            </div>
+            <div className="rounded-xl bg-zinc-800/60 p-3 flex justify-between items-center">
+              <div>
+                <p className="font-semibold text-zinc-200">Session Lockout</p>
+                <p className="text-[10px] text-zinc-400">Lock app after 5m of inactivity</p>
+              </div>
+              <span className="text-sky-400 font-bold text-[10px]">5 Mins</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onSaveSettings", "Account settings saved")}
+            className="w-full py-2.5 rounded-xl bg-sky-500 font-bold text-white text-xs shadow-md shadow-sky-500/20 active:scale-95"
+          >
+            Update Account Preferences
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "analytics-dashboard") {
+      const rev = String(merged.totalRevenue || "$124,500");
+      const tf = String(merged.timeframe || "7d");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Executive Overview</span>
+              <h3 className="text-xl font-black font-mono text-white mt-0.5">{rev}</h3>
+            </div>
+            <span className="rounded-xl bg-zinc-800 px-2.5 py-1 text-xs font-mono font-bold text-sky-400">
+              {tf.toUpperCase()}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="rounded-xl bg-zinc-800/60 p-2.5">
+              <span className="text-[10px] text-zinc-400">Active Users</span>
+              <p className="text-base font-bold font-mono text-white mt-0.5">38,420</p>
+              <span className="text-[9px] font-bold text-emerald-400">+12.4%</span>
+            </div>
+            <div className="rounded-xl bg-zinc-800/60 p-2.5">
+              <span className="text-[10px] text-zinc-400">Conversion</span>
+              <p className="text-base font-bold font-mono text-white mt-0.5">4.82%</p>
+              <span className="text-[9px] font-bold text-emerald-400">+0.6%</span>
+            </div>
+          </div>
+          <div className="rounded-xl bg-zinc-800/40 p-3 space-y-2 text-xs">
+            <div className="flex justify-between text-[11px] text-zinc-400">
+              <span>Mobile In-App Checkout</span>
+              <span className="text-white font-mono">68%</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+              <div className="h-full bg-sky-500 rounded-full" style={{ width: "68%" }} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "chat-flow") {
+      const partner = String(merged.chatWith || "Engineering Support");
+      const status = String(merged.status || "Online");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 shadow-2xl overflow-hidden flex flex-col h-[340px]">
+          <div className="flex items-center justify-between p-3.5 border-b border-zinc-800 bg-zinc-900/90">
+            <div className="flex items-center gap-2.5">
+              <div className="relative">
+                <div className="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-[11px]">ES</div>
+                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-zinc-900" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-white">{partner}</h4>
+                <p className="text-[9px] text-emerald-400">{status}</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs">
+            {chatMessages.map((msg, i) => (
+              <div key={i} className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs ${
+                  msg.sender === "user" ? "bg-sky-500 text-white rounded-br-none" : "bg-zinc-800 text-zinc-200 rounded-bl-none"
+                }`}>
+                  {msg.text}
+                </div>
+                <span className="text-[9px] text-zinc-500 mt-0.5 px-1 font-mono">{msg.time}</span>
+              </div>
+            ))}
+          </div>
+          <div className="p-2 border-t border-zinc-800 bg-zinc-950 flex items-center gap-1.5">
+            <input
+              type="text"
+              placeholder="Type message..."
+              value={chatDemoText}
+              onChange={(e) => setChatDemoText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && chatDemoText.trim()) {
+                  setChatMessages((prev) => [...prev, { sender: "user", text: chatDemoText, time: "Just now" }]);
+                  logEvent("onSendMessage", `Sent message: ${chatDemoText}`);
+                  setChatDemoText("");
+                }
+              }}
+              className="flex-1 bg-zinc-900 rounded-xl px-3 py-1.5 text-xs text-zinc-200 outline-none placeholder:text-zinc-500 border border-zinc-800"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (chatDemoText.trim()) {
+                  setChatMessages((prev) => [...prev, { sender: "user", text: chatDemoText, time: "Just now" }]);
+                  logEvent("onSendMessage", `Sent message: ${chatDemoText}`);
+                  setChatDemoText("");
+                }
+              }}
+              className="p-2 rounded-xl bg-sky-500 text-white hover:bg-sky-400 transition-colors"
+            >
+              <Send className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (item.id === "ecommerce-flow") {
+      const store = String(merged.storeName || "Nativra Storefront");
+      const cartCount = String(merged.cartItemsCount || "3");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-4 shadow-2xl space-y-3">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+            <span className="text-xs font-bold text-white">{store}</span>
+            <div className="flex items-center gap-1 text-xs text-sky-400 font-bold bg-sky-500/10 px-2 py-1 rounded-xl">
+              <ShoppingCart className="h-3.5 w-3.5" />
+              <span>{cartCount} items</span>
+            </div>
+          </div>
+          <div className="rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-700 p-4 text-white">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Spring Drop</span>
+            <h4 className="text-sm font-black mt-1">Mechanical Keypad Native</h4>
+            <p className="text-xs text-white/80 mt-0.5 font-mono">$149.00</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => logEvent("onAddToCart", "Added item to cart")}
+            className="w-full py-2.5 rounded-xl bg-white font-bold text-zinc-950 text-xs shadow-md active:scale-95"
+          >
+            Add to Bag • $149.00
+          </button>
+        </div>
+      );
+    }
+
+    if (item.id === "fintech-wallet") {
+      const bal = String(merged.totalBalance || "$24,850.40");
+      const tag = String(merged.accountTag || "Multi-Chain Vault");
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">{tag}</span>
+            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+              Synced
+            </span>
+          </div>
+          <div>
+            <span className="text-xs text-zinc-400">Total Net Worth</span>
+            <h3 className="text-2xl font-black font-mono text-white mt-0.5">{bal}</h3>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: "Send", icon: ArrowUpRight },
+              { label: "Receive", icon: ArrowDownRight },
+              { label: "Swap", icon: Activity },
+            ].map((btn) => {
+              const BIcon = btn.icon;
+              return (
+                <button
+                  key={btn.label}
+                  type="button"
+                  onClick={() => logEvent("onWalletAction", `Triggered ${btn.label}`)}
+                  className="flex flex-col items-center gap-1 rounded-2xl bg-zinc-800 p-2.5 text-zinc-300 hover:bg-zinc-700/80 transition-colors"
+                >
+                  <BIcon className="h-4 w-4 text-sky-400" />
+                  <span className="text-[10px] font-semibold">{btn.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (item.type === "theme" || ["amber", "dark-slate", "emerald", "midnight", "rose", "slate", "violet", "zinc"].includes(item.id)) {
+      return (
+        <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div>
+              <h4 className="text-sm font-bold text-white capitalize">{item.name}</h4>
+              <p className="text-[11px] text-zinc-400">{item.description || "Nativra Semantic Color Palette"}</p>
+            </div>
+            <Palette className="h-4 w-4 text-sky-400" />
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { name: "Primary", bg: "bg-sky-500", text: "text-white" },
+              { name: "Accent", bg: "bg-indigo-500", text: "text-white" },
+              { name: "Surface", bg: "bg-zinc-800", text: "text-zinc-200" },
+              { name: "Muted", bg: "bg-zinc-700", text: "text-zinc-300" },
+            ].map((swatch) => (
+              <div key={swatch.name} className="flex flex-col items-center gap-1.5">
+                <div className={`h-10 w-full rounded-xl ${swatch.bg} shadow flex items-center justify-center font-mono text-[9px] font-bold ${swatch.text}`}>
+                  {swatch.name[0]}
+                </div>
+                <span className="text-[10px] text-zinc-400">{swatch.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[10px] text-zinc-400 border border-zinc-800/80">
+            $ npx nativra add {item.id}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="p-8 text-center text-xs text-zinc-500">
         Preview renderer for <strong>{item.name}</strong>
@@ -1945,8 +2677,8 @@ export default function StudioClient({ items }: { items: StudioItem[] }) {
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-3 lg:px-4 backdrop-blur gap-2 lg:gap-4 overflow-hidden">
         {/* Brand Left */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-white font-black text-sm border border-zinc-700 shrink-0 shadow-sm">
-            N
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0 shadow-sm border border-zinc-800 bg-zinc-950">
+            <img src="/icon.png" alt="Nativra" className="h-7 w-7 object-contain" />
           </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 leading-tight">

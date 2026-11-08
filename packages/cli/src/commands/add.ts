@@ -23,6 +23,7 @@ export function registerAddCommand(program: Command) {
     .option("--yes", "Skip interactive confirmation prompts. Existing files are preserved unless --overwrite is set.")
     .option("--overwrite", "Overwrite existing files without prompting (equivalent to --on-conflict overwrite)")
     .option("--on-conflict <mode>", "Conflict resolution strategy for existing files: 'skip', 'overwrite', or 'error'", "skip")
+    .option("--dry-run", "Preview installation plan and dependencies without writing files to disk")
     .option("--registry <url>", "Override registry location (URL or local directory)")
     .action(
       async (
@@ -32,6 +33,7 @@ export function registerAddCommand(program: Command) {
           yes?: boolean;
           overwrite?: boolean;
           onConflict?: "skip" | "overwrite" | "error";
+          dryRun?: boolean;
           registry?: string;
         }
       ) => {
@@ -60,6 +62,24 @@ export function registerAddCommand(program: Command) {
             for (const file of filesForTarget(item, config)) {
               console.log(chalk.gray(`  + ${destPathFor(options.cwd, item, file, config)}`));
             }
+          }
+
+          if (options.dryRun) {
+            console.log(chalk.bold("\nRequired dependencies:"));
+            let hasDeps = false;
+            for (const item of items) {
+              if (item.npmDependencies && item.npmDependencies.length > 0) {
+                hasDeps = true;
+                const deps = item.npmDependencies.map((d) => `${d.package}@${d.version}`).join(" ");
+                console.log(chalk.cyan(`  • ${item.name}: ${deps}`));
+              }
+            }
+            if (!hasDeps) {
+              console.log(chalk.gray("  None (zero external dependencies)"));
+            }
+
+            console.log(chalk.yellow.bold(`\n🔍 [Dry Run] Simulation complete for "${componentId}". No files were written to disk.\n`));
+            continue;
           }
 
           if (!options.yes) {
@@ -146,8 +166,10 @@ export function registerAddCommand(program: Command) {
           }
         }
 
-        await writeLock(options.cwd, lock);
-        console.log(chalk.bold.green("\n✅ Done!\n"));
+        if (!options.dryRun) {
+          await writeLock(options.cwd, lock);
+          console.log(chalk.bold.green("\n✅ Done!\n"));
+        }
       }
     );
 }

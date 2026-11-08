@@ -5,9 +5,15 @@ import { z } from "zod";
 /** Location of the Nativra config file within a consumer project */
 export const CONFIG_FILENAME = "nativra.json";
 
+function cleanPath(p: unknown): string | undefined {
+  if (typeof p !== "string" || !p.trim()) return undefined;
+  return p.trim().replace(/^[@~]\//, "").replace(/^\.\//, "");
+}
+
 export const NativraConfigSchema = z.object({
   /** Schema specification version */
   version: z.number().optional().default(4),
+  $schema: z.string().optional(),
   /** Registry sources configured for this project */
   registries: z
     .array(
@@ -19,6 +25,8 @@ export const NativraConfigSchema = z.object({
     .default([{ name: "default", url: "https://registry.nativra.dev" }]),
   /** Where installed components are written, relative to project root */
   componentsDir: z.string().default("components/ui"),
+  /** Where installed blocks are written, relative to project root */
+  blocksDir: z.string().optional(),
   /** Where installed hooks are written, relative to project root */
   hooksDir: z.string().default("hooks"),
   /** Where installed utilities are written, relative to project root */
@@ -27,6 +35,22 @@ export const NativraConfigSchema = z.object({
   stylingTarget: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
   /** TypeScript path alias prefix, e.g. "@/" */
   aliasPrefix: z.string().optional(),
+  /** Modern nested V4 configuration object (Blueprint §6.2) */
+  config: z
+    .object({
+      v4: z
+        .object({
+          components: z.string().optional(),
+          blocks: z.string().optional(),
+          hooks: z.string().optional(),
+          utils: z.string().optional(),
+          theme: z.string().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+  /** Custom path aliases */
+  aliases: z.record(z.string(), z.string()).optional(),
 });
 
 export type NativraConfig = z.infer<typeof NativraConfigSchema>;
@@ -36,11 +60,48 @@ export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
   try {
     const raw = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
 
-    // Normalize V4 format if present (V4 §5)
+    // 1. Normalize V4 nested schema (Blueprint §6.2)
+    if (raw["config"] && typeof raw["config"] === "object") {
+      const cfg = raw["config"] as Record<string, unknown>;
+      const v4 = cfg["v4"] as Record<string, unknown> | undefined;
+      if (v4 && typeof v4 === "object") {
+        if (v4["components"] && !raw["componentsDir"]) {
+          raw["componentsDir"] = cleanPath(v4["components"]);
+        }
+        if (v4["blocks"] && !raw["blocksDir"]) {
+          raw["blocksDir"] = cleanPath(v4["blocks"]);
+        }
+        if (v4["hooks"] && !raw["hooksDir"]) {
+          raw["hooksDir"] = cleanPath(v4["hooks"]);
+        }
+        if (v4["utils"] && !raw["utilsDir"]) {
+          raw["utilsDir"] = cleanPath(v4["utils"]);
+        }
+      }
+    }
+
+    // 2. Normalize aliases if present
+    if (raw["aliases"] && typeof raw["aliases"] === "object") {
+      const aliases = raw["aliases"] as Record<string, unknown>;
+      if (aliases["components"] && !raw["componentsDir"]) {
+        raw["componentsDir"] = cleanPath(aliases["components"]);
+      }
+      if (aliases["blocks"] && !raw["blocksDir"]) {
+        raw["blocksDir"] = cleanPath(aliases["blocks"]);
+      }
+      if (aliases["hooks"] && !raw["hooksDir"]) {
+        raw["hooksDir"] = cleanPath(aliases["hooks"]);
+      }
+      if (aliases["utils"] && !raw["utilsDir"]) {
+        raw["utilsDir"] = cleanPath(aliases["utils"]);
+      }
+    }
+
+    // 3. Normalize V4 component object format (V4 §5)
     if (raw["components"] && typeof raw["components"] === "object") {
       const comp = raw["components"] as Record<string, unknown>;
       if (comp["directory"] && !raw["componentsDir"]) {
-        raw["componentsDir"] = comp["directory"];
+        raw["componentsDir"] = cleanPath(comp["directory"]);
       }
     }
     if (raw["styling"] && !raw["stylingTarget"]) {

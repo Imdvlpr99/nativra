@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/app/contexts/ThemeContext";
 import { Search, Menu, X, ExternalLink } from "lucide-react";
@@ -39,8 +40,8 @@ export function Navbar() {
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm font-black text-sm">
-                N
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0 shadow-sm">
+                <Image src="/icon.png" alt="Nativra logo" width={32} height={32} priority className="object-contain" />
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-bold tracking-tight text-foreground">Nativra</span>

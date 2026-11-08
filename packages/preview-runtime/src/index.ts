@@ -2,7 +2,7 @@
  * @nativra/preview-runtime — deterministic preview fixtures shared by Studio and
  * the native-preview app, so both render the same states.
  */
-export type PreviewProps = Record<string, string | boolean | number>;
+export type PreviewProps = Record<string, unknown>;
 
 export interface PreviewFixture {
   name: string;
@@ -69,6 +69,125 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
     { name: "Small avatar", props: { fallback: "NV", size: "sm" } },
     { name: "Large avatar", props: { fallback: "AB", size: "lg" } },
   ],
+  alert: [
+    { name: "Info Notice", props: { variant: "info", title: "Update Available", description: "A new version of Nativra is ready to install." } },
+    { name: "Success Alert", props: { variant: "success", title: "Payment Processed", description: "Your subscription has been renewed." } },
+    { name: "Destructive Alert", props: { variant: "destructive", title: "Session Expired", description: "Please sign in again to continue." } },
+    { name: "Warning Notice", props: { variant: "warning", title: "Storage Warning", description: "You have used 85% of your quota." } },
+  ],
+  progress: [
+    { name: "Initial 25%", props: { value: 25, variant: "primary", size: "md" } },
+    { name: "Halfway 50%", props: { value: 50, variant: "primary", size: "md" } },
+    { name: "Complete 100%", props: { value: 100, variant: "success", size: "lg" } },
+    { name: "Warning 75%", props: { value: 75, variant: "destructive", size: "sm" } },
+  ],
+  slider: [
+    { name: "Midpoint 50", props: { value: 50, min: 0, max: 100 } },
+    { name: "High Value 85", props: { value: 85, min: 0, max: 100 } },
+    { name: "Low Value 15", props: { value: 15, min: 0, max: 100 } },
+    { name: "Disabled", props: { value: 40, disabled: true } },
+  ],
+  tabs: [
+    { name: "Pill Style", props: { value: "overview", variant: "pill" } },
+    { name: "Underline Style", props: { value: "activity", variant: "underline" } },
+  ],
+  accordion: [
+    {
+      name: "Default Accordion",
+      props: {
+        items: [
+          { id: "1", title: "What is Nativra?", content: "A source-first UI platform for React Native & Expo." },
+          { id: "2", title: "Is there runtime lock-in?", content: "No, you own 100% of the installed source code." },
+        ],
+      },
+    },
+  ],
+  "bottom-sheet": [
+    { name: "Open Sheet", props: { title: "Sheet Menu", isOpen: true } },
+  ],
+  "data-table": [
+    {
+      name: "Enterprise Grid",
+      props: {
+        columns: [
+          { key: "id", title: "ID", width: 70 },
+          { key: "name", title: "User" },
+          { key: "status", title: "Status" },
+        ],
+        data: [
+          { id: "#101", name: "Alex Mercer", status: "Active" },
+          { id: "#102", name: "Sophia Vance", status: "Pending" },
+        ],
+      },
+    },
+  ],
+  dialog: [
+    { name: "Confirm Modal", props: { title: "Delete Record", description: "Are you sure you want to permanently delete this?", isOpen: true } },
+  ],
+  fab: [
+    { name: "Primary Action", props: { label: "New Message", variant: "primary" } },
+    { name: "Secondary Action", props: { label: "Add", variant: "secondary" } },
+  ],
+  "icon-button": [
+    { name: "Primary Icon", props: { variant: "primary", size: "md" } },
+    { name: "Outline Icon", props: { variant: "outline", size: "md" } },
+  ],
+  "otp-input": [
+    { name: "4-Digit Pin", props: { length: 4, value: "4821" } },
+  ],
+  "radio-group": [
+    {
+      name: "Tier Selector",
+      props: {
+        options: [
+          { label: "Personal Plan", value: "personal" },
+          { label: "Team Plan", value: "team" },
+        ],
+        value: "personal",
+      },
+    },
+  ],
+  "rating-stars": [
+    { name: "4 of 5 Stars", props: { rating: 4, maxStars: 5, size: "md" } },
+    { name: "5 of 5 Stars", props: { rating: 5, maxStars: 5, size: "lg" } },
+  ],
+  "safe-area": [
+    { name: "Standard Edges", props: { edges: ["top", "bottom"] } },
+  ],
+  "segmented-control": [
+    {
+      name: "Timeframe Selector",
+      props: {
+        options: [
+          { label: "Day", value: "day" },
+          { label: "Week", value: "week" },
+          { label: "Month", value: "month" },
+        ],
+        value: "week",
+      },
+    },
+  ],
+  select: [
+    {
+      name: "Dropdown Picker",
+      props: {
+        placeholder: "Select country",
+        options: ["United States", "Germany", "Japan", "Singapore"],
+      },
+    },
+  ],
+  stack: [
+    { name: "Vertical Stack", props: { direction: "column", gap: "md" } },
+    { name: "Horizontal Stack", props: { direction: "row", gap: "sm" } },
+  ],
+  textarea: [
+    { name: "Standard Input", props: { label: "Bio / Notes", placeholder: "Enter description here..." } },
+  ],
+  toast: [
+    { name: "Success Notification", props: { title: "Payment Processed", message: "Your card was charged successfully.", variant: "success" } },
+  ],
+
+  // Blocks
   "empty-state": [
     { name: "Default", props: { title: "No Items Found", description: "Get started by creating your first item." } },
     { name: "No Action", props: { title: "Inbox Zero", description: "All caught up for today!", showAction: false } },
@@ -97,28 +216,6 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
   "use-disclosure": [
     { name: "Closed", props: { defaultIsOpen: false, triggerLabel: "Open Bottom Sheet" } },
     { name: "Open", props: { defaultIsOpen: true, triggerLabel: "Sheet Active" } },
-  ],
-  alert: [
-    { name: "Info Notice", props: { variant: "info", title: "Update Available", description: "A new version of Nativra is ready to install." } },
-    { name: "Success Alert", props: { variant: "success", title: "Payment Processed", description: "Your subscription has been renewed." } },
-    { name: "Destructive Alert", props: { variant: "destructive", title: "Session Expired", description: "Please sign in again to continue." } },
-    { name: "Warning Notice", props: { variant: "warning", title: "Storage Warning", description: "You have used 85% of your quota." } },
-  ],
-  progress: [
-    { name: "Initial 25%", props: { value: 25, variant: "primary", size: "md" } },
-    { name: "Halfway 50%", props: { value: 50, variant: "primary", size: "md" } },
-    { name: "Complete 100%", props: { value: 100, variant: "success", size: "lg" } },
-    { name: "Warning 75%", props: { value: 75, variant: "destructive", size: "sm" } },
-  ],
-  slider: [
-    { name: "Midpoint 50", props: { value: 50, min: 0, max: 100 } },
-    { name: "High Value 85", props: { value: 85, min: 0, max: 100 } },
-    { name: "Low Value 15", props: { value: 15, min: 0, max: 100 } },
-    { name: "Disabled", props: { value: 40, disabled: true } },
-  ],
-  tabs: [
-    { name: "Pill Style", props: { value: "overview", variant: "pill" } },
-    { name: "Underline Style", props: { value: "activity", variant: "underline" } },
   ],
   "order-summary": [
     { name: "Standard Checkout", props: { orderNumber: "#NV-88219", subtotal: "$108.00", discount: "-$20.00", total: "$96.80" } },

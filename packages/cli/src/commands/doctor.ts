@@ -1,10 +1,11 @@
 import type { Command } from "commander";
-import { readFile, access } from "node:fs/promises";
+import { readFile, writeFile, access } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
 import { checkProjectCompatibility } from "@nativra/registry-schema";
-import { loadConfig } from "../config.js";
+import { loadConfig, saveConfig, NativraConfigSchema } from "../config.js";
 import { readLock } from "../install.js";
+import { detectProjectEnvironment } from "../detect.js";
 
 interface Check {
   name: string;
@@ -27,7 +28,8 @@ export function registerDoctorCommand(program: Command) {
     .command("doctor")
     .description("Inspect project setup, dependencies, and diagnose configuration problems")
     .option("--cwd <dir>", "Project root directory", process.cwd())
-    .action(async (options: { cwd: string }) => {
+    .option("--fix", "Automatically resolve or scaffold missing configurations")
+    .action(async (options: { cwd: string; fix?: boolean }) => {
       console.log(chalk.bold("\n🩺 Nativra Doctor — Project Diagnostic\n"));
 
       const checks: Check[] = [];
@@ -47,11 +49,49 @@ export function registerDoctorCommand(program: Command) {
           }`,
         });
       } catch {
-        checks.push({
-          name: "nativra.json configuration",
-          pass: false,
-          detail: `Missing or invalid — run ${chalk.cyan("nativra init")}`,
-        });
+        if (options.fix) {
+          try {
+            const env = await detectProjectEnvironment(options.cwd);
+            stylingTarget = env.stylingTarget;
+            hasV4Config = true;
+            const newConfig = NativraConfigSchema.parse({
+              $schema: "https://nativra.dev/schema.json",
+              version: 4,
+              stylingTarget: env.stylingTarget,
+              componentsDir: env.suggestedComponentsDir,
+              hooksDir: env.suggestedHooksDir,
+              utilsDir: env.suggestedUtilsDir,
+              config: {
+                v4: {
+                  styling: env.stylingTarget,
+                },
+              },
+              aliases: {
+                components: env.suggestedComponentsDir,
+                hooks: env.suggestedHooksDir,
+                utils: env.suggestedUtilsDir,
+              },
+            });
+            await saveConfig(options.cwd, newConfig);
+            checks.push({
+              name: "nativra.json configuration",
+              pass: true,
+              detail: chalk.green("⚡ Auto-fixed: Scaffolded v4 nativra.json based on environment"),
+            });
+          } catch (fixErr) {
+            checks.push({
+              name: "nativra.json configuration",
+              pass: false,
+              detail: `Auto-fix failed: ${(fixErr as Error).message}`,
+            });
+          }
+        } else {
+          checks.push({
+            name: "nativra.json configuration",
+            pass: false,
+            detail: `Missing or invalid — run ${chalk.cyan("nativra init")} or ${chalk.cyan("nativra doctor --fix")}`,
+          });
+        }
       }
 
       // 2. Check package.json & Ecosystem Compatibility
@@ -155,9 +195,20 @@ export function registerDoctorCommand(program: Command) {
       // 5. NativeWind v4 Configuration (if active)
       if (stylingTarget === "nativewind") {
         const hasNativeWindPkg = Boolean(allDeps["nativewind"]);
-        const hasTailwindConfig =
+        let hasTailwindConfig =
           (await fileExists(join(options.cwd, "tailwind.config.js"))) ||
           (await fileExists(join(options.cwd, "tailwind.config.ts")));
+
+        if (!hasTailwindConfig && options.fix) {
+          const defaultTailwind = `/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],\n  presets: [require("nativewind/preset")],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n};\n`;
+          await writeFile(join(options.cwd, "tailwind.config.js"), defaultTailwind, "utf8");
+          hasTailwindConfig = true;
+          checks.push({
+            name: "Tailwind CSS configuration",
+            pass: true,
+            detail: chalk.green("⚡ Auto-fixed: Scaffolded tailwind.config.js"),
+          });
+        }
 
         checks.push({
           name: "NativeWind v4 package",
@@ -167,14 +218,14 @@ export function registerDoctorCommand(program: Command) {
             : `Run: ${chalk.cyan("npx expo install nativewind tailwindcss")}`,
         });
 
-        if (hasNativeWindPkg) {
+        if (hasNativeWindPkg && !options.fix) {
           checks.push({
             name: "Tailwind CSS configuration",
             pass: true,
             warn: !hasTailwindConfig,
             detail: hasTailwindConfig
               ? "tailwind.config detected"
-              : "Consider running npx tailwindcss init",
+              : "Consider running npx tailwindcss init or pass --fix",
           });
         }
       }
@@ -228,7 +279,7 @@ export function registerDoctorCommand(program: Command) {
       } else {
         console.log(
           chalk.yellow(
-            `\n⚠ ${failed.length} check(s) failed. See diagnostic details above to resolve.\n`
+            `\n⚠ ${failed.length} check(s) failed. Run ${chalk.cyan("nativra doctor --fix")} or see diagnostic details above to resolve.\n`
           )
         );
       }
