@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# nativra
+# nativra-cli
 
 The official command-line interface for [Nativra](https://nativra.dev) — the source-first UI platform for React Native and Expo.
 

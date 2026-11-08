@@ -1,5 +1,5 @@
 {
-  "name": "nativra",
+  "name": "nativra-cli",
   "version": "0.1.0",
   "description": "Nativra CLI — add, update, diff, and manage UI components in your React Native project",
   "license": "MIT",
@@ -31,7 +31,8 @@
     "README.md"
   ],
   "bin": {
-    "nativra": "dist/cli.js"
+    "nativra": "dist/cli.js",
+    "nativra-cli": "dist/cli.js"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
