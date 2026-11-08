@@ -72,6 +72,9 @@ importers:
       '@nativra/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@nativra/registry-builder':
+        specifier: workspace:*
+        version: link:../../packages/registry-builder
       '@types/node':
         specifier: ^22.10.1
         version: 22.20.5
