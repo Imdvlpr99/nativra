@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
+import { getItem } from "@/lib/registry";
+import { ComponentPreview } from "@/components/ComponentPreview";
+import { CodeViewer } from "@/components/CodeViewer";
 
 export const metadata: Metadata = {
   title: "Screen Templates",
@@ -138,7 +141,14 @@ const TEMPLATES: ScreenTemplate[] = [
   },
 ];
 
-export default function TemplatesPage() {
+export default async function TemplatesPage() {
+  const loadedTemplates = await Promise.all(
+    TEMPLATES.map(async (tmpl) => {
+      const item = await getItem(tmpl.id);
+      return { ...tmpl, item };
+    })
+  );
+
   return (
     <div className="space-y-10">
       {/* Header */}
@@ -154,11 +164,12 @@ export default function TemplatesPage() {
         </p>
       </div>
 
-      {/* Templates Grid */}
-      <div className="space-y-8">
-        {TEMPLATES.map((tmpl) => (
+      {/* Templates List */}
+      <div className="space-y-12">
+        {loadedTemplates.map((tmpl) => (
           <div
             key={tmpl.id}
+            id={tmpl.id}
             className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
@@ -184,7 +195,7 @@ export default function TemplatesPage() {
             </div>
 
             {/* Architecture Details */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 rounded-xl border border-border bg-muted/20 p-4">
               <div className="space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Components Used
@@ -216,6 +227,26 @@ export default function TemplatesPage() {
                 </ul>
               </div>
             </div>
+
+            {/* Interactive Preview Canvas */}
+            {tmpl.item && (
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Interactive Preview
+                </h3>
+                <ComponentPreview item={tmpl.item} />
+              </div>
+            )}
+
+            {/* Source Code Viewer */}
+            {tmpl.item && tmpl.item.files.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Implementation
+                </h3>
+                <CodeViewer files={tmpl.item.files} defaultTarget="nativewind" />
+              </div>
+            )}
           </div>
         ))}
       </div>

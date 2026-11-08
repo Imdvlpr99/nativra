@@ -179,6 +179,10 @@ describe("nativra CLI (local registry)", () => {
     expect(utilityList).toContain("cn");
   });
 
+  it("add without components in non-interactive mode errors cleanly", () => {
+    expect(() => runReg("add")).toThrow();
+  });
+
   it("doctor passes and doctor --fix recovers missing configuration", () => {
     expect(run("doctor")).toContain("All checks passed");
 

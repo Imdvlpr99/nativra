@@ -123,6 +123,7 @@ const SPINNER_SIZES: Record<SpinnerSize, string> = {
 
 export function ComponentPreview({ item }: ComponentPreviewProps) {
   const [copied, setCopied] = useState(false);
+  const [copyMode, setCopyMode] = useState<"cli" | "import">("cli");
 
   // Button state
   const [btnVariant, setBtnVariant] = useState<ButtonVariant>("default");
@@ -191,8 +192,31 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
   const [ratingStarsVal, setRatingStarsVal] = useState(4);
   const [chatDemoText, setChatDemoText] = useState("");
 
+  const importSnippet = React.useMemo(() => {
+    const firstFile = item.files?.[0]?.path;
+    const rawFileName = firstFile
+      ? firstFile.split("/").pop()?.replace(/\.(tsx|ts|jsx|js)$/, "")
+      : "";
+    const name = rawFileName || item.name.replace(/[^a-zA-Z0-9]/g, "");
+
+    if (item.type === "hook") {
+      return `import { ${name} } from "@/hooks/${name}";`;
+    }
+    if (item.type === "block") {
+      return `import { ${name} } from "@/components/blocks/${name}";`;
+    }
+    if (item.type === "template") {
+      return `import { ${name} } from "@/components/templates/${name}";`;
+    }
+    if (item.type === "utility") {
+      return `import { ${name} } from "@/lib/utils";`;
+    }
+    return `import { ${name} } from "@/components/ui/${name}";`;
+  }, [item]);
+
   const copyCommand = () => {
-    navigator.clipboard.writeText(`npx nativra add ${item.id}`);
+    const textToCopy = copyMode === "cli" ? `npx nativra add ${item.id}` : importSnippet;
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -2448,22 +2472,57 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
         )}
       </div>
 
-      {/* Quick Install Bar */}
-      <div className="flex items-center justify-between rounded-xl border border-border bg-muted/40 px-4 py-2.5">
-        <div className="flex items-center gap-2 font-mono text-xs">
-          <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-muted-foreground">$</span>
-          <span className="text-foreground">npx nativra add {item.id}</span>
+      {/* Quick Install Bar & Import Snippet Toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 p-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 min-w-0">
+          <div className="flex rounded-lg bg-background p-0.5 border border-border text-[11px] font-medium shrink-0">
+            <button
+              type="button"
+              onClick={() => setCopyMode("cli")}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
+                copyMode === "cli"
+                  ? "bg-muted font-semibold text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Terminal className="h-3 w-3" />
+              <span>CLI</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCopyMode("import")}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
+                copyMode === "import"
+                  ? "bg-muted font-semibold text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Code2 className="h-3 w-3 text-sky-500" />
+              <span>Import</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 font-mono text-xs overflow-x-auto">
+            {copyMode === "cli" ? (
+              <>
+                <span className="text-muted-foreground">$</span>
+                <span className="text-foreground">npx nativra add {item.id}</span>
+              </>
+            ) : (
+              <span className="text-foreground font-medium">{importSnippet}</span>
+            )}
+          </div>
         </div>
+
         <button
           onClick={copyCommand}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-          aria-label="Copy install command"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted shrink-0 ml-auto"
+          aria-label={copyMode === "cli" ? "Copy install command" : "Copy import statement"}
         >
           {copied ? (
             <>
               <Check className="h-3.5 w-3.5 text-emerald-500" />
-              <span className="text-emerald-500">Copied</span>
+              <span className="text-emerald-500 font-medium">Copied</span>
             </>
           ) : (
             <>

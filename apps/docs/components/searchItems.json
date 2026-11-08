@@ -1,0 +1,583 @@
+[
+  {
+    "id": "intro",
+    "name": "Introduction",
+    "category": "Documentation",
+    "href": "/docs",
+    "description": "Source-first UI philosophy & core principles"
+  },
+  {
+    "id": "install",
+    "name": "Installation Guide",
+    "category": "Documentation",
+    "href": "/docs/installation",
+    "description": "Expo SDK 51/52, NativeWind, and StyleSheet setup"
+  },
+  {
+    "id": "principles",
+    "name": "Principles & Architecture",
+    "category": "Documentation",
+    "href": "/docs/principles",
+    "description": "Deep dive into source ownership and dual targets"
+  },
+  {
+    "id": "compatibility",
+    "name": "Platform Compatibility Matrix",
+    "category": "Documentation",
+    "href": "/docs/compatibility",
+    "description": "Android, iOS, Expo Go, and Fabric verification table"
+  },
+  {
+    "id": "cli",
+    "name": "CLI Reference",
+    "category": "CLI",
+    "href": "/docs/cli",
+    "description": "Commands for init, add, diff, update, doctor, remove, rollback"
+  },
+  {
+    "id": "theming",
+    "name": "Theming & Tokens",
+    "category": "Documentation",
+    "href": "/docs/theming",
+    "description": "Semantic color tokens and theme gallery"
+  },
+  {
+    "id": "nativewind",
+    "name": "NativeWind Guide",
+    "category": "Documentation",
+    "href": "/docs/styling/nativewind",
+    "description": "Tailwind CSS styling for React Native"
+  },
+  {
+    "id": "stylesheet",
+    "name": "StyleSheet Guide",
+    "category": "Documentation",
+    "href": "/docs/styling/stylesheet",
+    "description": "Pure React Native StyleSheet without dependencies"
+  },
+  {
+    "id": "blocks-guide",
+    "name": "Blocks Overview",
+    "category": "Block",
+    "href": "/docs/blocks",
+    "description": "Pre-composed mobile patterns and screens"
+  },
+  {
+    "id": "templates-guide",
+    "name": "Screen Templates",
+    "category": "Template",
+    "href": "/docs/templates",
+    "description": "Full-screen mobile flows: Auth, Settings, Dashboard, Wallet"
+  },
+  {
+    "id": "hooks-guide",
+    "name": "Hooks Overview",
+    "category": "Hook",
+    "href": "/docs/hooks",
+    "description": "Mobile behavior utilities and lifecycle hooks"
+  },
+  {
+    "id": "contributing",
+    "name": "Contribution Guide",
+    "category": "Documentation",
+    "href": "/docs/contributing",
+    "description": "How to author dual-target components and build the registry"
+  },
+  {
+    "id": "changelog",
+    "name": "Changelog",
+    "category": "Documentation",
+    "href": "/docs/changelog",
+    "description": "Release notes and roadmap history for v0.1.0"
+  },
+  {
+    "id": "accordion",
+    "name": "Accordion",
+    "category": "Component",
+    "href": "/docs/components/accordion",
+    "description": "An interactive collapsible accordion component supporting single and multiple open items."
+  },
+  {
+    "id": "alert",
+    "name": "Alert",
+    "category": "Component",
+    "href": "/docs/components/alert",
+    "description": "Displays a callout banner for user attention with icons and status variants."
+  },
+  {
+    "id": "avatar",
+    "name": "Avatar",
+    "category": "Component",
+    "href": "/docs/components/avatar",
+    "description": "Avatar component displaying profile image with automatic text initials fallback."
+  },
+  {
+    "id": "badge",
+    "name": "Badge",
+    "category": "Component",
+    "href": "/docs/components/badge",
+    "description": "A small status indicator label for React Native."
+  },
+  {
+    "id": "bottom-sheet",
+    "name": "Bottom Sheet",
+    "category": "Component",
+    "href": "/docs/components/bottom-sheet",
+    "description": "An interactive modal bottom drawer with drag handle and backdrop dismiss."
+  },
+  {
+    "id": "button",
+    "name": "Button",
+    "category": "Component",
+    "href": "/docs/components/button",
+    "description": "A pressable button with variant and size presets for React Native."
+  },
+  {
+    "id": "card",
+    "name": "Card",
+    "category": "Component",
+    "href": "/docs/components/card",
+    "description": "A surface container for grouped content."
+  },
+  {
+    "id": "checkbox",
+    "name": "Checkbox",
+    "category": "Component",
+    "href": "/docs/components/checkbox",
+    "description": "Accessible checkbox component with check indicator and label support."
+  },
+  {
+    "id": "data-table",
+    "name": "Data Table",
+    "category": "Component",
+    "href": "/docs/components/data-table",
+    "description": "Mobile-optimized horizontally scrollable data grid with columns, sorting indicators, and striped rows."
+  },
+  {
+    "id": "dialog",
+    "name": "Dialog",
+    "category": "Component",
+    "href": "/docs/components/dialog",
+    "description": "An accessible modal dialog with backdrop, title, description, and action buttons."
+  },
+  {
+    "id": "fab",
+    "name": "Floating Action Button",
+    "category": "Component",
+    "href": "/docs/components/fab",
+    "description": "An elevated circular action button anchored above screen content."
+  },
+  {
+    "id": "icon-button",
+    "name": "Icon Button",
+    "category": "Component",
+    "href": "/docs/components/icon-button",
+    "description": "An accessible, compact icon-only button with 44x44pt minimum touch target."
+  },
+  {
+    "id": "input",
+    "name": "Input",
+    "category": "Component",
+    "href": "/docs/components/input",
+    "description": "A text input with label, helper and error state."
+  },
+  {
+    "id": "label",
+    "name": "Label",
+    "category": "Component",
+    "href": "/docs/components/label",
+    "description": "Accessible form label component with required asterisk and disabled state."
+  },
+  {
+    "id": "otp-input",
+    "name": "OTP Input",
+    "category": "Component",
+    "href": "/docs/components/otp-input",
+    "description": "A discrete multi-cell numeric pin input for one-time passwords and verification codes."
+  },
+  {
+    "id": "progress",
+    "name": "Progress",
+    "category": "Component",
+    "href": "/docs/components/progress",
+    "description": "Displays an indicator showing the completion progress of a task."
+  },
+  {
+    "id": "radio-group",
+    "name": "RadioGroup",
+    "category": "Component",
+    "href": "/docs/components/radio-group",
+    "description": "An accessible group of radio buttons with keyboard and screen reader support."
+  },
+  {
+    "id": "rating-stars",
+    "name": "Rating Stars",
+    "category": "Component",
+    "href": "/docs/components/rating-stars",
+    "description": "Accessible tap-to-rate star component supporting custom sizes, ratings, and read-only display."
+  },
+  {
+    "id": "safe-area",
+    "name": "Safe Area",
+    "category": "Component",
+    "href": "/docs/components/safe-area",
+    "description": "Cross-platform viewport safe area container respecting notch and navigation bar insets."
+  },
+  {
+    "id": "segmented-control",
+    "name": "Segmented Control",
+    "category": "Component",
+    "href": "/docs/components/segmented-control",
+    "description": "iOS and Material style sliding segmented pill switcher with animated selection indicator."
+  },
+  {
+    "id": "select",
+    "name": "Select",
+    "category": "Component",
+    "href": "/docs/components/select",
+    "description": "A native mobile dropdown/modal picker component with search and selection state."
+  },
+  {
+    "id": "separator",
+    "name": "Separator",
+    "category": "Component",
+    "href": "/docs/components/separator",
+    "description": "A horizontal or vertical divider line."
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "category": "Component",
+    "href": "/docs/components/skeleton",
+    "description": "Loading placeholder skeleton with subtle pulse animation effect."
+  },
+  {
+    "id": "slider",
+    "name": "Slider",
+    "category": "Component",
+    "href": "/docs/components/slider",
+    "description": "A touch-friendly continuous input control for selecting a value within a range."
+  },
+  {
+    "id": "spinner",
+    "name": "Spinner",
+    "category": "Component",
+    "href": "/docs/components/spinner",
+    "description": "Accessible activity indicator spinner with size and semantic color presets."
+  },
+  {
+    "id": "stack",
+    "name": "Stack",
+    "category": "Component",
+    "href": "/docs/components/stack",
+    "description": "Flexible layout primitives (VStack, HStack, ZStack) for composable spacing and alignment."
+  },
+  {
+    "id": "switch",
+    "name": "Switch",
+    "category": "Component",
+    "href": "/docs/components/switch",
+    "description": "Accessible toggle switch with themed active/inactive colors."
+  },
+  {
+    "id": "tabs",
+    "name": "Tabs",
+    "category": "Component",
+    "href": "/docs/components/tabs",
+    "description": "Segmented mobile navigation tabs for switching between views."
+  },
+  {
+    "id": "text",
+    "name": "Text",
+    "category": "Component",
+    "href": "/docs/components/text",
+    "description": "Typography component with semantic heading, body, and muted variants."
+  },
+  {
+    "id": "textarea",
+    "name": "Textarea",
+    "category": "Component",
+    "href": "/docs/components/textarea",
+    "description": "A multiline text input with character counting and error state."
+  },
+  {
+    "id": "toast",
+    "name": "Toast",
+    "category": "Component",
+    "href": "/docs/components/toast",
+    "description": "A floating toast notification with success, error, and info variants."
+  },
+  {
+    "id": "use-color-scheme",
+    "name": "useColorScheme",
+    "category": "Hook",
+    "href": "/docs/hooks#use-color-scheme",
+    "description": "Theme mode hook supporting system theme synchronization with manual light/dark toggle override."
+  },
+  {
+    "id": "use-disclosure",
+    "name": "useDisclosure",
+    "category": "Hook",
+    "href": "/docs/hooks#use-disclosure",
+    "description": "A hook for open/close/toggle boolean state."
+  },
+  {
+    "id": "use-haptics",
+    "name": "useHaptics",
+    "category": "Hook",
+    "href": "/docs/hooks#use-haptics",
+    "description": "Safe tactile feedback hook supporting light, medium, heavy, and notification haptics with web/unsupported fallback."
+  },
+  {
+    "id": "use-keyboard",
+    "name": "useKeyboard",
+    "category": "Hook",
+    "href": "/docs/hooks#use-keyboard",
+    "description": "React Native software keyboard observer tracking height, visibility, and dismissal."
+  },
+  {
+    "id": "cn",
+    "name": "Class Names Utility",
+    "category": "Documentation",
+    "href": "/docs/styling/nativewind",
+    "description": "Utility function for conditionally merging class names with clsx and tailwind-merge (NativeWind) or flattening style objects (StyleSheet)."
+  },
+  {
+    "id": "activity-timeline",
+    "name": "Activity Timeline",
+    "category": "Block",
+    "href": "/docs/blocks#activity-timeline",
+    "description": "Vertical audit log and activity timeline item with status node, connector line, and timestamp metadata."
+  },
+  {
+    "id": "app-header",
+    "name": "App Header",
+    "category": "Block",
+    "href": "/docs/blocks#app-header",
+    "description": "Versatile enterprise application navigation header with branding, back navigation, search, action buttons, notifications badge, and user avatar."
+  },
+  {
+    "id": "app-sidebar",
+    "name": "App Sidebar",
+    "category": "Block",
+    "href": "/docs/blocks#app-sidebar",
+    "description": "Enterprise collapsible application navigation sidebar with grouped navigation items, active route indicators, user profile card, and footer actions."
+  },
+  {
+    "id": "empty-state",
+    "name": "Empty State",
+    "category": "Block",
+    "href": "/docs/blocks#empty-state",
+    "description": "Clean empty state illustration card with title, description, and call to action."
+  },
+  {
+    "id": "filter-sheet",
+    "name": "Filter Sheet",
+    "category": "Block",
+    "href": "/docs/blocks#filter-sheet",
+    "description": "Enterprise slide-up filter sheet with multi-select category chips, price range slider, status toggles, and CTA controls."
+  },
+  {
+    "id": "kpi-comparison-card",
+    "name": "KPI Comparison Card",
+    "category": "Block",
+    "href": "/docs/blocks#kpi-comparison-card",
+    "description": "Enterprise dual-metric comparison card featuring current vs target performance, progress indicators, and trend badges."
+  },
+  {
+    "id": "login-form",
+    "name": "Login Form",
+    "category": "Block",
+    "href": "/docs/blocks#login-form",
+    "description": "A full authentication block with email, password, and sign-in action."
+  },
+  {
+    "id": "metric-card",
+    "name": "Metric Card",
+    "category": "Block",
+    "href": "/docs/blocks#metric-card",
+    "description": "Ready-to-use mobile analytics KPI stat card with positive/negative trend badges."
+  },
+  {
+    "id": "mini-sparkline-card",
+    "name": "Mini Sparkline Card",
+    "category": "Block",
+    "href": "/docs/blocks#mini-sparkline-card",
+    "description": "Executive KPI metric card with integrated zero-dependency trend sparkline curve."
+  },
+  {
+    "id": "notification-item",
+    "name": "Notification Item",
+    "category": "Block",
+    "href": "/docs/blocks#notification-item",
+    "description": "Interactive mobile notification card with user avatar, timestamp, unread indicator dot, and action buttons."
+  },
+  {
+    "id": "order-summary",
+    "name": "Order Summary",
+    "category": "Block",
+    "href": "/docs/blocks#order-summary",
+    "description": "Complete mobile e-commerce checkout invoice summary with line items, voucher discount, and checkout button."
+  },
+  {
+    "id": "payment-method-card",
+    "name": "Payment Method Card",
+    "category": "Block",
+    "href": "/docs/blocks#payment-method-card",
+    "description": "Visual credit card and digital payment method card with card brand logo, masked PAN, and default selector."
+  },
+  {
+    "id": "pricing-card",
+    "name": "Pricing Card",
+    "category": "Block",
+    "href": "/docs/blocks#pricing-card",
+    "description": "Ready-to-use mobile subscription tier card with features list and checkout CTA."
+  },
+  {
+    "id": "settings-list",
+    "name": "Settings List",
+    "category": "Block",
+    "href": "/docs/blocks#settings-list",
+    "description": "Ready-to-use mobile settings group with switches, badges, and navigation rows."
+  },
+  {
+    "id": "stat-progress-card",
+    "name": "Stat Progress Card",
+    "category": "Block",
+    "href": "/docs/blocks#stat-progress-card",
+    "description": "Mobile goal KPI card with target value, percent indicator, and embedded progress bar with milestone indicators."
+  },
+  {
+    "id": "team-member-row",
+    "name": "Team Member Row",
+    "category": "Block",
+    "href": "/docs/blocks#team-member-row",
+    "description": "Enterprise team member row with avatar, identity details, role selector pill, and action menu."
+  },
+  {
+    "id": "transaction-row",
+    "name": "Transaction Row",
+    "category": "Block",
+    "href": "/docs/blocks#transaction-row",
+    "description": "High-density enterprise financial ledger item with counterparty icon, status badge, and monetary values."
+  },
+  {
+    "id": "user-profile",
+    "name": "User Profile",
+    "category": "Block",
+    "href": "/docs/blocks#user-profile",
+    "description": "Ready-to-use mobile profile card with avatar, verified badge, stats, and actions."
+  },
+  {
+    "id": "account-settings-flow",
+    "name": "Account Settings Flow",
+    "category": "Template",
+    "href": "/docs/templates#account-settings-flow",
+    "description": "Enterprise SaaS account, organization seats, security sessions, and billing management flow."
+  },
+  {
+    "id": "analytics-dashboard",
+    "name": "Analytics Dashboard",
+    "category": "Template",
+    "href": "/docs/templates#analytics-dashboard",
+    "description": "Executive SaaS mobile dashboard template with KPI metrics, time-range filter pills, channel breakdown bars, and recent audit activity feed."
+  },
+  {
+    "id": "auth-flow",
+    "name": "Auth Flow",
+    "category": "Template",
+    "href": "/docs/templates#auth-flow",
+    "description": "A complete mobile authentication template with Sign In, Sign Up, Forgot Password, and OTP verification steps."
+  },
+  {
+    "id": "chat-flow",
+    "name": "Chat & Messaging Flow",
+    "category": "Template",
+    "href": "/docs/templates#chat-flow",
+    "description": "In-app support and customer messaging template with conversation threads, speech bubbles, and keyboard-avoiding input bar."
+  },
+  {
+    "id": "ecommerce-flow",
+    "name": "eCommerce Flow",
+    "category": "Template",
+    "href": "/docs/templates#ecommerce-flow",
+    "description": "Production mobile retail and eCommerce storefront template with product catalog, search filters, detail sheet, cart, and order summary."
+  },
+  {
+    "id": "fintech-wallet",
+    "name": "Fintech Wallet",
+    "category": "Template",
+    "href": "/docs/templates#fintech-wallet",
+    "description": "High-impact mobile finance and crypto wallet screen with total balance card, quick action pills, asset allocation list, and recent transactions."
+  },
+  {
+    "id": "onboarding-flow",
+    "name": "Onboarding Flow",
+    "category": "Template",
+    "href": "/docs/templates#onboarding-flow",
+    "description": "A multi-step walkthrough walkthrough template with slides, pagination indicators, next/skip controls, and completion actions."
+  },
+  {
+    "id": "settings-flow",
+    "name": "Settings Flow",
+    "category": "Template",
+    "href": "/docs/templates#settings-flow",
+    "description": "A comprehensive mobile settings screen template with account profile header, preference toggles, security options, and logout dialog."
+  },
+  {
+    "id": "amber",
+    "name": "Amber",
+    "category": "Theme",
+    "href": "/docs/theming#amber",
+    "description": "A rich warm amber theme token set."
+  },
+  {
+    "id": "dark-slate",
+    "name": "Dark Slate",
+    "category": "Theme",
+    "href": "/docs/theming#dark-slate",
+    "description": "A slate-toned theme with cool dark colors for Nativra components."
+  },
+  {
+    "id": "emerald",
+    "name": "Emerald",
+    "category": "Theme",
+    "href": "/docs/theming#emerald",
+    "description": "A vibrant organic emerald green theme token set."
+  },
+  {
+    "id": "midnight",
+    "name": "Midnight",
+    "category": "Theme",
+    "href": "/docs/theming#midnight",
+    "description": "A deep navy-and-blue midnight theme token set."
+  },
+  {
+    "id": "rose",
+    "name": "Rose",
+    "category": "Theme",
+    "href": "/docs/theming#rose",
+    "description": "A warm coral rose theme token set for lifestyle interfaces."
+  },
+  {
+    "id": "slate",
+    "name": "Slate",
+    "category": "Theme",
+    "href": "/docs/theming#slate",
+    "description": "A cool corporate slate-blue theme token set."
+  },
+  {
+    "id": "violet",
+    "name": "Violet",
+    "category": "Theme",
+    "href": "/docs/theming#violet",
+    "description": "An electric purple theme token set for creative interfaces."
+  },
+  {
+    "id": "zinc",
+    "name": "Zinc",
+    "category": "Theme",
+    "href": "/docs/theming#zinc",
+    "description": "A neutral zinc monochrome theme token set."
+  }
+]

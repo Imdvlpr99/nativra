@@ -223,6 +223,25 @@ const COMPONENT_PROPS_MAP: Record<string, PropSpec[]> = {
     { name: "backgroundColor", type: "string", default: '"transparent"', description: "Surface background color" },
     { name: "children", type: "React.ReactNode", default: "required", description: "Safe area protected content" },
   ],
+  "data-table": [
+    { name: "columns", type: "ColumnDef<T>[]", default: "required", description: "Array of column definitions with header and accessor" },
+    { name: "data", type: "T[]", default: "required", description: "Data records array to render in table rows" },
+    { name: "striped", type: "boolean", default: "false", description: "Applies alternating zebra-stripe background shading to rows" },
+    { name: "onRowPress", type: "(row: T) => void", default: "undefined", description: "Callback triggered when a table row is pressed" },
+  ],
+  "rating-stars": [
+    { name: "rating", type: "number", default: "5", description: "Current rating value between 1 and 5" },
+    { name: "maxStars", type: "number", default: "5", description: "Total number of stars rendered" },
+    { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Star icon size preset" },
+    { name: "readOnly", type: "boolean", default: "false", description: "Prevents user interaction when used as static score display" },
+    { name: "onRatingChange", type: "(rating: number) => void", default: "undefined", description: "Callback triggered when a star is pressed" },
+  ],
+  "segmented-control": [
+    { name: "values", type: "string[]", default: "required", description: "Array of segment tab labels" },
+    { name: "selectedIndex", type: "number", default: "0", description: "Currently active segment index" },
+    { name: "onChange", type: "(index: number) => void", default: "required", description: "Callback fired when active segment changes" },
+    { name: "disabled", type: "boolean", default: "false", description: "Disables user selection" },
+  ],
 
 };
 

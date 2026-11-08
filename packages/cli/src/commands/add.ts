@@ -17,7 +17,7 @@ import {
 
 export function registerAddCommand(program: Command) {
   program
-    .command("add <components...>")
+    .command("add [components...]")
     .description("Add one or more registry items to your project")
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--yes", "Skip interactive confirmation prompts. Existing files are preserved unless --overwrite is set.")
@@ -27,7 +27,7 @@ export function registerAddCommand(program: Command) {
     .option("--registry <url>", "Override registry location (URL or local directory)")
     .action(
       async (
-        components: string[],
+        components: string[] = [],
         options: {
           cwd: string;
           yes?: boolean;
@@ -42,6 +42,44 @@ export function registerAddCommand(program: Command) {
           process.exit(1);
         });
         const client = createClient(config, options.registry);
+
+        if (!components || components.length === 0) {
+          if (!process.stdin.isTTY) {
+            console.error(chalk.red("\n✗ No components specified. Usage: npx nativra add <components...>\n"));
+            process.exit(1);
+          }
+
+          const spinner = ora("Fetching available items from registry...").start();
+          let availableItems: { id: string; name: string; type: string; description: string }[] = [];
+          try {
+            const manifest = await client.getManifest();
+            availableItems = manifest.items;
+            spinner.succeed(`Found ${availableItems.length} registry items`);
+          } catch (err) {
+            spinner.fail(chalk.red(`Failed to fetch registry items: ${(err as Error).message}`));
+            process.exit(1);
+          }
+
+          const response = await prompts({
+            type: "autocompleteMultiselect",
+            name: "selected",
+            message: "Select components, blocks, or templates to install:",
+            choices: availableItems.map((item) => ({
+              title: `${item.name} (${item.type})`,
+              value: item.id,
+              description: item.description,
+            })),
+            hint: "- Space to select. Return to submit",
+          });
+
+          if (!response.selected || response.selected.length === 0) {
+            console.log(chalk.yellow("\n  No items selected. Exiting.\n"));
+            return;
+          }
+
+          components = response.selected;
+        }
+
         const lock = await readLock(options.cwd);
 
         for (const componentId of components) {
