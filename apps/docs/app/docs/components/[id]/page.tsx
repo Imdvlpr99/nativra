@@ -278,6 +278,56 @@ const COMPONENT_PROPS_MAP: Record<string, PropSpec[]> = {
     { name: "onChange", type: "(index: number) => void", default: "required", description: "Callback fired when active segment changes" },
     { name: "disabled", type: "boolean", default: "false", description: "Disables user selection" },
   ],
+  chip: [
+    { name: "label", type: "string", default: "required", description: "Text displayed inside the chip" },
+    { name: "selected", type: "boolean", default: "false", description: "Highlights the chip in active selected state" },
+    { name: "variant", type: '"default" | "primary" | "outline"', default: '"default"', description: "Visual surface style" },
+    { name: "size", type: '"sm" | "md"', default: '"md"', description: "Height and horizontal padding preset" },
+    { name: "onPress", type: "() => void", default: "undefined", description: "Callback fired when chip is tapped" },
+    { name: "onRemove", type: "() => void", default: "undefined", description: "Renders a trailing remove button and fires on press" },
+  ],
+  "date-picker": [
+    { name: "label", type: "string", default: "undefined", description: "Form field label above the date trigger" },
+    { name: "value", type: "string", default: '"2026-11-09"', description: "Selected ISO date string" },
+    { name: "onChange", type: "(dateIso: string) => void", default: "undefined", description: "Callback fired when a date is chosen" },
+    { name: "disabled", type: "boolean", default: "false", description: "Disables date picker interaction" },
+  ],
+  "header-bar": [
+    { name: "title", type: "string", default: "required", description: "Centered primary screen title" },
+    { name: "subtitle", type: "string", default: "undefined", description: "Optional secondary subtitle below title" },
+    { name: "onBack", type: "() => void", default: "undefined", description: "Renders leading Back button when provided" },
+    { name: "rightLabel", type: "string", default: "undefined", description: "Trailing action button label" },
+    { name: "onRightPress", type: "() => void", default: "undefined", description: "Callback for trailing action button" },
+  ],
+  "bottom-tab-bar": [
+    { name: "tabs", type: "Array<{ id: string; label: string; icon?: string; badge?: number }>", default: "required", description: "Navigation tab definitions" },
+    { name: "activeTab", type: "string", default: "required", description: "ID of currently active tab" },
+    { name: "onTabChange", type: "(tabId: string) => void", default: "required", description: "Callback when user switches tab" },
+  ],
+  "action-tile": [
+    { name: "label", type: "string", default: "required", description: "Primary action title" },
+    { name: "subtitle", type: "string", default: "undefined", description: "Secondary helper caption" },
+    { name: "icon", type: "string", default: '"⚡"', description: "Icon or emoji glyph rendered inside tile badge" },
+    { name: "variant", type: '"default" | "primary" | "outline"', default: '"default"', description: "Visual emphasis preset" },
+    { name: "onPress", type: "() => void", default: "undefined", description: "Press handler" },
+  ],
+  "stat-tile": [
+    { name: "label", type: "string", default: "required", description: "Metric title" },
+    { name: "value", type: "string", default: "required", description: "Primary formatted KPI value" },
+    { name: "delta", type: "string", default: "undefined", description: "Percentage or numeric change pill" },
+    { name: "trend", type: '"up" | "down" | "neutral"', default: '"up"', description: "Semantic color of the delta badge" },
+    { name: "caption", type: "string", default: "undefined", description: "Supporting comparison text" },
+  ],
+  "pagination-dots": [
+    { name: "total", type: "number", default: "required", description: "Total number of steps or slides" },
+    { name: "currentIndex", type: "number", default: "required", description: "Zero-based active slide index" },
+    { name: "onDotPress", type: "(index: number) => void", default: "undefined", description: "Optional callback when a dot is tapped" },
+  ],
+  "error-boundary": [
+    { name: "fallbackTitle", type: "string", default: '"Something went wrong"', description: "Alert heading shown when an error is caught" },
+    { name: "fallbackMessage", type: "string", default: "undefined", description: "Custom recovery message" },
+    { name: "onReset", type: "() => void", default: "undefined", description: "Callback invoked when user presses Try Again" },
+  ],
 
 };
 

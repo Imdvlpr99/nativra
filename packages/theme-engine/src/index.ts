@@ -588,6 +588,165 @@ export function toStyleSheetTokens(theme: NativraThemeTokens, colorScheme: "ligh
 }
 
 // ---------------------------------------------------------------------------
+// Density Presets, Font Scale Tiers, Typography Scale & High-Contrast Mode
+// ---------------------------------------------------------------------------
+
+export type DensityPreset = "compact" | "regular" | "comfortable";
+export type FontScaleTier = "sm" | "md" | "lg" | "xl";
+
+export interface TypographyVariantSpec {
+  fontSize: number;
+  lineHeight: number;
+  fontWeight: "400" | "500" | "600" | "700" | "800";
+  letterSpacing: number;
+  tabularNums?: boolean;
+}
+
+export type TypographyVariantName =
+  | "displayLarge"
+  | "displayMedium"
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "bodyLarge"
+  | "body"
+  | "bodySmall"
+  | "label"
+  | "caption"
+  | "overline";
+
+export type TypographyScale = Record<TypographyVariantName, TypographyVariantSpec>;
+
+const DENSITY_MULTIPLIERS: Record<DensityPreset, number> = {
+  compact: 0.85,
+  regular: 1.0,
+  comfortable: 1.15,
+};
+
+const FONT_SCALE_MULTIPLIERS: Record<FontScaleTier, number> = {
+  sm: 0.9,
+  md: 1.0,
+  lg: 1.125,
+  xl: 1.25,
+};
+
+export const BASE_TYPOGRAPHY_SCALE: TypographyScale = {
+  displayLarge: { fontSize: 34, lineHeight: 41, fontWeight: "700", letterSpacing: -0.6, tabularNums: true },
+  displayMedium: { fontSize: 28, lineHeight: 34, fontWeight: "700", letterSpacing: -0.4, tabularNums: true },
+  h1: { fontSize: 28, lineHeight: 34, fontWeight: "600", letterSpacing: -0.4 },
+  h2: { fontSize: 22, lineHeight: 28, fontWeight: "600", letterSpacing: -0.3 },
+  h3: { fontSize: 18, lineHeight: 24, fontWeight: "600", letterSpacing: -0.2 },
+  h4: { fontSize: 16, lineHeight: 22, fontWeight: "600", letterSpacing: -0.1 },
+  bodyLarge: { fontSize: 17, lineHeight: 24, fontWeight: "500", letterSpacing: 0 },
+  body: { fontSize: 15, lineHeight: 22, fontWeight: "400", letterSpacing: 0 },
+  bodySmall: { fontSize: 13, lineHeight: 18, fontWeight: "400", letterSpacing: 0 },
+  label: { fontSize: 14, lineHeight: 20, fontWeight: "600", letterSpacing: 0.1 },
+  caption: { fontSize: 12, lineHeight: 16, fontWeight: "500", letterSpacing: 0.2, tabularNums: true },
+  overline: { fontSize: 11, lineHeight: 14, fontWeight: "700", letterSpacing: 0.8 },
+};
+
+/**
+ * Computes a density- and font-scale-adjusted typography scale.
+ */
+export function getTypographyScale(
+  density: DensityPreset = "regular",
+  fontScale: FontScaleTier = "md"
+): TypographyScale {
+  const densityFactor = density === "compact" ? 0.94 : density === "comfortable" ? 1.06 : 1.0;
+  const fontFactor = FONT_SCALE_MULTIPLIERS[fontScale] ?? 1.0;
+  const multiplier = densityFactor * fontFactor;
+
+  const result = {} as TypographyScale;
+  for (const [key, spec] of Object.entries(BASE_TYPOGRAPHY_SCALE) as Array<[TypographyVariantName, TypographyVariantSpec]>) {
+    result[key] = {
+      ...spec,
+      fontSize: Math.round(spec.fontSize * multiplier),
+      lineHeight: Math.round(spec.lineHeight * multiplier),
+    };
+  }
+  return result;
+}
+
+/**
+ * Applies WCAG AAA high-contrast adjustments to a semantic color set.
+ */
+export function applyHighContrast(
+  colors: SemanticColors,
+  colorScheme: "light" | "dark" = "light"
+): SemanticColors {
+  if (colorScheme === "dark") {
+    return {
+      ...colors,
+      background: "#000000",
+      foreground: "#ffffff",
+      card: "#09090b",
+      "card-foreground": "#ffffff",
+      "muted-foreground": "#e4e4e7",
+      border: "#71717a",
+      input: "#71717a",
+    };
+  }
+  return {
+    ...colors,
+    background: "#ffffff",
+    foreground: "#000000",
+    card: "#ffffff",
+    "card-foreground": "#000000",
+    "muted-foreground": "#27272a",
+    border: "#52525b",
+    input: "#52525b",
+  };
+}
+
+export interface ResolveThemeOptions {
+  colorScheme?: "light" | "dark";
+  density?: DensityPreset;
+  fontScale?: FontScaleTier;
+  highContrast?: boolean;
+}
+
+/**
+ * Resolves a complete Nativra theme configuration with density-scaled spacing,
+ * dynamic font-scale typography, and optional high-contrast accessibility tokens.
+ */
+export function resolveThemeTokens(
+  theme: NativraThemeTokens,
+  options: ResolveThemeOptions = {}
+) {
+  const {
+    colorScheme = "light",
+    density = "regular",
+    fontScale = "md",
+    highContrast = false,
+  } = options;
+
+  const baseColors = theme[colorScheme];
+  const colors = highContrast ? applyHighContrast(baseColors, colorScheme) : baseColors;
+  const spaceMultiplier = DENSITY_MULTIPLIERS[density] ?? 1.0;
+
+  const space = Object.fromEntries(
+    Object.entries(theme.space).map(([k, v]) => [k, Math.round(v * spaceMultiplier)])
+  ) as unknown as SpaceScale;
+
+  const typography = getTypographyScale(density, fontScale);
+
+  return {
+    id: theme.id,
+    name: theme.name,
+    colorScheme,
+    density,
+    fontScale,
+    highContrast,
+    colors,
+    space,
+    radius: theme.radius,
+    fontSize: theme.fontSize,
+    typography,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // NativeWind / CSS variable adapter
 // ---------------------------------------------------------------------------
 

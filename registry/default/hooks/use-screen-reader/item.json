@@ -1,0 +1,15 @@
+{
+  "id": "use-screen-reader",
+  "name": "useScreenReader",
+  "description": "Detects active iOS VoiceOver and Android TalkBack screen readers with a live announcement helper.",
+  "type": "hook",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-screen-reader.ts" }],
+  "npmDependencies": [],
+  "tags": ["hook", "accessibility", "a11y", "voiceover", "talkback", "screen-reader"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

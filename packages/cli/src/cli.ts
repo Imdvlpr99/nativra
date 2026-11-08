@@ -10,11 +10,12 @@ import { registerUpdateCommand } from "./commands/update.js";
 import { registerRollbackCommand } from "./commands/rollback.js";
 import { registerSearchCommand } from "./commands/search.js";
 import { registerThemeCommand, registerRegistryCommand } from "./commands/theme-registry.js";
+import { registerAuditCommand } from "./commands/audit.js";
 
 program
   .name("nativra")
   .description("Nativra CLI — Native UI, built your way.")
-  .version("0.1.1");
+  .version("0.2.0");
 
 registerInitCommand(program);
 registerAddCommand(program);
@@ -28,5 +29,6 @@ registerRollbackCommand(program);
 registerSearchCommand(program);
 registerThemeCommand(program);
 registerRegistryCommand(program);
+registerAuditCommand(program);
 
 program.parse(process.argv);

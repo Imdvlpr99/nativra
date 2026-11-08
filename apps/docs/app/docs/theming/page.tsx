@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeGallery } from "@/components/ThemeGallery";
+import { TokenAndTypeVisualizer } from "@/components/TokenAndTypeVisualizer";
 
 export const metadata: Metadata = {
   title: "Theme Engine & Design Tokens — Dark Mode & Presets for React Native",
@@ -38,6 +39,10 @@ export default function ThemingPage() {
         </div>
         <ThemeGallery />
       </section>
+
+      <div className="pt-4 border-t border-border">
+        <TokenAndTypeVisualizer />
+      </div>
 
       <div className="space-y-8 text-foreground pt-4 border-t border-border">
         {/* Semantic Model */}

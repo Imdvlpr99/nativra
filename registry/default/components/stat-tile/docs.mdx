@@ -1,0 +1,33 @@
+---
+title: StatTile
+description: Compact KPI metric tile with tabular value, trend delta badge, and caption.
+---
+
+# StatTile
+
+Compact dashboard KPI tile displaying a primary metric value, semantic trend badge (`up` / `down` / `neutral`), and contextual subtitle.
+
+## Installation
+
+```bash
+npx nativra-cli add stat-tile
+```
+
+## Usage
+
+```tsx
+import { StatTile } from "@/components/ui/StatTile";
+
+export function SpendMetric() {
+  return (
+    <StatTile
+      label="Spent this month"
+      value="$2,450"
+      delta="-12%"
+      trend="up"
+      caption="12% under monthly budget"
+    />
+  );
+}
+```
+

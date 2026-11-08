@@ -1,0 +1,32 @@
+---
+title: ActionTile
+description: Quick-action icon button tile for mobile dashboards, wallets, and launcher grids.
+---
+
+# ActionTile
+
+Tactile square/rectangular action button tile ideal for mobile banking shortcuts (`Scan`, `Send`, `Split`), quick settings, or dashboard launchers.
+
+## Installation
+
+```bash
+npx nativra-cli add action-tile
+```
+
+## Usage
+
+```tsx
+import { View } from "react-native";
+import { ActionTile } from "@/components/ui/ActionTile";
+
+export function QuickActions() {
+  return (
+    <View className="flex-row gap-3">
+      <ActionTile label="Scan" icon="📷" variant="primary" onPress={() => {}} />
+      <ActionTile label="Send" icon="↗️" onPress={() => {}} />
+      <ActionTile label="Split" icon="➗" onPress={() => {}} />
+    </View>
+  );
+}
+```
+

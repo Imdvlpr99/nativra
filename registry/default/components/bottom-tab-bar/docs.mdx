@@ -1,0 +1,39 @@
+---
+title: BottomTabBar
+description: Native-feeling bottom tab navigation bar with active indicator pill and notification badge counts.
+---
+
+# BottomTabBar
+
+Primary bottom navigation bar with active pill highlight, badge counters, and full screen-reader `tablist` / `tab` accessibility roles.
+
+## Installation
+
+```bash
+npx nativra-cli add bottom-tab-bar
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { BottomTabBar } from "@/components/ui/BottomTabBar";
+
+export function MainTabDock() {
+  const [active, setActive] = useState("home");
+
+  return (
+    <BottomTabBar
+      activeTab={active}
+      onTabChange={setActive}
+      tabs={[
+        { id: "home", label: "Home", icon: "🏠" },
+        { id: "wallet", label: "Wallet", icon: "💳" },
+        { id: "inbox", label: "Inbox", icon: "💬", badge: 3 },
+        { id: "profile", label: "Profile", icon: "👤" },
+      ]}
+    />
+  );
+}
+```
+

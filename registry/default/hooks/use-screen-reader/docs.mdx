@@ -1,0 +1,35 @@
+---
+title: useScreenReader
+description: Detects active iOS VoiceOver and Android TalkBack screen readers with a live announcement helper.
+---
+
+# useScreenReader
+
+The `useScreenReader` hook tracks whether iOS VoiceOver or Android TalkBack is active (`isEnabled`) and exposes an `announce(message)` helper wrapping `AccessibilityInfo.announceForAccessibility`.
+
+## Installation
+
+```bash
+npx nativra-cli add use-screen-reader
+```
+
+## Usage
+
+```tsx
+import { Pressable, Text } from "react-native";
+import { useScreenReader } from "@/hooks/use-screen-reader";
+
+export function SaveAction() {
+  const { isEnabled, announce } = useScreenReader();
+
+  return (
+    <Pressable
+      onPress={() => announce("Profile settings saved successfully")}
+      accessibilityRole="button"
+    >
+      <Text>{isEnabled ? "Save (Screen Reader Active)" : "Save"}</Text>
+    </Pressable>
+  );
+}
+```
+

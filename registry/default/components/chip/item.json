@@ -1,0 +1,25 @@
+{
+  "id": "chip",
+  "name": "Chip",
+  "description": "Interactive filter, selection, and removable tag chip with selected state and close action.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/Chip.tsx", "target": "nativewind" },
+    { "path": "stylesheet/Chip.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["chip", "tag", "filter", "pill", "selection"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

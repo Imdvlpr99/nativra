@@ -98,6 +98,14 @@ const COMMANDS = [
     ],
   },
   {
+    cmd: "npx nativra-cli audit",
+    desc: "Scan your React Native or Expo codebase for Nativra component adoption, hardcoded hex colors, legacy <Touchable*> primitives, and screen-reader accessibility coverage. Outputs a 0–100% Design System & Accessibility Health Score.",
+    flags: [
+      "--json (Output structured JSON audit report for CI pipelines)",
+      "--cwd <dir> (Explicit working directory)",
+    ],
+  },
+  {
     cmd: "npx nativra-cli theme list",
     desc: "List available theme token sets in the registry (zinc, dark-slate, midnight, cyberpunk, emerald, etc.).",
     flags: [

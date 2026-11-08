@@ -1,0 +1,29 @@
+---
+title: ErrorBoundary
+description: Mobile crash recovery error boundary card with diagnostic summary and retry action.
+---
+
+# ErrorBoundary
+
+React error boundary component that catches unexpected render exceptions in a subtree and displays a graceful mobile recovery surface with a **Try Again** action.
+
+## Installation
+
+```bash
+npx nativra-cli add error-boundary
+```
+
+## Usage
+
+```tsx
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+
+export function SafeWidgetSection() {
+  return (
+    <ErrorBoundary fallbackTitle="Widget failed to load">
+      {/* Child screen or widget */}
+    </ErrorBoundary>
+  );
+}
+```
+

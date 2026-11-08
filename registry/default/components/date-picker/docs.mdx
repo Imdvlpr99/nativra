@@ -1,0 +1,27 @@
+---
+title: DatePicker
+description: Native-feeling calendar date and quick-preset selector input for mobile forms and scheduling.
+---
+
+# DatePicker
+
+A mobile date selector trigger and expandable calendar preset drawer for due dates, booking flows, and reminders.
+
+## Installation
+
+```bash
+npx nativra-cli add date-picker
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { DatePicker } from "@/components/ui/DatePicker";
+
+export function DueDateField() {
+  const [date, setDate] = useState("2026-11-09");
+  return <DatePicker label="Due date" value={date} onChange={setDate} />;
+}
+```
+

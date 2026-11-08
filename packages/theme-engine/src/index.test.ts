@@ -7,6 +7,9 @@ import {
   getThemePreset,
   THEME_PRESETS,
   emeraldTheme,
+  getTypographyScale,
+  applyHighContrast,
+  resolveThemeTokens,
 } from "./index.js";
 
 describe("theme-engine", () => {
@@ -39,7 +42,32 @@ describe("theme-engine", () => {
 
   it("generates tailwind theme.extend configuration object", () => {
     const preset = toTailwindPreset(emeraldTheme);
-    expect(preset.theme.extend.colors.primary.DEFAULT).toBe("var(--color-primary)");
-    expect(preset.theme.extend.borderRadius.md).toBe("8px");
+    const themeObj = preset["theme"] as Record<string, any>;
+    expect(themeObj["extend"]["colors"]["primary"]["DEFAULT"]).toBe("var(--color-primary)");
+    expect(themeObj["extend"]["borderRadius"]["md"]).toBe("8px");
+  });
+
+  it("scales typography and spacing by density and fontScale presets", () => {
+    const regularScale = getTypographyScale("regular", "md");
+    const compactScale = getTypographyScale("compact", "sm");
+    const largeScale = getTypographyScale("comfortable", "xl");
+
+    expect(compactScale.h1.fontSize).toBeLessThan(regularScale.h1.fontSize);
+    expect(largeScale.h1.fontSize).toBeGreaterThan(regularScale.h1.fontSize);
+    expect(regularScale.displayLarge.tabularNums).toBe(true);
+  });
+
+  it("applies high-contrast accessibility overrides and resolves full theme tokens", () => {
+    const resolved = resolveThemeTokens(defaultTheme, {
+      colorScheme: "dark",
+      density: "compact",
+      fontScale: "lg",
+      highContrast: true,
+    });
+
+    expect(resolved.colors.background).toBe("#000000");
+    expect(resolved.colors.foreground).toBe("#ffffff");
+    expect(resolved.space["4"]).toBe(Math.round(defaultTheme.space["4"] * 0.85));
+    expect(resolved.typography.body.fontSize).toBeGreaterThan(15);
   });
 });

@@ -1,0 +1,40 @@
+---
+title: Chip
+description: Interactive filter, selection, and removable tag chip with selected state and close action.
+---
+
+# Chip
+
+Compact pill control for filtering datasets, toggling multi-select tags, or displaying removable input tokens.
+
+## Installation
+
+```bash
+npx nativra-cli add chip
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { View } from "react-native";
+import { Chip } from "@/components/ui/Chip";
+
+export function FilterChips() {
+  const [active, setActive] = useState("Today");
+
+  return (
+    <View className="flex-row gap-2">
+      {["Today", "Week", "Month", "Custom"].map((item) => (
+        <Chip
+          key={item}
+          label={item}
+          selected={active === item}
+          onPress={() => setActive(item)}
+        />
+      ))}
+    </View>
+  );
+}
+```
+

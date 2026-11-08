@@ -1,0 +1,36 @@
+---
+title: useDebouncedPress
+description: Prevents accidental double-taps on navigation, form submission, and payment actions with configurable cooldown.
+---
+
+# useDebouncedPress
+
+The `useDebouncedPress` hook wraps any `onPress` callback and ignores rapid consecutive taps within a configurable cooldown window (`delayMs`, default `500ms`), preventing duplicate screen pushes or double form submissions.
+
+## Installation
+
+```bash
+npx nativra-cli add use-debounced-press
+```
+
+## Usage
+
+```tsx
+import { Pressable, Text } from "react-native";
+import { useDebouncedPress } from "@/hooks/use-debounced-press";
+
+export function CheckoutButton({ onPay }: { onPay: () => void }) {
+  const handlePress = useDebouncedPress(onPay, { delayMs: 600 });
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      className="h-11 px-5 rounded-xl bg-sky-600 items-center justify-center"
+    >
+      <Text className="text-white font-semibold">Pay Now</Text>
+    </Pressable>
+  );
+}
+```
+

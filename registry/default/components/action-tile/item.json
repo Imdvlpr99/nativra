@@ -1,0 +1,25 @@
+{
+  "id": "action-tile",
+  "name": "ActionTile",
+  "description": "Quick-action icon button tile for mobile dashboards, wallets, and launcher grids.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/ActionTile.tsx", "target": "nativewind" },
+    { "path": "stylesheet/ActionTile.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["action-tile", "tile", "button", "grid", "shortcut"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

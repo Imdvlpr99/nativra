@@ -197,5 +197,18 @@ describe("nativra CLI (local registry)", () => {
     expect(existsSync(join(fixDir, "tailwind.config.js"))).toBe(true);
     rmSync(fixDir, { recursive: true, force: true });
   });
+
+  it("installs v0.2.0 components and hooks and runs nativra audit", () => {
+    runReg("add", "chip", "stat-tile", "use-debounced-press", "--yes");
+    expect(existsSync(join(cwd, "components/ui/Chip.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "components/ui/StatTile.tsx"))).toBe(true);
+    expect(existsSync(join(cwd, "hooks/use-debounced-press.ts"))).toBe(true);
+
+    const auditJsonRaw = run("audit", "--json");
+    const report = JSON.parse(auditJsonRaw);
+    expect(report.scannedFiles).toBeGreaterThan(0);
+    expect(report.score).toBeGreaterThanOrEqual(80);
+    expect(report.grade).toBeTruthy();
+  });
 });
 

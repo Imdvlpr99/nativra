@@ -1,0 +1,25 @@
+{
+  "id": "error-boundary",
+  "name": "ErrorBoundary",
+  "description": "Mobile crash recovery error boundary card with diagnostic summary and retry action.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/ErrorBoundary.tsx", "target": "nativewind" },
+    { "path": "stylesheet/ErrorBoundary.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["error-boundary", "error", "fallback", "crash", "recovery"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

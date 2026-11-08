@@ -1,0 +1,25 @@
+{
+  "id": "date-picker",
+  "name": "DatePicker",
+  "description": "Native-feeling calendar date and quick-preset selector input for mobile forms and scheduling.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/DatePicker.tsx", "target": "nativewind" },
+    { "path": "stylesheet/DatePicker.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["date-picker", "calendar", "date", "form", "input"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

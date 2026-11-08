@@ -2053,7 +2053,188 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
                 </div>
               ))}
             </div>
-            <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[10px] text-zinc-400 border border-zinc-800/80">
+              <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[10px] text-zinc-400 border border-zinc-800/80">
+              $ npx nativra-cli add {item.id}
+            </div>
+          </div>
+        );
+
+      case "chip":
+        return (
+          <div className="w-full space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              Filter & Tag Chips
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {["Today", "Week", "Month", "Custom"].map((lbl, idx) => (
+                <button
+                  key={lbl}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                    idx === 0
+                      ? "border-sky-600 bg-sky-600 text-white"
+                      : "border-zinc-300 bg-zinc-100 text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+                  }`}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "date-picker":
+        return (
+          <div className="w-full space-y-2.5 text-left">
+            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+              Due Date
+            </span>
+            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 dark:border-zinc-800 dark:bg-zinc-900">
+              <span className="text-xs font-semibold">📅 Nov 9, 2026</span>
+              <span className="text-xs font-bold text-sky-500">Change</span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-zinc-200 bg-white p-2.5 dark:border-zinc-800 dark:bg-zinc-900">
+              {["Today (Nov 9)", "Tomorrow (Nov 10)", "Next Week (Nov 16)", "Nov 30"].map(
+                (d, i) => (
+                  <div
+                    key={d}
+                    className={`rounded-lg px-2.5 py-1.5 text-[11px] font-medium ${
+                      i === 0
+                        ? "bg-sky-600 text-white"
+                        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                    }`}
+                  >
+                    {d}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        );
+
+      case "header-bar":
+        return (
+          <div className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-3 dark:border-zinc-800 dark:bg-zinc-900 flex items-center justify-between">
+            <span className="text-xs font-semibold text-sky-500">‹ Back</span>
+            <div className="text-center">
+              <p className="text-xs font-bold">Account Settings</p>
+              <p className="text-[10px] text-zinc-400">Personal Workspace</p>
+            </div>
+            <span className="rounded-lg bg-sky-500/15 px-2.5 py-1 text-xs font-semibold text-sky-500">
+              Save
+            </span>
+          </div>
+        );
+
+      case "bottom-tab-bar":
+        return (
+          <div className="w-full rounded-2xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900 grid grid-cols-4">
+            {[
+              { label: "Home", icon: "🏠", active: false },
+              { label: "Wallet", icon: "💳", active: true },
+              { label: "Inbox", icon: "💬", active: false, badge: 3 },
+              { label: "Profile", icon: "👤", active: false },
+            ].map((t) => (
+              <div
+                key={t.label}
+                className="relative flex flex-col items-center justify-center py-1"
+              >
+                <span
+                  className={`rounded-full px-3 py-0.5 text-sm ${
+                    t.active ? "bg-sky-500/15" : ""
+                  }`}
+                >
+                  {t.icon}
+                </span>
+                {t.badge ? (
+                  <span className="absolute right-3 top-0.5 rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white">
+                    {t.badge}
+                  </span>
+                ) : null}
+                <span
+                  className={`mt-1 text-[10px] ${
+                    t.active ? "font-bold text-sky-500" : "text-zinc-400"
+                  }`}
+                >
+                  {t.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "action-tile":
+        return (
+          <div className="w-full grid grid-cols-3 gap-2.5">
+            {[
+              { label: "Scan", icon: "📷", primary: true },
+              { label: "Send", icon: "↗️", primary: false },
+              { label: "Split", icon: "➗", primary: false },
+            ].map((a) => (
+              <div
+                key={a.label}
+                className={`flex flex-col items-center justify-center rounded-2xl border p-3 ${
+                  a.primary
+                    ? "border-sky-600 bg-sky-600 text-white"
+                    : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+                }`}
+              >
+                <span className="text-base mb-1">{a.icon}</span>
+                <span className="text-xs font-bold">{a.label}</span>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "stat-tile":
+        return (
+          <div className="w-full rounded-2xl border border-zinc-200 bg-white p-4 text-left dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-zinc-400">Spent this month</span>
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-500">
+                -12%
+              </span>
+            </div>
+            <p className="mt-1.5 text-2xl font-extrabold tabular-nums">$2,450</p>
+            <p className="mt-1 text-[11px] text-zinc-400">12% under monthly budget</p>
+          </div>
+        );
+
+      case "pagination-dots":
+        return (
+          <div className="flex items-center justify-center gap-2 py-4">
+            <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span className="h-2.5 w-7 rounded-full bg-sky-500" />
+            <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+          </div>
+        );
+
+      case "error-boundary":
+        return (
+          <div className="w-full rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-left space-y-2">
+            <p className="text-xs font-bold text-rose-500">⚠️ Something went wrong</p>
+            <p className="text-[11px] text-rose-400">
+              Widget subtree encountered a rendering error. Your session data is safe.
+            </p>
+            <button className="mt-1 rounded-xl bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white">
+              Try Again
+            </button>
+          </div>
+        );
+
+      case "use-debounced-press":
+      case "use-reduced-motion":
+      case "use-screen-reader":
+        return (
+          <div className="w-full rounded-2xl border border-zinc-200 bg-white p-4 text-left dark:border-zinc-800 dark:bg-zinc-900 space-y-2">
+            <div className="flex items-center justify-between">
+              <code className="text-xs font-bold text-sky-500">{item.name}()</code>
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-500">
+                Active Hook
+              </span>
+            </div>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">{item.description}</p>
+            <div className="rounded-xl bg-zinc-950 p-2.5 font-mono text-[10px] text-zinc-300">
               $ npx nativra-cli add {item.id}
             </div>
           </div>

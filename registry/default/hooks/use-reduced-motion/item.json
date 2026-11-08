@@ -1,0 +1,15 @@
+{
+  "id": "use-reduced-motion",
+  "name": "useReducedMotion",
+  "description": "Subscribes to OS-level Reduce Motion accessibility preferences on iOS and Android so animations degrade gracefully.",
+  "type": "hook",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-reduced-motion.ts" }],
+  "npmDependencies": [],
+  "tags": ["hook", "accessibility", "a11y", "motion", "animation"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

@@ -1,0 +1,15 @@
+{
+  "id": "use-debounced-press",
+  "name": "useDebouncedPress",
+  "description": "Prevents accidental double-taps on navigation, form submission, and payment actions with configurable cooldown.",
+  "type": "hook",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-debounced-press.ts" }],
+  "npmDependencies": [],
+  "tags": ["hook", "press", "debounce", "gesture", "interaction"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { HomeHeroPlayground } from "@/components/HomeHeroPlayground";
+import { HomeBentoShowcase } from "@/components/HomeBentoShowcase";
 
 export const metadata: Metadata = {
   title:
@@ -338,6 +339,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <HomeBentoShowcase />
 
       {/* ------------------------------------------------------------------- */}
       {/* FAQ Section (SEO & Developer Answers) */}

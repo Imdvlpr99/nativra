@@ -1,0 +1,25 @@
+{
+  "id": "stat-tile",
+  "name": "StatTile",
+  "description": "Compact KPI metric tile with tabular value, trend delta badge, and caption.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/StatTile.tsx", "target": "nativewind" },
+    { "path": "stylesheet/StatTile.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["stat-tile", "kpi", "metric", "dashboard", "card"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

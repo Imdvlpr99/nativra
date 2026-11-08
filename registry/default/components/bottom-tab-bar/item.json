@@ -1,0 +1,25 @@
+{
+  "id": "bottom-tab-bar",
+  "name": "BottomTabBar",
+  "description": "Native-feeling bottom tab navigation bar with active indicator pill and notification badge counts.",
+  "type": "component",
+  "status": "stable",
+  "version": "0.2.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "web": true,
+    "expoGo": true
+  },
+  "files": [
+    { "path": "nativewind/BottomTabBar.tsx", "target": "nativewind" },
+    { "path": "stylesheet/BottomTabBar.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [],
+  "npmDependencies": [],
+  "tags": ["bottom-tab-bar", "tabs", "navigation", "navbar", "dock"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-09T00:00:00.000Z"
+}
+

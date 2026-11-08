@@ -1,0 +1,27 @@
+---
+title: PaginationDots
+description: Step and carousel pagination dot indicator with active pill expansion and interactive dot press.
+---
+
+# PaginationDots
+
+Compact pagination dot strip for onboarding flows, image carousels, and multi-step wizards.
+
+## Installation
+
+```bash
+npx nativra-cli add pagination-dots
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { PaginationDots } from "@/components/ui/PaginationDots";
+
+export function OnboardingStepper() {
+  const [page, setPage] = useState(0);
+  return <PaginationDots total={4} currentIndex={page} onDotPress={setPage} />;
+}
+```
+

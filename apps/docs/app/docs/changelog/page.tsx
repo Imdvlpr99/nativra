@@ -27,15 +27,48 @@ export default function ChangelogPage() {
       </div>
 
       <div className="space-y-12">
-        {/* Release v0.1.0 */}
+        {/* Release v0.2.0 */}
         <div className="relative pl-6 border-l-2 border-sky-500 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              v0.1.0 — Foundation Release
+              v0.2.0 — 81 Registry Items, CLI Audit & Density Scales
             </h2>
             <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
               Latest
             </span>
+            <span className="font-mono text-xs text-muted-foreground">November 2026</span>
+          </div>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Major expansion adding 8 new mobile-first components, 3 accessibility & ergonomics hooks, the <code className="font-mono text-foreground">npx nativra-cli audit</code> health scanner, and dynamic density/typography scaling in <code className="font-mono text-foreground">@nativra/theme-engine</code>.
+          </p>
+
+          <ul className="grid gap-1.5 sm:grid-cols-2 text-xs text-muted-foreground pt-1">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>8 New Components</strong> — Chip, DatePicker, HeaderBar, BottomTabBar, ActionTile, StatTile, PaginationDots, ErrorBoundary</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>3 New Mobile Hooks</strong> — useDebouncedPress, useReducedMotion, useScreenReader</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>CLI Audit Command</strong> — <code className="font-mono">npx nativra-cli audit</code> scores token hygiene &amp; a11y</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Density &amp; Typography Scales</strong> — Compact/Regular/Comfortable + WCAG AAA High-Contrast mode</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Release v0.1.0 */}
+        <div className="relative pl-6 border-l-2 border-border space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              v0.1.0 — Foundation Release
+            </h2>
             <span className="font-mono text-xs text-muted-foreground">November 2026</span>
           </div>
 

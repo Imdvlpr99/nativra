@@ -1,0 +1,33 @@
+---
+title: HeaderBar
+description: Mobile screen navigation bar with back action, title, subtitle, and right action button.
+---
+
+# HeaderBar
+
+Top screen header bar tuned for iOS and Android navigation stacks with optional back button, centered title/subtitle, and trailing action button.
+
+## Installation
+
+```bash
+npx nativra-cli add header-bar
+```
+
+## Usage
+
+```tsx
+import { HeaderBar } from "@/components/ui/HeaderBar";
+
+export function ProfileScreenHeader() {
+  return (
+    <HeaderBar
+      title="Account Settings"
+      subtitle="Personal workspace"
+      onBack={() => {}}
+      rightLabel="Save"
+      onRightPress={() => {}}
+    />
+  );
+}
+```
+

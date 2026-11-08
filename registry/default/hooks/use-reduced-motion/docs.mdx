@@ -1,0 +1,27 @@
+---
+title: useReducedMotion
+description: Subscribes to OS-level Reduce Motion accessibility preferences on iOS and Android so animations degrade gracefully.
+---
+
+# useReducedMotion
+
+The `useReducedMotion` hook queries `AccessibilityInfo.isReduceMotionEnabled()` and listens to `"reduceMotionChanged"` events so components can skip spring/timing transitions when the user requests reduced motion.
+
+## Installation
+
+```bash
+npx nativra-cli add use-reduced-motion
+```
+
+## Usage
+
+```tsx
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+
+export function AnimatedCard() {
+  const reduceMotion = useReducedMotion();
+  const duration = reduceMotion ? 0 : 250;
+  // Pass duration to Animated.timing or Reanimated withTiming
+}
+```
+
