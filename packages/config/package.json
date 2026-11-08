@@ -1,6 +1,6 @@
 {
   "name": "@nativra/config",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Shared ESLint, TypeScript, and test configs for the Nativra monorepo",
   "private": true,
   "type": "module",
@@ -14,6 +14,15 @@
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "eslint": "^9.16.0"
+  },
+  "license": "MIT",
+  "homepage": "https://nativra.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Imdvlpr99/nativra.git",
+    "directory": "packages/config"
+  },
+  "bugs": {
+    "url": "https://github.com/Imdvlpr99/nativra/issues"
   }
 }
-

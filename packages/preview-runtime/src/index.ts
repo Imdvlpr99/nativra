@@ -1,5 +1,5 @@
 /**
- * @nativra/preview-runtime — deterministic preview fixtures shared by Studio and
+ * @nativra/preview-runtime — deterministic preview fixtures shared by Docs and
  * the native-preview app, so both render the same states.
  */
 export type PreviewProps = Record<string, unknown>;

@@ -627,7 +627,7 @@ export function toCssVariables(theme: NativraThemeTokens): string {
 /**
  * Converts theme tokens into a Tailwind CSS theme.extend configuration object.
  */
-export function toTailwindPreset(theme: NativraThemeTokens): Record<string, any> {
+export function toTailwindPreset(theme: NativraThemeTokens): Record<string, unknown> {
   return {
     theme: {
       extend: {

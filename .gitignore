@@ -14,6 +14,8 @@ coverage/
 .expo-shared/
 
 nativra.lock.json.bak
+apps/docs/public/registry.json
+apps/docs/public/items/
 
 # Blueprints & Specifications
 nativra_complete_product_blueprint.docx

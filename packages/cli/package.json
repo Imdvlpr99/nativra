@@ -1,8 +1,35 @@
 {
   "name": "@nativra/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Nativra CLI — add, update, diff, and manage UI components in your React Native project",
+  "license": "MIT",
   "type": "module",
+  "homepage": "https://nativra.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Imdvlpr99/nativra.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/Imdvlpr99/nativra/issues"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "nativewind",
+    "ui",
+    "components",
+    "shadcn",
+    "nativra",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "bin": {
     "nativra": "./dist/cli.js"
   },
@@ -15,6 +42,9 @@
       "require": "./dist/index.cjs"
     }
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -24,9 +54,6 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@nativra/registry-schema": "workspace:*",
-    "@nativra/registry-client": "workspace:*",
-    "@nativra/utils": "workspace:*",
     "commander": "^12.1.0",
     "chalk": "^5.3.0",
     "ora": "^8.1.1",
@@ -37,6 +64,9 @@
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
+    "@nativra/registry-client": "workspace:*",
+    "@nativra/registry-schema": "workspace:*",
+    "@nativra/utils": "workspace:*",
     "@types/prompts": "^2.4.9",
     "@types/fs-extra": "^11.0.4",
     "@types/diff": "^7.0.0",

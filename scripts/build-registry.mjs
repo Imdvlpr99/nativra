@@ -3,12 +3,14 @@
  * scripts/build-registry.mjs
  *
  * CLI script that runs the registry builder to produce deployable
- * registry.json + per-item JSON output.
+ * registry.json + per-item JSON output, and syncs static registry
+ * artifacts into apps/docs/public for zero-config CDN hosting.
  *
  * Usage: node scripts/build-registry.mjs [--out ./dist/registry] [--pretty]
  */
 import { buildRegistry } from "@nativra/registry-builder";
-import { resolve, dirname } from "node:path";
+import { cp, mkdir } from "node:fs/promises";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -39,7 +41,14 @@ if (result.errors.length > 0) {
   process.exit(1);
 }
 
+// Mirror static registry files into apps/docs/public when using default output
+if (outFlag === -1) {
+  const docsPublicDir = resolve(root, "apps/docs/public");
+  await mkdir(join(docsPublicDir, "items"), { recursive: true });
+  await cp(join(outDir, "registry.json"), join(docsPublicDir, "registry.json"));
+  await cp(join(outDir, "items"), join(docsPublicDir, "items"), { recursive: true });
+}
+
 console.log(`\n✅ Registry built successfully!`);
 console.log(`   ${result.items.length} item(s) published`);
 console.log(`   Manifest: ${outDir}/registry.json`);
-
