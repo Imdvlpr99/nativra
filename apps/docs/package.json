@@ -20,7 +20,7 @@
     "@nativra/registry-schema": "workspace:*",
     "@nativra/theme-engine": "workspace:*",
     "@next/mdx": "^15.1.0",
-    "fumadocs-core": "^14.4.0",
+    "fumadocs-core": "^16.18.0",
     "fumadocs-ui": "^14.4.0",
     "lucide-react": "^1.70.0",
     "next": "^15.1.0",
