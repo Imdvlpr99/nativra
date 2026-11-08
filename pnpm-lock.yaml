@@ -49,7 +49,7 @@ importers:
         version: 14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       fumadocs-ui:
         specifier: ^14.4.0
-        version: 14.7.7(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(fumadocs-core@14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@3.4.19(yaml@2.9.1))
+        version: 14.7.7(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(fumadocs-core@14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4)
       lucide-react:
         specifier: ^1.70.0
         version: 1.70.0(@types/react@19.0.10)(react@19.3.1)
@@ -100,8 +100,8 @@ importers:
         specifier: ^6.0.1
         version: 6.1.4
       tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.19(yaml@2.9.1)
+        specifier: ^4.3.4
+        version: 4.3.4
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -159,7 +159,7 @@ importers:
         version: 2.0.1(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)
       nativewind:
         specifier: ^4.0.1
-        version: 4.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.19(yaml@2.9.1))
+        version: 4.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@4.3.4)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -167,8 +167,8 @@ importers:
         specifier: 0.76.5
         version: 0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1)
       tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.19(yaml@2.9.1)
+        specifier: ^4.3.4
+        version: 4.3.4
     devDependencies:
       '@babel/core':
         specifier: ^7.20.0
@@ -405,10 +405,6 @@ packages:
     peerDependenciesMeta:
       graphql:
         optional: true
-
-  '@alloc/quick-lru@5.3.0':
-    resolution: {integrity: sha512-U4+70Pc5ZS9osnCBCE5Jha/ciHM+Yp+CNMNC/7HvYbNRk1Ldd+f7qO65W5qfhu/TCv+/ozljlXXe9Nj8419DMA==}
-    engines: {node: '>=10'}
 
   '@babel/code-frame@7.10.4':
     resolution: {integrity: sha512-vG6SvB6oYEhvgisZNFRmRCUkLz11c7rp+tbNTynGqc6mS1d5ATd/sGyV6W0KZZnXRKMTzZDRgQT3Ou9jhpAfUg==}
@@ -3199,10 +3195,6 @@ packages:
     resolution: {integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==}
     engines: {node: '>=0.6'}
 
-  binary-extensions@2.3.0:
-    resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
-    engines: {node: '>=8'}
-
   bplist-creator@0.0.7:
     resolution: {integrity: sha512-xp/tcaV3T5PCiaY04mXga7o/TE+t95gqeLmADeBI1CvZtdWTbgBt3uLpvh4UWtenKeBhCV6oVxGk38yZr2uYEA==}
 
@@ -3300,10 +3292,6 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  camelcase-css@2.0.1:
-    resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
-    engines: {node: '>= 6'}
-
   camelcase@5.3.1:
     resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
     engines: {node: '>=6'}
@@ -3352,10 +3340,6 @@ packages:
   check-error@2.1.3:
     resolution: {integrity: sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA==}
     engines: {node: '>= 16'}
-
-  chokidar@3.6.0:
-    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
-    engines: {node: '>= 8.10.0'}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -3647,9 +3631,6 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  didyoumean@1.2.2:
-    resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
-
   diff@7.0.0:
     resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
     engines: {node: '>=0.3.1'}
@@ -3657,9 +3638,6 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
-
-  dlv@1.1.3:
-    resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -4510,10 +4488,6 @@ packages:
   is-bigint@1.1.0:
     resolution: {integrity: sha512-n4ZT37wG78iz03xPRKJrHTdZbe3IicyucEtdRsV5yglwc3GyUfbAfpSeD0FJ41NbUNSt5wbhqfp1fS+BgnvDFQ==}
     engines: {node: '>= 0.4'}
-
-  is-binary-path@2.1.0:
-    resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
-    engines: {node: '>=8'}
 
   is-boolean-object@1.2.2:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
@@ -5526,10 +5500,6 @@ packages:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
 
-  object-hash@3.0.0:
-    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
-    engines: {node: '>= 6'}
-
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
@@ -5753,18 +5723,6 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postcss-import@15.1.0:
-    resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      postcss: ^8.0.0
-
-  postcss-js@4.1.0:
-    resolution: {integrity: sha512-oIAOTqgIo7q2EOwbhb8UalYePMvYoIeRY2YKntdpFQXNosSu3vLrniGgmH9OKs/qAkfoj5oB3le/7mINW1LCfw==}
-    engines: {node: ^12 || ^14 || >= 16}
-    peerDependencies:
-      postcss: ^8.4.21
-
   postcss-load-config@6.0.1:
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
     engines: {node: '>= 18'}
@@ -5782,16 +5740,6 @@ packages:
         optional: true
       yaml:
         optional: true
-
-  postcss-nested@6.2.0:
-    resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
-    engines: {node: '>=12.0'}
-    peerDependencies:
-      postcss: ^8.2.14
-
-  postcss-selector-parser@6.1.5:
-    resolution: {integrity: sha512-TEHFzb5KRDKaOgJ4TYE+0jyJtFbjLvkdVOu0fZ2b6MTWzoqZd4Le+61aEppWkvTlYePgOX4ATL1wsAIPMLTw6Q==}
-    engines: {node: '>=4'}
 
   postcss-selector-parser@7.1.7:
     resolution: {integrity: sha512-wWBro/7hJ40ye6TPiXkUQoXKCw23xSsjriUvqd7Uls9Sso3oLiON1flc18cCdnjgCRXw4fBVqUJJeOdDTh3P3g==}
@@ -5999,13 +5947,6 @@ packages:
   react@19.3.1:
     resolution: {integrity: sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==}
     engines: {node: '>=0.10.0'}
-
-  read-cache@1.0.2:
-    resolution: {integrity: sha512-/peqiBB/n07gQGLsWaHho3WfvUyRscw0gYTsEFMhrIe/nWLkYaf5SbKYjGYqtRV3aPwykJgF2VEMo1ac4bnsGA==}
-
-  readdirp@3.6.0:
-    resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
-    engines: {node: '>=8.10.0'}
 
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
@@ -6530,10 +6471,8 @@ packages:
   tailwind-merge@2.6.1:
     resolution: {integrity: sha512-Oo6tHdpZsGpkKG88HJ8RR1rg/RdnEkQEfMoEk2x1XRI3F1AxeU+ijRXpiVUF4UbLfcxxRGw6TbUINKYdWVsQTQ==}
 
-  tailwindcss@3.4.19:
-    resolution: {integrity: sha512-3ofp+LL8E+pK/JuPLPggVAIaEuhvIz4qNcf3nA1Xn2o/7fb7s/TYpHhwGDv1ZU3PkBluUVaF8PyCHcm48cKLWQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
+  tailwindcss@4.3.4:
+    resolution: {integrity: sha512-PCJZTFFdG+sL3gvnP1Do9o6GbkvH2q0p04xSs3f7cSvmAeK+sttG+/7ncK1fdRwKFfC7n+wDDJaOMBSefkI9ow==}
 
   tar@6.2.1:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
@@ -7089,8 +7028,6 @@ packages:
 snapshots:
 
   '@0no-co/graphql.web@1.3.4': {}
-
-  '@alloc/quick-lru@5.3.0': {}
 
   '@babel/code-frame@7.10.4':
     dependencies:
@@ -10330,8 +10267,6 @@ snapshots:
 
   big-integer@1.6.52: {}
 
-  binary-extensions@2.3.0: {}
-
   bplist-creator@0.0.7:
     dependencies:
       stream-buffers: 2.2.0
@@ -10446,8 +10381,6 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  camelcase-css@2.0.1: {}
-
   camelcase@5.3.1: {}
 
   camelcase@6.3.0: {}
@@ -10488,18 +10421,6 @@ snapshots:
   charenc@0.0.2: {}
 
   check-error@2.1.3: {}
-
-  chokidar@3.6.0:
-    dependencies:
-      anymatch: 3.1.3
-      braces: 3.0.3
-      glob-parent: 5.1.2
-      is-binary-path: 2.1.0
-      is-glob: 4.0.3
-      normalize-path: 3.0.0
-      readdirp: 3.6.0
-    optionalDependencies:
-      fsevents: 2.3.3
 
   chokidar@4.0.3:
     dependencies:
@@ -10780,15 +10701,11 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  didyoumean@1.2.2: {}
-
   diff@7.0.0: {}
 
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
-
-  dlv@1.1.3: {}
 
   doctrine@2.1.0:
     dependencies:
@@ -11610,7 +11527,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  fumadocs-ui@14.7.7(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(fumadocs-core@14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@3.4.19(yaml@2.9.1)):
+  fumadocs-ui@14.7.7(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(fumadocs-core@14.7.7(@types/react@19.0.10)(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4):
     dependencies:
       '@radix-ui/react-accordion': 1.3.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@radix-ui/react-collapsible': 1.2.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -11633,7 +11550,7 @@ snapshots:
       react-medium-image-zoom: 5.4.9(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       tailwind-merge: 2.6.1
     optionalDependencies:
-      tailwindcss: 3.4.19(yaml@2.9.1)
+      tailwindcss: 4.3.4
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -11968,10 +11885,6 @@ snapshots:
     dependencies:
       has-bigints: 1.1.0
 
-  is-binary-path@2.1.0:
-    dependencies:
-      binary-extensions: 2.3.0
-
   is-boolean-object@1.2.2:
     dependencies:
       call-bound: 1.0.4
@@ -12213,7 +12126,8 @@ snapshots:
 
   jimp-compact@0.16.1: {}
 
-  jiti@1.21.7: {}
+  jiti@1.21.7:
+    optional: true
 
   join-component@1.1.0: {}
 
@@ -13337,12 +13251,12 @@ snapshots:
 
   napi-postinstall@0.3.8: {}
 
-  nativewind@4.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.19(yaml@2.9.1)):
+  nativewind@4.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@4.3.4):
     dependencies:
       comment-json: 4.6.2
       debug: 4.4.3
-      react-native-css-interop: 0.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.19(yaml@2.9.1))
-      tailwindcss: 3.4.19(yaml@2.9.1)
+      react-native-css-interop: 0.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@4.3.4)
+      tailwindcss: 4.3.4
     transitivePeerDependencies:
       - react
       - react-native
@@ -13459,8 +13373,6 @@ snapshots:
       flow-enums-runtime: 0.0.6
 
   object-assign@4.1.1: {}
-
-  object-hash@3.0.0: {}
 
   object-inspect@1.13.4: {}
 
@@ -13699,18 +13611,6 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-import@15.1.0(postcss@8.5.32):
-    dependencies:
-      postcss: 8.5.32
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.2
-      resolve: 1.22.14
-
-  postcss-js@4.1.0(postcss@8.5.32):
-    dependencies:
-      camelcase-css: 2.0.1
-      postcss: 8.5.32
-
   postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.32)(yaml@2.9.1):
     dependencies:
       lilconfig: 3.1.4
@@ -13718,16 +13618,6 @@ snapshots:
       jiti: 1.21.7
       postcss: 8.5.32
       yaml: 2.9.1
-
-  postcss-nested@6.2.0(postcss@8.5.32):
-    dependencies:
-      postcss: 8.5.32
-      postcss-selector-parser: 6.1.5
-
-  postcss-selector-parser@6.1.5:
-    dependencies:
-      cssesc: 3.0.0
-      util-deprecate: 1.0.2
 
   postcss-selector-parser@7.1.7:
     dependencies:
@@ -13841,7 +13731,7 @@ snapshots:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  react-native-css-interop@0.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.19(yaml@2.9.1)):
+  react-native-css-interop@0.2.7(react-native-reanimated@4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)(tailwindcss@4.3.4):
     dependencies:
       '@babel/helper-module-imports': 7.29.7
       '@babel/traverse': 7.29.13
@@ -13852,7 +13742,7 @@ snapshots:
       react-native: 0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1)
       react-native-reanimated: 4.7.1(react-native-worklets@0.13.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react-native@0.76.5(@babel/core@7.29.13)(@babel/preset-env@7.29.7(@babel/core@7.29.13))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)
       semver: 7.8.6
-      tailwindcss: 3.4.19(yaml@2.9.1)
+      tailwindcss: 4.3.4
     transitivePeerDependencies:
       - supports-color
 
@@ -14000,12 +13890,6 @@ snapshots:
       loose-envify: 1.4.0
 
   react@19.3.1: {}
-
-  read-cache@1.0.2: {}
-
-  readdirp@3.6.0:
-    dependencies:
-      picomatch: 2.3.2
 
   readdirp@4.1.2: {}
 
@@ -14683,33 +14567,7 @@ snapshots:
 
   tailwind-merge@2.6.1: {}
 
-  tailwindcss@3.4.19(yaml@2.9.1):
-    dependencies:
-      '@alloc/quick-lru': 5.3.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.3
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.7
-      lilconfig: 3.1.4
-      micromatch: 4.0.8
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.1.1
-      postcss: 8.5.32
-      postcss-import: 15.1.0(postcss@8.5.32)
-      postcss-js: 4.1.0(postcss@8.5.32)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.32)(yaml@2.9.1)
-      postcss-nested: 6.2.0(postcss@8.5.32)
-      postcss-selector-parser: 6.1.5
-      resolve: 1.22.14
-      sucrase: 3.35.1
-    transitivePeerDependencies:
-      - tsx
-      - yaml
+  tailwindcss@4.3.4: {}
 
   tar@6.2.1:
     dependencies:
