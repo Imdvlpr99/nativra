@@ -1,8 +1,8 @@
 /** Nativra — StatTile (NativeWind). Install: npx nativra-cli add stat-tile */
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, type ViewProps } from "react-native";
 
-export interface StatTileProps {
+export interface StatTileProps extends ViewProps {
   label: string;
   value: string;
   delta?: string;
@@ -18,6 +18,8 @@ export function StatTile({
   trend = "up",
   caption,
   className = "",
+  style,
+  ...rest
 }: StatTileProps) {
   const badgeClasses =
     trend === "up"
@@ -29,7 +31,9 @@ export function StatTile({
   return (
     <View
       accessibilityRole="summary"
+      style={style}
       className={`rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 ${className}`}
+      {...rest}
     >
       <View className="flex-row items-center justify-between">
         <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400">

@@ -1,6 +1,6 @@
 /** Nativra — BottomTabBar (NativeWind). Install: npx nativra-cli add bottom-tab-bar */
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type ViewProps } from "react-native";
 
 export interface BottomTabItem {
   id: string;
@@ -9,7 +9,7 @@ export interface BottomTabItem {
   badge?: number;
 }
 
-export interface BottomTabBarProps {
+export interface BottomTabBarProps extends ViewProps {
   tabs: BottomTabItem[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
@@ -21,11 +21,15 @@ export function BottomTabBar({
   activeTab,
   onTabChange,
   className = "",
+  style,
+  ...rest
 }: BottomTabBarProps) {
   return (
     <View
       accessibilityRole="tablist"
+      style={style}
       className={`flex-row items-center justify-around border-t border-zinc-200 bg-white px-2 py-2 dark:border-zinc-800 dark:bg-zinc-900 ${className}`}
+      {...rest}
     >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTab;

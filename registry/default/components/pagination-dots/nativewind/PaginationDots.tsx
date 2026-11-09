@@ -1,8 +1,8 @@
 /** Nativra — PaginationDots (NativeWind). Install: npx nativra-cli add pagination-dots */
 import React from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, type ViewProps } from "react-native";
 
-export interface PaginationDotsProps {
+export interface PaginationDotsProps extends ViewProps {
   total: number;
   currentIndex: number;
   onDotPress?: (index: number) => void;
@@ -14,6 +14,8 @@ export function PaginationDots({
   currentIndex,
   onDotPress,
   className = "",
+  style,
+  ...rest
 }: PaginationDotsProps) {
   const safeTotal = Math.max(1, total);
 
@@ -21,7 +23,9 @@ export function PaginationDots({
     <View
       accessibilityRole="adjustable"
       accessibilityLabel={`Page ${currentIndex + 1} of ${safeTotal}`}
+      style={style}
       className={`flex-row items-center justify-center gap-1.5 ${className}`}
+      {...rest}
     >
       {Array.from({ length: safeTotal }).map((_, idx) => {
         const isActive = idx === currentIndex;

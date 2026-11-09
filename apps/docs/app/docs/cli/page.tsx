@@ -21,11 +21,13 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli add <...components>",
-    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, supports atomic rollback on failure, and records exact file locations in nativra.lock.json.",
+    desc: "Install one or more components, blocks, or hooks into your project. Recursively resolves dependencies, verifies SHA-256 integrity, rewrites import path aliases to match your project, supports atomic rollback on failure, and records exact file locations in nativra.lock.json.",
     flags: [
       "--yes (Skip interactive prompts; preserves existing files unless --overwrite is set)",
       "--overwrite (Overwrite existing files without prompting)",
       "--on-conflict <skip|overwrite|error> (Explicit conflict strategy; defaults to skip)",
+      "--install (Automatically install missing npm dependencies via detected Expo CLI or package manager)",
+      "--no-install (Skip installing npm dependencies; only copy component source files)",
       "--dry-run (Simulate installation and preview files and dependencies without writing to disk)",
       "--registry <url-or-name> (Specify alternate registry URL or local directory)",
       "--cwd <dir> (Explicit working directory)",
@@ -99,8 +101,9 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli audit",
-    desc: "Scan your React Native or Expo codebase for Nativra component adoption, hardcoded hex colors, legacy <Touchable*> primitives, and screen-reader accessibility coverage. Outputs a 0–100% Design System & Accessibility Health Score.",
+    desc: "Scan your React Native or Expo codebase for Nativra component adoption, hardcoded hex colors, legacy <Touchable*> primitives, allowFontScaling={false} accessibility regressions, and screen-reader accessibility coverage with line-numbered locations. Outputs a 0–100% Design System & Accessibility Health Score.",
     flags: [
+      "--fix (Automatically migrate legacy <TouchableOpacity> usages and imports to <Pressable>)",
       "--json (Output structured JSON audit report for CI pipelines)",
       "--cwd <dir> (Explicit working directory)",
     ],
@@ -117,6 +120,8 @@ const COMMANDS = [
     cmd: "npx nativra-cli theme add <theme-id>",
     desc: "Install a theme into your project (e.g. lib/themes/midnight.ts or CSS variables).",
     flags: [
+      "--as <name> (Install theme under a custom file name, e.g. --as midnight writes lib/themes/midnight.ts)",
+      "--apply-css (Automatically wire and inject theme CSS variables into global.css)",
       "--registry <url-or-name> (Override registry URL)",
       "--cwd <dir> (Explicit working directory)",
     ],

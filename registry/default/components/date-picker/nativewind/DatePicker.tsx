@@ -1,8 +1,8 @@
 /** Nativra — DatePicker (NativeWind). Install: npx nativra-cli add date-picker */
 import React, { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type ViewProps } from "react-native";
 
-export interface DatePickerProps {
+export interface DatePickerProps extends ViewProps {
   label?: string;
   value?: string;
   placeholder?: string;
@@ -25,6 +25,8 @@ export function DatePicker({
   onChange,
   disabled = false,
   className = "",
+  style,
+  ...rest
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const [internalVal, setInternalVal] = useState(value ?? "2026-11-09");
@@ -40,7 +42,7 @@ export function DatePicker({
   };
 
   return (
-    <View className={`w-full ${className}`}>
+    <View style={style} className={`w-full ${className}`} {...rest}>
       {label ? (
         <Text className="mb-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
           {label}

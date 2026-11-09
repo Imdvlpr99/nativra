@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/Imdvlpr99/nativra/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square&logo=github" alt="CI Status" /></a>
-  <a href="https://npmjs.com/package/nativra-cli"><img src="https://img.shields.io/badge/npm-v0.2.0-sky?style=flat-square&logo=npm" alt="npm package" /></a>
+  <a href="https://npmjs.com/package/nativra-cli"><img src="https://img.shields.io/badge/npm-v0.2.2-sky?style=flat-square&logo=npm" alt="npm package" /></a>
   <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.76+-22c55e?style=flat-square&logo=react" alt="React Native 0.76+" /></a>
   <a href="https://expo.dev"><img src="https://img.shields.io/badge/Expo-SDK%2052+-000000?style=flat-square&logo=expo" alt="Expo SDK 52+" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
@@ -26,7 +26,7 @@ Nativra combines the discoverability, accessibility, and copy-into-your-project 
 
 Developers use Nativra to:
 
-- 🔍 **Discover** — 70+ high-fidelity primitives, hooks, utilities, themes, blocks, and full-screen templates.
+- 🔍 **Discover** — 80+ high-fidelity primitives, hooks, utilities, themes, blocks, and full-screen templates.
 - 📱 **Preview & Inspect** — Interactive real-time mobile canvas inside the documentation site.
 - 🎨 **Customize & Theme** — Tailor design tokens, radii, and semantic colors for NativeWind v4 and React Native StyleSheet.
 - ⚡ **Install** — Add TypeScript sources directly to your project with `npx nativra-cli add <item>`.

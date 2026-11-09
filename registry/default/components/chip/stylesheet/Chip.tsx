@@ -1,8 +1,8 @@
 /** Nativra — Chip (StyleSheet). Install: npx nativra-cli add chip */
 import React from "react";
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 
-export interface ChipProps {
+export interface ChipProps extends Omit<PressableProps, "style"> {
   label: string;
   selected?: boolean;
   variant?: "default" | "primary" | "outline";
@@ -10,7 +10,7 @@ export interface ChipProps {
   disabled?: boolean;
   onPress?: () => void;
   onRemove?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Chip({
@@ -22,6 +22,7 @@ export function Chip({
   onPress,
   onRemove,
   style,
+  ...rest
 }: ChipProps) {
   return (
     <Pressable
@@ -39,6 +40,7 @@ export function Chip({
         pressed && !disabled && styles.pressed,
         style,
       ]}
+      {...rest}
     >
       <Text
         style={[

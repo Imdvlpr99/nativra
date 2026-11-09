@@ -1,12 +1,12 @@
 /** Nativra — Separator (StyleSheet). Install: npx nativra-cli add separator */
 import React from "react";
-import { StyleSheet, View, useColorScheme } from "react-native";
+import { StyleSheet, View, useColorScheme, type ViewProps } from "react-native";
 
-export interface SeparatorProps {
+export interface SeparatorProps extends ViewProps {
   orientation?: "horizontal" | "vertical";
 }
 
-export function Separator({ orientation = "horizontal" }: SeparatorProps) {
+export function Separator({ orientation = "horizontal", style, ...rest }: SeparatorProps) {
   const dark = useColorScheme() === "dark";
   return (
     <View
@@ -14,7 +14,9 @@ export function Separator({ orientation = "horizontal" }: SeparatorProps) {
       style={[
         orientation === "horizontal" ? styles.h : styles.v,
         { backgroundColor: dark ? "#27272a" : "#e4e4e7" },
+        style,
       ]}
+      {...rest}
     />
   );
 }

@@ -44,7 +44,7 @@ const homepageFaqItems = [
   {
     question: "Is Nativra compatible with Expo SDK 52+ and React Native's New Architecture (Bridgeless / Fabric)?",
     answer:
-      "Yes. All 31 Nativra components, 16 blocks, 8 screen templates, and 4 mobile hooks are tested for React Native 0.76+, Expo SDK 52+, Bridgeless mode, Fabric renderer, iOS VoiceOver, and Android TalkBack accessibility.",
+      "Yes. All 39 Nativra components, 18 blocks, 8 screen templates, and 7 mobile hooks are tested for React Native 0.76+, Expo SDK 52+, Bridgeless mode, Fabric renderer, iOS VoiceOver, and Android TalkBack accessibility.",
   },
   {
     question: "How does Nativra prevent overwriting my local component customizations during updates?",
@@ -97,7 +97,7 @@ export default function HomePage() {
           {/* Announcement Pill with Brand Icon */}
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 py-1 pl-1.5 pr-3.5 text-xs font-semibold text-sky-800 dark:border-sky-900/60 dark:bg-sky-950/60 dark:text-sky-300 shadow-sm">
             <Image src="/icon.png" alt="Nativra" width={18} height={18} className="rounded-full object-contain" />
-            <span>Introducing Nativra v0.1 — Source-First React Native UI</span>
+            <span>Introducing Nativra v0.2.2 — Source-First React Native UI</span>
           </div>
 
           {/* Main Title */}

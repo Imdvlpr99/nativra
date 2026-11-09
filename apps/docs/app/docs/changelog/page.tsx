@@ -27,15 +27,56 @@ export default function ChangelogPage() {
       </div>
 
       <div className="space-y-12">
-        {/* Release v0.2.1 */}
+        {/* Release v0.2.2 */}
         <div className="relative pl-6 border-l-2 border-sky-500 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              v0.2.1 — Security, Registry &amp; Dependency Hardening
+              v0.2.2 — Alias Rewriting, Auto-Installer, Audit Fix &amp; DX Enhancements
             </h2>
             <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
               Latest
             </span>
+            <span className="font-mono text-xs text-muted-foreground">November 2026</span>
+          </div>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Developer experience and component ergonomics upgrade: automatic import alias rewriting, automated npm dependency installation, line-numbered audit with <code className="font-mono text-foreground">--fix</code>, multi-theme CSS variable wiring, complete 39-component contract coverage, and full 4-tab interactive example apps.
+          </p>
+
+          <ul className="grid gap-1.5 sm:grid-cols-2 text-xs text-muted-foreground pt-1">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Import Alias Rewriting</strong> — Automatically transforms component imports to match custom project structure and path aliases</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Auto-Dependency Installer</strong> — <code className="font-mono text-foreground">--install</code> flag runs <code className="font-mono text-foreground">npx expo install</code> or package manager commands</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Audit --fix &amp; Line Numbers</strong> — Migrates legacy <code className="font-mono text-foreground">&lt;TouchableOpacity&gt;</code> to <code className="font-mono text-foreground">&lt;Pressable&gt;</code> with exact file locations</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Multi-Theme CSS Injection</strong> — <code className="font-mono text-foreground">nativra theme add --as &lt;name&gt; --apply-css</code> auto-wires tokens into <code className="font-mono text-foreground">global.css</code></span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>100% Component Contracts</strong> — Full TypeScript contracts for all 39 components with standard style overrides and pass-through props</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Interactive Example Apps</strong> — Multi-tab showcase apps in both NativeWind and StyleSheet with 1:1 visual parity</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Release v0.2.1 */}
+        <div className="relative pl-6 border-l-2 border-border space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              v0.2.1 — Security, Registry &amp; Dependency Hardening
+            </h2>
             <span className="font-mono text-xs text-muted-foreground">November 2026</span>
           </div>
 

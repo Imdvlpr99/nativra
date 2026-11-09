@@ -1,6 +1,6 @@
 {
   "name": "@nativra/registry-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Fetch, cache, and resolve Nativra registry items",
   "type": "module",
   "main": "./dist/index.cjs",

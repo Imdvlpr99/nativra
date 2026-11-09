@@ -173,7 +173,7 @@ export default async function TemplatesPage() {
           <div
             key={tmpl.id}
             id={tmpl.id}
-            className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6"
+            className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6 scroll-mt-20"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <div>

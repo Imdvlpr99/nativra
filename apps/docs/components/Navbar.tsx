@@ -46,7 +46,7 @@ export function Navbar() {
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-bold tracking-tight text-foreground">Nativra</span>
                 <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                  v0.1
+                  v0.2.2
                 </span>
               </div>
             </Link>

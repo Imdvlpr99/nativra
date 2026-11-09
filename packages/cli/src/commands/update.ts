@@ -13,6 +13,7 @@ import {
   toLockKey,
   createBackup,
 } from "../install.js";
+import { transformFileImports } from "../transform.js";
 
 export function registerUpdateCommand(program: Command) {
   program
@@ -47,7 +48,7 @@ export function registerUpdateCommand(program: Command) {
           const dest = destPathFor(options.cwd, item, file, config);
           const lockKey = toLockKey(options.cwd, dest);
           const recordedHash = entry.files[lockKey] ?? entry.files[dest];
-          const next = file.content ?? "";
+          const next = transformFileImports(file.content ?? "", config);
           const local = await readFile(dest, "utf8").catch(() => null);
 
           if (local === next) {

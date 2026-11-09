@@ -1,16 +1,21 @@
 /** Nativra — Separator (NativeWind). Install: npx nativra add separator */
 import React from "react";
-import { View } from "react-native";
+import { View, type ViewProps } from "react-native";
 
-export interface SeparatorProps {
+export interface SeparatorProps extends ViewProps {
   orientation?: "horizontal" | "vertical";
+  className?: string;
 }
 
-export function Separator({ orientation = "horizontal" }: SeparatorProps) {
+export function Separator({ orientation = "horizontal", className = "", style, ...rest }: SeparatorProps) {
   return (
     <View
       accessibilityRole="none"
-      className={`bg-zinc-200 dark:bg-zinc-800 ${orientation === "horizontal" ? "h-px w-full" : "h-full w-px"}`}
+      style={style}
+      className={`bg-zinc-200 dark:bg-zinc-800 ${
+        orientation === "horizontal" ? "h-px w-full" : "h-full w-px"
+      } ${className}`}
+      {...rest}
     />
   );
 }

@@ -1,8 +1,16 @@
 import type { Command } from "commander";
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import chalk from "chalk";
 import { readLock } from "../install.js";
+
+export interface AuditFinding {
+  file: string;
+  line?: number;
+  column?: number;
+  issue: string;
+  rule: string;
+}
 
 export interface AuditReport {
   scannedFiles: number;
@@ -11,12 +19,11 @@ export interface AuditReport {
   accessibleInteractiveElements: number;
   hardcodedHexCount: number;
   legacyTouchableCount: number;
+  disabledFontScalingCount: number;
   score: number;
   grade: string;
-  findings: Array<{
-    file: string;
-    issue: string;
-  }>;
+  findings: AuditFinding[];
+  fixedCount?: number;
 }
 
 const IGNORED_DIRS = new Set([
@@ -53,6 +60,87 @@ async function collectSourceFiles(dir: string, results: string[] = []): Promise<
   return results;
 }
 
+function getLineAndCol(content: string, index: number): { line: number; column: number } {
+  const prefix = content.slice(0, index);
+  const lines = prefix.split("\n");
+  const line = lines.length;
+  const lastLine = lines[lines.length - 1] ?? "";
+  const column = lastLine.length + 1;
+  return { line, column };
+}
+
+export async function fixLegacyTouchables(cwd: string): Promise<number> {
+  const files = await collectSourceFiles(cwd);
+  let fixedFiles = 0;
+
+  for (const filePath of files) {
+    const relPath = relative(cwd, filePath).replace(/\\/g, "/");
+    if (
+      relPath.includes("components/ui/") ||
+      relPath.includes("blocks/") ||
+      relPath.includes("templates/")
+    ) {
+      continue;
+    }
+
+    let content = "";
+    try {
+      content = await readFile(filePath, "utf8");
+    } catch {
+      continue;
+    }
+
+    if (!/<(TouchableOpacity|TouchableHighlight)\b/.test(content)) {
+      continue;
+    }
+
+    let modified = content;
+
+    // Replace JSX opening and closing tags
+    modified = modified.replace(/<TouchableOpacity\b/g, "<Pressable");
+    modified = modified.replace(/<\/TouchableOpacity>/g, "</Pressable>");
+    modified = modified.replace(/<TouchableHighlight\b/g, "<Pressable");
+    modified = modified.replace(/<\/TouchableHighlight>/g, "</Pressable>");
+
+    // Update imports from react-native
+    if (/from\s+["']react-native["']/.test(modified)) {
+      if (!/\bPressable\b/.test(modified.match(/import\s*\{([^}]+)\}\s*from\s*["']react-native["']/)?.[1] ?? "")) {
+        modified = modified.replace(
+          /(import\s*\{)([^}]+)(\}\s*from\s*["']react-native["'])/,
+          (m, p1, p2, p3) => {
+            const cleaned = p2
+              .replace(/\bTouchableOpacity\b,?\s*/g, "")
+              .replace(/\bTouchableHighlight\b,?\s*/g, "")
+              .trim();
+            const withPressable = cleaned ? `${cleaned}, Pressable` : "Pressable";
+            return `${p1} ${withPressable} ${p3}`;
+          }
+        );
+      } else {
+        modified = modified.replace(
+          /(import\s*\{)([^}]+)(\}\s*from\s*["']react-native["'])/,
+          (m, p1, p2, p3) => {
+            const cleaned = p2
+              .replace(/\bTouchableOpacity\b,?\s*/g, "")
+              .replace(/\bTouchableHighlight\b,?\s*/g, "")
+              .replace(/,\s*,/g, ",")
+              .replace(/,\s*$/, "")
+              .trim();
+            return `${p1} ${cleaned} ${p3}`;
+          }
+        );
+      }
+    }
+
+    if (modified !== content) {
+      await writeFile(filePath, modified, "utf8");
+      fixedFiles++;
+    }
+  }
+
+  return fixedFiles;
+}
+
 export async function runProjectAudit(cwd: string): Promise<AuditReport> {
   const files = await collectSourceFiles(cwd);
   const lock = await readLock(cwd);
@@ -62,7 +150,8 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
   let accessibleInteractiveElements = 0;
   let hardcodedHexCount = 0;
   let legacyTouchableCount = 0;
-  const findings: Array<{ file: string; issue: string }> = [];
+  let disabledFontScalingCount = 0;
+  const findings: AuditFinding[] = [];
 
   for (const filePath of files) {
     const relPath = relative(cwd, filePath).replace(/\\/g, "/");
@@ -89,9 +178,13 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
         /accessibilityRole|accessibilityLabel|accessible|\.\.\.props|\.\.\.rest/.test(snippet)
       ) {
         accessibleInteractiveElements++;
-      } else if (findings.length < 15) {
+      } else if (findings.length < 25) {
+        const { line, column } = getLineAndCol(content, match.index);
         findings.push({
           file: relPath,
+          line,
+          column,
+          rule: "a11y-interactive-label",
           issue: "Interactive pressable missing accessibilityRole or accessibilityLabel",
         });
       }
@@ -99,19 +192,41 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
 
     // 2. Count legacy TouchableOpacity / TouchableHighlight outside Nativra-managed files
     if (!isNativraManaged) {
-      const legacyMatches = content.match(/<(TouchableOpacity|TouchableHighlight)\b/g) ?? [];
-      if (legacyMatches.length > 0) {
-        legacyTouchableCount += legacyMatches.length;
-        if (findings.length < 15) {
+      const legacyRegex = /<(TouchableOpacity|TouchableHighlight)\b/g;
+      let legacyMatch: RegExpExecArray | null;
+      while ((legacyMatch = legacyRegex.exec(content)) !== null) {
+        legacyTouchableCount++;
+        if (findings.length < 25) {
+          const { line, column } = getLineAndCol(content, legacyMatch.index);
           findings.push({
             file: relPath,
-            issue: `${legacyMatches.length} legacy <Touchable*> usage(s) — prefer Nativra <Button> or <Pressable>`,
+            line,
+            column,
+            rule: "prefer-nativra-button",
+            issue: `Legacy <${legacyMatch[1]}> usage — migrate to Nativra <Button> or <Pressable> (run: nativra audit --fix)`,
           });
         }
       }
     }
 
-    // 3. Count hardcoded hex colors outside theme/token/ui files
+    // 3. Count allowFontScaling={false} accessibility violations
+    const fontScalingRegex = /allowFontScaling\s*=\s*\{\s*false\s*\}/g;
+    let fontScalingMatch: RegExpExecArray | null;
+    while ((fontScalingMatch = fontScalingRegex.exec(content)) !== null) {
+      disabledFontScalingCount++;
+      if (findings.length < 25) {
+        const { line, column } = getLineAndCol(content, fontScalingMatch.index);
+        findings.push({
+          file: relPath,
+          line,
+          column,
+          rule: "dynamic-type-support",
+          issue: "allowFontScaling={false} breaks dynamic type & accessibility for users with vision accommodations",
+        });
+      }
+    }
+
+    // 4. Count hardcoded hex colors outside theme/token/ui files
     if (
       !relPath.includes("theme") &&
       !relPath.includes("tokens") &&
@@ -132,9 +247,10 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
   const adoptionPoints = installedItemsCount > 0 ? 20 : 10;
   const tokenPoints = Math.max(0, 20 - Math.min(20, Math.floor(hardcodedHexCount / 2)));
   const modernPrimitivePoints = Math.max(0, 20 - Math.min(20, legacyTouchableCount * 4));
+  const fontScalingPenalty = Math.min(10, disabledFontScalingCount * 2);
   const score = Math.min(
     100,
-    Math.max(0, a11yPoints + adoptionPoints + tokenPoints + modernPrimitivePoints)
+    Math.max(0, a11yPoints + adoptionPoints + tokenPoints + modernPrimitivePoints - fontScalingPenalty)
   );
 
   const grade =
@@ -155,6 +271,7 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
     accessibleInteractiveElements,
     hardcodedHexCount,
     legacyTouchableCount,
+    disabledFontScalingCount,
     score,
     grade,
     findings,
@@ -169,8 +286,20 @@ export function registerAuditCommand(program: Command) {
     )
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--json", "Output structured JSON report for CI pipelines")
-    .action(async (options: { cwd: string; json?: boolean }) => {
+    .option("--fix", "Automatically migrate legacy <TouchableOpacity> usages to <Pressable>")
+    .action(async (options: { cwd: string; json?: boolean; fix?: boolean }) => {
+      let fixedCount = 0;
+      if (options.fix) {
+        fixedCount = await fixLegacyTouchables(options.cwd);
+        if (!options.json) {
+          console.log(chalk.green(`\n⚡ Auto-fixed legacy <Touchable*> components in ${fixedCount} file(s).`));
+        }
+      }
+
       const report = await runProjectAudit(options.cwd);
+      if (fixedCount > 0) {
+        report.fixedCount = fixedCount;
+      }
 
       if (options.json) {
         console.log(JSON.stringify(report, null, 2));
@@ -187,6 +316,9 @@ export function registerAuditCommand(program: Command) {
       );
       console.log(`  Hardcoded Hex Colors:        ${chalk.cyan(String(report.hardcodedHexCount))}`);
       console.log(`  Legacy <Touchable*> Tags:    ${chalk.cyan(String(report.legacyTouchableCount))}`);
+      if (report.disabledFontScalingCount > 0) {
+        console.log(`  Disabled Font Scaling Tags:  ${chalk.yellow(String(report.disabledFontScalingCount))}`);
+      }
 
       const scoreColor =
         report.score >= 85 ? chalk.green : report.score >= 70 ? chalk.yellow : chalk.red;
@@ -198,8 +330,9 @@ export function registerAuditCommand(program: Command) {
 
       if (report.findings.length > 0) {
         console.log(chalk.bold("  Top Actionable Findings:"));
-        for (const f of report.findings.slice(0, 6)) {
-          console.log(`    ${chalk.yellow("•")} ${chalk.dim(f.file)}: ${f.issue}`);
+        for (const f of report.findings.slice(0, 8)) {
+          const loc = f.line ? `:${f.line}:${f.column}` : "";
+          console.log(`    ${chalk.yellow("•")} ${chalk.cyan(f.file + loc)}: ${f.issue}`);
         }
         console.log("");
       } else {
@@ -207,4 +340,3 @@ export function registerAuditCommand(program: Command) {
       }
     });
 }
-

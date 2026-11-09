@@ -56,27 +56,6 @@
     "description": "Pure React Native StyleSheet without dependencies"
   },
   {
-    "id": "blocks-guide",
-    "name": "Blocks Overview",
-    "category": "Block",
-    "href": "/docs/blocks",
-    "description": "Pre-composed mobile patterns and screens"
-  },
-  {
-    "id": "templates-guide",
-    "name": "Screen Templates",
-    "category": "Template",
-    "href": "/docs/templates",
-    "description": "Full-screen mobile flows: Auth, Settings, Dashboard, Wallet"
-  },
-  {
-    "id": "hooks-guide",
-    "name": "Hooks Overview",
-    "category": "Hook",
-    "href": "/docs/hooks",
-    "description": "Mobile behavior utilities and lifecycle hooks"
-  },
-  {
     "id": "contributing",
     "name": "Contribution Guide",
     "category": "Documentation",
@@ -88,7 +67,14 @@
     "name": "Changelog",
     "category": "Documentation",
     "href": "/docs/changelog",
-    "description": "Release notes and roadmap history for v0.1.0"
+    "description": "Release notes and roadmap history for v0.2.1"
+  },
+  {
+    "id": "cn",
+    "name": "Class Names Utility",
+    "category": "Documentation",
+    "href": "/docs/styling/nativewind",
+    "description": "Utility function for conditionally merging class names with clsx and tailwind-merge (NativeWind) or flattening style objects (StyleSheet)."
   },
   {
     "id": "accordion",
@@ -96,6 +82,13 @@
     "category": "Component",
     "href": "/docs/components/accordion",
     "description": "An interactive collapsible accordion component supporting single and multiple open items."
+  },
+  {
+    "id": "action-tile",
+    "name": "ActionTile",
+    "category": "Component",
+    "href": "/docs/components/action-tile",
+    "description": "Quick-action icon button tile for mobile dashboards, wallets, and launcher grids."
   },
   {
     "id": "alert",
@@ -126,6 +119,13 @@
     "description": "An interactive modal bottom drawer with drag handle and backdrop dismiss."
   },
   {
+    "id": "bottom-tab-bar",
+    "name": "BottomTabBar",
+    "category": "Component",
+    "href": "/docs/components/bottom-tab-bar",
+    "description": "Native-feeling bottom tab navigation bar with active indicator pill and notification badge counts."
+  },
+  {
     "id": "button",
     "name": "Button",
     "category": "Component",
@@ -147,11 +147,25 @@
     "description": "Accessible checkbox component with check indicator and label support."
   },
   {
+    "id": "chip",
+    "name": "Chip",
+    "category": "Component",
+    "href": "/docs/components/chip",
+    "description": "Interactive filter, selection, and removable tag chip with selected state and close action."
+  },
+  {
     "id": "data-table",
     "name": "Data Table",
     "category": "Component",
     "href": "/docs/components/data-table",
     "description": "Mobile-optimized horizontally scrollable data grid with columns, sorting indicators, and striped rows."
+  },
+  {
+    "id": "date-picker",
+    "name": "DatePicker",
+    "category": "Component",
+    "href": "/docs/components/date-picker",
+    "description": "Native-feeling calendar date and quick-preset selector input for mobile forms and scheduling."
   },
   {
     "id": "dialog",
@@ -161,11 +175,25 @@
     "description": "An accessible modal dialog with backdrop, title, description, and action buttons."
   },
   {
+    "id": "error-boundary",
+    "name": "ErrorBoundary",
+    "category": "Component",
+    "href": "/docs/components/error-boundary",
+    "description": "Mobile crash recovery error boundary card with diagnostic summary and retry action."
+  },
+  {
     "id": "fab",
     "name": "Floating Action Button",
     "category": "Component",
     "href": "/docs/components/fab",
     "description": "An elevated circular action button anchored above screen content."
+  },
+  {
+    "id": "header-bar",
+    "name": "HeaderBar",
+    "category": "Component",
+    "href": "/docs/components/header-bar",
+    "description": "Mobile screen navigation bar with back action, title, subtitle, and right action button."
   },
   {
     "id": "icon-button",
@@ -194,6 +222,13 @@
     "category": "Component",
     "href": "/docs/components/otp-input",
     "description": "A discrete multi-cell numeric pin input for one-time passwords and verification codes."
+  },
+  {
+    "id": "pagination-dots",
+    "name": "PaginationDots",
+    "category": "Component",
+    "href": "/docs/components/pagination-dots",
+    "description": "Step and carousel pagination dot indicator with active pill expansion and interactive dot press."
   },
   {
     "id": "progress",
@@ -273,6 +308,13 @@
     "description": "Flexible layout primitives (VStack, HStack, ZStack) for composable spacing and alignment."
   },
   {
+    "id": "stat-tile",
+    "name": "StatTile",
+    "category": "Component",
+    "href": "/docs/components/stat-tile",
+    "description": "Compact KPI metric tile with tabular value, trend delta badge, and caption."
+  },
+  {
     "id": "switch",
     "name": "Switch",
     "category": "Component",
@@ -315,6 +357,13 @@
     "description": "Theme mode hook supporting system theme synchronization with manual light/dark toggle override."
   },
   {
+    "id": "use-debounced-press",
+    "name": "useDebouncedPress",
+    "category": "Hook",
+    "href": "/docs/hooks#use-debounced-press",
+    "description": "Prevents accidental double-taps on navigation, form submission, and payment actions with configurable cooldown."
+  },
+  {
     "id": "use-disclosure",
     "name": "useDisclosure",
     "category": "Hook",
@@ -334,6 +383,20 @@
     "category": "Hook",
     "href": "/docs/hooks#use-keyboard",
     "description": "React Native software keyboard observer tracking height, visibility, and dismissal."
+  },
+  {
+    "id": "use-reduced-motion",
+    "name": "useReducedMotion",
+    "category": "Hook",
+    "href": "/docs/hooks#use-reduced-motion",
+    "description": "Subscribes to OS-level Reduce Motion accessibility preferences on iOS and Android so animations degrade gracefully."
+  },
+  {
+    "id": "use-screen-reader",
+    "name": "useScreenReader",
+    "category": "Hook",
+    "href": "/docs/hooks#use-screen-reader",
+    "description": "Detects active iOS VoiceOver and Android TalkBack screen readers with a live announcement helper."
   },
   {
     "id": "cn",

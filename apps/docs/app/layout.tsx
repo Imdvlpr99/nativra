@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s | Nativra — React Native & Expo UI",
   },
   description:
-    "Nativra is the source-first UI component library and CLI for React Native & Expo (shadcn/ui for mobile). Copy 31+ accessible components, 16 blocks, and 8 screen templates with full NativeWind v4 and StyleSheet parity.",
+    "Nativra is the source-first UI component library and CLI for React Native & Expo (shadcn/ui for mobile). Copy 39 accessible components, 18 blocks, and 8 screen templates with full NativeWind v4 and StyleSheet parity.",
   keywords: [
     "Nativra",
     "Nativra UI",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     title:
       "Nativra — Source-First React Native & Expo UI Components (shadcn/ui for Mobile)",
     description:
-      "Copy 31+ accessible React Native & Expo components, 16 blocks, and 8 screen templates into your codebase. Full NativeWind v4 and StyleSheet parity.",
+      "Copy 39 accessible React Native & Expo components, 18 blocks, and 8 screen templates into your codebase. Full NativeWind v4 and StyleSheet parity.",
     images: ["/nativra-banner.png"],
   },
 };
@@ -108,7 +108,7 @@ const rootJsonLd = {
       applicationCategory: "DeveloperApplication",
       applicationSubCategory: "React Native UI Component Library & CLI",
       operatingSystem: "iOS, Android, Web, macOS, Windows, Linux",
-      softwareVersion: "0.2.1",
+      softwareVersion: "0.2.2",
       license: "https://opensource.org/licenses/MIT",
       url: "https://nativra.vercel.app",
       downloadUrl: "https://www.npmjs.com/package/nativra-cli",

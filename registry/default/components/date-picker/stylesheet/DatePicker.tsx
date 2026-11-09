@@ -1,14 +1,14 @@
 /** Nativra — DatePicker (StyleSheet). Install: npx nativra-cli add date-picker */
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 
-export interface DatePickerProps {
+export interface DatePickerProps extends ViewProps {
   label?: string;
   value?: string;
   placeholder?: string;
   onChange?: (dateIso: string) => void;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 const QUICK_DATES = [
@@ -25,6 +25,7 @@ export function DatePicker({
   onChange,
   disabled = false,
   style,
+  ...rest
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const [internalVal, setInternalVal] = useState(value ?? "2026-11-09");
@@ -40,7 +41,7 @@ export function DatePicker({
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, style]} {...rest}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
 
       <Pressable

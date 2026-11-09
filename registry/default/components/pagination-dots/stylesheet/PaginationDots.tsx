@@ -1,12 +1,12 @@
 /** Nativra — PaginationDots (StyleSheet). Install: npx nativra-cli add pagination-dots */
 import React from "react";
-import { Pressable, StyleSheet, View, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 
-export interface PaginationDotsProps {
+export interface PaginationDotsProps extends ViewProps {
   total: number;
   currentIndex: number;
   onDotPress?: (index: number) => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function PaginationDots({
@@ -14,6 +14,7 @@ export function PaginationDots({
   currentIndex,
   onDotPress,
   style,
+  ...rest
 }: PaginationDotsProps) {
   const safeTotal = Math.max(1, total);
 
@@ -22,6 +23,7 @@ export function PaginationDots({
       accessibilityRole="adjustable"
       accessibilityLabel={`Page ${currentIndex + 1} of ${safeTotal}`}
       style={[styles.container, style]}
+      {...rest}
     >
       {Array.from({ length: safeTotal }).map((_, idx) => {
         const isActive = idx === currentIndex;

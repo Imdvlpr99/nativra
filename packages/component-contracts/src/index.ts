@@ -480,4 +480,158 @@ export interface SafeAreaBaseProps {
   backgroundColor?: string;
 }
 
+// ---------------------------------------------------------------------------
+// ActionTile contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface ActionTileBaseProps extends AccessibleProps {
+  label: string;
+  subtitle?: string;
+  icon?: string;
+  variant?: "default" | "primary" | "outline";
+  disabled?: boolean;
+  onPress?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// BottomTabBar contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface BottomTabItemContract {
+  id: string;
+  label: string;
+  icon?: string;
+  badge?: string | number;
+}
+
+export interface BottomTabBarBaseProps extends AccessibleProps {
+  tabs: BottomTabItemContract[];
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
+}
+
+// ---------------------------------------------------------------------------
+// Chip contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface ChipBaseProps extends AccessibleProps {
+  label: string;
+  selected?: boolean;
+  variant?: "default" | "primary" | "outline";
+  size?: "sm" | "md";
+  disabled?: boolean;
+  onPress?: () => void;
+  onRemove?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// DataTable contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface DataTableColumnContract<T = unknown> {
+  key: string;
+  title: string;
+  width?: number | string;
+  render?: (item: T, index: number) => unknown;
+}
+
+export interface DataTableBaseProps<T = unknown> extends AccessibleProps {
+  columns: DataTableColumnContract<T>[];
+  data: T[];
+  keyExtractor?: (item: T, index: number) => string;
+  onRowPress?: (item: T, index: number) => void;
+  striped?: boolean;
+  emptyMessage?: string;
+}
+
+// ---------------------------------------------------------------------------
+// DatePicker contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface DatePickerBaseProps extends AccessibleProps {
+  label?: string;
+  value?: string;
+  placeholder?: string;
+  onChange?: (dateIso: string) => void;
+  disabled?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// ErrorBoundary contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface ErrorBoundaryBaseProps {
+  children?: unknown;
+  fallbackTitle?: string;
+  fallbackMessage?: string;
+  onReset?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// HeaderBar contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface HeaderBarBaseProps extends AccessibleProps {
+  title: string;
+  subtitle?: string;
+  onBack?: () => void;
+  rightLabel?: string;
+  onRightPress?: () => void;
+  elevated?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// PaginationDots contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface PaginationDotsBaseProps extends AccessibleProps {
+  total: number;
+  currentIndex: number;
+  onDotPress?: (index: number) => void;
+}
+
+// ---------------------------------------------------------------------------
+// RatingStars contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface RatingStarsBaseProps extends AccessibleProps {
+  rating: number;
+  maxStars?: number;
+  size?: "sm" | "md" | "lg";
+  readOnly?: boolean;
+  onRatingChange?: (rating: number) => void;
+}
+
+// ---------------------------------------------------------------------------
+// SegmentedControl contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface SegmentedControlOptionContract {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+export interface SegmentedControlBaseProps extends AccessibleProps {
+  values?: string[];
+  options?: SegmentedControlOptionContract[];
+  value: string;
+  onValueChange: (value: string) => void;
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// StatTile contract (Wave 2)
+// ---------------------------------------------------------------------------
+
+export interface StatTileBaseProps extends AccessibleProps {
+  label: string;
+  value: string;
+  delta?: string;
+  trend?: "up" | "down" | "neutral";
+  caption?: string;
+}
+
+
 

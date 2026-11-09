@@ -1,8 +1,8 @@
 /** Nativra — HeaderBar (NativeWind). Install: npx nativra-cli add header-bar */
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type ViewProps } from "react-native";
 
-export interface HeaderBarProps {
+export interface HeaderBarProps extends ViewProps {
   title: string;
   subtitle?: string;
   onBack?: () => void;
@@ -20,13 +20,17 @@ export function HeaderBar({
   onRightPress,
   elevated = false,
   className = "",
+  style,
+  ...rest
 }: HeaderBarProps) {
   return (
     <View
       accessibilityRole="header"
+      style={style}
       className={`flex-row items-center justify-between border-b border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900 ${
         elevated ? "shadow-sm" : ""
       } ${className}`}
+      {...rest}
     >
       <View className="w-16 items-start">
         {onBack ? (

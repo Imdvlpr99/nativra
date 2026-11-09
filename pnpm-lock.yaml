@@ -228,6 +228,9 @@ importers:
       '@nativra/registry-schema':
         specifier: workspace:*
         version: link:../registry-schema
+      '@nativra/theme-engine':
+        specifier: workspace:*
+        version: link:../theme-engine
       '@nativra/utils':
         specifier: workspace:*
         version: link:../utils

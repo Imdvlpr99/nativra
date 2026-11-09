@@ -37,7 +37,8 @@ export default async function BlocksPage() {
         {blocks.map((block) => (
           <div
             key={block!.id}
-            className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
+            id={block!.id}
+            className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm scroll-mt-20"
           >
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-4">
               <div>

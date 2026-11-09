@@ -1,6 +1,6 @@
 {
   "name": "@nativra/config",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Shared ESLint, TypeScript, and test configs for the Nativra monorepo",
   "private": true,
   "type": "module",

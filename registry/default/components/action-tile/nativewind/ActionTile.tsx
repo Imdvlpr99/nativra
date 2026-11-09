@@ -1,8 +1,8 @@
 /** Nativra — ActionTile (NativeWind). Install: npx nativra-cli add action-tile */
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 
-export interface ActionTileProps {
+export interface ActionTileProps extends Omit<PressableProps, "style"> {
   label: string;
   subtitle?: string;
   icon?: string;
@@ -10,6 +10,7 @@ export interface ActionTileProps {
   disabled?: boolean;
   onPress?: () => void;
   className?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function ActionTile({
@@ -20,6 +21,8 @@ export function ActionTile({
   disabled = false,
   onPress,
   className = "",
+  style,
+  ...rest
 }: ActionTileProps) {
   const surfaceClasses =
     variant === "primary"
@@ -40,9 +43,11 @@ export function ActionTile({
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       accessibilityLabel={label}
+      style={style}
       className={`flex-1 items-center justify-center rounded-2xl border p-3.5 shadow-sm ${surfaceClasses} ${
         disabled ? "opacity-50" : "active:opacity-80"
       } ${className}`}
+      {...rest}
     >
       <View className={`mb-2 h-10 w-10 items-center justify-center rounded-xl ${iconWrapClasses}`}>
         <Text className="text-base">{icon}</Text>

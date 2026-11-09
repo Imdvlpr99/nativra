@@ -1,15 +1,15 @@
 /** Nativra — ActionTile (StyleSheet). Install: npx nativra-cli add action-tile */
 import React from "react";
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 
-export interface ActionTileProps {
+export interface ActionTileProps extends Omit<PressableProps, "style"> {
   label: string;
   subtitle?: string;
   icon?: string;
   variant?: "default" | "primary" | "outline";
   disabled?: boolean;
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function ActionTile({
@@ -20,6 +20,7 @@ export function ActionTile({
   disabled = false,
   onPress,
   style,
+  ...rest
 }: ActionTileProps) {
   const isPrimary = variant === "primary";
 
@@ -37,6 +38,7 @@ export function ActionTile({
         pressed && !disabled && styles.pressed,
         style,
       ]}
+      {...rest}
     >
       <View style={[styles.iconWrap, isPrimary && styles.iconWrapPrimary]}>
         <Text style={styles.iconText}>{icon}</Text>

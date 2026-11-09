@@ -2,7 +2,7 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
-import type { RegistryItem } from "@nativra/registry-schema";
+import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { createClient } from "../client.js";
 import { loadConfig } from "../config.js";
 import {
@@ -15,6 +15,13 @@ import {
   executeInstallTransaction,
   type PlannedInstallFile,
 } from "../install.js";
+import { transformFileImports } from "../transform.js";
+import {
+  getMissingDependencies,
+  getInstallCommand,
+  executeDependencyInstall,
+  type PackageDependency,
+} from "../installer.js";
 
 export function registerAddCommand(program: Command) {
   program
@@ -26,6 +33,8 @@ export function registerAddCommand(program: Command) {
     .option("--on-conflict <mode>", "Conflict resolution strategy for existing files: 'skip', 'overwrite', or 'error'", "skip")
     .option("--dry-run", "Preview installation plan and dependencies without writing files to disk")
     .option("--registry <url>", "Override registry location (URL or local directory)")
+    .option("--install", "Automatically install required npm/peer dependencies via detected package manager or Expo CLI")
+    .option("--no-install", "Skip installing npm dependencies (only copy component source files)")
     .action(
       async (
         components: string[] = [],
@@ -36,6 +45,7 @@ export function registerAddCommand(program: Command) {
           onConflict?: "skip" | "overwrite" | "error";
           dryRun?: boolean;
           registry?: string;
+          install?: boolean;
         }
       ) => {
         const config = await loadConfig(options.cwd).catch((err) => {
@@ -50,23 +60,22 @@ export function registerAddCommand(program: Command) {
             process.exit(1);
           }
 
-          const spinner = ora("Fetching available items from registry...").start();
-          let availableItems: { id: string; name: string; type: string; description: string }[] = [];
+          const spinner = ora("Fetching registry items...").start();
+          let allItems: RegistryManifest["items"];
           try {
-            const manifest = await client.getManifest();
-            availableItems = manifest.items;
-            spinner.succeed(`Found ${availableItems.length} registry items`);
+            allItems = await client.listItems();
+            spinner.succeed(`Found ${allItems.length} available items`);
           } catch (err) {
             spinner.fail(chalk.red(`Failed to fetch registry items: ${(err as Error).message}`));
             process.exit(1);
           }
 
           const response = await prompts({
-            type: "autocompleteMultiselect",
+            type: "multiselect",
             name: "selected",
             message: "Select components, blocks, or templates to install:",
-            choices: availableItems.map((item) => ({
-              title: `${item.name} (${item.type})`,
+            choices: allItems.map((item) => ({
+              title: `${item.name} (${chalk.dim(item.type)})`,
               value: item.id,
               description: item.description,
             })),
@@ -82,6 +91,7 @@ export function registerAddCommand(program: Command) {
         }
 
         const lock = await readLock(options.cwd);
+        const accumulatedDeps: PackageDependency[] = [];
 
         for (const componentId of components) {
           console.log(chalk.bold(`\n📦 Resolving ${chalk.cyan(componentId)}...`));
@@ -134,7 +144,7 @@ export function registerAddCommand(program: Command) {
             }
           }
 
-          // Build transactional installation plan (Plan Section 2.1)
+          // Build transactional installation plan with import alias rewriting
           const plan: PlannedInstallFile[] = [];
           for (const item of items) {
             for (const file of filesForTarget(item, config)) {
@@ -168,7 +178,7 @@ export function registerAddCommand(program: Command) {
               plan.push({
                 componentId: item.id,
                 destPath,
-                content: file.content ?? "",
+                content: transformFileImports(file.content ?? "", config),
                 action,
               });
             }
@@ -199,16 +209,49 @@ export function registerAddCommand(program: Command) {
             }
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
-              const deps = item.npmDependencies.map((d) => `${d.package}@${d.version}`).join(" ");
-              console.log(
-                chalk.yellow(`\n  ⚠ Install dependencies:\n`) + chalk.cyan(`    npx expo install ${deps}`)
-              );
+              accumulatedDeps.push(...item.npmDependencies);
             }
           }
         }
 
         if (!options.dryRun) {
           await writeLock(options.cwd, lock);
+
+          // Handle missing npm dependencies
+          if (accumulatedDeps.length > 0) {
+            const uniqueDepsMap = new Map<string, PackageDependency>();
+            for (const dep of accumulatedDeps) {
+              if (!uniqueDepsMap.has(dep.package)) {
+                uniqueDepsMap.set(dep.package, dep);
+              }
+            }
+            const missing = await getMissingDependencies(options.cwd, Array.from(uniqueDepsMap.values()));
+
+            if (missing.length > 0) {
+              const installCmd = await getInstallCommand(options.cwd, missing);
+
+              if (options.install === true) {
+                await executeDependencyInstall(options.cwd, installCmd);
+              } else if (options.install === false) {
+                console.log(chalk.yellow(`\n  ⚠ Install required dependencies:\n`) + chalk.cyan(`    ${installCmd}\n`));
+              } else if (!options.yes && process.stdin.isTTY) {
+                const { doInstall } = await prompts({
+                  type: "confirm",
+                  name: "doInstall",
+                  message: `Install ${missing.length} missing npm package(s) via "${installCmd}"?`,
+                  initial: true,
+                });
+                if (doInstall) {
+                  await executeDependencyInstall(options.cwd, installCmd);
+                } else {
+                  console.log(chalk.yellow(`\n  ⚠ Install dependencies manually:\n`) + chalk.cyan(`    ${installCmd}\n`));
+                }
+              } else {
+                console.log(chalk.yellow(`\n  ⚠ Install dependencies:\n`) + chalk.cyan(`    ${installCmd}\n`));
+              }
+            }
+          }
+
           console.log(chalk.bold.green("\n✅ Done!\n"));
         }
       }

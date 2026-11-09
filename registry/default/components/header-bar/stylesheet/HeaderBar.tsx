@@ -1,15 +1,15 @@
 /** Nativra — HeaderBar (StyleSheet). Install: npx nativra-cli add header-bar */
 import React from "react";
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 
-export interface HeaderBarProps {
+export interface HeaderBarProps extends ViewProps {
   title: string;
   subtitle?: string;
   onBack?: () => void;
   rightLabel?: string;
   onRightPress?: () => void;
   elevated?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function HeaderBar({
@@ -20,11 +20,13 @@ export function HeaderBar({
   onRightPress,
   elevated = false,
   style,
+  ...rest
 }: HeaderBarProps) {
   return (
     <View
       accessibilityRole="header"
       style={[styles.container, elevated && styles.elevated, style]}
+      {...rest}
     >
       <View style={styles.sideLeft}>
         {onBack ? (

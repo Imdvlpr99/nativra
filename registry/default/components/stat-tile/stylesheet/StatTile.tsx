@@ -1,14 +1,14 @@
 /** Nativra — StatTile (StyleSheet). Install: npx nativra-cli add stat-tile */
 import React from "react";
-import { StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 
-export interface StatTileProps {
+export interface StatTileProps extends ViewProps {
   label: string;
   value: string;
   delta?: string;
   trend?: "up" | "down" | "neutral";
   caption?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function StatTile({
@@ -18,9 +18,10 @@ export function StatTile({
   trend = "up",
   caption,
   style,
+  ...rest
 }: StatTileProps) {
   return (
-    <View accessibilityRole="summary" style={[styles.container, style]}>
+    <View accessibilityRole="summary" style={[styles.container, style]} {...rest}>
       <View style={styles.topRow}>
         <Text style={styles.label}>{label}</Text>
         {delta ? (
