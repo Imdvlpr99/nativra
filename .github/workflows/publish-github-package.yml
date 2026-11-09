@@ -53,21 +53,24 @@ jobs:
           cd packages/cli
           TGZ=$(npm pack --silent)
           cd ../..
+          cat << 'EOF' > /tmp/release-notes.md
+          ## 🛡️ Nativra — Security, Registry & Dependency Hardening
+
+          ### 🔒 Security & Supply-Chain Hardening
+          - **Path Traversal & Symlink Protection (`nativra-cli`)**: Enforced strict project-root (`cwd`) containment and symlink rejection across `nativra add`, `nativra update`, `nativra remove`, `nativra rollback`, and `nativra theme add`.
+          - **Portable Lockfile Paths**: `nativra.lock.json` now records portable POSIX project-relative file keys (while seamlessly migrating legacy entries).
+          - **Mandatory SHA-256 Verification & HTTPS Enforcement**: `@nativra/registry-client` now requires valid SHA-256 hashes for all hydrated source files and validates item IDs prior to file/URL resolution; remote registries require `https://`.
+          - **Backup Integrity Verification**: `nativra rollback` now validates backup SHA-256 digests before restoring files.
+          - **Zero Dependency Advisories**: Upgraded `zod`, `vitest`, `vite`, and `postcss` and configured patched `pnpm.overrides` (`pnpm audit` reports **0 vulnerabilities**, down from 59).
+
+          ### 📦 Registry & Configuration Fixes
+          - **Live Registry Default URL**: Updated default registry base URL across `nativra-cli`, `@nativra/registry-schema`, and example configurations to `https://nativra.vercel.app`.
+          - **Complete Dependency Declarations**: Added missing `cn` utility and `class-variance-authority` dependency declarations across `fab`, `icon-button`, `stack`, `bottom-sheet`, `otp-input`, `safe-area`, `auth-flow`, `onboarding-flow`, and `settings-flow`.
+          EOF
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" "packages/cli/$TGZ" "dist/registry/registry.json" \
               --title "$TAG — Security, Registry & Dependency Hardening" \
-              --notes "## 🛡️ Nativra $TAG — Security, Registry & Dependency Hardening
-
-### 🔒 Security & Supply-Chain Hardening
-- **Path Traversal & Symlink Protection (\`nativra-cli\`)**: Enforced strict project-root (\`cwd\`) containment and symlink rejection across \`nativra add\`, \`nativra update\`, \`nativra remove\`, \`nativra rollback\`, and \`nativra theme add\`.
-- **Portable Lockfile Paths**: \`nativra.lock.json\` now records portable POSIX project-relative file keys (while seamlessly migrating legacy entries).
-- **Mandatory SHA-256 Verification & HTTPS Enforcement**: \`@nativra/registry-client\` now requires valid SHA-256 hashes for all hydrated source files and validates item IDs prior to file/URL resolution; remote registries require \`https://\`.
-- **Backup Integrity Verification**: \`nativra rollback\` now validates backup SHA-256 digests before restoring files.
-- **Zero Dependency Advisories**: Upgraded \`zod\`, \`vitest\`, \`vite\`, and \`postcss\` and configured patched \`pnpm.overrides\` (\`pnpm audit\` reports **0 vulnerabilities**, down from 59).
-
-### 📦 Registry & Configuration Fixes
-- **Live Registry Default URL**: Updated default registry base URL across \`nativra-cli\`, \`@nativra/registry-schema\`, and example configurations to \`https://nativra.vercel.app\`.
-- **Complete Dependency Declarations**: Added missing \`cn\` utility and \`class-variance-authority\` dependency declarations across \`fab\`, \`icon-button\`, \`stack\`, \`bottom-sheet\`, \`otp-input\`, \`safe-area\`, \`auth-flow\`, \`onboarding-flow\`, and \`settings-flow\`."
+              --notes-file /tmp/release-notes.md
           fi
 
       - name: Prepare package.json for GitHub Packages (@imdvlpr99/nativra-cli)
