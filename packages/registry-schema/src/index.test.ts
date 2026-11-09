@@ -79,14 +79,14 @@ describe("NativraConfigV4Schema", () => {
     expect(cfg.framework).toBe("expo");
     expect(cfg.components.directory).toBe("src/components/ui");
     expect(cfg.components.aliases.components).toBe("@/components");
-    expect(cfg.registry["default"]).toBe("https://registry.nativra.dev");
+    expect(cfg.registry["default"]).toBe("https://nativra.vercel.app");
   });
 
   it("maintains backward compatibility with legacy flat v1-v3 fields", () => {
     const legacy = NativraConfigV4Schema.parse({
       componentsDir: "components/ui",
       stylingTarget: "stylesheet",
-      registries: [{ name: "default", url: "https://registry.nativra.dev" }],
+      registries: [{ name: "default", url: "https://nativra.vercel.app" }],
     });
 
     expect(legacy.componentsDir).toBe("components/ui");

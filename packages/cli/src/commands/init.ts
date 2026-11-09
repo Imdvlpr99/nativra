@@ -77,9 +77,9 @@ export function registerInitCommand(program: Command) {
 
       const prefix = "@/";
       const config = NativraConfigSchema.parse({
-        $schema: "https://nativra.dev/schemas/nativra.json",
+        $schema: "https://nativra.vercel.app/schema.json",
         version: 4,
-        registries: [{ name: "default", url: "https://registry.nativra.dev" }],
+        registries: [{ name: "default", url: "https://nativra.vercel.app" }],
         stylingTarget,
         componentsDir,
         hooksDir,

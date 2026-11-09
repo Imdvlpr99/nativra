@@ -71,7 +71,9 @@ export default function HomePage() {
     <div className="flex flex-col">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(homepageFaqJsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       {/* ------------------------------------------------------------------- */}
       {/* Hero Section */}

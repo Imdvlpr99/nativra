@@ -14,6 +14,7 @@ coverage/
 .expo-shared/
 
 nativra.lock.json.bak
+.nativra/
 apps/docs/public/registry.json
 apps/docs/public/items/
 

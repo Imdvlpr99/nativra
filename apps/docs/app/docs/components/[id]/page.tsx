@@ -395,7 +395,9 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
     <div className="space-y-10">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(componentJsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(componentJsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">

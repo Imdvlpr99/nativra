@@ -10,6 +10,7 @@ import {
   readLock,
   writeInstalledFile,
   writeLock,
+  toLockKey,
   createBackup,
 } from "../install.js";
 
@@ -44,15 +45,18 @@ export function registerUpdateCommand(program: Command) {
         const entry = lock.items[id] ?? { version: item.version, files: {} };
         for (const file of filesForTarget(item, config)) {
           const dest = destPathFor(options.cwd, item, file, config);
+          const lockKey = toLockKey(options.cwd, dest);
+          const recordedHash = entry.files[lockKey] ?? entry.files[dest];
           const next = file.content ?? "";
           const local = await readFile(dest, "utf8").catch(() => null);
 
           if (local === next) {
             console.log(chalk.gray(`  = ${dest} (up to date)`));
-            entry.files[dest] = sha256(next);
+            delete entry.files[dest];
+            entry.files[lockKey] = sha256(next);
             continue;
           }
-          const locallyModified = local !== null && sha256(local) !== entry.files[dest];
+          const locallyModified = local !== null && sha256(local) !== recordedHash;
           if (locallyModified && !options.force) {
             console.log(chalk.yellow(`  ! ${dest} has local changes — skipped (use --force, or 'nativra diff ${id}')`));
             continue;
@@ -71,7 +75,8 @@ export function registerUpdateCommand(program: Command) {
             }
           }
 
-          entry.files[dest] = await writeInstalledFile(dest, next);
+          delete entry.files[dest];
+          entry.files[lockKey] = await writeInstalledFile(dest, next);
           console.log(chalk.green(`  ✓ Updated ${dest}`));
         }
         entry.version = item.version;

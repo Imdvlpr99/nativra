@@ -1,10 +1,10 @@
 {
   "name": "nativra-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Nativra CLI — add, update, diff, and manage UI components in your React Native project",
   "license": "MIT",
   "type": "module",
-  "homepage": "https://nativra.dev",
+  "homepage": "https://nativra.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Imdvlpr99/nativra.git",
@@ -59,9 +59,8 @@
     "chalk": "^5.3.0",
     "ora": "^8.1.1",
     "prompts": "^2.4.2",
-    "fs-extra": "^11.2.0",
     "diff": "^9.0.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
@@ -69,10 +68,8 @@
     "@nativra/registry-schema": "workspace:*",
     "@nativra/utils": "workspace:*",
     "@types/prompts": "^2.4.9",
-    "@types/fs-extra": "^11.0.4",
-    "@types/diff": "^8.0.0",
     "tsup": "^9.0.0",
-    "vitest": "^2.1.8",
+    "vitest": "^5.1.0",
     "rimraf": "^6.0.1"
   }
 }

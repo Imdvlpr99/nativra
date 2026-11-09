@@ -1,6 +1,6 @@
 {
   "name": "@nativra/registry-client",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Fetch, cache, and resolve Nativra registry items",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -27,11 +27,11 @@
   "devDependencies": {
     "@nativra/config": "workspace:*",
     "tsup": "^9.0.0",
-    "vitest": "^2.1.8",
+    "vitest": "^5.1.0",
     "rimraf": "^6.0.1"
   },
   "license": "MIT",
-  "homepage": "https://nativra.dev",
+  "homepage": "https://nativra.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Imdvlpr99/nativra.git",

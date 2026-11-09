@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
-import { RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
+import { join, resolve, sep } from "node:path";
+import { ITEM_ID_REGEX, RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
 import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 
 export type RegistryItemSummary = RegistryManifest["items"][number];
@@ -13,8 +13,16 @@ export async function getManifest(): Promise<RegistryManifest> {
 }
 
 export async function getItem(id: string): Promise<RegistryItem | null> {
+  if (!ITEM_ID_REGEX.test(id)) {
+    return null;
+  }
   try {
-    const raw = await readFile(join(BUILT_REGISTRY, "items", `${id}.json`), "utf8");
+    const itemsDir = resolve(BUILT_REGISTRY, "items");
+    const targetPath = resolve(itemsDir, `${id}.json`);
+    if (!targetPath.startsWith(itemsDir + sep)) {
+      return null;
+    }
+    const raw = await readFile(targetPath, "utf8");
     return RegistryItemSchema.parse(JSON.parse(raw));
   } catch {
     return null;

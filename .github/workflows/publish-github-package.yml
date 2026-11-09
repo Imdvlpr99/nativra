@@ -33,6 +33,11 @@ jobs:
       - name: Build CLI and internal packages
         run: pnpm --filter nativra-cli... build
 
+      - name: Typecheck and test CLI
+        run: |
+          pnpm --filter nativra-cli typecheck
+          pnpm --filter nativra-cli test
+
       - name: Prepare package.json for GitHub Packages (@imdvlpr99/nativra-cli)
         working-directory: packages/cli
         run: |
@@ -51,4 +56,4 @@ jobs:
         working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm publish
+        run: pnpm publish --no-git-checks

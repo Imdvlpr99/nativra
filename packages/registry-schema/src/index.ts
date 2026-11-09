@@ -23,6 +23,11 @@ export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>;
 export const ItemStatusSchema = z.enum(["stable", "beta", "experimental", "deprecated"]);
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
 
+export const ITEM_ID_REGEX = /^[a-z][a-z0-9-]*$/;
+export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
+export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*|+ -]+$/i;
+export const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/i;
+
 // ---------------------------------------------------------------------------
 // Accessibility metadata contract (V4 §3 & §15)
 // ---------------------------------------------------------------------------
@@ -31,7 +36,7 @@ export const AccessibilityMetadataSchema = z.object({
   /** Whether accessibility props or screen-reader labels are mandatory */
   required: z.boolean().default(false),
   /** Standard accessibility role, e.g. "button", "header", "checkbox" */
-  role: z.string().optional(),
+  role: z.string().max(64).optional(),
   /** Whether component implements accessibilityLabel prop */
   supportsAccessibilityLabel: z.boolean().default(true),
   /** Whether component implements accessibilityHint prop */
@@ -39,7 +44,7 @@ export const AccessibilityMetadataSchema = z.object({
   /** Recommended touch target size in dp (e.g. 44 or 48) */
   minTouchTarget: z.number().optional(),
   /** Additional guidance or screen reader notes */
-  notes: z.string().optional(),
+  notes: z.string().max(1000).optional(),
 });
 export type AccessibilityMetadata = z.infer<typeof AccessibilityMetadataSchema>;
 
@@ -50,8 +55,8 @@ export type AccessibilityMetadata = z.infer<typeof AccessibilityMetadataSchema>;
 export const TestingMetadataSchema = z.object({
   hasUnitTests: z.boolean().default(false),
   hasE2eTests: z.boolean().default(false),
-  testedFrameworks: z.array(z.string()).optional(),
-  notes: z.string().optional(),
+  testedFrameworks: z.array(z.string().max(64)).max(32).optional(),
+  notes: z.string().max(1000).optional(),
 });
 export type TestingMetadata = z.infer<typeof TestingMetadataSchema>;
 
@@ -61,9 +66,13 @@ export type TestingMetadata = z.infer<typeof TestingMetadataSchema>;
 
 export const NpmDependencySchema = z.object({
   /** npm package name */
-  package: z.string().min(1),
+  package: z.string().min(1).max(214).regex(NPM_PACKAGE_REGEX, {
+    message: "Must be a valid npm package name",
+  }),
   /** semver range, e.g. "^1.2.3" */
-  version: z.string().min(1),
+  version: z.string().min(1).max(64).regex(SEMVER_RANGE_REGEX, {
+    message: "Must be a valid semver range",
+  }),
   /** whether it's a peer dependency */
   peer: z.boolean().optional(),
 });
@@ -71,9 +80,11 @@ export type NpmDependency = z.infer<typeof NpmDependencySchema>;
 
 export const RegistryDependencySchema = z.object({
   /** Registry item id, e.g. "button" */
-  id: z.string().min(1),
+  id: z.string().min(1).max(100).regex(ITEM_ID_REGEX, {
+    message: "ID must be lowercase letters, numbers and hyphens, starting with a letter",
+  }),
   /** Registry name, defaults to "default" */
-  registry: z.string().default("default"),
+  registry: z.string().min(1).max(64).default("default"),
 });
 export type RegistryDependency = z.infer<typeof RegistryDependencySchema>;
 
@@ -83,13 +94,15 @@ export type RegistryDependency = z.infer<typeof RegistryDependencySchema>;
 
 export const SourceFileSchema = z.object({
   /** Relative path within the installed location, e.g. "components/ui/Button.tsx" */
-  path: z.string().min(1),
+  path: z.string().min(1).max(260),
   /** Styling target this file is for */
   target: StylingTargetSchema.optional(),
   /** Raw source content (populated during build) */
-  content: z.string().optional(),
+  content: z.string().max(524288).optional(),
   /** SHA-256 hash of content for integrity checks */
-  hash: z.string().optional(),
+  hash: z.string().regex(SHA256_HEX_REGEX, {
+    message: "Hash must be a valid 64-character SHA-256 hex digest",
+  }).optional(),
 });
 export type SourceFile = z.infer<typeof SourceFileSchema>;
 
@@ -136,25 +149,25 @@ export const RegistryItemSchema = z.object({
     message: "Must be a valid semver string",
   }),
   /** Supported styling targets */
-  stylingTargets: z.array(StylingTargetSchema).min(1),
+  stylingTargets: z.array(StylingTargetSchema).min(1).max(10),
   /** Platform compatibility details */
   platforms: PlatformCompatibilitySchema,
   /** Source files for each styling target */
-  files: z.array(SourceFileSchema).min(1),
+  files: z.array(SourceFileSchema).min(1).max(50),
   /** Other registry items this item depends on */
-  registryDependencies: z.array(RegistryDependencySchema).optional(),
+  registryDependencies: z.array(RegistryDependencySchema).max(50).optional(),
   /** npm packages this item requires */
-  npmDependencies: z.array(NpmDependencySchema).optional(),
+  npmDependencies: z.array(NpmDependencySchema).max(50).optional(),
   /** Peer dependencies (e.g. { "react": "*", "react-native": "*" }) */
-  peerDependencies: z.record(z.string(), z.string()).optional(),
+  peerDependencies: z.record(z.string().max(214), z.string().max(64)).optional(),
   /** Component usage examples IDs */
-  examples: z.array(z.string()).optional(),
+  examples: z.array(z.string().max(100)).max(50).optional(),
   /** Accessibility requirements & metadata */
   accessibility: AccessibilityMetadataSchema.optional(),
   /** Testing metadata & status */
   testing: TestingMetadataSchema.optional(),
   /** Tags for search/filter */
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string().max(64)).max(50).optional(),
   /** Relative path to preview image or gif */
   previewImage: z.string().optional(),
   /** Relative path to documentation MDX file */
@@ -326,7 +339,7 @@ export const NativraConfigV4Schema = z.object({
     },
   }),
   registry: z.record(z.string(), z.string()).default({
-    default: "https://registry.nativra.dev",
+    default: "https://nativra.vercel.app",
   }),
   theme: z
     .object({

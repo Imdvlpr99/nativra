@@ -10,6 +10,24 @@ function cleanPath(p: unknown): string | undefined {
   return p.trim().replace(/^[@~]\//, "").replace(/^\.\//, "");
 }
 
+function isSafeRelativeConfigDir(dir: string): boolean {
+  if (!dir || typeof dir !== "string") return false;
+  if (
+    dir.includes("\0") ||
+    /^[a-zA-Z]:/.test(dir) ||
+    dir.startsWith("/") ||
+    dir.startsWith("\\")
+  ) {
+    return false;
+  }
+  const segments = dir.split(/[/\\]/);
+  return !segments.includes("..");
+}
+
+const SafeRelativeDirSchema = z.string().min(1).refine(isSafeRelativeConfigDir, {
+  message: "Directory must be a safe relative path within the project root (no '..' or absolute paths)",
+});
+
 export const NativraConfigSchema = z.object({
   /** Schema specification version */
   version: z.number().optional().default(4),
@@ -22,15 +40,15 @@ export const NativraConfigSchema = z.object({
         url: z.string(),
       })
     )
-    .default([{ name: "default", url: "https://registry.nativra.dev" }]),
+    .default([{ name: "default", url: "https://nativra.vercel.app" }]),
   /** Where installed components are written, relative to project root */
-  componentsDir: z.string().default("components/ui"),
+  componentsDir: SafeRelativeDirSchema.default("components/ui"),
   /** Where installed blocks are written, relative to project root */
-  blocksDir: z.string().optional(),
+  blocksDir: SafeRelativeDirSchema.optional(),
   /** Where installed hooks are written, relative to project root */
-  hooksDir: z.string().default("hooks"),
+  hooksDir: SafeRelativeDirSchema.default("hooks"),
   /** Where installed utilities are written, relative to project root */
-  utilsDir: z.string().default("lib/utils"),
+  utilsDir: SafeRelativeDirSchema.default("lib/utils"),
   /** Default styling target */
   stylingTarget: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
   /** TypeScript path alias prefix, e.g. "@/" */
@@ -106,6 +124,18 @@ export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
     }
     if (raw["styling"] && !raw["stylingTarget"]) {
       raw["stylingTarget"] = raw["styling"];
+    }
+    if (
+      raw["registries"] &&
+      typeof raw["registries"] === "object" &&
+      !Array.isArray(raw["registries"])
+    ) {
+      raw["registries"] = Object.entries(raw["registries"] as Record<string, string>).map(
+        ([name, url]) => ({
+          name,
+          url,
+        })
+      );
     }
     if (raw["registry"] && typeof raw["registry"] === "object" && !raw["registries"]) {
       raw["registries"] = Object.entries(raw["registry"] as Record<string, string>).map(

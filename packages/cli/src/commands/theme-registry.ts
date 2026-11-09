@@ -2,7 +2,16 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import { createClient } from "../client.js";
 import { loadConfig, saveConfig } from "../config.js";
-import { destPathFor, filesForTarget, readLock, writeInstalledFile, writeLock } from "../install.js";
+import {
+  createBackup,
+  destPathFor,
+  fileExists,
+  filesForTarget,
+  readLock,
+  toLockKey,
+  writeInstalledFile,
+  writeLock,
+} from "../install.js";
 
 async function requireConfig(cwd: string) {
   return loadConfig(cwd).catch((err) => {
@@ -42,7 +51,11 @@ export function registerThemeCommand(program: Command) {
       const entry = { version: item.version, files: {} as Record<string, string> };
       for (const file of filesForTarget(item, config)) {
         const dest = destPathFor(options.cwd, item, file, config);
-        entry.files[dest] = await writeInstalledFile(dest, file.content ?? "");
+        if (await fileExists(dest)) {
+          await createBackup(options.cwd, id, [{ destPath: dest, exists: true }]).catch(() => {});
+        }
+        const hash = await writeInstalledFile(dest, file.content ?? "");
+        entry.files[toLockKey(options.cwd, dest)] = hash;
         console.log(chalk.green(`  ✓ Written: ${dest}`));
       }
       lock.items[id] = entry;

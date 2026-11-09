@@ -1,12 +1,12 @@
 <p align="center">
-  <a href="https://nativra.dev">
+  <a href="https://nativra.vercel.app">
     <img src="../../assets/icon.png" alt="Nativra CLI" width="72" height="72" />
   </a>
 </p>
 
 # nativra-cli
 
-The official command-line interface for [Nativra](https://nativra.dev) — the source-first UI platform for React Native and Expo.
+The official command-line interface for [Nativra](https://nativra.vercel.app) — the source-first UI platform for React Native and Expo.
 
 ## Features
 

@@ -18,6 +18,10 @@ const root = resolve(__dirname, "..");
 
 const args = process.argv.slice(2);
 const outFlag = args.indexOf("--out");
+if (outFlag !== -1 && (!args[outFlag + 1] || args[outFlag + 1].startsWith("--"))) {
+  console.error("❌ Error: --out flag requires a destination directory argument.");
+  process.exit(1);
+}
 const outDir = outFlag !== -1 ? resolve(args[outFlag + 1]) : resolve(root, "dist/registry");
 const pretty = args.includes("--pretty");
 
@@ -29,7 +33,7 @@ const result = await buildRegistry({
   sourceDir: resolve(root, "registry"),
   outDir,
   registryName: "default",
-  baseUrl: "https://registry.nativra.dev",
+  baseUrl: "https://nativra.vercel.app",
   pretty,
 });
 

@@ -1,19 +1,21 @@
 import type { Command } from "commander";
 import { rm, readFile, readdir } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, resolve, sep } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
 import { sha256 } from "@nativra/utils";
 import { loadConfig } from "../config.js";
-import { fileExists, readLock, writeLock } from "../install.js";
+import { assertNotSymlink, fileExists, readLock, resolveLockFilePath, writeLock } from "../install.js";
 
 async function pruneEmptyDir(dir: string, stopAt: string): Promise<void> {
   try {
-    if (dir === stopAt || !dir.startsWith(stopAt)) return;
-    const entries = await readdir(dir);
+    const resolvedDir = resolve(dir);
+    const resolvedStop = resolve(stopAt);
+    if (resolvedDir === resolvedStop || !resolvedDir.startsWith(resolvedStop + sep)) return;
+    const entries = await readdir(resolvedDir);
     if (entries.length === 0) {
-      await rm(dir, { recursive: true, force: true }).catch(() => {});
-      await pruneEmptyDir(dirname(dir), stopAt);
+      await rm(resolvedDir, { recursive: true, force: true }).catch(() => {});
+      await pruneEmptyDir(dirname(resolvedDir), resolvedStop);
     }
   } catch {
     // Ignore cleanup errors
@@ -69,9 +71,24 @@ export function registerRemoveCommand(program: Command) {
             continue;
           }
 
+          // Resolve and validate all tracked file paths within cwd before touching disk
+          const resolvedEntries: Array<{ filePath: string; expectedHash: string }> = [];
+          try {
+            for (const [fileKey, expectedHash] of Object.entries(lockEntry.files)) {
+              const safePath = resolveLockFilePath(options.cwd, fileKey);
+              await assertNotSymlink(safePath);
+              resolvedEntries.push({ filePath: safePath, expectedHash });
+            }
+          } catch (err) {
+            console.error(
+              chalk.red(`\n✗ Security check failed for "${componentId}": ${(err as Error).message}\n`)
+            );
+            process.exit(1);
+          }
+
           // Check for local modifications
           const modifiedFiles: string[] = [];
-          for (const [filePath, expectedHash] of Object.entries(lockEntry.files)) {
+          for (const { filePath, expectedHash } of resolvedEntries) {
             if (await fileExists(filePath)) {
               try {
                 const currentContent = await readFile(filePath, "utf8");
@@ -119,7 +136,7 @@ export function registerRemoveCommand(program: Command) {
             const { confirmed } = await prompts({
               type: "confirm",
               name: "confirmed",
-              message: `Remove "${componentId}" and its ${filePaths.length} tracked file(s)?`,
+              message: `Remove "${componentId}" and its ${resolvedEntries.length} tracked file(s)?`,
               initial: true,
             });
             if (!confirmed) {
@@ -129,8 +146,9 @@ export function registerRemoveCommand(program: Command) {
           }
 
           // Delete tracked files
-          for (const filePath of filePaths) {
+          for (const { filePath } of resolvedEntries) {
             if (await fileExists(filePath)) {
+              await assertNotSymlink(filePath);
               await rm(filePath, { force: true });
               console.log(chalk.red(`  - Deleted: ${filePath}`));
               await pruneEmptyDir(dirname(filePath), options.cwd);

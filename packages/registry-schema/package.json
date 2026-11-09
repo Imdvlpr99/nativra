@@ -1,6 +1,6 @@
 {
   "name": "@nativra/registry-schema",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Zod schemas and inferred types for the Nativra registry",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -21,16 +21,16 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
     "tsup": "^9.0.0",
-    "vitest": "^2.1.8",
+    "vitest": "^5.1.0",
     "rimraf": "^6.0.1"
   },
   "license": "MIT",
-  "homepage": "https://nativra.dev",
+  "homepage": "https://nativra.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Imdvlpr99/nativra.git",

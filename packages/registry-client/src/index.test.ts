@@ -30,6 +30,12 @@ describe("RegistryClient (local)", () => {
     const item = await client.getItem("button");
     expect(item.files[0]?.hash).toBeDefined();
   });
+
+  it("rejects path traversal and malformed item IDs", async () => {
+    await expect(client.getItem("../registry")).rejects.toThrow(/Invalid registry item ID/);
+    await expect(client.getItem("../../package")).rejects.toThrow(/Invalid registry item ID/);
+    await expect(client.getItem("button/../../etc/passwd")).rejects.toThrow(/Invalid registry item ID/);
+  });
 });
 
 

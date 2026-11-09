@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { resolve, sep } from "node:path";
 import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
-import { RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
+import { ITEM_ID_REGEX, RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 
 function isSafeRelativePath(targetPath: string): boolean {
@@ -38,7 +38,7 @@ export interface RegistrySource {
   kind: RegistrySourceKind;
   /**
    * For local: absolute path to the registry directory containing `registry.json`
-   * For remote: base URL, e.g. "https://registry.nativra.dev" or a raw GitHub URL
+   * For remote: base URL, e.g. "https://nativra.vercel.app" or a raw GitHub URL
    */
   location: string;
   /** Registry name, defaults to "default" */
@@ -89,6 +89,12 @@ export class RegistryClient {
   // -------------------------------------------------------------------------
 
   async getItem(id: string, registryName = "default"): Promise<RegistryItem> {
+    if (!ITEM_ID_REGEX.test(id)) {
+      throw new Error(
+        `Invalid registry item ID "${id}". IDs must be lowercase letters, numbers, and hyphens.`
+      );
+    }
+
     const cacheKey = `${registryName}/${id}`;
     const cached = this.itemCache.get(cacheKey);
     if (cached) return cached;
@@ -102,9 +108,14 @@ export class RegistryClient {
       if (!isSafeRelativePath(file.path)) {
         throw new Error(`Item "${item.id}" contains an unsafe file path: "${file.path}"`);
       }
-      if (file.hash && file.content !== undefined) {
+      if (file.content !== undefined) {
+        if (!file.hash) {
+          throw new Error(
+            `Integrity verification failed for "${file.path}" in "${item.id}": missing required SHA-256 hash`
+          );
+        }
         const computed = sha256(file.content);
-        if (computed !== file.hash) {
+        if (computed !== file.hash.toLowerCase()) {
           throw new Error(
             `Integrity verification failed for "${file.path}" in "${item.id}": expected hash ${file.hash}, got ${computed}`
           );
@@ -182,8 +193,16 @@ export class RegistryClient {
   }
 
   private async fetchJson<T>(source: RegistrySource, relativePath: string): Promise<T> {
+    if (!isSafeRelativePath(relativePath)) {
+      throw new Error(`Unsafe registry relative path rejected: "${relativePath}"`);
+    }
+
     if (source.kind === "local") {
-      const filePath = join(source.location, relativePath);
+      const normalizedRoot = resolve(source.location);
+      const filePath = resolve(normalizedRoot, relativePath);
+      if (!filePath.startsWith(normalizedRoot + sep)) {
+        throw new Error(`Registry path traversal rejected: "${relativePath}"`);
+      }
       const content = await readFile(filePath, "utf8");
       return JSON.parse(content) as T;
     }

@@ -1,24 +1,67 @@
-import { access, mkdir, readFile, writeFile, rename, rm } from "node:fs/promises";
+import { access, lstat, mkdir, readFile, writeFile, rename, rm } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import type { RegistryItem, SourceFile } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 import type { NativraConfig } from "./config.js";
 
+/**
+ * Ensures targetPath resolves strictly inside rootDir (at least one level below rootDir).
+ */
+export function assertChildOfRoot(rootDir: string, targetPath: string, label = "path"): string {
+  const normalizedRoot = resolve(rootDir);
+  const resolvedTarget = resolve(normalizedRoot, targetPath);
+  if (!resolvedTarget.startsWith(normalizedRoot + sep)) {
+    throw new Error(`Unsafe ${label} rejected (escapes project root): "${targetPath}"`);
+  }
+  return resolvedTarget;
+}
+
+export function toLockKey(cwd: string, filePath: string): string {
+  const safeAbs = assertChildOfRoot(cwd, filePath, "lockfile path");
+  return relative(resolve(cwd), safeAbs).replace(/\\/g, "/");
+}
+
+export function resolveLockFilePath(cwd: string, fileKey: string): string {
+  if (!fileKey || typeof fileKey !== "string" || fileKey.includes("\0")) {
+    throw new Error(`Invalid lockfile path entry: "${String(fileKey)}"`);
+  }
+  return assertChildOfRoot(cwd, fileKey, "tracked lockfile path");
+}
+
+export async function assertNotSymlink(filePath: string): Promise<void> {
+  try {
+    const stat = await lstat(filePath);
+    if (stat.isSymbolicLink()) {
+      throw new Error(`Refusing to operate on symbolic link: "${filePath}"`);
+    }
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return;
+    throw err;
+  }
+}
+
 export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraConfig): string {
+  let rawDir: string;
   switch (item.type) {
     case "hook":
-      return join(cwd, config.hooksDir);
+      rawDir = join(cwd, config.hooksDir);
+      break;
     case "utility": {
       const uDir = config.utilsDir.replace(/\.(ts|js|tsx)$/, "");
-      return join(cwd, uDir);
+      rawDir = join(cwd, uDir);
+      break;
     }
     case "theme":
-      return join(cwd, "lib/themes");
+      rawDir = join(cwd, "lib/themes");
+      break;
     case "block":
-      return join(cwd, config.blocksDir ?? config.componentsDir);
+      rawDir = join(cwd, config.blocksDir ?? config.componentsDir);
+      break;
     default:
-      return join(cwd, config.componentsDir);
+      rawDir = join(cwd, config.componentsDir);
+      break;
   }
+  return assertChildOfRoot(cwd, rawDir, "destination directory");
 }
 
 export function filesForTarget(item: RegistryItem, config: NativraConfig): SourceFile[] {
@@ -28,14 +71,17 @@ export function filesForTarget(item: RegistryItem, config: NativraConfig): Sourc
 export function destPathFor(cwd: string, item: RegistryItem, file: SourceFile, config: NativraConfig): string {
   const destDir = resolveDestDir(cwd, item, config);
   const fileName = file.path.split(/[/\\]/).pop() ?? file.path;
+  if (!fileName || fileName === "." || fileName === "..") {
+    throw new Error(`Unsafe file name in registry item: ${file.path}`);
+  }
   const target = resolve(destDir, fileName);
 
-  // Security containment check (Plan Section 2.6)
+  // Security containment check (Plan Section 2.6): both inside destDir and inside cwd
   const normalizedDestDir = resolve(destDir);
-  if (!target.startsWith(normalizedDestDir + sep) && target !== normalizedDestDir) {
+  if (!target.startsWith(normalizedDestDir + sep)) {
     throw new Error(`Unsafe destination path resolved for ${file.path}`);
   }
-  return target;
+  return assertChildOfRoot(cwd, target, "destination file path");
 }
 
 export async function fileExists(path: string): Promise<boolean> {
@@ -109,8 +155,12 @@ export async function createBackup(
   componentId: string,
   filesToModify: Array<{ destPath: string; exists: boolean }>
 ): Promise<string> {
+  if (!/^[a-z][a-z0-9-]*$/.test(componentId)) {
+    throw new Error(`Invalid component ID for backup: "${componentId}"`);
+  }
   const backupId = `backup-${componentId}-${Date.now()}`;
-  const backupDir = join(cwd, ".nativra", "backups", componentId);
+  const backupsRoot = join(cwd, ".nativra", "backups");
+  const backupDir = assertChildOfRoot(backupsRoot, join(backupsRoot, componentId), "backup directory");
   await mkdir(backupDir, { recursive: true });
 
   const entries: BackupFileEntry[] = [];

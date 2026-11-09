@@ -22,7 +22,12 @@
       "target": "stylesheet"
     }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "cn",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
   "tags": ["input", "otp", "pin", "verification", "code", "security"],
   "docsPath": "docs.mdx",

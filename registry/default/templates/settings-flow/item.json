@@ -23,6 +23,7 @@
     }
   ],
   "registryDependencies": [
+    { "id": "cn", "registry": "default" },
     { "id": "avatar", "registry": "default" },
     { "id": "card", "registry": "default" },
     { "id": "switch", "registry": "default" },

@@ -22,7 +22,12 @@
       "target": "stylesheet"
     }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "cn",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [
     {
       "package": "react-native-safe-area-context",

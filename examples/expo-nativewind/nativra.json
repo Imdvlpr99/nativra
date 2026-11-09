@@ -1,11 +1,14 @@
 {
-  "$schema": "https://nativra.dev/schema.json",
+  "$schema": "https://nativra.vercel.app/schema.json",
   "stylingTarget": "nativewind",
   "componentsDir": "components/ui",
   "hooksDir": "hooks",
   "utilsDir": "lib/utils",
-  "registries": {
-    "default": "https://registry.nativra.dev"
-  }
+  "registries": [
+    {
+      "name": "default",
+      "url": "https://nativra.vercel.app"
+    }
+  ]
 }
 

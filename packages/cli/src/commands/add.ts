@@ -11,6 +11,7 @@ import {
   filesForTarget,
   readLock,
   writeLock,
+  toLockKey,
   executeInstallTransaction,
   type PlannedInstallFile,
 } from "../install.js";
@@ -187,8 +188,10 @@ export function registerAddCommand(program: Command) {
             };
             for (const file of filesForTarget(item, config)) {
               const destPath = destPathFor(options.cwd, item, file, config);
+              const lockKey = toLockKey(options.cwd, destPath);
               if (writtenFiles[destPath]) {
-                entry.files[destPath] = writtenFiles[destPath];
+                delete entry.files[destPath];
+                entry.files[lockKey] = writtenFiles[destPath];
               }
             }
             if (Object.keys(entry.files).length > 0) {

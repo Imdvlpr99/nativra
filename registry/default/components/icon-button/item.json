@@ -22,8 +22,18 @@
       "target": "stylesheet"
     }
   ],
-  "registryDependencies": [],
-  "npmDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "cn",
+      "registry": "default"
+    }
+  ],
+  "npmDependencies": [
+    {
+      "package": "class-variance-authority",
+      "version": "^0.7.1"
+    }
+  ],
   "tags": ["action", "icon", "button", "touchable", "accessible"],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"

@@ -15,7 +15,7 @@ import { registerAuditCommand } from "./commands/audit.js";
 program
   .name("nativra")
   .description("Nativra CLI — Native UI, built your way.")
-  .version("0.2.0");
+  .version("0.2.1");
 
 registerInitCommand(program);
 registerAddCommand(program);

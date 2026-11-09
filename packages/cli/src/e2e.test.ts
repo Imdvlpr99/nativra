@@ -210,5 +210,30 @@ describe("nativra CLI (local registry)", () => {
     expect(report.score).toBeGreaterThanOrEqual(80);
     expect(report.grade).toBeTruthy();
   });
+
+  it("stores portable project-relative paths in nativra.lock.json and blocks path traversal", () => {
+    const lock = JSON.parse(readFileSync(join(cwd, "nativra.lock.json"), "utf8"));
+    const buttonFiles = Object.keys(lock.items.button.files);
+    expect(buttonFiles).toContain("components/ui/Button.tsx");
+    expect(buttonFiles.every((k) => !k.includes("\\") && !k.startsWith("/"))).toBe(true);
+
+    // Path traversal in rollback component ID must be rejected
+    expect(() => run("rollback", "../evil")).toThrow();
+
+    // Tampered lockfile pointing outside project root must be rejected on remove
+    lock.items["evil-item"] = {
+      version: "0.1.0",
+      registry: "default",
+      stylingTarget: "nativewind",
+      installedAt: new Date().toISOString(),
+      files: {
+        "../outside-target.tsx": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      },
+    };
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock, null, 2));
+    expect(() => run("remove", "evil-item", "--yes", "--force")).toThrow();
+    delete lock.items["evil-item"];
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock, null, 2));
+  });
 });
 

@@ -55,7 +55,7 @@ export function registerDoctorCommand(program: Command) {
             stylingTarget = env.stylingTarget;
             hasV4Config = true;
             const newConfig = NativraConfigSchema.parse({
-              $schema: "https://nativra.dev/schema.json",
+              $schema: "https://nativra.vercel.app/schema.json",
               version: 4,
               stylingTarget: env.stylingTarget,
               componentsDir: env.suggestedComponentsDir,
