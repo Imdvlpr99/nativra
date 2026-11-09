@@ -97,7 +97,7 @@ export default function HomePage() {
           {/* Announcement Pill with Brand Icon */}
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 py-1 pl-1.5 pr-3.5 text-xs font-semibold text-sky-800 dark:border-sky-900/60 dark:bg-sky-950/60 dark:text-sky-300 shadow-sm">
             <Image src="/icon.png" alt="Nativra" width={18} height={18} className="rounded-full object-contain" />
-            <span>Introducing Nativra v0.2.2 — Source-First React Native UI</span>
+            <span>Introducing Nativra v0.2.3 — Source-First React Native UI</span>
           </div>
 
           {/* Main Title */}

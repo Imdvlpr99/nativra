@@ -27,11 +27,11 @@ export default function ChangelogPage() {
       </div>
 
       <div className="space-y-12">
-        {/* Release v0.2.2 */}
+        {/* Release v0.2.3 */}
         <div className="relative pl-6 border-l-2 border-sky-500 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              v0.2.2 — Alias Rewriting, Auto-Installer, Audit Fix &amp; DX Enhancements
+              v0.2.3 — Alias Rewriting, Auto-Installer, Audit Fix &amp; DX Enhancements
             </h2>
             <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
               Latest

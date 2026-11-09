@@ -1,6 +1,6 @@
 {
   "name": "@nativra/component-contracts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Shared TypeScript types and behavioral contracts for Nativra components",
   "type": "module",
   "main": "./dist/index.cjs",

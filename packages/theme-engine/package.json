@@ -1,6 +1,6 @@
 {
   "name": "@nativra/theme-engine",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Token model and NativeWind/StyleSheet adapter for Nativra themes",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -108,7 +108,7 @@ const rootJsonLd = {
       applicationCategory: "DeveloperApplication",
       applicationSubCategory: "React Native UI Component Library & CLI",
       operatingSystem: "iOS, Android, Web, macOS, Windows, Linux",
-      softwareVersion: "0.2.2",
+      softwareVersion: "0.2.3",
       license: "https://opensource.org/licenses/MIT",
       url: "https://nativra.vercel.app",
       downloadUrl: "https://www.npmjs.com/package/nativra-cli",
