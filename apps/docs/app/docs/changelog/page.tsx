@@ -27,15 +27,48 @@ export default function ChangelogPage() {
       </div>
 
       <div className="space-y-12">
-        {/* Release v0.2.0 */}
+        {/* Release v0.2.1 */}
         <div className="relative pl-6 border-l-2 border-sky-500 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              v0.2.0 — 81 Registry Items, CLI Audit & Density Scales
+              v0.2.1 — Security, Registry &amp; Dependency Hardening
             </h2>
             <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
               Latest
             </span>
+            <span className="font-mono text-xs text-muted-foreground">November 2026</span>
+          </div>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Comprehensive security and supply-chain hardening across <code className="font-mono text-foreground">nativra-cli</code>, <code className="font-mono text-foreground">@nativra/registry-client</code>, and <code className="font-mono text-foreground">@nativra/registry-schema</code>, plus zero dependency vulnerabilities in <code className="font-mono text-foreground">pnpm audit</code> and complete registry dependency metadata.
+          </p>
+
+          <ul className="grid gap-1.5 sm:grid-cols-2 text-xs text-muted-foreground pt-1">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Path Traversal &amp; Symlink Protection</strong> — Strict project-root containment &amp; portable lockfile keys</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Mandatory SHA-256 &amp; HTTPS</strong> — Verified file hashes on all registry loads &amp; rollbacks</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>0 Dependency Vulnerabilities</strong> — Remediated all 59 transitive advisories via upgrades &amp; overrides</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span><strong>Live Registry URL &amp; Metadata</strong> — Default registry set to <code className="font-mono">https://nativra.vercel.app</code></span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Release v0.2.0 */}
+        <div className="relative pl-6 border-l-2 border-border space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              v0.2.0 — 81 Registry Items, CLI Audit & Density Scales
+            </h2>
             <span className="font-mono text-xs text-muted-foreground">November 2026</span>
           </div>
 
