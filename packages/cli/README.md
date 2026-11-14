@@ -50,7 +50,7 @@ By default, Nativra **never** silently overwrites existing files.
 | *(interactive)* | Prompts for each existing file: `Skip` or `Overwrite`. |
 | `--yes` | Non-interactive. Preserves existing files by skipping them, preventing accidental code loss. |
 | `--overwrite` | Non-interactive. Overwrites existing files with upstream code. |
-| `--on-conflict <mode>` | Explicit policy: `skip` (default), `overwrite`, or `error` (aborts with exit code 1 on conflict). |
+| `--on-conflict <mode>` | Explicit policy: `skip`, `overwrite`, or `error` (aborts with exit code 1 on conflict). Without it: prompt interactively, skip with `--yes` or when not attached to a terminal. |
 
 ```bash
 # In CI pipelines, keep existing files safely:

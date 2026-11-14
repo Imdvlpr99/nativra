@@ -50,7 +50,6 @@ nativra/
 │   ├── registry-builder/  # Compiles authored sources into registry distributions
 │   ├── theme-engine/      # Semantic token model and CSS/StyleSheet adapters
 │   ├── preview-runtime/   # Shared canvas runtime and test fixtures
-│   ├── component-contracts/ # Core component interfaces and accessibility contracts
 │   ├── config/            # Shared ESLint, Prettier, TypeScript, and Vitest configs
 │   └── utils/             # Lightweight utilities (cn, style mergers)
 ├── registry/

@@ -25,7 +25,7 @@ const COMMANDS = [
     flags: [
       "--yes (Skip interactive prompts; preserves existing files unless --overwrite is set)",
       "--overwrite (Overwrite existing files without prompting)",
-      "--on-conflict <skip|overwrite|error> (Explicit conflict strategy; defaults to skip)",
+      "--on-conflict <skip|overwrite|error> (Explicit conflict strategy; default: prompt interactively, skip with --yes or in CI)",
       "--install (Automatically install missing npm dependencies via detected Expo CLI or package manager)",
       "--no-install (Skip installing npm dependencies; only copy component source files)",
       "--dry-run (Simulate installation and preview files and dependencies without writing to disk)",
@@ -35,10 +35,10 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli remove <...components>",
-    desc: "Safely remove installed components, blocks, or hooks. Checks local file modifications against the lockfile, removes component files, prunes empty directories, and updates nativra.lock.json.",
+    desc: "Safely remove installed components, blocks, or hooks. Checks local file modifications against the lockfile, refuses to remove items other installed items depend on, prunes empty directories, and updates nativra.lock.json.",
     flags: [
       "--yes (Skip interactive prompts)",
-      "--force (Force removal even if local modifications are detected)",
+      "--force (Force removal even if local modifications are detected or other installed items depend on it)",
       "--cwd <dir> (Explicit working directory)",
     ],
   },
@@ -69,7 +69,7 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli diff [component]",
-    desc: "Compare your installed local component files with the upstream registry source to inspect any modifications.",
+    desc: "Compare your installed files with exactly what the registry would install (import aliases rewritten for your project) to inspect local modifications.",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
       "--cwd <dir> (Explicit working directory)",
@@ -77,7 +77,7 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli update [component]",
-    desc: "Safely update installed components to their latest registry version. Automatically creates a verified backup manifest before modifying files.",
+    desc: "Safely update installed components to their latest registry version, installing any new registry dependencies. Snapshots every file it changes first, so the update can be undone with rollback.",
     flags: [
       "--force (Overwrite local modifications)",
       "--registry <url-or-name> (Override registry URL)",
@@ -86,7 +86,7 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli rollback <component>",
-    desc: "Restore an updated component to its previous state using the manifest-driven backup system.",
+    desc: "Restore the most recent backup snapshot of an item and refresh its lockfile hashes. Run it again to step further back through older snapshots.",
     flags: [
       "--cwd <dir> (Explicit working directory)",
     ],
@@ -103,14 +103,16 @@ const COMMANDS = [
     cmd: "npx nativra-cli audit",
     desc: "Scan your React Native or Expo codebase for Nativra component adoption, hardcoded hex colors, legacy <Touchable*> primitives, allowFontScaling={false} accessibility regressions, and screen-reader accessibility coverage with line-numbered locations. Outputs a 0–100% Design System & Accessibility Health Score.",
     flags: [
-      "--fix (Automatically migrate legacy <TouchableOpacity> usages and imports to <Pressable>)",
+      "--fix (Migrate legacy <TouchableOpacity>/<TouchableHighlight> to <Pressable>; files using Touchable-only props are skipped and reported; changed files are backed up — undo with `rollback audit-fix`)",
+      "--dry-run (With --fix: list files that would change without writing)",
+      "--yes (With --fix: skip the confirmation prompt; required in non-interactive mode)",
       "--json (Output structured JSON audit report for CI pipelines)",
       "--cwd <dir> (Explicit working directory)",
     ],
   },
   {
     cmd: "npx nativra-cli theme list",
-    desc: "List available theme token sets in the registry (zinc, dark-slate, midnight, cyberpunk, emerald, etc.).",
+    desc: "List available theme token sets in the registry (zinc, slate, dark-slate, midnight, emerald, violet, rose, amber, orange, cyan).",
     flags: [
       "--registry <url-or-name> (Override registry URL)",
       "--cwd <dir> (Explicit working directory)",
@@ -118,9 +120,10 @@ const COMMANDS = [
   },
   {
     cmd: "npx nativra-cli theme add <theme-id>",
-    desc: "Install a theme into your project (e.g. lib/themes/midnight.ts or CSS variables).",
+    desc: "Install a theme token file (light and dark palettes) into your themesDir (default lib/themes), optionally wiring CSS variables. Existing theme files are never overwritten without confirmation.",
     flags: [
       "--as <name> (Install theme under a custom file name, e.g. --as midnight writes lib/themes/midnight.ts)",
+      "--overwrite (Replace an existing theme file; a backup is kept)",
       "--apply-css (Automatically wire and inject theme CSS variables into global.css)",
       "--registry <url-or-name> (Override registry URL)",
       "--cwd <dir> (Explicit working directory)",
