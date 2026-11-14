@@ -1,9 +1,7 @@
 import type { Command } from "commander";
-import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
-import { THEME_PRESETS, toCssVariables } from "@nativra/theme-engine";
 import { createClient } from "../client.js";
 import { loadConfig, saveConfig } from "../config.js";
 import {
@@ -18,6 +16,7 @@ import {
   writeLock,
 } from "../install.js";
 import { transformFileImports } from "../transform.js";
+import { applyThemeCss } from "../theme-css.js";
 
 async function requireConfig(cwd: string) {
   return loadConfig(cwd).catch((err) => {
@@ -107,42 +106,6 @@ export function registerThemeCommand(program: Command) {
         if (options.applyCss) await applyThemeCss(options.cwd, id);
       }
     );
-}
-
-async function applyThemeCss(cwd: string, id: string): Promise<void> {
-  const tokens = THEME_PRESETS[id];
-  if (!tokens) {
-    console.warn(
-      chalk.yellow(`  ⚠ No built-in CSS token preset for "${id}"; global.css was not changed. Wire its variables manually.`)
-    );
-    return;
-  }
-
-  const cssCandidates = [join(cwd, "global.css"), join(cwd, "src", "global.css"), join(cwd, "app", "global.css")];
-  let targetCss: string | null = null;
-  for (const candidate of cssCandidates) {
-    if (await fileExists(candidate)) {
-      targetCss = candidate;
-      break;
-    }
-  }
-  if (!targetCss) {
-    console.log(chalk.yellow(`  ⚠ No global.css found. Create global.css to wire CSS variables automatically.`));
-    return;
-  }
-
-  try {
-    const existingCss = await readFile(targetCss, "utf8");
-    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n/* NATIVRA THEME END: ${id} */`;
-    const anyThemeMarker = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
-    const updatedCss = anyThemeMarker.test(existingCss)
-      ? existingCss.replace(anyThemeMarker, block)
-      : `${existingCss.trimEnd()}\n\n${block}\n`;
-    await writeFile(targetCss, updatedCss, "utf8");
-    console.log(chalk.green(`  ✓ Injected CSS variables for "${id}" into: ${targetCss}`));
-  } catch (err) {
-    console.warn(chalk.yellow(`  ⚠ Could not wire CSS variables: ${(err as Error).message}`));
-  }
 }
 
 export function registerRegistryCommand(program: Command) {

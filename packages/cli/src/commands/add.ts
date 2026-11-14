@@ -23,6 +23,13 @@ import {
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
+import {
+  TAILWIND_COLORS_SNIPPET,
+  applyThemeCss,
+  findGlobalCss,
+  hasThemeCss,
+  tailwindMapsThemeColors,
+} from "../theme-css.js";
 
 export function registerAddCommand(program: Command) {
   program
@@ -100,6 +107,7 @@ export function registerAddCommand(program: Command) {
 
         const lock = await readLock(options.cwd);
         const accumulatedDeps: PackageDependency[] = [];
+        const themeIds = new Set<string>();
 
         for (const componentId of components) {
           console.log(chalk.bold(`\n📦 Resolving ${chalk.cyan(componentId)}...`));
@@ -206,6 +214,7 @@ export function registerAddCommand(program: Command) {
               if (hash) itemWrites[destPath] = hash;
             }
             recordLockEntry(lock, options.cwd, item, itemWrites);
+            if (item.type === "theme") themeIds.add(item.id);
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
               accumulatedDeps.push(...item.npmDependencies);
@@ -215,6 +224,10 @@ export function registerAddCommand(program: Command) {
 
         if (!options.dryRun) {
           await writeLock(options.cwd, lock);
+
+          if (config.stylingTarget === "nativewind" && themeIds.size > 0) {
+            await ensureNativeWindTheme(options.cwd, [...themeIds][0]!);
+          }
 
           // Handle missing npm dependencies
           if (accumulatedDeps.length > 0) {
@@ -262,4 +275,21 @@ export function registerAddCommand(program: Command) {
         }
       }
     );
+}
+
+/**
+ * NativeWind components use semantic classes (bg-primary, text-muted-foreground, ...) backed
+ * by CSS variables. Make sure the variables exist and tell the user if Tailwind doesn't map them.
+ */
+async function ensureNativeWindTheme(cwd: string, themeId: string): Promise<void> {
+  const css = await findGlobalCss(cwd);
+  if (css && !(await hasThemeCss(css))) {
+    await applyThemeCss(cwd, themeId);
+  }
+  if ((await tailwindMapsThemeColors(cwd)) === false) {
+    console.log(
+      chalk.yellow("\n  ⚠ tailwind.config doesn't map Nativra's theme colors yet. Add this to theme.extend:\n") +
+        chalk.gray(TAILWIND_COLORS_SNIPPET.replace(/^/gm, "    "))
+    );
+  }
 }

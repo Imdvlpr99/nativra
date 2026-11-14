@@ -6,6 +6,7 @@ import { checkProjectCompatibility } from "@nativra/registry-schema";
 import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, loadConfig, saveConfig } from "../config.js";
 import { readLock } from "../install.js";
 import { detectProjectEnvironment } from "../detect.js";
+import { TAILWIND_COLORS_SNIPPET, tailwindMapsThemeColors } from "../theme-css.js";
 
 interface Check {
   name: string;
@@ -201,7 +202,21 @@ export function registerDoctorCommand(program: Command) {
           (await fileExists(join(options.cwd, "tailwind.config.ts")));
 
         if (!hasTailwindConfig && options.fix) {
-          const defaultTailwind = `/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],\n  presets: [require("nativewind/preset")],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n};\n`;
+          const colors = TAILWIND_COLORS_SNIPPET.split("\n").map((l) => `      ${l}`).join("\n");
+          const defaultTailwind = [
+            "/** @type {import('tailwindcss').Config} */",
+            "module.exports = {",
+            '  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],',
+            '  presets: [require("nativewind/preset")],',
+            "  theme: {",
+            "    extend: {",
+            colors,
+            "    },",
+            "  },",
+            "  plugins: [],",
+            "};",
+            "",
+          ].join("\n");
           await writeFile(join(options.cwd, "tailwind.config.js"), defaultTailwind, "utf8");
           hasTailwindConfig = true;
           checks.push({
@@ -227,6 +242,19 @@ export function registerDoctorCommand(program: Command) {
             detail: hasTailwindConfig
               ? "tailwind.config detected"
               : "Consider running npx tailwindcss init or pass --fix",
+          });
+        }
+
+        if (hasTailwindConfig) {
+          const mapped = await tailwindMapsThemeColors(options.cwd);
+          checks.push({
+            name: "Theme colors mapped in Tailwind",
+            pass: true,
+            warn: mapped === false,
+            detail:
+              mapped === false
+                ? "Components use bg-primary, text-muted-foreground, … — map them to var(--color-*) (see /docs/styling/nativewind)"
+                : "rgb(var(--color-*)) colors configured",
           });
         }
       }

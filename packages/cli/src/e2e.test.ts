@@ -317,3 +317,47 @@ describe("nativra CLI (src/ project with tsconfig alias)", () => {
   });
 });
 
+
+describe("nativra CLI (theme-aware components)", () => {
+  let dir: string;
+  const runIn = (...args: string[]) =>
+    execFileSync("node", [CLI, ...args, "--cwd", dir, "--registry", REGISTRY], { encoding: "utf8" });
+
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("StyleSheet: add installs the theme hook and default theme, and the component reads them", () => {
+    dir = mkdtempSync(join(tmpdir(), "nativra-theme-ss-"));
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "t", dependencies: { "react-native": "0.76.0" } }));
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", dir], { encoding: "utf8" });
+    runIn("add", "button", "--yes", "--no-install");
+
+    const button = readFileSync(join(dir, "components/ui/Button.tsx"), "utf8");
+    expect(button).toContain('from "@/hooks/use-theme-colors"');
+    expect(button).not.toMatch(/"#(18181b|0284c7|ef4444)"/i);
+    expect(readFileSync(join(dir, "hooks/use-theme-colors.ts"), "utf8")).toContain('from "@/lib/themes/theme"');
+    expect(readFileSync(join(dir, "lib/themes/theme.ts"), "utf8")).toContain("export const themeColors = { light: zinc, dark: zincDark }");
+  });
+
+  it("theme add --overwrite switches the palette every component reads", () => {
+    runIn("theme", "add", "midnight", "--overwrite");
+    expect(readFileSync(join(dir, "lib/themes/theme.ts"), "utf8")).toContain("export const themeColors = { light: midnight, dark: midnightDark }");
+  });
+
+  it("NativeWind: add writes theme variables into global.css and flags an unmapped Tailwind config", () => {
+    const nw = mkdtempSync(join(tmpdir(), "nativra-theme-nw-"));
+    writeFileSync(join(nw, "package.json"), JSON.stringify({ name: "t", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(nw, "global.css"), "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n");
+    writeFileSync(join(nw, "tailwind.config.js"), "module.exports = { content: [], theme: { extend: {} } };\n");
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", nw], { encoding: "utf8" });
+    const out = execFileSync("node", [CLI, "add", "button", "--yes", "--no-install", "--cwd", nw, "--registry", REGISTRY], {
+      encoding: "utf8",
+    });
+
+    const css = readFileSync(join(nw, "global.css"), "utf8");
+    expect(css).toContain("/* NATIVRA THEME START: zinc */");
+    expect(css).toMatch(/--color-primary: \d+ \d+ \d+;/);
+    expect(readFileSync(join(nw, "components/ui/Button.tsx"), "utf8")).toContain("bg-primary");
+    expect(out).toContain("rgb(var(--color-primary) / <alpha-value>)");
+    rmSync(nw, { recursive: true, force: true });
+  });
+});
