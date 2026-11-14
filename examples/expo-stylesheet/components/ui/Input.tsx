@@ -1,6 +1,7 @@
 /** Nativra — Input (StyleSheet). Install: npx nativra-cli add input */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -10,8 +11,10 @@ export interface InputProps extends TextInputProps {
 }
 
 export function Input({ label, error = false, errorMessage, disabled = false, style, ...rest }: InputProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const dark = useColorScheme() === "dark";
-  const fg = dark ? "#fafafa" : "#18181b";
+  const fg = c.foreground;
   return (
     <View style={styles.wrap}>
       {label ? <Text style={[styles.label, { color: fg }]}>{label}</Text> : null}
@@ -19,10 +22,10 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
+        placeholderTextColor={c["muted-foreground"]}
         style={[
           styles.input,
-          { color: fg, borderColor: error ? "#ef4444" : dark ? "#3f3f46" : "#d4d4d8" },
+          { color: fg, borderColor: error ? c.destructive : c.input },
           disabled && styles.disabled,
           style,
         ]}
@@ -33,11 +36,11 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
   label: { fontSize: 14, fontWeight: "500" },
   input: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
   disabled: { opacity: 0.5 },
-  error: { fontSize: 12, color: "#ef4444" },
+  error: { fontSize: 12, color: c.destructive },
 });
 

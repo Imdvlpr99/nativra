@@ -1,6 +1,7 @@
 /** Nativra — Card (StyleSheet). Install: npx nativra-cli add card */
 import React from "react";
-import { StyleSheet, View, useColorScheme, type ViewProps } from "react-native";
+import { StyleSheet, View, type ViewProps } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface CardProps extends ViewProps {
   elevated?: boolean;
@@ -10,12 +11,12 @@ export interface CardProps extends ViewProps {
 const PAD = { sm: 12, md: 16, lg: 24 } as const;
 
 export function Card({ elevated = false, padding = "md", style, ...rest }: CardProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
   return (
     <View
       style={[
         styles.base,
-        { backgroundColor: dark ? "#18181b" : "#ffffff", borderColor: dark ? "#27272a" : "#e4e4e7", padding: PAD[padding] },
+        { backgroundColor: c.background, borderColor: c.border, padding: PAD[padding] },
         elevated && styles.elevated,
         style,
       ]}

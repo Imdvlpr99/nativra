@@ -18,6 +18,7 @@ import {
   type ViewStyle,
   type TextStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -68,28 +69,28 @@ const styles = StyleSheet.create({
   textXl:  { fontSize: 16, fontWeight: "700" },
 });
 
-function getVariantStyle(variant: ButtonVariant, dark: boolean): ViewStyle {
+function getVariantStyle(variant: ButtonVariant, c: ThemeColors): ViewStyle {
   const map: Record<ButtonVariant, ViewStyle> = {
-    default:     { backgroundColor: dark ? "#fafafa" : "#171717" },
-    primary:     { backgroundColor: dark ? "#0ea5e9" : "#0284c7" },
-    secondary:   { backgroundColor: dark ? "#27272a" : "#f4f4f5" },
-    destructive: { backgroundColor: dark ? "#7f1d1d" : "#ef4444" },
-    outline:     { borderWidth: 1, borderColor: dark ? "#3f3f46" : "#d4d4d8", backgroundColor: "transparent" },
+    default:     { backgroundColor: c.foreground },
+    primary:     { backgroundColor: c.primary },
+    secondary:   { backgroundColor: c.muted },
+    destructive: { backgroundColor: c.destructive },
+    outline:     { borderWidth: 1, borderColor: c.input, backgroundColor: "transparent" },
     ghost:       { backgroundColor: "transparent" },
     link:        { backgroundColor: "transparent" },
   };
   return map[variant];
 }
 
-function getTextStyle(variant: ButtonVariant, dark: boolean): TextStyle {
+function getTextStyle(variant: ButtonVariant, c: ThemeColors): TextStyle {
   const map: Record<ButtonVariant, TextStyle> = {
-    default:     { color: dark ? "#171717" : "#ffffff" },
-    primary:     { color: "#ffffff" },
-    secondary:   { color: dark ? "#fafafa" : "#171717" },
-    destructive: { color: "#ffffff" },
-    outline:     { color: dark ? "#fafafa" : "#171717" },
-    ghost:       { color: dark ? "#fafafa" : "#171717" },
-    link:        { color: dark ? "#38bdf8" : "#0284c7", textDecorationLine: "underline" },
+    default:     { color: c.background },
+    primary:     { color: c["primary-foreground"] },
+    secondary:   { color: c.foreground },
+    destructive: { color: c["destructive-foreground"] },
+    outline:     { color: c.foreground },
+    ghost:       { color: c.foreground },
+    link:        { color: c.primary, textDecorationLine: "underline" },
   };
   return map[variant];
 }
@@ -123,22 +124,25 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
+  const c = useThemeColors();
   const colorScheme = useColorScheme();
   const dark = colorScheme === "dark";
   const isDisabled = disabled || loading;
 
   const loaderColor =
-    variant === "default" || variant === "primary" || variant === "destructive"
-      ? "#fff"
-      : dark
-      ? "#fafafa"
-      : "#171717";
+    variant === "default"
+      ? c.background
+      : variant === "primary"
+      ? c["primary-foreground"]
+      : variant === "destructive"
+      ? c["destructive-foreground"]
+      : c.foreground;
 
   return (
     <Pressable
       style={[
         styles.base,
-        getVariantStyle(variant, dark),
+        getVariantStyle(variant, c),
         SIZE_STYLES[size],
         isDisabled && styles.disabled,
         style as ViewStyle,
@@ -149,7 +153,7 @@ export function Button({
       {...rest}
     >
       {loading && <ActivityIndicator size="small" color={loaderColor} />}
-      <Text style={[getTextStyle(variant, dark), TEXT_SIZE_STYLES[size]]}>{children}</Text>
+      <Text style={[getTextStyle(variant, c), TEXT_SIZE_STYLES[size]]}>{children}</Text>
     </Pressable>
   );
 }

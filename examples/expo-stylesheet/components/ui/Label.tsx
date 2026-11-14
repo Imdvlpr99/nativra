@@ -12,9 +12,9 @@ import {
   Text,
   View,
   StyleSheet,
-  useColorScheme,
   type TextProps,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface LabelProps extends TextProps {
   children: string;
@@ -29,8 +29,9 @@ export function Label({
   style,
   ...props
 }: LabelProps) {
-  const isDark = useColorScheme() === "dark";
-  const textColor = isDark ? "#f4f4f5" : "#18181b";
+  const c = useThemeColors();
+  const styles = createStyles(c);
+  const textColor = c.foreground;
 
   return (
     <View style={styles.container}>
@@ -55,7 +56,7 @@ export function Label({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   required: {
-    color: "#ef4444",
+    color: c.destructive,
     marginLeft: 4,
     fontSize: 14,
     fontWeight: "700",

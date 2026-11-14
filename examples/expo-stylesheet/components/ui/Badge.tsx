@@ -7,7 +7,8 @@
  * Install: npx nativra-cli add badge
  */
 import React from "react";
-import { View, Text, StyleSheet, useColorScheme, type ViewStyle, type TextStyle } from "react-native";
+import { View, Text, StyleSheet, type ViewStyle, type TextStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 type BadgeVariant = "default" | "primary" | "secondary" | "destructive" | "outline";
 type BadgeSize = "sm" | "md" | "lg";
@@ -28,36 +29,36 @@ const styles = StyleSheet.create({
   textLg: { fontSize: 13, fontWeight: "500" },
 });
 
-function getContainerStyle(variant: BadgeVariant, dark: boolean): ViewStyle {
+function getContainerStyle(variant: BadgeVariant, c: ThemeColors): ViewStyle {
   const map: Record<BadgeVariant, ViewStyle> = {
-    default:     { backgroundColor: dark ? "#fafafa" : "#171717" },
-    primary:     { backgroundColor: dark ? "#0c4a6e" : "#e0f2fe" },
-    secondary:   { backgroundColor: dark ? "#27272a" : "#f4f4f5" },
-    destructive: { backgroundColor: dark ? "#7f1d1d" : "#fee2e2" },
-    outline:     { borderWidth: 1, borderColor: dark ? "#52525b" : "#d4d4d8", backgroundColor: "transparent" },
+    default:     { backgroundColor: c.foreground },
+    primary:     { backgroundColor: alpha(c.primary, 0.12) },
+    secondary:   { backgroundColor: c.muted },
+    destructive: { backgroundColor: alpha(c.destructive, 0.12) },
+    outline:     { borderWidth: 1, borderColor: c.input, backgroundColor: "transparent" },
   };
   return map[variant];
 }
 
-function getLabelStyle(variant: BadgeVariant, dark: boolean): TextStyle {
+function getLabelStyle(variant: BadgeVariant, c: ThemeColors): TextStyle {
   const map: Record<BadgeVariant, TextStyle> = {
-    default:     { color: dark ? "#171717" : "#ffffff" },
-    primary:     { color: dark ? "#bae6fd" : "#0369a1" },
-    secondary:   { color: dark ? "#d4d4d8" : "#3f3f46" },
-    destructive: { color: dark ? "#fca5a5" : "#b91c1c" },
-    outline:     { color: dark ? "#d4d4d8" : "#3f3f46" },
+    default:     { color: c.background },
+    primary:     { color: c.primary },
+    secondary:   { color: c.foreground },
+    destructive: { color: c.destructive },
+    outline:     { color: c.foreground },
   };
   return map[variant];
 }
 
 export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
   const sizeStyle = size === "sm" ? styles.sm : size === "lg" ? styles.lg : styles.md;
   const textSizeStyle = size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : styles.textMd;
 
   return (
-    <View style={[styles.base, getContainerStyle(variant, dark), sizeStyle]}>
-      <Text style={[getLabelStyle(variant, dark), textSizeStyle]}>{label}</Text>
+    <View style={[styles.base, getContainerStyle(variant, c), sizeStyle]}>
+      <Text style={[getLabelStyle(variant, c), textSizeStyle]}>{label}</Text>
     </View>
   );
 }

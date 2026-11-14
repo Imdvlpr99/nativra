@@ -13,10 +13,10 @@ import {
   View,
   Text,
   StyleSheet,
-  useColorScheme,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface CheckboxProps {
   checked: boolean;
@@ -35,11 +35,11 @@ export function Checkbox({
   style,
   accessibilityLabel,
 }: CheckboxProps) {
-  const isDark = useColorScheme() === "dark";
-  const activeColor = isDark ? "#fafafa" : "#18181b";
-  const inactiveBorder = isDark ? "#52525b" : "#a1a1aa";
-  const checkColor = isDark ? "#18181b" : "#ffffff";
-  const labelColor = isDark ? "#f4f4f5" : "#18181b";
+  const c = useThemeColors();
+  const activeColor = c.foreground;
+  const inactiveBorder = c.input;
+  const checkColor = c.background;
+  const labelColor = c.foreground;
 
   return (
     <Pressable

@@ -10,9 +10,9 @@
 import React from "react";
 import {
   ActivityIndicator,
-  useColorScheme,
   type ActivityIndicatorProps,
 } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export type SpinnerSize = "sm" | "md" | "lg";
 
@@ -32,8 +32,8 @@ export function Spinner({
   style,
   ...props
 }: SpinnerProps) {
-  const isDark = useColorScheme() === "dark";
-  const defaultColor = isDark ? "#fafafa" : "#18181b";
+  const c = useThemeColors();
+  const defaultColor = c.foreground;
 
   return (
     <ActivityIndicator

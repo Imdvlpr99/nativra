@@ -3,74 +3,125 @@
     "avatar": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Avatar.tsx": "630e72715a619203401b43e2737bb02ba7edc90c2051eeef666a7094ae10776a"
-      }
+        "components/ui/Avatar.tsx": "1aaa7999ed1247a7ea33c9fa5c7963960fd1dea2aec3e0d82720bb996abbb5fd"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "badge": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Badge.tsx": "6597d92af9cbd5dae1f620e14a7d9a06ff9ab5882ef5ddf92a57d1986c4b4e53"
-      }
+        "components/ui/Badge.tsx": "3271bc4b87f42697bd5c5f3f9529f12a9c2df46e64474aac67ab8857543f9d28"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "button": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Button.tsx": "1dba77674ab46c26179bfb016af7eea2d662edd95924d5c0b2ab27ed25cf273f"
-      }
+        "components/ui/Button.tsx": "86068ea6085bf33cad1f39d537a7b96ef4a4d91fb5e567ac5a616479a7c6eacb"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "card": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Card.tsx": "a5d894b5404467799c295f266b6e1c409e2226824fc4c06fe4f24911b9510d20"
-      }
+        "components/ui/Card.tsx": "291aaa08531231c952e7d15d3873fb05df44063d6d0a07e4cee22c5940127091"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "checkbox": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Checkbox.tsx": "fd0630d0ac334ee79ea8bfd9b4ace0d234d5d3b1502ce08f08936869fbc737a5"
-      }
+        "components/ui/Checkbox.tsx": "c10e884b651d40da23ebbfa8b2800144a45b711f5b27569d61b69a5f7a157597"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "input": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Input.tsx": "9d8758be5e5a382c51385385d7c8392185a38c245f8a29d86e22374e7d022bba"
-      }
+        "components/ui/Input.tsx": "029df1f3171912839ec77468ccf3f6b687e4a147b9fd08b082ce634d9eb421c9"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "label": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Label.tsx": "e5acb1b94d357482c16ef3efaeb99e2c05b7ad5a9825ae413dbd20e7b1dc4534"
-      }
+        "components/ui/Label.tsx": "192d434a9e456657907d5150f860e89c9cae6f7aa258563c2c0db7fe81fd5584"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "separator": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Separator.tsx": "09d938b6683313beaa4e71377bdd6dd504c627b9d566fe8ea7417d2c1b27a607"
-      }
+        "components/ui/Separator.tsx": "765f1ed890e29ebd67ee39b47a86470c64cd14e3c9e744a3327d912f34c0973b"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "skeleton": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Skeleton.tsx": "61ef868df6f397fe150f168af869c679956a127d3c1fe5d0b02685a4bbe74e25"
-      }
+        "components/ui/Skeleton.tsx": "f061e7578d9d98875dea25f1dd3fcd0d439cbeaa9858eba5e2c73e2e85a11c39"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "spinner": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Spinner.tsx": "f5bd28312ba8d46a463e929a043619b400eaeb463a78e4448e01496df1df89f2"
-      }
+        "components/ui/Spinner.tsx": "52e3b9dd08e90ebf3f41d45149209fedd447744918da393e9acb8e4daf21a154"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "switch": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Switch.tsx": "a003f8a06c5c353f27e681506d8327141ebe2e2e0f4810a6b46d44052946e74f"
-      }
+        "components/ui/Switch.tsx": "5c72e77004b404fa6d8063cacaade317d2ae54149a2aecab6740fe167fcf42a0"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
     },
     "text": {
       "version": "0.1.0",
       "files": {
-        "components/ui/Text.tsx": "4cbe6078db935ee01f50c6d73d2c8dee41dfe6d76af8d0014eb41fccf58e0b19"
+        "components/ui/Text.tsx": "37f48082223ca85f79c6048d74b65dc5c6a337b6e76241ab241082e3524ef27c"
+      },
+      "dependencies": [
+        "use-theme-colors"
+      ]
+    },
+    "zinc": {
+      "version": "0.1.0",
+      "files": {
+        "lib/themes/theme.ts": "1e37f57f81a8bcdaa44a3e85fed07962ff90de311782c2ee586bd799bf28a55c"
       }
+    },
+    "use-theme-colors": {
+      "version": "0.1.0",
+      "files": {
+        "hooks/use-theme-colors.ts": "b950bc4401a43dfab2cd52adc4956c98da3443b4054870efe3dc74e69a718fb8"
+      },
+      "dependencies": [
+        "zinc"
+      ]
     }
   }
 }

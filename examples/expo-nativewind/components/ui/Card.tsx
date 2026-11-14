@@ -12,7 +12,7 @@ const PAD = { sm: "p-3", md: "p-4", lg: "p-6" } as const;
 export function Card({ elevated = false, padding = "md", className, ...rest }: CardProps & { className?: string }) {
   return (
     <View
-      className={`rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 ${PAD[padding]} ${
+      className={`rounded-xl border border-border bg-card ${PAD[padding]} ${
         elevated ? "shadow-md" : ""
       } ${className ?? ""}`}
       {...rest}
