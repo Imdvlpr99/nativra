@@ -9,7 +9,7 @@ import { Callout, CodeBlock, Defs, DocsHeader, DocsSection, NextStep, P } from "
 export const metadata: Metadata = {
   title: "Theming — Semantic Tokens and Theme Presets for React Native",
   description:
-    "Nativra themes are semantic color tokens with light and dark palettes. Install one as a TypeScript file or as CSS variables for NativeWind.",
+    "Nativra themes are semantic color tokens with light and dark palettes. Every component reads them, so switching themes restyles your whole UI.",
   alternates: { canonical: "/docs/theming" },
 };
 
@@ -23,33 +23,40 @@ const TOKEN_DOCS = [
   { term: "border · input · ring", desc: "Dividers, input outlines and the keyboard focus ring." },
 ];
 
-const TS_USAGE = `import { StyleSheet, useColorScheme } from "react-native";
-import { midnight, midnightDark } from "@/lib/themes/theme";
+const TS_USAGE = `import { View, Text } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
-export function useTokens() {
-  return useColorScheme() === "dark" ? midnightDark : midnight;
-}
+export function Banner() {
+  const c = useThemeColors(); // follows the device's light/dark setting
+  return (
+    <View style={{ backgroundColor: c.muted, borderColor: c.border, borderWidth: 1 }}>
+      <Text style={{ color: c.foreground }}>Same tokens as the components</Text>
+    </View>
+  );
+}`;
 
-// in a component
-const t = useTokens();
-<View style={{ backgroundColor: t.background, borderColor: t.border }} />`;
+const THEME_FILE = `// lib/themes/theme.ts — installed with your first component
+export const zinc = { background: "#ffffff", primary: "#18181b", /* … */ } as const;
+export const zincDark = { background: "#09090b", primary: "#fafafa", /* … */ } as const;
 
-const TAILWIND = `// tailwind.config.js
-module.exports = {
-  presets: [require("nativewind/preset")],
-  theme: {
-    extend: {
-      colors: {
-        background: "var(--color-background)",
-        foreground: "var(--color-foreground)",
-        primary: "var(--color-primary)",
-        "primary-foreground": "var(--color-primary-foreground)",
-        muted: "var(--color-muted)",
-        border: "var(--color-border)",
-      },
-    },
-  },
-};`;
+// What every component reads (through useThemeColors / the CSS variables)
+export const themeColors = { light: zinc, dark: zincDark } as const;`;
+
+const TAILWIND = `// tailwind.config.js — theme.extend
+colors: {
+  border: "rgb(var(--color-border) / <alpha-value>)",
+  input: "rgb(var(--color-input) / <alpha-value>)",
+  ring: "rgb(var(--color-ring) / <alpha-value>)",
+  background: "rgb(var(--color-background) / <alpha-value>)",
+  foreground: "rgb(var(--color-foreground) / <alpha-value>)",
+  primary: { DEFAULT: "rgb(var(--color-primary) / <alpha-value>)", foreground: "rgb(var(--color-primary-foreground) / <alpha-value>)" },
+  secondary: { DEFAULT: "rgb(var(--color-secondary) / <alpha-value>)", foreground: "rgb(var(--color-secondary-foreground) / <alpha-value>)" },
+  muted: { DEFAULT: "rgb(var(--color-muted) / <alpha-value>)", foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)" },
+  accent: { DEFAULT: "rgb(var(--color-accent) / <alpha-value>)", foreground: "rgb(var(--color-accent-foreground) / <alpha-value>)" },
+  destructive: { DEFAULT: "rgb(var(--color-destructive) / <alpha-value>)", foreground: "rgb(var(--color-destructive-foreground) / <alpha-value>)" },
+  card: { DEFAULT: "rgb(var(--color-card) / <alpha-value>)", foreground: "rgb(var(--color-card-foreground) / <alpha-value>)" },
+  popover: { DEFAULT: "rgb(var(--color-popover) / <alpha-value>)", foreground: "rgb(var(--color-popover-foreground) / <alpha-value>)" },
+},`;
 
 export default async function ThemingPage() {
   const themes = (await getItemsByType("theme")).filter((t) => THEME_PRESETS[t.id]);
@@ -61,24 +68,46 @@ export default async function ThemingPage() {
       <DocsHeader
         eyebrow="Guides"
         title="Theming"
-        description="A theme is a set of semantic color tokens with a light and a dark palette. Install one as a TypeScript file, or as CSS variables for NativeWind."
+        description="A theme is a set of semantic color tokens with a light and a dark palette. Every Nativra component reads them, so one command restyles your whole UI."
         meta={`${themes.length} presets · light and dark`}
       />
 
       <DocsSection id="how-it-works" title="How theming works">
         <P>
           <p>
-            Components ship with a neutral palette and light/dark support built in. Because their colors live in your copy of
-            each file, you restyle a component by editing it.
+            Every component reads its colors from one file: <code>lib/themes/theme.ts</code>. It is installed with the{" "}
+            <strong>zinc</strong> theme the first time you add a component, and holds a light and a dark palette of the same
+            semantic tokens.
           </p>
+          <ul>
+            <li>
+              <strong>StyleSheet</strong> components read it through the <Link href="/docs/hooks/use-theme-colors">useThemeColors</Link>{" "}
+              hook and follow the device&apos;s light/dark setting.
+            </li>
+            <li>
+              <strong>NativeWind</strong> components use semantic classes (<code>bg-primary</code>,{" "}
+              <code>text-muted-foreground</code>) backed by CSS variables in <code>global.css</code>.
+            </li>
+          </ul>
+        </P>
+        <CodeBlock code={THEME_FILE} lang="ts" title="lib/themes/theme.ts" />
+      </DocsSection>
+
+      <DocsSection id="switch" title="Switch themes">
+        <P>
+          <p>Replace the theme file with another preset. Every installed component picks up the new palette:</p>
+        </P>
+        <CommandLine command="npx nativra-cli theme add midnight --overwrite --apply-css" switcher />
+        <P>
           <p>
-            Themes are for the rest of your app: they give your own screens the same vocabulary — <code>background</code>,{" "}
-            <code>primary</code>, <code>muted</code> — so you never hard-code a hex value twice.
+            <code>--overwrite</code> replaces <code>theme.ts</code> (the old one is backed up — undo with{" "}
+            <code>nativra rollback midnight</code>). <code>--apply-css</code> rewrites the CSS variables for NativeWind; it
+            is harmless with StyleSheet.
           </p>
         </P>
-        <Callout type="note" title="Installing a theme doesn't restyle installed components">
-          Components use their own colors today. To align a component with a theme, replace its color values with the theme&apos;s
-          tokens — it&apos;s your code.
+        <Callout type="tip" title="Customize a preset">
+          The theme file is yours: change a value in <code>theme.ts</code> (and, for NativeWind, the matching variable in{" "}
+          <code>global.css</code>) to adjust a color everywhere at once.
         </Callout>
       </DocsSection>
 
@@ -117,26 +146,25 @@ export default async function ThemingPage() {
 
       <DocsSection id="stylesheet" title="With StyleSheet">
         <P>
-          <p>
-            <code>theme add</code> writes a typed token file with both palettes to your <code>themesDir</code>{" "}
-            (default <code>lib/themes</code>):
-          </p>
+          <p>Use the same hook in your own screens so they match the components:</p>
         </P>
-        <CommandLine command="npx nativra-cli theme add midnight" switcher />
-        <CodeBlock code={TS_USAGE} title="hooks/use-tokens.ts" />
+        <CodeBlock code={TS_USAGE} title="components/Banner.tsx" />
       </DocsSection>
 
       <DocsSection id="nativewind" title="With NativeWind">
         <P>
           <p>
-            Add <code>--apply-css</code> to also write the tokens as CSS variables into your <code>global.css</code> (between
-            marker comments, so running it again replaces the block):
+            When you add a component and <code>global.css</code> has no theme yet, the CLI writes the theme&apos;s variables
+            there between marker comments (later <code>--apply-css</code> runs replace the block). The values are RGB channels
+            so opacity modifiers like <code>bg-primary/10</code> work:
           </p>
         </P>
-        <CommandLine command="npx nativra-cli theme add midnight --apply-css" switcher />
         <CodeBlock code={css} lang="css" title="global.css (generated)" />
         <P>
-          <p>Then map the variables to Tailwind colors so classes like <code>bg-background</code> work:</p>
+          <p>
+            Map them once in your Tailwind config. <code>add</code> and <code>doctor</code> warn when this is missing, and{" "}
+            <code>doctor --fix</code> includes it when it scaffolds a new config:
+          </p>
         </P>
         <CodeBlock code={TAILWIND} lang="js" title="tailwind.config.js" />
       </DocsSection>

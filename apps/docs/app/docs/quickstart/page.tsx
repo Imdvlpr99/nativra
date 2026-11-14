@@ -81,11 +81,11 @@ export default function QuickstartPage() {
       <DocsSection id="theme" title="4. Apply a theme">
         <P>
           <p>
-            Themes are semantic token sets with light and dark palettes. Install one as a TypeScript file, and with NativeWind
-            also wire its CSS variables into <code>global.css</code>:
+            Your components already use the default <strong>zinc</strong> theme. Switch every one of them to another palette
+            by replacing the theme file (and, with NativeWind, its CSS variables):
           </p>
         </P>
-        <CommandLine command="npx nativra-cli theme add midnight --apply-css" switcher />
+        <CommandLine command="npx nativra-cli theme add midnight --overwrite --apply-css" switcher />
         <P>
           <p>
             Browse all palettes in <Link href="/docs/themes">Themes</Link>.

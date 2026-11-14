@@ -55,9 +55,9 @@ export default function PrinciplesPage() {
             <code>nativra.json</code>, and the CLI only installs that version.
           </p>
           <p>
-            Both versions ship with the same neutral look and light/dark support. Because the colors live in your copy of the
-            file, restyling is an edit, not an override. <a href="/docs/theming">Themes</a> give you matching token sets to use
-            in your own screens.
+            Both versions read the same semantic tokens from your installed theme — <code>background</code>,{" "}
+            <code>primary</code>, <code>muted</code>… — so a <a href="/docs/theming">theme</a> looks identical whichever target
+            you use, and switching themes restyles every component.
           </p>
         </P>
       </DocsSection>

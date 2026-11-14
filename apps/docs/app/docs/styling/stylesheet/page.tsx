@@ -15,26 +15,27 @@ const CONFIG = `{
 }`;
 
 /** Trimmed from registry/default/components/badge/stylesheet/Badge.tsx */
-const PATTERN = `import { View, Text, StyleSheet, useColorScheme, type ViewStyle } from "react-native";
+const PATTERN = `import { View, Text, StyleSheet, type ViewStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 const styles = StyleSheet.create({
   base: { flexDirection: "row", alignItems: "center", borderRadius: 999 },
   md: { paddingHorizontal: 10, paddingVertical: 2 },
 });
 
-function getContainerStyle(variant: BadgeVariant, dark: boolean): ViewStyle {
+function getContainerStyle(variant: BadgeVariant, c: ThemeColors): ViewStyle {
   const map: Record<BadgeVariant, ViewStyle> = {
-    default: { backgroundColor: dark ? "#fafafa" : "#171717" },
-    primary: { backgroundColor: dark ? "#0c4a6e" : "#e0f2fe" },
+    default: { backgroundColor: c.foreground },
+    primary: { backgroundColor: alpha(c.primary, 0.12) },
     // …
   };
   return map[variant];
 }
 
 export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
   return (
-    <View style={[styles.base, styles[size], getContainerStyle(variant, dark)]}>
+    <View style={[styles.base, styles[size], getContainerStyle(variant, c)]}>
       <Text>{label}</Text>
     </View>
   );
@@ -65,8 +66,8 @@ export default function StyleSheetPage() {
       <DocsSection id="how-it-works" title="How the components are written">
         <P>
           <p>
-            Static layout goes in <code>StyleSheet.create</code>. Colors are chosen per variant and color scheme with{" "}
-            <code>useColorScheme()</code>, so components follow the device&apos;s light or dark setting:
+            Static layout goes in <code>StyleSheet.create</code>. Colors come from your installed theme through{" "}
+            <code>useThemeColors()</code>, which also follows the device&apos;s light or dark setting:
           </p>
         </P>
         <CodeBlock code={PATTERN} title="components/ui/Badge.tsx (excerpt)" />
@@ -75,8 +76,8 @@ export default function StyleSheetPage() {
       <DocsSection id="restyle" title="Restyling">
         <Defs
           items={[
-            { term: "Change a color", desc: "Edit the value in the component's color map. It is your file — there is no override layer." },
-            { term: "Use your theme", desc: <>Replace hex values with tokens from a theme file (<Link className="link" href="/docs/theming#stylesheet">Theming → StyleSheet</Link>).</> },
+            { term: "Change every component", desc: <>Switch or edit the theme file — see <Link className="link" href="/docs/theming#switch">Theming</Link>.</> },
+            { term: "Change one component", desc: "Edit its styles directly. It is your file — there is no override layer." },
             { term: "Add a variant", desc: "Extend the variant union type and add an entry to the map; TypeScript flags every place that needs it." },
           ]}
         />
