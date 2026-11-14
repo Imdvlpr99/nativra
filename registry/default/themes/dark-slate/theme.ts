@@ -47,3 +47,9 @@ export const darkSlateDark = {
 } as const;
 
 export type DarkSlateTheme = typeof darkSlate;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: darkSlate, dark: darkSlateDark } as const;

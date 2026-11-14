@@ -4,6 +4,7 @@ import {
   toCssVariables,
   toStyleSheetTokens,
   toTailwindPreset,
+  hexToRgbChannels,
   getThemePreset,
   THEME_PRESETS,
   emeraldTheme,
@@ -22,6 +23,12 @@ describe("theme-engine", () => {
     const css = toCssVariables(defaultTheme);
     expect(css).toContain("--color-primary:");
     expect(css).toContain("--radius-md: 8px;");
+  });
+
+  it("emits RGB channels so Tailwind opacity modifiers work", () => {
+    expect(hexToRgbChannels("#18181b")).toBe("24 24 27");
+    expect(hexToRgbChannels("#fff")).toBe("255 255 255");
+    expect(toCssVariables(defaultTheme)).toMatch(/--color-primary: \d+ \d+ \d+;/);
   });
 
   it("wraps dark tokens in a valid media block", () => {
@@ -56,7 +63,7 @@ describe("theme-engine", () => {
         borderRadius: { md: string };
       };
     };
-    expect(themeObj.extend.colors.primary.DEFAULT).toBe("var(--color-primary)");
+    expect(themeObj.extend.colors.primary.DEFAULT).toBe("rgb(var(--color-primary) / <alpha-value>)");
     expect(themeObj.extend.borderRadius.md).toBe("8px");
   });
 

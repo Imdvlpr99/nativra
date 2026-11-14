@@ -47,3 +47,9 @@ export const roseDark = {
 } as const;
 
 export type RoseTheme = typeof rose;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: rose, dark: roseDark } as const;

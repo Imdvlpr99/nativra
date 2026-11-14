@@ -41,6 +41,12 @@ ${block(theme.dark)}
 } as const;
 
 export type ${pascal(theme.id)}Theme = typeof ${name};
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: ${name}, dark: ${name}Dark } as const;
 `;
 }
 

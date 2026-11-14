@@ -47,3 +47,9 @@ export const violetDark = {
 } as const;
 
 export type VioletTheme = typeof violet;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: violet, dark: violetDark } as const;

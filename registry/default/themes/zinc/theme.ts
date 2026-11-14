@@ -47,3 +47,9 @@ export const zincDark = {
 } as const;
 
 export type ZincTheme = typeof zinc;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: zinc, dark: zincDark } as const;

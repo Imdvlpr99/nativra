@@ -47,3 +47,9 @@ export const midnightDark = {
 } as const;
 
 export type MidnightTheme = typeof midnight;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: midnight, dark: midnightDark } as const;

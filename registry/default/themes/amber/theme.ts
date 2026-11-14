@@ -47,3 +47,9 @@ export const amberDark = {
 } as const;
 
 export type AmberTheme = typeof amber;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: amber, dark: amberDark } as const;

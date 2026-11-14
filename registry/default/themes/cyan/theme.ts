@@ -47,3 +47,9 @@ export const cyanDark = {
 } as const;
 
 export type CyanTheme = typeof cyan;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: cyan, dark: cyanDark } as const;

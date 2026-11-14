@@ -47,3 +47,9 @@ export const emeraldDark = {
 } as const;
 
 export type EmeraldTheme = typeof emerald;
+
+/**
+ * The active palette pair. Components read this through the use-theme-colors hook, so
+ * installing a different theme over this file restyles every component.
+ */
+export const themeColors = { light: emerald, dark: emeraldDark } as const;

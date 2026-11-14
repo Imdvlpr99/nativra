@@ -854,11 +854,22 @@ export function resolveThemeTokens(
  * Converts theme tokens into a CSS custom property block suitable for
  * embedding in a global CSS file (used by NativeWind / web target).
  */
+/** "#18181b" -> "24 24 27". Accepts 3- or 6-digit hex; anything else is returned unchanged. */
+export function hexToRgbChannels(hex: string): string {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  const full = m[1]!.length === 3 ? m[1]!.split("").map((c) => c + c).join("") : m[1]!;
+  const n = parseInt(full, 16);
+  return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
+}
+
 export function toCssVariables(theme: NativraThemeTokens): string {
   const lines: string[] = [];
 
+  // Space-separated RGB channels, so Tailwind opacity modifiers work:
+  // rgb(var(--color-primary) / <alpha-value>) -> bg-primary/10
   const colorVars = (colors: SemanticColors, indent: string) =>
-    Object.entries(colors).map(([key, value]) => `${indent}--color-${key}: ${value};`);
+    Object.entries(colors).map(([key, value]) => `${indent}--color-${key}: ${hexToRgbChannels(String(value))};`);
 
   lines.push(":root {", ...colorVars(theme.light, "  "), "}");
   // A media query needs its own block around the rule; "@media (...) :root {" is invalid CSS.
@@ -887,39 +898,39 @@ export function toTailwindPreset(theme: NativraThemeTokens): Record<string, unkn
     theme: {
       extend: {
         colors: {
-          background: "var(--color-background)",
-          foreground: "var(--color-foreground)",
+          background: "rgb(var(--color-background) / <alpha-value>)",
+          foreground: "rgb(var(--color-foreground) / <alpha-value>)",
           card: {
-            DEFAULT: "var(--color-card)",
-            foreground: "var(--color-card-foreground)",
+            DEFAULT: "rgb(var(--color-card) / <alpha-value>)",
+            foreground: "rgb(var(--color-card-foreground) / <alpha-value>)",
           },
           popover: {
-            DEFAULT: "var(--color-popover)",
-            foreground: "var(--color-popover-foreground)",
+            DEFAULT: "rgb(var(--color-popover) / <alpha-value>)",
+            foreground: "rgb(var(--color-popover-foreground) / <alpha-value>)",
           },
           primary: {
-            DEFAULT: "var(--color-primary)",
-            foreground: "var(--color-primary-foreground)",
+            DEFAULT: "rgb(var(--color-primary) / <alpha-value>)",
+            foreground: "rgb(var(--color-primary-foreground) / <alpha-value>)",
           },
           secondary: {
-            DEFAULT: "var(--color-secondary)",
-            foreground: "var(--color-secondary-foreground)",
+            DEFAULT: "rgb(var(--color-secondary) / <alpha-value>)",
+            foreground: "rgb(var(--color-secondary-foreground) / <alpha-value>)",
           },
           muted: {
-            DEFAULT: "var(--color-muted)",
-            foreground: "var(--color-muted-foreground)",
+            DEFAULT: "rgb(var(--color-muted) / <alpha-value>)",
+            foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)",
           },
           accent: {
-            DEFAULT: "var(--color-accent)",
-            foreground: "var(--color-accent-foreground)",
+            DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+            foreground: "rgb(var(--color-accent-foreground) / <alpha-value>)",
           },
           destructive: {
-            DEFAULT: "var(--color-destructive)",
-            foreground: "var(--color-destructive-foreground)",
+            DEFAULT: "rgb(var(--color-destructive) / <alpha-value>)",
+            foreground: "rgb(var(--color-destructive-foreground) / <alpha-value>)",
           },
-          border: "var(--color-border)",
-          input: "var(--color-input)",
-          ring: "var(--color-ring)",
+          border: "rgb(var(--color-border) / <alpha-value>)",
+          input: "rgb(var(--color-input) / <alpha-value>)",
+          ring: "rgb(var(--color-ring) / <alpha-value>)",
         },
         borderRadius: {
           sm: `${theme.radius.sm}px`,
