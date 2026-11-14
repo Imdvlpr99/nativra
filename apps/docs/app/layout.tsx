@@ -1,7 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { THEME_INIT_SCRIPT, ThemeProvider } from "./contexts/ThemeContext";
 import { Navbar } from "@/components/Navbar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { getCliVersion } from "@/lib/site";
+
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fontMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nativra.vercel.app"),
@@ -108,7 +121,7 @@ const rootJsonLd = {
       applicationCategory: "DeveloperApplication",
       applicationSubCategory: "React Native UI Component Library & CLI",
       operatingSystem: "iOS, Android, Web, macOS, Windows, Linux",
-      softwareVersion: "0.2.3",
+      softwareVersion: getCliVersion(),
       license: "https://opensource.org/licenses/MIT",
       url: "https://nativra.vercel.app",
       downloadUrl: "https://www.npmjs.com/package/nativra-cli",
@@ -140,65 +153,33 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const version = getCliVersion();
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-sky-500 selection:text-white">
+    <html lang="en" suppressHydrationWarning className={`${fontSans.variable} ${fontMono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(rootJsonLd).replace(/</g, "\\u003c"),
           }}
         />
+        <a
+          href="#main-content"
+          className="fixed left-4 top-3 z-[60] -translate-y-20 rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background transition-transform focus-visible:translate-y-0"
+        >
+          Skip to content
+        </a>
         <ThemeProvider>
           <div className="relative flex min-h-screen flex-col">
-            <Navbar />
+            <Navbar version={version} />
             <div className="flex-1">{children}</div>
-            <Footer />
+            <SiteFooter version={version} />
           </div>
         </ThemeProvider>
       </body>
     </html>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-border bg-background py-8 text-xs text-muted-foreground">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
-        <div className="flex items-center gap-2">
-          <img src="/icon.png" alt="Nativra" className="h-4 w-4 object-contain" />
-          <span className="font-semibold text-foreground">Nativra</span>
-          <span>— Built for high-performance React Native & Expo apps. MIT License.</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <a
-            href="/docs"
-            className="hover:text-foreground transition-colors"
-          >
-            Documentation
-          </a>
-          <a
-            href="/docs/components"
-            className="hover:text-foreground transition-colors"
-          >
-            Components
-          </a>
-          <a
-            href="/docs/cli"
-            className="hover:text-foreground transition-colors"
-          >
-            CLI
-          </a>
-          <a
-            href="https://github.com/Imdvlpr99/nativra"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
-          >
-            GitHub
-          </a>
-        </div>
-      </div>
-    </footer>
   );
 }

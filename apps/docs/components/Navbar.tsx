@@ -1,12 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Menu, Search, X } from "lucide-react";
 import { ThemeToggle } from "@/app/contexts/ThemeContext";
-import { Search, Menu, X } from "lucide-react";
 import { SearchDialog } from "./SearchDialog";
+
+const REPO_URL = "https://github.com/Imdvlpr99/nativra";
+
+const NAV_LINKS = [
+  { name: "Docs", href: "/docs" },
+  { name: "Components", href: "/docs/components" },
+  { name: "Blocks", href: "/docs/blocks" },
+  { name: "Templates", href: "/docs/templates" },
+  { name: "Themes", href: "/docs/themes" },
+  { name: "CLI", href: "/docs/cli" },
+];
+
+function isActive(pathname: string, href: string): boolean {
+  if (href === "/docs") return pathname === "/docs" || /^\/docs\/(installation|principles|compatibility|styling|theming|contributing|changelog)/.test(pathname);
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -20,142 +36,137 @@ function GithubIcon({ className }: { className?: string }) {
   );
 }
 
-export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const pathname = usePathname();
+export function Navbar({ version }: { version: string }) {
+  const pathname = usePathname() ?? "/";
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [shortcut, setShortcut] = useState("Ctrl K");
 
-  const navLinks = [
-    { name: "Docs", href: "/docs" },
-    { name: "Components", href: "/docs/components" },
-    { name: "Blocks", href: "/docs/blocks" },
-    { name: "Hooks", href: "/docs/hooks" },
-    { name: "Theming", href: "/docs/theming" },
-    { name: "CLI", href: "/docs/cli" },
-  ];
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+
+  useEffect(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.platform)) setShortcut("⌘K");
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      } else if (e.key === "/" && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Close the mobile menu on navigation.
+  useEffect(() => setMenuOpen(false), [pathname]);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0 shadow-sm">
-                <Image src="/icon.png" alt="Nativra logo" width={32} height={32} priority className="object-contain" />
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-bold tracking-tight text-foreground">Nativra</span>
-                <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                  v0.2.3
-                </span>
-              </div>
-            </Link>
+      <header className="sticky top-0 z-50 h-[var(--header-height)] border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+        <div className="container-docs flex h-full items-center gap-4">
+          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Nativra home">
+            <Image src="/icon.png" alt="" width={28} height={28} priority className="rounded-md" />
+            <span className="text-[15px] font-semibold tracking-tight">Nativra</span>
+          </Link>
+          <Link
+            href="/docs/changelog"
+            className="hidden rounded-full border border-border px-2 py-0.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground sm:inline-block"
+            aria-label={`Version ${version}, view changelog`}
+          >
+            v{version}
+          </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden items-center gap-1 lg:flex">
-              {navLinks.map((link) => {
-                const isActive =
-                  pathname === link.href ||
-                  (link.href !== "/docs" && pathname.startsWith(link.href)) ||
-                  (link.href === "/docs" && pathname === "/docs");
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                      isActive
-                        ? "bg-zinc-100 text-foreground dark:bg-zinc-800 font-semibold"
-                        : "text-muted-foreground hover:bg-zinc-50 hover:text-foreground dark:hover:bg-zinc-800/50"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          <nav aria-label="Main" className="ml-4 hidden items-center gap-1 lg:flex">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                    active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Search Trigger */}
+          <div className="ml-auto flex items-center gap-1">
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex h-9 items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 text-xs text-muted-foreground transition-colors hover:border-zinc-400 hover:bg-muted/70 sm:w-56 justify-between"
+              type="button"
+              onClick={openSearch}
+              className="hidden h-9 w-60 items-center gap-2 rounded-md border border-border bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
               aria-label="Search documentation"
             >
-              <span className="flex items-center gap-1.5">
-                <Search className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Search docs...</span>
-                <span className="sm:hidden">Search</span>
-              </span>
-              <kbd className="hidden rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground sm:inline-block">
-                ⌘K
-              </kbd>
+              <Search className="h-4 w-4" aria-hidden="true" />
+              <span>Search docs…</span>
+              <kbd className="kbd ml-auto">{shortcut}</kbd>
             </button>
-
-            {/* GitHub Link */}
+            <button
+              type="button"
+              onClick={openSearch}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground md:hidden"
+              aria-label="Search documentation"
+            >
+              <Search className="h-[18px] w-[18px]" aria-hidden="true" />
+            </button>
             <a
-              href="https://github.com/Imdvlpr99/nativra"
+              href={REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
-              aria-label="GitHub Repository"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label="Nativra on GitHub"
             >
-              <GithubIcon className="h-4 w-4" />
+              <GithubIcon className="h-[18px] w-[18px]" />
             </a>
-
-            {/* Theme Toggle */}
             <ThemeToggle />
-
-            {/* Mobile Menu Toggle Button */}
             <button
-              className="rounded-lg p-2 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle navigation menu"
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-main-nav"
             >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Dropdown */}
-        {isMenuOpen && (
-          <div className="border-t border-border bg-background px-4 py-4 lg:hidden animate-in slide-in-from-top-2">
-            <nav className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
-                <a
-                  href="https://github.com/Imdvlpr99/nativra"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                  GitHub Repository
-                </a>
-                <Link
-                  href="/docs/cli"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-1 text-xs font-medium text-sky-600 dark:text-sky-400"
-                >
-                  CLI Guide →
-                </Link>
-              </div>
-            </nav>
-          </div>
+        {menuOpen && (
+          <nav
+            id="mobile-main-nav"
+            aria-label="Main"
+            className="border-b border-border bg-background shadow-sm lg:hidden"
+          >
+            <ul className="container-docs grid gap-1 py-3">
+              {NAV_LINKS.map((link) => {
+                const active = isActive(pathname, link.href);
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`flex min-h-11 items-center rounded-md px-3 text-sm ${
+                        active ? "bg-accent font-medium text-foreground" : "text-muted-foreground hover:bg-accent"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
         )}
       </header>
-
-      {/* Global Search Dialog */}
-      <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchDialog isOpen={searchOpen} onClose={closeSearch} />
     </>
   );
 }

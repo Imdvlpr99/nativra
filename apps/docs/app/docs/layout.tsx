@@ -1,23 +1,31 @@
 import React from "react";
-import { DocsSidebar } from "@/components/DocsSidebar";
+import { getDocsNav } from "@/lib/docs-nav";
+import { DocsSidebar } from "@/components/docs/DocsSidebar";
+import { DocsMobileNav } from "@/components/docs/DocsMobileNav";
+import { DocsPager } from "@/components/docs/DocsPager";
+import { OnThisPage } from "@/components/docs/OnThisPage";
 
-export default function DocsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function DocsLayout({ children }: { children: React.ReactNode }) {
+  const sections = await getDocsNav();
+
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="flex">
-        {/* Sticky Sidebar on Desktop */}
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-border py-8 pr-6 md:block">
-          <DocsSidebar />
+    <div className="container-docs">
+      <DocsMobileNav sections={sections} />
+      <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)_200px]">
+        <aside className="sticky top-[var(--header-height)] hidden h-[calc(100vh-var(--header-height))] overflow-y-auto overscroll-contain py-8 pr-2 lg:block">
+          <DocsSidebar sections={sections} />
         </aside>
 
-        {/* Main Content Area */}
-        <main className="min-w-0 flex-1 py-8 md:pl-8 lg:pl-10">
-          {children}
+        <main id="main-content" tabIndex={-1} className="min-w-0 py-8 outline-none lg:py-10">
+          <div id="docs-content" className="mx-auto max-w-3xl xl:max-w-none">
+            {children}
+          </div>
+          <DocsPager sections={sections} />
         </main>
+
+        <aside className="sticky top-[var(--header-height)] hidden h-[calc(100vh-var(--header-height))] overflow-y-auto py-10 xl:block">
+          <OnThisPage />
+        </aside>
       </div>
     </div>
   );

@@ -122,43 +122,28 @@ if (outFlag === -1) {
       name: "Changelog",
       category: "Documentation",
       href: "/docs/changelog",
-      description: "Release notes and roadmap history for v0.2.1",
-    },
-    {
-      id: "cn",
-      name: "Class Names Utility",
-      category: "Documentation",
-      href: "/docs/styling/nativewind",
-      description: "Utility function for conditionally merging class names with clsx and tailwind-merge (NativeWind) or flattening style objects (StyleSheet).",
+      description: "Release notes for every nativra-cli version",
     },
   ];
 
   const searchItems = [
     ...staticDocItems,
     ...result.items.map((item) => {
-      let category = "Component";
-      let href = `/docs/components/${item.id}`;
-      if (item.type === "block") {
-        category = "Block";
-        href = `/docs/blocks#${item.id}`;
-      } else if (item.type === "template") {
-        category = "Template";
-        href = `/docs/templates#${item.id}`;
-      } else if (item.type === "hook") {
-        category = "Hook";
-        href = `/docs/hooks#${item.id}`;
-      } else if (item.type === "theme") {
-        category = "Theme";
-        href = `/docs/theming#${item.id}`;
-      } else if (item.type === "utility") {
-        category = "Documentation";
-        href = "/docs/styling/nativewind";
-      }
+      // Mirrors apps/docs/lib/item-types.ts: every item has its own page at /docs/<segment>/<id>.
+      const TYPES = {
+        component: ["Component", "components"],
+        block: ["Block", "blocks"],
+        template: ["Template", "templates"],
+        hook: ["Hook", "hooks"],
+        utility: ["Utility", "utilities"],
+        theme: ["Theme", "themes"],
+      };
+      const [category, segment] = TYPES[item.type] ?? ["Component", "components"];
       return {
         id: item.id,
         name: item.name,
         category,
-        href,
+        href: `/docs/${segment}/${item.id}`,
         description: item.description,
       };
     }),

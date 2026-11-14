@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 import { ITEM_ID_REGEX, RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
-import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
+import type { RegistryItem, RegistryItemType, RegistryManifest } from "@nativra/registry-schema";
+import { ITEM_TYPE_ORDER } from "./item-types";
 
 export type RegistryItemSummary = RegistryManifest["items"][number];
 
@@ -29,28 +30,42 @@ export async function getItem(id: string): Promise<RegistryItem | null> {
   }
 }
 
-export async function getComponents(): Promise<RegistryItemSummary[]> {
+/** Manifest items of one type, sorted by name. */
+export async function getItemsByType(type: RegistryItemType): Promise<RegistryItemSummary[]> {
   const manifest = await getManifest();
-  return manifest.items.filter((i) => i.type === "component");
+  return manifest.items.filter((i) => i.type === type).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function getBlocks(): Promise<RegistryItemSummary[]> {
+export type CatalogCounts = Record<RegistryItemType, number>;
+
+export async function getCatalogCounts(): Promise<CatalogCounts> {
   const manifest = await getManifest();
-  return manifest.items.filter((i) => i.type === "block");
+  const counts = Object.fromEntries(ITEM_TYPE_ORDER.map((t) => [t, 0])) as CatalogCounts;
+  for (const item of manifest.items) counts[item.type] += 1;
+  return counts;
 }
 
-export async function getHooks(): Promise<RegistryItemSummary[]> {
-  const manifest = await getManifest();
-  return manifest.items.filter((i) => i.type === "hook");
+let allItemsPromise: Promise<RegistryItem[]> | undefined;
+
+/** Every full item (with sources and docs). Cached per process; used for reverse-dependency lookups. */
+export function getAllItems(): Promise<RegistryItem[]> {
+  allItemsPromise ??= getManifest().then(async (m) => {
+    const items = await Promise.all(m.items.map((i) => getItem(i.id)));
+    return items.filter((i): i is RegistryItem => i !== null);
+  });
+  return allItemsPromise;
 }
 
-export async function getThemes(): Promise<RegistryItemSummary[]> {
-  const manifest = await getManifest();
-  return manifest.items.filter((i) => i.type === "theme");
+/** Items that list `id` as a registry dependency ("Used by"). */
+export async function getDependents(id: string): Promise<RegistryItemSummary[]> {
+  const [manifest, all] = await Promise.all([getManifest(), getAllItems()]);
+  const ids = new Set(all.filter((i) => i.registryDependencies?.some((d) => d.id === id)).map((i) => i.id));
+  return manifest.items.filter((i) => ids.has(i.id)).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function getTemplates(): Promise<RegistryItemSummary[]> {
+export async function getSummaries(ids: string[]): Promise<RegistryItemSummary[]> {
   const manifest = await getManifest();
-  return manifest.items.filter((i) => i.type === "template");
+  return ids
+    .map((id) => manifest.items.find((i) => i.id === id))
+    .filter((i): i is RegistryItemSummary => Boolean(i));
 }
-

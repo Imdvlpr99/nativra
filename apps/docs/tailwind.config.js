@@ -1,4 +1,7 @@
 module.exports = {
+  // Theme toggle sets the "dark" class on <html>; without this, dark: variants
+  // followed the OS setting and ignored the toggle.
+  darkMode: "class",
   content: [
     "./app/**/*.{ts,tsx,mdx}",
     "./components/**/*.{ts,tsx}",
@@ -7,7 +10,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: "var(--font-sans)",
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
         background: "hsl(var(--background))",

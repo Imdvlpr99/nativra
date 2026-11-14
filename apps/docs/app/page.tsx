@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ArrowRight,
-  ShieldCheck,
+  FileCode2,
+  GitCompareArrows,
   Layers,
-  Sparkles,
+  Palette,
+  ShieldCheck,
   Smartphone,
-  Terminal,
-  GitPullRequest,
-  CheckCircle2,
-  X,
 } from "lucide-react";
+import { THEME_PRESETS } from "@nativra/theme-engine";
 import { HomeHeroPlayground } from "@/components/HomeHeroPlayground";
-import { HomeBentoShowcase } from "@/components/HomeBentoShowcase";
+import { CommandLine } from "@/components/docs/CopyButton";
+import { getCatalogCounts, getManifest } from "@/lib/registry";
+import { ITEM_TYPE_ORDER, TYPE_META, catalogHref, itemHref } from "@/lib/item-types";
+import { getCliVersion } from "@/lib/site";
 
 export const metadata: Metadata = {
   title:
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 };
+
 
 const homepageFaqItems = [
   {
@@ -66,351 +68,261 @@ const homepageFaqJsonLd = {
   })),
 };
 
-export default function HomePage() {
+const FEATURES = [
+  {
+    icon: FileCode2,
+    title: "You own the source",
+    body: "The CLI copies typed TypeScript into your repo — no runtime package, no version lock. Edit anything.",
+  },
+  {
+    icon: Layers,
+    title: "NativeWind or StyleSheet",
+    body: "Every item ships both implementations with the same props and behavior. Pick one in nativra.json.",
+  },
+  {
+    icon: GitCompareArrows,
+    title: "Updates that respect your edits",
+    body: "SHA-256 hashes in nativra.lock.json detect local changes. diff before you update; every update is snapshotted and reversible with rollback.",
+  },
+  {
+    icon: Palette,
+    title: "Theme engine",
+    body: "Semantic tokens with light and dark palettes. Install a theme as source or wire it into global.css as CSS variables.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Accessible by default",
+    body: "Accessibility roles and labels on interactive components, no font-scaling locks — and nativra audit checks the rest of your app.",
+  },
+  {
+    icon: Smartphone,
+    title: "Made for Expo",
+    body: "Verified on iOS and Android, Expo Go and the New Architecture. init detects your setup and tsconfig aliases.",
+  },
+];
+
+const WORKFLOW = [
+  { cmd: "npx nativra-cli init", title: "Initialize", body: "Detects Expo, NativeWind, src/ layout and your tsconfig path alias, then writes nativra.json." },
+  { cmd: "npx nativra-cli add login-form", title: "Add", body: "Resolves registry dependencies, rewrites imports to your aliases and records hashes in the lockfile." },
+  { cmd: "npx nativra-cli diff button", title: "Compare", body: "See exactly how your copy differs from the latest registry version before changing anything." },
+  { cmd: "npx nativra-cli update", title: "Update safely", body: "Locally modified files are skipped unless you pass --force. Undo any update with rollback." },
+];
+
+export default async function HomePage() {
+  const [counts, manifest] = await Promise.all([getCatalogCounts(), getManifest()]);
+  const version = getCliVersion();
+  const themes = manifest.items.filter((i) => i.type === "theme" && THEME_PRESETS[i.id]);
+  const stats = ITEM_TYPE_ORDER.filter((t) => counts[t] > 0 && t !== "utility");
+
   return (
-    <div className="flex flex-col">
+    <main id="main-content" tabIndex={-1} className="outline-none">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(homepageFaqJsonLd).replace(/</g, "\\u003c"),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd).replace(/</g, "\\u003c") }}
       />
-      {/* ------------------------------------------------------------------- */}
-      {/* Hero Section */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden px-4 pt-16 pb-20 sm:px-6 lg:px-8">
-        {/* Subtle Background Glow */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-        >
-          <div
-            style={{
-              clipPath:
-                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-            }}
-            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-sky-400 to-indigo-500 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          />
-        </div>
 
-        <div className="mx-auto max-w-5xl text-center space-y-6">
-          {/* Announcement Pill with Brand Icon */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 py-1 pl-1.5 pr-3.5 text-xs font-semibold text-sky-800 dark:border-sky-900/60 dark:bg-sky-950/60 dark:text-sky-300 shadow-sm">
-            <Image src="/icon.png" alt="Nativra" width={18} height={18} className="rounded-full object-contain" />
-            <span>Introducing Nativra v0.2.3 — Source-First React Native UI</span>
+      {/* Hero */}
+      <section className="border-b border-border">
+        <div className="container-docs grid gap-12 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center">
+          <div className="space-y-6">
+            <Link
+              href="/docs/changelog"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <span className="font-mono">v{version}</span>
+              <span aria-hidden="true">·</span>
+              <span>What&apos;s new</span>
+              <ArrowRight className="h-3 w-3" aria-hidden="true" />
+            </Link>
+            <h1 className="text-4xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl">
+              Native UI,
+              <br />
+              <span className="text-muted-foreground">built your way.</span>
+            </h1>
+            <p className="max-w-xl text-lg text-muted-foreground">
+              Copy accessible React Native and Expo components into your project with one command. The source is yours —
+              styled with NativeWind or StyleSheet, with no runtime dependency.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/docs/installation"
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90"
+              >
+                Get started
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/docs/components"
+                className="inline-flex h-11 items-center rounded-md border border-border px-5 text-sm font-medium transition-colors hover:bg-accent"
+              >
+                Browse components
+              </Link>
+            </div>
+            <div className="max-w-md">
+              <CommandLine command="npx nativra-cli init" />
+            </div>
           </div>
-
-          {/* Main Title */}
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-            Native UI,{" "}
-            <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              built your way.
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg leading-relaxed">
-            A source-first UI platform for React Native and Expo. Copy production-grade components into your codebase, own every line, and customize without runtime package locks.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <Link
-              href="/docs"
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <Link
-              href="/docs/components"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-muted"
-            >
-              Browse Components
-            </Link>
-
-            <Link
-              href="/docs/cli"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300/60 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-800 transition-all hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
-            >
-              <Terminal className="h-4 w-4" />
-              <span>CLI Guide</span>
-            </Link>
-          </div>
-
-          {/* Live Interactive Playground Hero Component */}
-          <div className="mx-auto pt-8 flex justify-center">
+          <div className="min-w-0">
             <HomeHeroPlayground />
           </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------- */}
-      {/* Quickstart CLI Box */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="border-y border-border bg-muted/20 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center space-y-6">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <Terminal className="h-4 w-4 text-sky-500" />
-            <span>Add in Seconds</span>
-          </div>
+      {/* Catalog numbers */}
+      <section aria-labelledby="catalog-heading" className="border-b border-border">
+        <h2 id="catalog-heading" className="sr-only">
+          What&apos;s in the registry
+        </h2>
+        <ul className="container-docs grid grid-cols-2 divide-border sm:grid-cols-3 lg:grid-cols-5 lg:divide-x">
+          {stats.map((t) => (
+            <li key={t}>
+              <Link href={catalogHref(t)} className="group block px-2 py-8 transition-colors hover:bg-accent/40 lg:px-6">
+                <span className="block font-mono text-3xl font-semibold tabular-nums">{counts[t]}</span>
+                <span className="mt-1 flex items-center gap-1 text-sm text-muted-foreground group-hover:text-foreground">
+                  {TYPE_META[t].plural}
+                  <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            One command to install. Zero runtime locks.
+      {/* Features */}
+      <section aria-labelledby="features-heading" className="container-docs py-20 sm:py-24">
+        <div className="max-w-2xl space-y-3">
+          <p className="eyebrow">Why Nativra</p>
+          <h2 id="features-heading" className="text-3xl font-semibold sm:text-4xl">
+            A component library you can actually change.
           </h2>
-
-          <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-            Nativra installs clean TypeScript source files straight into your repository. No mysterious node_modules packages.
+          <p className="text-lg text-muted-foreground">
+            Packages give you components you can&apos;t edit. Nativra gives you the code, plus tooling to keep it current.
           </p>
-
-          <div className="mx-auto max-w-xl rounded-xl border border-border bg-zinc-950 p-4 text-left font-mono text-xs text-zinc-100 shadow-lg">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-zinc-500 text-[11px]">
-              <span>bash</span>
-              <span>nativra-cli</span>
-            </div>
-            <div className="pt-3 space-y-1.5 text-zinc-300">
-              <div>
-                <span className="text-zinc-500">$ </span>
-                <span className="text-sky-400">npx nativra-cli init</span>
-              </div>
-              <div className="text-zinc-400 pl-4">✓ Created nativra.json (target: NativeWind)</div>
-              <div className="pt-1">
-                <span className="text-zinc-500">$ </span>
-                <span className="text-sky-400">npx nativra-cli add button input card badge</span>
-              </div>
-              <div className="text-emerald-400 pl-4">✓ Written: components/ui/Button.tsx</div>
-              <div className="text-emerald-400 pl-4">✓ Written: components/ui/Input.tsx</div>
-              <div className="text-emerald-400 pl-4">✓ Written: components/ui/Card.tsx</div>
-              <div className="text-emerald-400 pl-4">✓ Written: components/ui/Badge.tsx</div>
-            </div>
-          </div>
         </div>
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map(({ icon: Icon, title, body }) => (
+            <li key={title} className="space-y-3 bg-background p-6">
+              <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+              <h3 className="font-semibold">{title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* ------------------------------------------------------------------- */}
-      {/* Architectural Pillars (6 Cards) */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-12">
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold text-muted-foreground">
-              Core Principles
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Engineered for Mobile Developers
+      {/* Workflow */}
+      <section aria-labelledby="workflow-heading" className="border-y border-border bg-muted/30">
+        <div className="container-docs grid gap-12 py-20 sm:py-24 lg:grid-cols-[1fr_1.4fr]">
+          <div className="space-y-3">
+            <p className="eyebrow">The CLI</p>
+            <h2 id="workflow-heading" className="text-3xl font-semibold sm:text-4xl">
+              From install to update, nothing is overwritten by surprise.
             </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Everything you need to deliver high-performance, accessible native apps with total engineering freedom.
+            <p className="text-muted-foreground">
+              Twelve commands cover the lifecycle — including <code className="font-mono text-foreground">remove</code>,{" "}
+              <code className="font-mono text-foreground">rollback</code>, <code className="font-mono text-foreground">doctor</code> and{" "}
+              <code className="font-mono text-foreground">audit</code>.
             </p>
+            <Link href="/docs/cli" className="link inline-flex items-center gap-1 text-sm">
+              CLI reference <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
           </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: ShieldCheck,
-                color: "text-sky-500 bg-sky-500/10",
-                title: "Source Ownership",
-                desc: "Components are copied into your repository as clean TypeScript. You own every line, every prop, and every animation frame.",
-              },
-              {
-                icon: Smartphone,
-                color: "text-emerald-500 bg-emerald-500/10",
-                title: "Native-First Quality Bar",
-                desc: "Strict 44x44pt touch targets, accessibility roles/states, dynamic typography, and tested compatibility on iOS and Android.",
-              },
-              {
-                icon: Layers,
-                color: "text-purple-500 bg-purple-500/10",
-                title: "Two Styling Targets",
-                desc: "Every component is authored for both Tailwind-based NativeWind v4 and vanilla React Native StyleSheet. Choose during init.",
-              },
-              {
-                icon: GitPullRequest,
-                color: "text-amber-500 bg-amber-500/10",
-                title: "Conflict-Free Upgrades",
-                desc: "SHA-256 file hashing tracks modifications. The CLI detects local edits and ensures you never lose custom work on updates.",
-              },
-              {
-                icon: Terminal,
-                color: "text-blue-500 bg-blue-500/10",
-                title: "Intelligent CLI",
-                desc: "Automated dependency resolution, upstream diffing, atomic rollbacks, and environment doctor checks via npx nativra.",
-              },
-              {
-                icon: Sparkles,
-                color: "text-rose-500 bg-rose-500/10",
-                title: "Zero Runtime Overhead",
-                desc: "No heavyweight library packages bundled into your release build. Faster cold starts, zero extra bridge hops, minimal bundle footprint.",
-              },
-            ].map((f) => {
-              const Icon = f.icon;
-              return (
-                <div
-                  key={f.title}
-                  className="rounded-2xl border border-border bg-card p-6 transition-all hover:border-zinc-400 hover:shadow-sm dark:hover:border-zinc-700"
-                >
-                  <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl ${f.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mb-2 font-bold text-foreground text-base">{f.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+          <ol className="space-y-6">
+            {WORKFLOW.map((step, i) => (
+              <li key={step.cmd} className="grid gap-3 sm:grid-cols-[2rem_1fr]">
+                <span className="font-mono text-sm text-muted-foreground" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="space-y-2">
+                  <h3 className="font-semibold">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.body}</p>
+                  <CommandLine command={step.cmd} />
                 </div>
-              );
-            })}
-          </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------- */}
-      {/* Comparison Matrix Table */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="border-t border-border bg-muted/20 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl space-y-10">
-          <div className="text-center space-y-3">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              How Nativra Compares
+      {/* Themes */}
+      <section aria-labelledby="themes-heading" className="container-docs py-20 sm:py-24">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-2xl space-y-3">
+            <p className="eyebrow">Themes</p>
+            <h2 id="themes-heading" className="text-3xl font-semibold sm:text-4xl">
+              {themes.length} palettes, light and dark.
             </h2>
-            <p className="text-xs text-muted-foreground max-w-md mx-auto">
-              Why leading mobile teams are moving from traditional npm UI libraries to source-owned components.
-            </p>
+            <p className="text-muted-foreground">Generated from one token source, so the installed files and CSS variables always agree.</p>
           </div>
-
-          <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-border bg-muted/50 text-muted-foreground font-semibold uppercase tracking-wider">
-                <tr>
-                  <th className="px-5 py-3.5">Feature</th>
-                  <th className="px-5 py-3.5">Traditional RN Libraries</th>
-                  <th className="px-5 py-3.5 text-foreground font-bold">Nativra</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {[
-                  {
-                    feature: "Code Location",
-                    traditional: "Compiled in node_modules",
-                    nativra: "100% in your components/ui folder",
-                  },
-                  {
-                    feature: "Runtime Package",
-                    traditional: "200 KB - 800 KB bundle impact",
-                    nativra: "0 KB runtime overhead",
-                  },
-                  {
-                    feature: "Styling Targets",
-                    traditional: "Proprietary styling runtime only",
-                    nativra: "NativeWind v4 + Pure StyleSheet",
-                  },
-                  {
-                    feature: "Customizability",
-                    traditional: "Restricted by exposed props",
-                    nativra: "Infinite (edit any line of code)",
-                  },
-                  {
-                    feature: "Upgrade Safety",
-                    traditional: "Upstream updates break layouts",
-                    nativra: "SHA-256 hash checks prevent overwriting",
-                  },
-                  {
-                    feature: "Interactive Previews",
-                    traditional: "External Storybook setup required",
-                    nativra: "Live mobile device canvas for all 70 components in docs",
-                  },
-                ].map((row) => (
-                  <tr key={row.feature} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-5 py-3.5 font-semibold text-foreground">
-                      {row.feature}
-                    </td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
-                      <span className="flex items-center gap-1.5 text-zinc-500">
-                        <X className="h-3.5 w-3.5 text-red-500" />
-                        <span>{row.traditional}</span>
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 font-medium text-foreground">
-                      <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                        <span>{row.nativra}</span>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Link href="/docs/themes" className="link inline-flex items-center gap-1 text-sm">
+            All themes <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </div>
+        <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {themes.map((t) => {
+            const p = THEME_PRESETS[t.id]!;
+            return (
+              <li key={t.id}>
+                <Link href={itemHref("theme", t.id)} className="group block rounded-lg border border-border p-2 transition-colors hover:border-foreground/30">
+                  <span className="grid h-16 grid-cols-2 overflow-hidden rounded-md" aria-hidden="true">
+                    <span className="flex items-end p-2" style={{ background: String(p.light.background) }}>
+                      <span className="h-4 w-8 rounded-sm" style={{ background: String(p.light.primary) }} />
+                    </span>
+                    <span className="flex items-end p-2" style={{ background: String(p.dark.background) }}>
+                      <span className="h-4 w-8 rounded-sm" style={{ background: String(p.dark.primary) }} />
+                    </span>
+                  </span>
+                  <span className="mt-2 block px-1 text-sm font-medium">{t.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
-      <HomeBentoShowcase />
-
-      {/* ------------------------------------------------------------------- */}
-      {/* FAQ Section (SEO & Developer Answers) */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="border-t border-border px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl space-y-10">
-          <div className="text-center space-y-3">
-            <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Everything you need to know about adopting Nativra in your React Native and Expo applications.
-            </p>
-          </div>
-
-          <div className="grid gap-4">
-            {homepageFaqItems.map((faq) => (
-              <div
-                key={faq.question}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-2"
-              >
-                <h3 className="text-base font-bold text-foreground">
-                  {faq.question}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {faq.answer}
-                </p>
-              </div>
+      {/* FAQ */}
+      <section aria-labelledby="faq-heading" className="border-t border-border">
+        <div className="container-docs grid gap-10 py-20 sm:py-24 lg:grid-cols-[1fr_2fr]">
+          <h2 id="faq-heading" className="text-3xl font-semibold">
+            Questions
+          </h2>
+          <div className="divide-y divide-border border-y border-border">
+            {homepageFaqItems.map((f) => (
+              <details key={f.question} className="group py-1">
+                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-3 font-medium [&::-webkit-details-marker]:hidden">
+                  {f.question}
+                  <span className="text-xl leading-none text-muted-foreground transition-transform group-open:rotate-45" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                <p className="pb-4 text-sm leading-relaxed text-muted-foreground">{f.answer}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------------------------- */}
-      {/* CTA Section */}
-      {/* ------------------------------------------------------------------- */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-border bg-gradient-to-b from-card to-muted/40 p-8 sm:p-12 text-center shadow-lg space-y-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500 text-white shadow-md">
-            <Sparkles className="h-6 w-6" />
+      {/* CTA */}
+      <section className="border-t border-border">
+        <div className="container-docs flex flex-col items-start justify-between gap-6 py-16 sm:flex-row sm:items-center">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold">Add your first component in a minute.</h2>
+            <p className="text-muted-foreground">Works in any Expo or React Native 0.74+ project.</p>
           </div>
-
-          <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Start building native mobile apps today.
-          </h2>
-
-          <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Initialize Nativra in your Expo or React Native project in less than two minutes. Free, open source, and MIT licensed.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <div className="sm:w-72">
+              <CommandLine command="npx nativra-cli add button" />
+            </div>
             <Link
               href="/docs/installation"
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
-              <span>Install Nativra</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <Link
-              href="/docs/components"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-muted"
-            >
-              Explore Components
+              Read the guide
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

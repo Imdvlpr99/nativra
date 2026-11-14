@@ -48,6 +48,8 @@ import { DeviceFrame } from "./DeviceFrame";
 
 interface ComponentPreviewProps {
   item: RegistryItem;
+  /** Show the built-in CLI/import copy bar (pages with their own install section turn it off). */
+  showInstallBar?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -121,7 +123,7 @@ const SPINNER_SIZES: Record<SpinnerSize, string> = {
 // Component Preview Harness
 // ---------------------------------------------------------------------------
 
-export function ComponentPreview({ item }: ComponentPreviewProps) {
+export function ComponentPreview({ item, showInstallBar = true }: ComponentPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [copyMode, setCopyMode] = useState<"cli" | "import">("cli");
 
@@ -2654,6 +2656,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
       </div>
 
       {/* Quick Install Bar & Import Snippet Toggle */}
+      {showInstallBar && (
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 p-2.5">
         <div className="flex flex-wrap items-center gap-2.5 min-w-0">
           <div className="flex rounded-lg bg-background p-0.5 border border-border text-[11px] font-medium shrink-0">
@@ -2713,6 +2716,7 @@ export function ComponentPreview({ item }: ComponentPreviewProps) {
           )}
         </button>
       </div>
+      )}
     </div>
   );
 }

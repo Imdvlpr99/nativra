@@ -1,242 +1,229 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  X,
-  Box,
-  Layers,
-  Code,
-  Terminal,
-  BookOpen,
-  Smartphone,
-  Palette,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight, Search, X } from "lucide-react";
 import searchCatalog from "./searchItems.json";
+
+interface SearchItem {
+  id: string;
+  name: string;
+  category: string;
+  href: string;
+  description: string;
+}
+
+const ITEMS = searchCatalog as SearchItem[];
+const CATEGORY_ORDER = ["Documentation", "Component", "Block", "Template", "Hook", "Utility", "Theme"];
 
 interface SearchDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface SearchItem {
-  id: string;
-  name: string;
-  category: "Component" | "Block" | "Template" | "Hook" | "Theme" | "Documentation" | "CLI";
-  href: string;
-  description: string;
+function score(item: SearchItem, q: string): number {
+  const name = item.name.toLowerCase();
+  if (name === q || item.id === q) return 0;
+  if (name.startsWith(q) || item.id.startsWith(q)) return 1;
+  if (name.includes(q) || item.id.includes(q)) return 2;
+  if (item.description.toLowerCase().includes(q)) return 3;
+  return item.category.toLowerCase().includes(q) ? 4 : -1;
 }
-
-const ITEMS: SearchItem[] = searchCatalog as SearchItem[];
 
 export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const [query, setQuery] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [active, setActive] = useState(0);
   const router = useRouter();
-  const listRef = useRef<HTMLDivElement>(null);
-  const activeItemRef = useRef<HTMLAnchorElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const baseId = useId();
+  const titleId = `${baseId}-title`;
+  const listId = `${baseId}-list`;
+  const optionId = (i: number) => `${baseId}-opt-${i}`;
 
-  const filtered = query.trim() === ""
-    ? ITEMS
-    : ITEMS.filter(
-        (i) =>
-          i.name.toLowerCase().includes(query.toLowerCase()) ||
-          i.description.toLowerCase().includes(query.toLowerCase()) ||
-          i.category.toLowerCase().includes(query.toLowerCase())
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      return ITEMS.filter((i) => i.category === "Documentation").concat(
+        ITEMS.filter((i) => i.category === "Component").slice(0, 8)
       );
-
-  useEffect(() => {
-    setSelectedIndex(0);
+    }
+    return ITEMS.map((item) => ({ item, s: score(item, q) }))
+      .filter((r) => r.s >= 0)
+      .sort((a, b) => a.s - b.s || a.item.name.localeCompare(b.item.name))
+      .slice(0, 40)
+      .map((r) => r.item);
   }, [query]);
 
-  useEffect(() => {
-    if (activeItemRef.current) {
-      activeItemRef.current.scrollIntoView({
-        block: "nearest",
-        behavior: "smooth",
-      });
-    }
-  }, [selectedIndex]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        if (isOpen) {
-          onClose();
-        } else {
-          const searchBtn = document.querySelector('[aria-label="Search documentation"]') as HTMLButtonElement | null;
-          searchBtn?.click();
-        }
-      }
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
+  // Group while keeping a flat index for keyboard navigation.
+  const groups = useMemo(() => {
+    const rank = (cat: string) => {
+      const i = CATEGORY_ORDER.indexOf(cat);
+      return i === -1 ? CATEGORY_ORDER.length : i;
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+    const ordered = [...new Set(results.map((r) => r.category))].sort((a, b) => rank(a) - rank(b));
+    let index = 0;
+    const flat: SearchItem[] = [];
+    const out = ordered.map((cat) => {
+      const entries = results.filter((r) => r.category === cat).map((item) => {
+        flat.push(item);
+        return { item, index: index++ };
+      });
+      return { cat, entries };
+    });
+    return { out, flat };
+  }, [results]);
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (filtered.length === 0) return;
+  useEffect(() => setActive(0), [query]);
 
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % filtered.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + filtered.length) % filtered.length);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      const target = filtered[selectedIndex];
-      if (target) {
-        onClose();
-        router.push(target.href);
-      }
-    }
-  };
+  useEffect(() => {
+    if (!isOpen) return;
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
+    setQuery("");
+    const raf = requestAnimationFrame(() => inputRef.current?.focus());
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      cancelAnimationFrame(raf);
+      document.body.style.overflow = prevOverflow;
+      returnFocusRef.current?.focus();
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    document.getElementById(`${baseId}-opt-${active}`)?.scrollIntoView({ block: "nearest" });
+  }, [active, baseId]);
 
   if (!isOpen) return null;
 
-  const getCategoryIcon = (category: SearchItem["category"]) => {
-    switch (category) {
-      case "Component":
-        return <Box className="h-4 w-4 text-sky-500" />;
-      case "Block":
-        return <Layers className="h-4 w-4 text-emerald-500" />;
-      case "Template":
-        return <Smartphone className="h-4 w-4 text-indigo-500" />;
-      case "Hook":
-        return <Code className="h-4 w-4 text-purple-500" />;
-      case "Theme":
-        return <Palette className="h-4 w-4 text-rose-500" />;
-      case "CLI":
-        return <Terminal className="h-4 w-4 text-amber-500" />;
-      default:
-        return <BookOpen className="h-4 w-4 text-blue-500" />;
+  const go = (item: SearchItem | undefined) => {
+    if (!item) return;
+    onClose();
+    router.push(item.href);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const count = groups.flat.length;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onClose();
+    } else if (e.key === "ArrowDown" && count > 0) {
+      e.preventDefault();
+      setActive((a) => (a + 1) % count);
+    } else if (e.key === "ArrowUp" && count > 0) {
+      e.preventDefault();
+      setActive((a) => (a - 1 + count) % count);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      go(groups.flat[active]);
+    } else if (e.key === "Tab") {
+      // Keep focus inside the dialog: input <-> close button.
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>("input, button");
+      if (!focusables || focusables.length === 0) return;
+      const first = focusables[0]!;
+      const last = focusables[focusables.length - 1]!;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-20 backdrop-blur-sm animate-in fade-in-0"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search dialog"
-    >
+    <div className="fixed inset-0 z-[70] flex items-start justify-center p-4 pt-[12vh]" onKeyDown={onKeyDown}>
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
       <div
-        className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-background shadow-2xl animate-in zoom-in-95"
-        onClick={(e) => e.stopPropagation()}
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-2xl"
       >
-        {/* Search Input Bar */}
-        <div className="flex items-center border-b border-border px-4 py-3">
-          <Search className="h-4 w-4 text-muted-foreground mr-3 shrink-0" />
+        <h2 id={titleId} className="sr-only">
+          Search documentation
+        </h2>
+        <div className="flex items-center gap-3 border-b border-border px-4">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <input
-            autoFocus
+            ref={inputRef}
             type="text"
             role="combobox"
-            aria-expanded={isOpen}
-            aria-controls="search-results-list"
-            aria-activedescendant={filtered[selectedIndex]?.id}
-            placeholder="Type a component, block, hook, or guide..."
+            aria-expanded="true"
+            aria-controls={listId}
+            aria-autocomplete="list"
+            aria-activedescendant={groups.flat.length > 0 ? optionId(active) : undefined}
+            aria-label="Search components, blocks, hooks and guides"
+            placeholder="Search components, blocks, hooks, guides…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleInputKeyDown}
-            className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <button
+            type="button"
             onClick={onClose}
-            className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label="Close search"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Results List */}
-        <div
-          id="search-results-list"
-          ref={listRef}
-          role="listbox"
-          className="max-h-96 overflow-y-auto p-2"
-        >
-          {filtered.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No results found for &ldquo;{query}&rdquo;
-            </div>
+        <div id={listId} role="listbox" aria-label="Results" className="max-h-[min(60vh,420px)] overflow-y-auto p-2">
+          {groups.flat.length === 0 ? (
+            <p className="px-3 py-10 text-center text-sm text-muted-foreground">
+              No results for &ldquo;{query}&rdquo;. Try a component name such as &ldquo;button&rdquo;.
+            </p>
           ) : (
-            <div className="space-y-1">
-              {filtered.map((item, index) => {
-                const isSelected = index === selectedIndex;
-                return (
-                  <Link
-                    key={`${item.category}-${item.id}`}
-                    id={item.id}
-                    ref={isSelected ? activeItemRef : undefined}
-                    href={item.href}
-                    onClick={onClose}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                    role="option"
-                    aria-selected={isSelected}
-                    className={`flex items-center justify-between rounded-xl p-3 text-left transition-colors ${
-                      isSelected
-                        ? "bg-zinc-100 dark:bg-zinc-800 text-foreground shadow-xs"
-                        : "text-muted-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                    } group`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        className={`rounded-lg p-2 shrink-0 transition-colors ${
-                          isSelected
-                            ? "bg-background shadow-xs text-foreground"
-                            : "bg-muted/60"
-                        }`}
-                      >
-                        {getCategoryIcon(item.category)}
-                      </div>
+            groups.out.map(({ cat, entries }) => (
+              <div key={cat} role="group" aria-label={cat} className="pb-1">
+                <div className="eyebrow px-3 pb-1 pt-2">{cat === "Documentation" ? "Guides" : `${cat}s`}</div>
+                {entries.map(({ item, index }) => {
+                  const selected = index === active;
+                  return (
+                    <div
+                      key={`${item.category}-${item.id}`}
+                      id={optionId(index)}
+                      role="option"
+                      aria-selected={selected}
+                      onMouseMove={() => setActive(index)}
+                      onClick={() => go(item)}
+                      className={`flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 ${
+                        selected ? "bg-accent text-accent-foreground" : "text-foreground"
+                      }`}
+                    >
                       <div className="min-w-0">
-                        <div className="text-sm font-semibold text-foreground flex items-center gap-2">
-                          <span className="truncate">{item.name}</span>
-                          <span className="rounded-md bg-secondary/80 px-1.5 py-0.2 text-[10px] font-normal text-muted-foreground shrink-0">
-                            {item.category}
-                          </span>
-                        </div>
-                        <div className="text-xs text-muted-foreground line-clamp-1 truncate">
-                          {item.description}
-                        </div>
+                        <div className="truncate text-sm font-medium">{item.name}</div>
+                        <div className="truncate text-xs text-muted-foreground">{item.description}</div>
                       </div>
+                      <ArrowRight
+                        className={`h-3.5 w-3.5 shrink-0 text-muted-foreground ${selected ? "opacity-100" : "opacity-0"}`}
+                        aria-hidden="true"
+                      />
                     </div>
-                    {isSelected && (
-                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground shrink-0 ml-2" />
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ))
           )}
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-border bg-muted/30 px-4 py-2.5 text-[11px] text-muted-foreground flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span>
-              <kbd className="rounded border border-border bg-background px-1 py-0.5 font-mono text-[10px]">↑</kbd>{" "}
-              <kbd className="rounded border border-border bg-background px-1 py-0.5 font-mono text-[10px]">↓</kbd> to navigate
-            </span>
-            <span>
-              <kbd className="rounded border border-border bg-background px-1 py-0.5 font-mono text-[10px]">↵</kbd> to select
-            </span>
-          </div>
-          <span>
-            <kbd className="rounded border border-border bg-background px-1 py-0.5 font-mono text-[10px]">ESC</kbd> to exit
+        <div className="flex items-center gap-4 border-t border-border px-4 py-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <kbd className="kbd">↑</kbd>
+            <kbd className="kbd">↓</kbd> navigate
+          </span>
+          <span className="flex items-center gap-1">
+            <kbd className="kbd">↵</kbd> open
+          </span>
+          <span className="ml-auto flex items-center gap-1">
+            <kbd className="kbd">esc</kbd> close
           </span>
         </div>
       </div>
     </div>
   );
 }
-
