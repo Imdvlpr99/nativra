@@ -146,9 +146,32 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           continue;
         }
 
+        if (parsed.data.id !== entry) {
+          errors.push(`[${entry}] Item id "${parsed.data.id}" must match its directory name`);
+          continue;
+        }
+        for (const file of parsed.data.files) {
+          if (file.target && !parsed.data.stylingTargets.includes(file.target)) {
+            errors.push(`[${entry}] File "${file.path}" targets "${file.target}", which is not listed in stylingTargets`);
+          }
+        }
         items.push(parsed.data);
       } catch (err) {
         errors.push(`[${entry}] Failed to process item: ${String(err)}`);
+      }
+    }
+  }
+
+  // Cross-item validation: unique ids and resolvable same-registry dependencies
+  const seen = new Set<string>();
+  for (const item of items) {
+    if (seen.has(item.id)) errors.push(`[${item.id}] Duplicate item id`);
+    seen.add(item.id);
+  }
+  for (const item of items) {
+    for (const dep of item.registryDependencies ?? []) {
+      if ((dep.registry ?? "default") === registryName && !seen.has(dep.id)) {
+        errors.push(`[${item.id}] Unknown registry dependency "${dep.id}"`);
       }
     }
   }
