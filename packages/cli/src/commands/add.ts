@@ -11,14 +11,15 @@ import {
   filesForTarget,
   readLock,
   writeLock,
-  toLockKey,
+  recordLockEntry,
   executeInstallTransaction,
+  renderFile,
   type PlannedInstallFile,
 } from "../install.js";
-import { transformFileImports } from "../transform.js";
 import {
   getMissingDependencies,
   getInstallCommand,
+  formatInstallCommand,
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
@@ -30,7 +31,7 @@ export function registerAddCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--yes", "Skip interactive confirmation prompts. Existing files are preserved unless --overwrite is set.")
     .option("--overwrite", "Overwrite existing files without prompting (equivalent to --on-conflict overwrite)")
-    .option("--on-conflict <mode>", "Conflict resolution strategy for existing files: 'skip', 'overwrite', or 'error'", "skip")
+    .option("--on-conflict <mode>", "Conflict resolution strategy for existing files: 'skip', 'overwrite', or 'error' (default: prompt, or skip with --yes)")
     .option("--dry-run", "Preview installation plan and dependencies without writing files to disk")
     .option("--registry <url>", "Override registry location (URL or local directory)")
     .option("--install", "Automatically install required npm/peer dependencies via detected package manager or Expo CLI")
@@ -52,6 +53,13 @@ export function registerAddCommand(program: Command) {
           console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
           process.exit(1);
         });
+        if (options.onConflict && !["skip", "overwrite", "error"].includes(options.onConflict)) {
+          console.error(chalk.red(`\n✗ Invalid --on-conflict value "${options.onConflict}". Use skip, overwrite or error.\n`));
+          process.exit(1);
+        }
+        const conflictMode: "skip" | "overwrite" | "error" | "prompt" = options.overwrite
+          ? "overwrite"
+          : options.onConflict ?? (options.yes || !process.stdin.isTTY ? "skip" : "prompt");
         const client = createClient(config, options.registry);
 
         if (!components || components.length === 0) {
@@ -152,13 +160,12 @@ export function registerAddCommand(program: Command) {
               let action: "create" | "overwrite" | "skip" = "create";
 
               if (await fileExists(destPath)) {
-                if (options.overwrite || options.onConflict === "overwrite") {
+                if (conflictMode === "error") {
+                  console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
+                  process.exit(1);
+                } else if (conflictMode === "overwrite") {
                   action = "overwrite";
-                } else if (options.yes || options.onConflict === "error") {
-                  if (options.onConflict === "error") {
-                    console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
-                    process.exit(1);
-                  }
+                } else if (conflictMode === "skip") {
                   action = "skip";
                   console.log(chalk.gray(`  → Skipped (existing file): ${destPath}`));
                 } else {
@@ -178,7 +185,7 @@ export function registerAddCommand(program: Command) {
               plan.push({
                 componentId: item.id,
                 destPath,
-                content: transformFileImports(file.content ?? "", config),
+                content: renderFile(options.cwd, item, file, items, config),
                 action,
               });
             }
@@ -192,21 +199,13 @@ export function registerAddCommand(program: Command) {
 
           // Update lockfile metadata only after transaction commits
           for (const item of items) {
-            const entry = lock.items[item.id] ?? {
-              version: item.version,
-              files: {} as Record<string, string>,
-            };
+            const itemWrites: Record<string, string> = {};
             for (const file of filesForTarget(item, config)) {
               const destPath = destPathFor(options.cwd, item, file, config);
-              const lockKey = toLockKey(options.cwd, destPath);
-              if (writtenFiles[destPath]) {
-                delete entry.files[destPath];
-                entry.files[lockKey] = writtenFiles[destPath];
-              }
+              const hash = writtenFiles[destPath];
+              if (hash) itemWrites[destPath] = hash;
             }
-            if (Object.keys(entry.files).length > 0) {
-              lock.items[item.id] = entry;
-            }
+            recordLockEntry(lock, options.cwd, item, itemWrites);
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
               accumulatedDeps.push(...item.npmDependencies);
@@ -228,10 +227,17 @@ export function registerAddCommand(program: Command) {
             const missing = await getMissingDependencies(options.cwd, Array.from(uniqueDepsMap.values()));
 
             if (missing.length > 0) {
-              const installCmd = await getInstallCommand(options.cwd, missing);
+              let install;
+              try {
+                install = await getInstallCommand(options.cwd, missing);
+              } catch (err) {
+                console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
+                process.exit(1);
+              }
+              const installCmd = formatInstallCommand(install);
 
               if (options.install === true) {
-                await executeDependencyInstall(options.cwd, installCmd);
+                await executeDependencyInstall(options.cwd, install);
               } else if (options.install === false) {
                 console.log(chalk.yellow(`\n  ⚠ Install required dependencies:\n`) + chalk.cyan(`    ${installCmd}\n`));
               } else if (!options.yes && process.stdin.isTTY) {
@@ -242,7 +248,7 @@ export function registerAddCommand(program: Command) {
                   initial: true,
                 });
                 if (doInstall) {
-                  await executeDependencyInstall(options.cwd, installCmd);
+                  await executeDependencyInstall(options.cwd, install);
                 } else {
                   console.log(chalk.yellow(`\n  ⚠ Install dependencies manually:\n`) + chalk.cyan(`    ${installCmd}\n`));
                 }

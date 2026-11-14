@@ -55,4 +55,16 @@ import { useHaptics } from "@/hooks/useHaptics";
     expect(result).toContain('from "@/custom/ui/Button"');
     expect(result).toContain('from "@/shared/hooks/useHaptics"');
   });
+
+  it("rewrites theme imports and cross-directory sibling imports", () => {
+    const config = NativraConfigSchema.parse({ componentsDir: "components/ui", blocksDir: "components/blocks", themesDir: "theme" });
+    const input = `import { Card } from "./Card";
+import { Local } from "./Local";
+import { tokens } from "@/lib/themes/zinc";
+`;
+    const result = transformFileImports(input, config, { Card: "@/components/ui/Card" });
+    expect(result).toContain('from "@/components/ui/Card"');
+    expect(result).toContain('from "./Local"');
+    expect(result).toContain('from "@/theme/zinc"');
+  });
 });

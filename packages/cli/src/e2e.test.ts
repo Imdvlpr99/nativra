@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -128,10 +128,49 @@ describe("nativra CLI (local registry)", () => {
     expect(out).toMatch(/backup/i);
   });
 
+  it("rollback walks back through successive backups and refreshes the lock", () => {
+    const file = join(cwd, "components/ui/Button.tsx");
+    writeFileSync(file, "// v1");
+    runReg("update", "button", "--force");
+    writeFileSync(file, "// v2");
+    runReg("update", "button", "--force");
+
+    run("rollback", "button");
+    expect(readFileSync(file, "utf8")).toBe("// v2");
+    // The restored file is now the tracked baseline, so update no longer sees local changes
+    expect(runReg("update", "button")).not.toContain("local changes");
+
+    run("rollback", "button"); // undo that update
+    run("rollback", "button");
+    expect(readFileSync(file, "utf8")).toBe("// v1");
+    runReg("update", "button", "--force");
+  });
+
+  it("diff reports an untouched install as up to date", () => {
+    runReg("add", "empty-state", "--yes", "--overwrite");
+    expect(runReg("diff", "empty-state")).toContain("is up to date");
+  });
+
+  it("remove refuses to delete an item other installed items depend on", () => {
+    expect(() => run("remove", "card", "--yes")).toThrow();
+    expect(existsSync(join(cwd, "components/ui/Card.tsx"))).toBe(true);
+  });
+
 
   it("theme add writes the theme file", () => {
     runReg("theme", "add", "dark-slate");
     expect(existsSync(join(cwd, "lib/themes/theme.ts"))).toBe(true);
+  });
+
+  it("theme add never silently overwrites an existing theme file", () => {
+    const file = join(cwd, "lib/themes/theme.ts");
+    const before = readFileSync(file, "utf8");
+    expect(runReg("theme", "add", "zinc")).toContain("Skipped");
+    expect(readFileSync(file, "utf8")).toBe(before);
+
+    runReg("theme", "add", "zinc", "--as", "zinc");
+    expect(existsSync(join(cwd, "lib/themes/zinc.ts"))).toBe(true);
+    expect(() => runReg("theme", "add", "zinc", "--as", "../evil")).toThrow();
   });
 
   it("registry add / list round-trips", () => {
@@ -234,6 +273,38 @@ describe("nativra CLI (local registry)", () => {
     expect(() => run("remove", "evil-item", "--yes", "--force")).toThrow();
     delete lock.items["evil-item"];
     writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock, null, 2));
+  });
+
+  it("init git-ignores local backups", () => {
+    expect(readFileSync(join(cwd, ".gitignore"), "utf8")).toContain(".nativra/");
+  });
+
+  it("--version matches package.json", () => {
+    const pkg = JSON.parse(readFileSync(resolve(__dirname, "../package.json"), "utf8"));
+    expect(execFileSync("node", [CLI, "--version"], { encoding: "utf8" }).trim()).toBe(pkg.version);
+  });
+});
+
+describe("nativra CLI (src/ project with tsconfig alias)", () => {
+  let dir: string;
+  const runIn = (...args: string[]) =>
+    execFileSync("node", [CLI, ...args, "--cwd", dir, "--registry", REGISTRY], { encoding: "utf8" });
+
+  beforeAll(() => {
+    dir = mkdtempSync(join(tmpdir(), "nativra-src-"));
+    mkdirSync(join(dir, "src"));
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "s", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(dir, "tsconfig.json"), JSON.stringify({ compilerOptions: { paths: { "@/*": ["./src/*"] } } }));
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", dir], { encoding: "utf8" });
+  });
+
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("installs into src/ but imports through the alias", () => {
+    runIn("add", "badge", "--yes");
+    const badge = readFileSync(join(dir, "src/components/ui/Badge.tsx"), "utf8");
+    expect(badge).not.toContain("@/src/");
+    expect(runIn("diff", "badge")).toContain("is up to date");
   });
 });
 

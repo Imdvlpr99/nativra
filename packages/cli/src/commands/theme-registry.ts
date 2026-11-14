@@ -2,7 +2,8 @@ import type { Command } from "commander";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
-import { getThemePreset, toCssVariables } from "@nativra/theme-engine";
+import prompts from "prompts";
+import { THEME_PRESETS, toCssVariables } from "@nativra/theme-engine";
 import { createClient } from "../client.js";
 import { loadConfig, saveConfig } from "../config.js";
 import {
@@ -12,10 +13,11 @@ import {
   fileExists,
   filesForTarget,
   readLock,
-  toLockKey,
+  recordLockEntry,
   writeInstalledFile,
   writeLock,
 } from "../install.js";
+import { transformFileImports } from "../transform.js";
 
 async function requireConfig(cwd: string) {
   return loadConfig(cwd).catch((err) => {
@@ -44,76 +46,103 @@ export function registerThemeCommand(program: Command) {
     .description("Add a theme/token file to your project")
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry location")
-    .option("--as <name>", "Install theme under a custom name/file (e.g. --as midnight installs to lib/themes/midnight.ts)")
+    .option("--as <name>", "Install theme under a custom file name (e.g. --as midnight installs <themesDir>/midnight.ts)")
+    .option("--overwrite", "Overwrite an existing theme file (a backup is created first)")
     .option("--apply-css", "Automatically wire and inject theme CSS variables into global.css")
-    .action(async (id: string, options: { cwd: string; registry?: string; as?: string; applyCss?: boolean }) => {
-      const config = await requireConfig(options.cwd);
-      const item = await createClient(config, options.registry).getItem(id);
-      if (item.type !== "theme") {
-        console.error(chalk.red(`\n✗ "${id}" is a ${item.type}, not a theme.\n`));
-        process.exit(1);
-      }
-      const lock = await readLock(options.cwd);
-      const entry = { version: item.version, files: {} as Record<string, string> };
-      for (const file of filesForTarget(item, config)) {
-        let dest = destPathFor(options.cwd, item, file, config);
-        if (options.as) {
-          const safeName = options.as.replace(/\.ts$/, "").replace(/[^a-zA-Z0-9_-]/g, "");
-          const baseDir = resolveDestDir(options.cwd, item, config);
-          dest = join(baseDir, `${safeName}.ts`);
+    .action(
+      async (
+        id: string,
+        options: { cwd: string; registry?: string; as?: string; overwrite?: boolean; applyCss?: boolean }
+      ) => {
+        const config = await requireConfig(options.cwd);
+        const item = await createClient(config, options.registry).getItem(id);
+        if (item.type !== "theme") {
+          console.error(chalk.red(`\n✗ "${id}" is a ${item.type}, not a theme.\n`));
+          process.exit(1);
         }
-        if (await fileExists(dest)) {
-          await createBackup(options.cwd, id, [{ destPath: dest, exists: true }]).catch(() => {});
-        }
-        const hash = await writeInstalledFile(dest, file.content ?? "");
-        entry.files[toLockKey(options.cwd, dest)] = hash;
-        console.log(chalk.green(`  ✓ Written: ${dest}`));
-      }
-      lock.items[id] = entry;
-      await writeLock(options.cwd, lock);
 
-      if (options.applyCss) {
-        const cssCandidates = [
-          join(options.cwd, "global.css"),
-          join(options.cwd, "src", "global.css"),
-          join(options.cwd, "app", "global.css"),
-        ];
-        let targetCss: string | null = null;
-        for (const candidate of cssCandidates) {
-          if (await fileExists(candidate)) {
-            targetCss = candidate;
-            break;
+        let customName: string | undefined;
+        if (options.as !== undefined) {
+          customName = options.as.replace(/\.ts$/, "");
+          if (!/^[a-zA-Z0-9_-]+$/.test(customName)) {
+            console.error(chalk.red(`\n✗ Invalid --as name "${options.as}". Use letters, numbers, "-" or "_".\n`));
+            process.exit(1);
           }
         }
 
-        if (targetCss) {
-          try {
-            const existingCss = await readFile(targetCss, "utf8");
-            const themeTokens = getThemePreset(id);
-            const cssVars = toCssVariables(themeTokens);
-            const startMarker = `/* NATIVRA THEME START: ${id} */`;
-            const endMarker = `/* NATIVRA THEME END: ${id} */`;
-            const anyThemeMarker = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
+        const lock = await readLock(options.cwd);
+        const writes: Record<string, string> = {};
+        for (const file of filesForTarget(item, config)) {
+          const dest = customName
+            ? join(resolveDestDir(options.cwd, item, config), `${customName}.ts`)
+            : destPathFor(options.cwd, item, file, config);
 
-            const block = `${startMarker}\n@layer base {\n${cssVars}\n}\n${endMarker}`;
-
-            let updatedCss: string;
-            if (anyThemeMarker.test(existingCss)) {
-              updatedCss = existingCss.replace(anyThemeMarker, block);
-            } else {
-              updatedCss = `${existingCss.trimEnd()}\n\n${block}\n`;
+          if (await fileExists(dest)) {
+            let overwrite = Boolean(options.overwrite);
+            if (!overwrite && process.stdin.isTTY) {
+              ({ overwrite } = await prompts({
+                type: "confirm",
+                name: "overwrite",
+                message: `${dest} already exists. Overwrite it (a backup is kept)?`,
+                initial: false,
+              }));
             }
-
-            await writeFile(targetCss, updatedCss, "utf8");
-            console.log(chalk.green(`  ✓ Injected CSS variables for "${id}" into: ${targetCss}`));
-          } catch (err) {
-            console.warn(chalk.yellow(`  ⚠ Could not wire CSS variables: ${(err as Error).message}`));
+            if (!overwrite) {
+              console.log(chalk.yellow(`  → Skipped (existing file): ${dest}. Use --overwrite or --as <name>.`));
+              continue;
+            }
+            try {
+              await createBackup(options.cwd, id, [{ destPath: dest, exists: true }]);
+            } catch (err) {
+              console.error(chalk.red(`\n✗ Could not back up ${dest}: ${(err as Error).message}. Nothing was written.\n`));
+              process.exit(1);
+            }
           }
-        } else {
-          console.log(chalk.yellow(`  ⚠ No global.css found. Create global.css to wire CSS variables automatically.`));
+          writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
+          console.log(chalk.green(`  ✓ Written: ${dest}`));
         }
+        recordLockEntry(lock, options.cwd, item, writes);
+        await writeLock(options.cwd, lock);
+
+        if (options.applyCss) await applyThemeCss(options.cwd, id);
       }
-    });
+    );
+}
+
+async function applyThemeCss(cwd: string, id: string): Promise<void> {
+  const tokens = THEME_PRESETS[id];
+  if (!tokens) {
+    console.warn(
+      chalk.yellow(`  ⚠ No built-in CSS token preset for "${id}"; global.css was not changed. Wire its variables manually.`)
+    );
+    return;
+  }
+
+  const cssCandidates = [join(cwd, "global.css"), join(cwd, "src", "global.css"), join(cwd, "app", "global.css")];
+  let targetCss: string | null = null;
+  for (const candidate of cssCandidates) {
+    if (await fileExists(candidate)) {
+      targetCss = candidate;
+      break;
+    }
+  }
+  if (!targetCss) {
+    console.log(chalk.yellow(`  ⚠ No global.css found. Create global.css to wire CSS variables automatically.`));
+    return;
+  }
+
+  try {
+    const existingCss = await readFile(targetCss, "utf8");
+    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n/* NATIVRA THEME END: ${id} */`;
+    const anyThemeMarker = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
+    const updatedCss = anyThemeMarker.test(existingCss)
+      ? existingCss.replace(anyThemeMarker, block)
+      : `${existingCss.trimEnd()}\n\n${block}\n`;
+    await writeFile(targetCss, updatedCss, "utf8");
+    console.log(chalk.green(`  ✓ Injected CSS variables for "${id}" into: ${targetCss}`));
+  } catch (err) {
+    console.warn(chalk.yellow(`  ⚠ Could not wire CSS variables: ${(err as Error).message}`));
+  }
 }
 
 export function registerRegistryCommand(program: Command) {

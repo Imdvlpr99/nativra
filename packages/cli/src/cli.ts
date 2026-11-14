@@ -12,10 +12,13 @@ import { registerSearchCommand } from "./commands/search.js";
 import { registerThemeCommand, registerRegistryCommand } from "./commands/theme-registry.js";
 import { registerAuditCommand } from "./commands/audit.js";
 
+/** Injected from package.json by tsup at build time. */
+declare const __NATIVRA_VERSION__: string;
+
 program
   .name("nativra")
   .description("Nativra CLI — Native UI, built your way.")
-  .version("0.2.1");
+  .version(__NATIVRA_VERSION__);
 
 registerInitCommand(program);
 registerAddCommand(program);

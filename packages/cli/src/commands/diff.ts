@@ -5,7 +5,8 @@ import { createPatch } from "diff";
 import ora from "ora";
 import { createClient } from "../client.js";
 import { loadConfig } from "../config.js";
-import { destPathFor } from "../install.js";
+import type { RegistryItem } from "@nativra/registry-schema";
+import { destPathFor, filesForTarget, renderFile } from "../install.js";
 
 export function registerDiffCommand(program: Command) {
   program
@@ -22,18 +23,18 @@ export function registerDiffCommand(program: Command) {
       const client = createClient(config, options.registry);
 
       const spinner = ora(`Fetching registry version of "${id}"...`).start();
-      let item;
+      let item: RegistryItem;
+      let related: RegistryItem[];
       try {
-        item = await client.getItem(id);
+        related = await client.resolveWithDependencies(id);
+        item = related[related.length - 1]!;
         spinner.stop();
       } catch (err) {
         spinner.fail(chalk.red(`Failed: ${(err as Error).message}`));
         process.exit(1);
       }
 
-      const targetFiles = item.files.filter(
-        (f) => !f.target || f.target === config.stylingTarget
-      );
+      const targetFiles = filesForTarget(item, config);
 
       let hasDiff = false;
 
@@ -50,7 +51,8 @@ export function registerDiffCommand(program: Command) {
           continue;
         }
 
-        const registryContent = file.content ?? "";
+        // Compare against what `add`/`update` would actually write (aliases rewritten)
+        const registryContent = renderFile(options.cwd, item, file, related, config);
         if (localContent === registryContent) {
           console.log(chalk.green(`  ✓ Up to date: ${localPath}`));
           continue;

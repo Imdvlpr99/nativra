@@ -5,7 +5,7 @@ import chalk from "chalk";
 import prompts from "prompts";
 import { sha256 } from "@nativra/utils";
 import { loadConfig } from "../config.js";
-import { assertNotSymlink, fileExists, readLock, resolveLockFilePath, writeLock } from "../install.js";
+import { assertNotSymlink, fileExists, findDependents, readLock, resolveLockFilePath, writeLock } from "../install.js";
 
 async function pruneEmptyDir(dir: string, stopAt: string): Promise<void> {
   try {
@@ -28,7 +28,7 @@ export function registerRemoveCommand(program: Command) {
     .description("Safely remove one or more installed components from your project")
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--yes", "Skip interactive confirmation prompts")
-    .option("--force", "Force removal even if local modifications are detected")
+    .option("--force", "Force removal even if local modifications or dependent items are detected")
     .action(
       async (
         components: string[],
@@ -61,6 +61,30 @@ export function registerRemoveCommand(program: Command) {
               chalk.yellow(`  ⚠ "${componentId}" is not registered in nativra.lock.json. Skipping.`)
             );
             continue;
+          }
+
+          const dependents = findDependents(lock, componentId).filter((d) => !components.includes(d));
+          if (dependents.length > 0 && !options.force) {
+            console.log(
+              chalk.yellow(`  ⚠ Still required by installed item(s): ${dependents.join(", ")}`)
+            );
+            if (options.yes) {
+              console.error(
+                chalk.red(`\n✗ Refusing to remove "${componentId}" while other items depend on it. Use --force to override.\n`)
+              );
+              process.exit(1);
+            }
+            const { proceedWithDependents } = await prompts({
+              type: "confirm",
+              name: "proceedWithDependents",
+              message: `Removing "${componentId}" will break ${dependents.join(", ")}. Continue?`,
+              initial: false,
+            });
+            if (!proceedWithDependents) {
+              console.log(chalk.gray(`  Skipped removal of "${componentId}".
+`));
+              continue;
+            }
           }
 
           const filePaths = Object.keys(lockEntry.files);

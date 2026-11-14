@@ -3,7 +3,7 @@ import { readFile, writeFile, access } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
 import { checkProjectCompatibility } from "@nativra/registry-schema";
-import { loadConfig, saveConfig, NativraConfigSchema } from "../config.js";
+import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, loadConfig, saveConfig } from "../config.js";
 import { readLock } from "../install.js";
 import { detectProjectEnvironment } from "../detect.js";
 
@@ -48,31 +48,32 @@ export function registerDoctorCommand(program: Command) {
             hasV4Config ? chalk.green("v4-nested") : chalk.yellow("v1-flat")
           }`,
         });
-      } catch {
-        if (options.fix) {
+      } catch (configErr) {
+        const configMissing = !(await fileExists(join(options.cwd, CONFIG_FILENAME)));
+        if (options.fix && !configMissing) {
+          // Never replace a config the user wrote; report why it is invalid instead.
+          checks.push({
+            name: "nativra.json configuration",
+            pass: false,
+            detail: `Invalid (not auto-fixed, fix it by hand): ${(configErr as Error).message}`,
+          });
+        } else if (options.fix) {
           try {
             const env = await detectProjectEnvironment(options.cwd);
             stylingTarget = env.stylingTarget;
             hasV4Config = true;
-            const newConfig = NativraConfigSchema.parse({
-              $schema: "https://nativra.vercel.app/schema.json",
-              version: 4,
-              stylingTarget: env.stylingTarget,
-              componentsDir: env.suggestedComponentsDir,
-              hooksDir: env.suggestedHooksDir,
-              utilsDir: env.suggestedUtilsDir,
-              config: {
-                v4: {
-                  styling: env.stylingTarget,
-                },
+            const { config: newConfig } = createProjectConfig(
+              {
+                stylingTarget: env.stylingTarget,
+                componentsDir: env.suggestedComponentsDir,
+                hooksDir: env.suggestedHooksDir,
+                utilsDir: env.suggestedUtilsDir,
+                themesDir: env.suggestedThemesDir,
               },
-              aliases: {
-                components: env.suggestedComponentsDir,
-                hooks: env.suggestedHooksDir,
-                utils: env.suggestedUtilsDir,
-              },
-            });
+              env.importAlias
+            );
             await saveConfig(options.cwd, newConfig);
+            await ensureGitignored(options.cwd);
             checks.push({
               name: "nativra.json configuration",
               pass: true,

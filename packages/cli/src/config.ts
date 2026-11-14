@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
+import { aliasForDir, type ImportAlias } from "./detect.js";
 
 /** Location of the Nativra config file within a consumer project */
 export const CONFIG_FILENAME = "nativra.json";
@@ -49,6 +50,8 @@ export const NativraConfigSchema = z.object({
   hooksDir: SafeRelativeDirSchema.default("hooks"),
   /** Where installed utilities are written, relative to project root */
   utilsDir: SafeRelativeDirSchema.default("lib/utils"),
+  /** Where installed themes are written, relative to project root */
+  themesDir: SafeRelativeDirSchema.default("lib/themes"),
   /** Default styling target */
   stylingTarget: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
   /** TypeScript path alias prefix, e.g. "@/" */
@@ -163,6 +166,71 @@ export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
     }
     throw err;
   }
+}
+
+export interface ProjectDirs {
+  stylingTarget: "nativewind" | "stylesheet";
+  componentsDir: string;
+  hooksDir: string;
+  utilsDir: string;
+  themesDir: string;
+}
+
+/**
+ * Builds a fresh nativra.json. Directories are stored once (flat fields); `aliases` are only
+ * written when the project's tsconfig alias base differs from the project root, because the
+ * default `aliasPrefix + dir` derivation would otherwise produce wrong imports.
+ */
+export function createProjectConfig(
+  dirs: ProjectDirs,
+  alias: ImportAlias | null
+): { config: NativraConfig; warnings: string[] } {
+  const effectiveAlias = alias ?? { prefix: "@/", baseDir: "" };
+  const warnings: string[] = [];
+  const aliases: Record<string, string> = {};
+
+  if (effectiveAlias.baseDir) {
+    const entries: Array<[string, string]> = [
+      ["components", dirs.componentsDir],
+      ["blocks", dirs.componentsDir],
+      ["hooks", dirs.hooksDir],
+      ["utils", dirs.utilsDir],
+    ];
+    for (const [key, dir] of entries) {
+      const spec = aliasForDir(effectiveAlias, dir);
+      if (spec) aliases[key] = spec;
+      else
+        warnings.push(
+          `"${dir}" is outside "${effectiveAlias.baseDir}/" (where ${effectiveAlias.prefix}* points), so installed imports of it may not resolve.`
+        );
+    }
+  }
+
+  const config = NativraConfigSchema.parse({
+    $schema: "https://nativra.vercel.app/schema.json",
+    version: 4,
+    registries: [{ name: "default", url: "https://nativra.vercel.app" }],
+    ...dirs,
+    aliasPrefix: effectiveAlias.prefix,
+    ...(Object.keys(aliases).length > 0 ? { aliases } : {}),
+  });
+  return { config, warnings };
+}
+
+/** Ensures `.nativra/` (backups) is git-ignored. Returns true if .gitignore was changed. */
+export async function ensureGitignored(projectRoot: string, entry = ".nativra/"): Promise<boolean> {
+  const path = join(projectRoot, ".gitignore");
+  let current = "";
+  try {
+    current = await readFile(path, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
+  }
+  const lines = current.split(/\r?\n/).map((l) => l.trim());
+  if (lines.includes(entry) || lines.includes(entry.replace(/\/$/, ""))) return false;
+  const prefix = current.length > 0 && !current.endsWith("\n") ? "\n" : "";
+  await writeFile(path, `${current}${prefix}\n# Nativra backups\n${entry}\n`, "utf8");
+  return true;
 }
 
 export async function saveConfig(projectRoot: string, config: NativraConfig): Promise<void> {

@@ -2,7 +2,7 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
-import { NativraConfigSchema, saveConfig } from "../config.js";
+import { createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
 
 export function registerInitCommand(program: Command) {
@@ -75,34 +75,19 @@ export function registerInitCommand(program: Command) {
         utilsDir = answers.utilsDir ?? env.suggestedUtilsDir;
       }
 
-      const prefix = "@/";
-      const config = NativraConfigSchema.parse({
-        $schema: "https://nativra.vercel.app/schema.json",
-        version: 4,
-        registries: [{ name: "default", url: "https://nativra.vercel.app" }],
-        stylingTarget,
-        componentsDir,
-        hooksDir,
-        utilsDir,
-        config: {
-          v4: {
-            components: `${prefix}${componentsDir}`,
-            blocks: `${prefix}${componentsDir}`,
-            hooks: `${prefix}${hooksDir}`,
-            utils: `${prefix}${utilsDir}`,
-            theme: `${prefix}theme`,
-          },
-        },
-        aliases: {
-          components: `${prefix}${componentsDir}`,
-          utils: `${prefix}${utilsDir}`,
-        },
-      });
+      const { config, warnings } = createProjectConfig(
+        { stylingTarget, componentsDir, hooksDir, utilsDir, themesDir: env.suggestedThemesDir },
+        env.importAlias
+      );
+      for (const w of warnings) console.log(chalk.yellow(`  ⚠ ${w}`));
 
       const spinner = ora("Writing nativra.json...").start();
       try {
         await saveConfig(options.cwd, config);
         spinner.succeed(chalk.green("nativra.json created!"));
+        if (await ensureGitignored(options.cwd)) {
+          console.log(chalk.gray("  Added .nativra/ (local backups) to .gitignore"));
+        }
       } catch (err) {
         spinner.fail(chalk.red("Failed to write nativra.json"));
         throw err;

@@ -1,8 +1,13 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtemp, rm, writeFile, readFile } from "node:fs/promises";
+import { mkdtemp, rm, writeFile, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { runProjectAudit, fixLegacyTouchables } from "./commands/audit.js";
+import {
+  runProjectAudit,
+  planLegacyTouchableFix,
+  applyLegacyTouchableFix,
+  migrateTouchables,
+} from "./commands/audit.js";
 
 describe("audit and --fix", () => {
   let testDir: string;
@@ -75,14 +80,50 @@ export function LegacyButton() {
 }
 `;
     await writeFile(filePath, code, "utf8");
-    const fixedFiles = await fixLegacyTouchables(testDir);
+    const plan = await planLegacyTouchableFix(testDir);
+    const fixedFiles = await applyLegacyTouchableFix(testDir, plan);
     expect(fixedFiles).toBe(1);
 
     const updated = await readFile(filePath, "utf8");
-    expect(updated).not.toContain("<TouchableOpacity");
-    expect(updated).toContain("<Pressable");
+    expect(updated).toContain('import { View, Text, Pressable } from "react-native";');
     expect(updated).toContain("</Pressable>");
-    expect(updated).toContain("Pressable");
     expect(updated).not.toContain("TouchableOpacity");
+
+    // A backup snapshot is written so the change can be rolled back
+    const snapshots = await readdir(join(testDir, ".nativra", "backups", "audit-fix"));
+    expect(snapshots).toHaveLength(1);
+  });
+});
+
+describe("migrateTouchables", () => {
+  it("produces a valid import when the touchable is the last specifier", () => {
+    const out = migrateTouchables(
+      'import { View, TouchableOpacity } from "react-native";\nconst A = () => <TouchableOpacity />;\n'
+    );
+    expect(out.content).toContain('import { View, Pressable } from "react-native";');
+    expect(out.content).not.toContain(",,");
+  });
+
+  it("handles multi-line imports that already include Pressable", () => {
+    const out = migrateTouchables(
+      'import {\n  Pressable,\n  TouchableHighlight,\n} from "react-native";\nconst A = () => <TouchableHighlight></TouchableHighlight>;\n'
+    );
+    expect(out.content).toContain('import { Pressable } from "react-native";');
+    expect(out.content).toContain("<Pressable></Pressable>");
+  });
+
+  it("refuses files using Touchable-only props", () => {
+    const out = migrateTouchables(
+      'import { TouchableOpacity } from "react-native";\nconst A = () => <TouchableOpacity activeOpacity={0.5} />;\n'
+    );
+    expect(out.content).toBeNull();
+    expect(out.reason).toMatch(/activeOpacity/);
+  });
+
+  it("refuses touchables imported from react-native-gesture-handler", () => {
+    const out = migrateTouchables(
+      'import { View } from "react-native";\nimport { TouchableOpacity } from "react-native-gesture-handler";\nconst A = () => <TouchableOpacity />;\n'
+    );
+    expect(out.content).toBeNull();
   });
 });

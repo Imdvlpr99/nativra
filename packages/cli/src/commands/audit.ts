@@ -2,7 +2,9 @@ import type { Command } from "commander";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import chalk from "chalk";
-import { readLock } from "../install.js";
+import prompts from "prompts";
+import { loadConfig } from "../config.js";
+import { createBackup, readLock } from "../install.js";
 
 export interface AuditFinding {
   file: string;
@@ -69,80 +71,118 @@ function getLineAndCol(content: string, index: number): { line: number; column: 
   return { line, column };
 }
 
-export async function fixLegacyTouchables(cwd: string): Promise<number> {
+/** Project-relative directory prefixes whose files are Nativra-managed (installed from the registry). */
+export async function managedDirs(cwd: string): Promise<string[]> {
+  const dirs = ["components/ui", "blocks", "templates"];
+  try {
+    const config = await loadConfig(cwd);
+    dirs.push(config.componentsDir, config.blocksDir ?? config.componentsDir, config.hooksDir, config.themesDir);
+  } catch {
+    // No nativra.json: fall back to the default layout
+  }
+  return [...new Set(dirs.map((d) => d.replace(/\\/g, "/").replace(/\/+$/, "")))];
+}
+
+function isManagedPath(relPath: string, dirs: string[]): boolean {
+  return dirs.some((d) => relPath.startsWith(`${d}/`) || relPath.includes(`/${d}/`));
+}
+
+const TOUCHABLE_TAG = /<(TouchableOpacity|TouchableHighlight)\b/;
+/** Props that only exist on Touchable* and would be silently dropped (or fail typecheck) on Pressable. */
+const TOUCHABLE_ONLY_PROPS = /\b(activeOpacity|underlayColor|onShowUnderlay|onHideUnderlay|touchSoundDisabled)\s*=/;
+const RN_NAMED_IMPORT = /import\s*\{([^}]*)\}\s*from\s*["']react-native["']\s*;?/;
+
+export interface TouchableMigration {
+  /** Rewritten file content, or null if the file must be migrated by hand. */
+  content: string | null;
+  reason?: string;
+}
+
+/**
+ * Rewrites <TouchableOpacity>/<TouchableHighlight> imported from "react-native" to <Pressable>.
+ * Refuses (content: null) whenever the rewrite could change behavior or produce invalid code.
+ */
+export function migrateTouchables(content: string): TouchableMigration {
+  if (!TOUCHABLE_TAG.test(content)) return { content: null, reason: "no legacy touchables" };
+
+  const importMatch = content.match(RN_NAMED_IMPORT);
+  const specifiers = (importMatch?.[1] ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const usedTouchables = ["TouchableOpacity", "TouchableHighlight"].filter((t) =>
+    new RegExp(`<${t}\\b`).test(content)
+  );
+  if (!importMatch || !usedTouchables.every((t) => specifiers.includes(t))) {
+    return { content: null, reason: "touchables are not imported from react-native (or are aliased)" };
+  }
+  if (TOUCHABLE_ONLY_PROPS.test(content)) {
+    return { content: null, reason: "uses Touchable-only props (activeOpacity, underlayColor, ...)" };
+  }
+
+  const nextSpecifiers = specifiers.filter((s) => !usedTouchables.includes(s));
+  if (!nextSpecifiers.includes("Pressable")) nextSpecifiers.push("Pressable");
+
+  let modified = content.replace(importMatch[0], `import { ${nextSpecifiers.join(", ")} } from "react-native";`);
+  for (const t of usedTouchables) {
+    modified = modified
+      .replace(new RegExp(`<${t}\\b`, "g"), "<Pressable")
+      .replace(new RegExp(`</${t}>`, "g"), "</Pressable>");
+  }
+  return { content: modified };
+}
+
+export interface FixResult {
+  changed: Array<{ file: string; content: string }>;
+  skipped: Array<{ file: string; reason: string }>;
+}
+
+/** Plans the Touchable -> Pressable migration without writing anything. */
+export async function planLegacyTouchableFix(cwd: string): Promise<FixResult> {
   const files = await collectSourceFiles(cwd);
-  let fixedFiles = 0;
+  const dirs = await managedDirs(cwd);
+  const result: FixResult = { changed: [], skipped: [] };
 
   for (const filePath of files) {
     const relPath = relative(cwd, filePath).replace(/\\/g, "/");
-    if (
-      relPath.includes("components/ui/") ||
-      relPath.includes("blocks/") ||
-      relPath.includes("templates/")
-    ) {
-      continue;
-    }
+    if (isManagedPath(relPath, dirs)) continue;
 
-    let content = "";
+    let content: string;
     try {
       content = await readFile(filePath, "utf8");
-    } catch {
+    } catch (err) {
+      result.skipped.push({ file: relPath, reason: `unreadable: ${(err as Error).message}` });
       continue;
     }
+    if (!TOUCHABLE_TAG.test(content)) continue;
 
-    if (!/<(TouchableOpacity|TouchableHighlight)\b/.test(content)) {
-      continue;
-    }
-
-    let modified = content;
-
-    // Replace JSX opening and closing tags
-    modified = modified.replace(/<TouchableOpacity\b/g, "<Pressable");
-    modified = modified.replace(/<\/TouchableOpacity>/g, "</Pressable>");
-    modified = modified.replace(/<TouchableHighlight\b/g, "<Pressable");
-    modified = modified.replace(/<\/TouchableHighlight>/g, "</Pressable>");
-
-    // Update imports from react-native
-    if (/from\s+["']react-native["']/.test(modified)) {
-      if (!/\bPressable\b/.test(modified.match(/import\s*\{([^}]+)\}\s*from\s*["']react-native["']/)?.[1] ?? "")) {
-        modified = modified.replace(
-          /(import\s*\{)([^}]+)(\}\s*from\s*["']react-native["'])/,
-          (m, p1, p2, p3) => {
-            const cleaned = p2
-              .replace(/\bTouchableOpacity\b,?\s*/g, "")
-              .replace(/\bTouchableHighlight\b,?\s*/g, "")
-              .trim();
-            const withPressable = cleaned ? `${cleaned}, Pressable` : "Pressable";
-            return `${p1} ${withPressable} ${p3}`;
-          }
-        );
-      } else {
-        modified = modified.replace(
-          /(import\s*\{)([^}]+)(\}\s*from\s*["']react-native["'])/,
-          (m, p1, p2, p3) => {
-            const cleaned = p2
-              .replace(/\bTouchableOpacity\b,?\s*/g, "")
-              .replace(/\bTouchableHighlight\b,?\s*/g, "")
-              .replace(/,\s*,/g, ",")
-              .replace(/,\s*$/, "")
-              .trim();
-            return `${p1} ${cleaned} ${p3}`;
-          }
-        );
-      }
-    }
-
-    if (modified !== content) {
-      await writeFile(filePath, modified, "utf8");
-      fixedFiles++;
+    const migration = migrateTouchables(content);
+    if (migration.content === null) {
+      result.skipped.push({ file: relPath, reason: migration.reason ?? "unsupported" });
+    } else if (migration.content !== content) {
+      result.changed.push({ file: filePath, content: migration.content });
     }
   }
+  return result;
+}
 
-  return fixedFiles;
+/** Applies a planned fix, backing every file up first (`nativra rollback audit-fix` restores it). */
+export async function applyLegacyTouchableFix(cwd: string, plan: FixResult): Promise<number> {
+  if (plan.changed.length === 0) return 0;
+  await createBackup(
+    cwd,
+    "audit-fix",
+    plan.changed.map((c) => ({ destPath: c.file, exists: true }))
+  );
+  for (const { file, content } of plan.changed) {
+    await writeFile(file, content, "utf8");
+  }
+  return plan.changed.length;
 }
 
 export async function runProjectAudit(cwd: string): Promise<AuditReport> {
   const files = await collectSourceFiles(cwd);
+  const dirs = await managedDirs(cwd);
   const lock = await readLock(cwd);
   const installedItemsCount = Object.keys(lock.items ?? {}).length;
 
@@ -162,10 +202,7 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
       continue;
     }
 
-    const isNativraManaged =
-      relPath.includes("components/ui/") ||
-      relPath.includes("blocks/") ||
-      relPath.includes("templates/");
+    const isNativraManaged = isManagedPath(relPath, dirs);
 
     // 1. Count interactive JSX tags (<Pressable, <TouchableOpacity, <TouchableHighlight)
     const tagRegex = /<(Pressable|TouchableOpacity|TouchableHighlight)\b/g;
@@ -230,9 +267,7 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
     if (
       !relPath.includes("theme") &&
       !relPath.includes("tokens") &&
-      !relPath.includes("components/ui") &&
-      !relPath.includes("blocks/") &&
-      !relPath.includes("templates/")
+      !isNativraManaged
     ) {
       const hexMatches = content.match(/#[0-9a-fA-F]{6}\b/g) ?? [];
       if (hexMatches.length > 0) {
@@ -286,13 +321,38 @@ export function registerAuditCommand(program: Command) {
     )
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--json", "Output structured JSON report for CI pipelines")
-    .option("--fix", "Automatically migrate legacy <TouchableOpacity> usages to <Pressable>")
-    .action(async (options: { cwd: string; json?: boolean; fix?: boolean }) => {
+    .option("--fix", "Migrate legacy <TouchableOpacity>/<TouchableHighlight> to <Pressable> (files are backed up first)")
+    .option("--dry-run", "With --fix: list the files that would change without writing them")
+    .option("--yes", "With --fix: skip the confirmation prompt")
+    .action(async (options: { cwd: string; json?: boolean; fix?: boolean; dryRun?: boolean; yes?: boolean }) => {
       let fixedCount = 0;
       if (options.fix) {
-        fixedCount = await fixLegacyTouchables(options.cwd);
+        const plan = await planLegacyTouchableFix(options.cwd);
         if (!options.json) {
-          console.log(chalk.green(`\n⚡ Auto-fixed legacy <Touchable*> components in ${fixedCount} file(s).`));
+          for (const c of plan.changed) console.log(chalk.cyan(`  ~ ${relative(options.cwd, c.file)}`));
+          for (const s of plan.skipped) console.log(chalk.yellow(`  ! ${s.file}: skipped — ${s.reason}; migrate manually`));
+        }
+
+        let proceed = plan.changed.length > 0 && !options.dryRun;
+        if (proceed && !options.yes) {
+          if (!process.stdin.isTTY) {
+            console.error(chalk.red("\n✗ audit --fix rewrites source files; pass --yes to confirm in non-interactive mode.\n"));
+            process.exit(1);
+          }
+          ({ proceed } = await prompts({
+            type: "confirm",
+            name: "proceed",
+            message: `Rewrite ${plan.changed.length} file(s)? Pressable has no default press feedback, so review the result.`,
+            initial: false,
+          }));
+        }
+        if (proceed) {
+          fixedCount = await applyLegacyTouchableFix(options.cwd, plan);
+          if (!options.json) {
+            console.log(chalk.green(`\n⚡ Migrated ${fixedCount} file(s). Undo with: nativra rollback audit-fix`));
+          }
+        } else if (!options.json && options.dryRun) {
+          console.log(chalk.gray(`\n[Dry Run] ${plan.changed.length} file(s) would change.`));
         }
       }
 

@@ -1,8 +1,9 @@
-import { access, lstat, mkdir, readFile, writeFile, rename, rm } from "node:fs/promises";
+import { access, lstat, mkdir, readFile, readdir, writeFile, rename, rm } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import type { RegistryItem, SourceFile } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 import type { NativraConfig } from "./config.js";
+import { importBaseForType, importTargets, transformFileImports } from "./transform.js";
 
 /**
  * Ensures targetPath resolves strictly inside rootDir (at least one level below rootDir).
@@ -52,7 +53,7 @@ export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraC
       break;
     }
     case "theme":
-      rawDir = join(cwd, "lib/themes");
+      rawDir = join(cwd, config.themesDir);
       break;
     case "block":
       rawDir = join(cwd, config.blocksDir ?? config.componentsDir);
@@ -66,6 +67,41 @@ export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraC
 
 export function filesForTarget(item: RegistryItem, config: NativraConfig): SourceFile[] {
   return item.files.filter((f) => !f.target || f.target === config.stylingTarget);
+}
+
+/**
+ * Sibling imports (`./Card`) from `item` to files of `related` items that get installed in a
+ * different directory, mapped to the alias that reaches them.
+ */
+export function crossDirectoryImports(
+  cwd: string,
+  item: RegistryItem,
+  related: RegistryItem[],
+  config: NativraConfig
+): Record<string, string> {
+  const ownDir = resolveDestDir(cwd, item, config);
+  const targets = importTargets(config);
+  const map: Record<string, string> = {};
+  for (const other of related) {
+    if (other.id === item.id || resolveDestDir(cwd, other, config) === ownDir) continue;
+    const base = importBaseForType(other.type, targets);
+    for (const file of filesForTarget(other, config)) {
+      const name = (file.path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
+      if (name) map[name] = `${base}/${name}`;
+    }
+  }
+  return map;
+}
+
+/** The exact content Nativra writes for `file`: registry source with imports rewritten. */
+export function renderFile(
+  cwd: string,
+  item: RegistryItem,
+  file: SourceFile,
+  related: RegistryItem[],
+  config: NativraConfig
+): string {
+  return transformFileImports(file.content ?? "", config, crossDirectoryImports(cwd, item, related, config));
 }
 
 export function destPathFor(cwd: string, item: RegistryItem, file: SourceFile, config: NativraConfig): string {
@@ -99,8 +135,46 @@ export async function fileExists(path: string): Promise<boolean> {
 
 export const LOCK_FILENAME = "nativra.lock.json";
 
+export interface LockEntry {
+  version: string;
+  /** project-relative path -> sha256 of the content Nativra wrote */
+  files: Record<string, string>;
+  /** Registry item ids this item depends on (recorded since 0.3; absent in older lockfiles) */
+  dependencies?: string[];
+}
+
 export interface LockFile {
-  items: Record<string, { version: string; files: Record<string, string> }>;
+  items: Record<string, LockEntry>;
+}
+
+/** Ids of installed items whose recorded dependencies include `id`. */
+export function findDependents(lock: LockFile, id: string): string[] {
+  return Object.entries(lock.items)
+    .filter(([otherId, entry]) => otherId !== id && entry.dependencies?.includes(id))
+    .map(([otherId]) => otherId);
+}
+
+/**
+ * Records freshly written file hashes for an item and refreshes its version/dependencies.
+ * Legacy absolute-path keys are migrated to project-relative keys.
+ */
+export function recordLockEntry(
+  lock: LockFile,
+  cwd: string,
+  item: RegistryItem,
+  writtenFiles: Record<string, string>
+): void {
+  const entry: LockEntry = lock.items[item.id] ?? { version: item.version, files: {} };
+  for (const [absPath, hash] of Object.entries(writtenFiles)) {
+    delete entry.files[absPath];
+    entry.files[toLockKey(cwd, absPath)] = hash;
+  }
+  if (Object.keys(entry.files).length === 0) return;
+  entry.version = item.version;
+  const deps = (item.registryDependencies ?? []).map((d) => d.id);
+  if (deps.length > 0) entry.dependencies = deps;
+  else delete entry.dependencies;
+  lock.items[item.id] = entry;
 }
 
 export async function readLock(cwd: string): Promise<LockFile> {
@@ -150,58 +224,80 @@ export interface BackupManifest {
   files: BackupFileEntry[];
 }
 
+export const BACKUP_ID_REGEX = /^[a-z][a-z0-9-]*$/;
+const BACKUP_SNAPSHOT_REGEX = /^\d{13}-[a-z0-9]{6}$/;
+
+/** Root directory holding every backup snapshot for one component. */
+export function backupDirFor(cwd: string, componentId: string): string {
+  if (!BACKUP_ID_REGEX.test(componentId)) {
+    throw new Error(`Invalid component ID for backup: "${componentId}"`);
+  }
+  const backupsRoot = join(cwd, ".nativra", "backups");
+  return assertChildOfRoot(backupsRoot, join(backupsRoot, componentId), "backup directory");
+}
+
+/**
+ * Snapshots every file in `filesToModify` into a fresh, timestamped directory
+ * (`.nativra/backups/<id>/<snapshot>/`) with one manifest covering all of them,
+ * so multi-file operations can be rolled back as a unit and older snapshots survive.
+ */
 export async function createBackup(
   cwd: string,
   componentId: string,
   filesToModify: Array<{ destPath: string; exists: boolean }>
 ): Promise<string> {
-  if (!/^[a-z][a-z0-9-]*$/.test(componentId)) {
-    throw new Error(`Invalid component ID for backup: "${componentId}"`);
-  }
-  const backupId = `backup-${componentId}-${Date.now()}`;
-  const backupsRoot = join(cwd, ".nativra", "backups");
-  const backupDir = assertChildOfRoot(backupsRoot, join(backupsRoot, componentId), "backup directory");
+  const componentDir = backupDirFor(cwd, componentId);
+  const snapshot = `${Date.now()}-${Math.random().toString(36).slice(2, 8).padEnd(6, "0")}`;
+  const backupDir = join(componentDir, snapshot);
   await mkdir(backupDir, { recursive: true });
 
   const entries: BackupFileEntry[] = [];
-
-  for (const { destPath, exists } of filesToModify) {
-    const relPath = relative(cwd, destPath).replace(/\\/g, "/");
+  for (const [index, { destPath, exists }] of filesToModify.entries()) {
+    const relPath = toLockKey(cwd, destPath);
     if (!exists) {
-      entries.push({
-        projectRelativePath: relPath,
-        stateBefore: "absent",
-      });
+      entries.push({ projectRelativePath: relPath, stateBefore: "absent" });
       continue;
     }
 
     const localContent = await readFile(destPath, "utf8");
-    const hash = sha256(localContent);
-    const safeBaseName = destPath.split(/[/\\]/).pop() ?? "file.tsx";
-    const backupFileName = `${safeBaseName}.${Date.now()}.bak`;
+    const baseName = destPath.split(/[/\\]/).pop() ?? "file";
+    const backupFileName = `${index}-${baseName}.bak`;
     await writeFile(join(backupDir, backupFileName), localContent, "utf8");
-
-    // Also write simple .bak for backward-compatibility with legacy tooling
-    await writeFile(join(backupDir, `${safeBaseName}.bak`), localContent, "utf8");
-
     entries.push({
       projectRelativePath: relPath,
       backupFileName,
       stateBefore: "present",
-      sha256: hash,
+      sha256: sha256(localContent),
     });
   }
 
   const manifest: BackupManifest = {
     schemaVersion: 1,
-    backupId,
+    backupId: `${componentId}/${snapshot}`,
     componentId,
     createdAt: new Date().toISOString(),
     files: entries,
   };
-
   await writeFile(join(backupDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
-  return backupId;
+  return manifest.backupId;
+}
+
+/**
+ * Returns the newest backup snapshot directory for a component, or null.
+ * Also recognises the pre-0.3 layout where `manifest.json` sat directly in the component dir.
+ */
+export async function findLatestBackup(cwd: string, componentId: string): Promise<string | null> {
+  const componentDir = backupDirFor(cwd, componentId);
+  let entries: string[];
+  try {
+    entries = await readdir(componentDir);
+  } catch {
+    return null;
+  }
+  const snapshots = entries.filter((e) => BACKUP_SNAPSHOT_REGEX.test(e)).sort();
+  const latest = snapshots[snapshots.length - 1];
+  if (latest) return join(componentDir, latest);
+  return entries.includes("manifest.json") ? componentDir : null;
 }
 
 // ---------------------------------------------------------------------------
