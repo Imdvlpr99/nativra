@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "pretypecheck": "node ../../scripts/build-registry.mjs",
     "clean": "rimraf .next out",
     "prebuild": "node ../../scripts/build-registry.mjs",
     "predev": "node ../../scripts/build-registry.mjs"
