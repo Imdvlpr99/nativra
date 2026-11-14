@@ -63,7 +63,7 @@ jobs:
             gh release edit "$TAG" \
               --title "$TITLE" \
               --notes-file /tmp/release-notes.md
-            gh release upload "$TAG" "packages/cli/$TGZ" "dist/registry/registry.json" --clobber || true
+            gh release upload "$TAG" "packages/cli/$TGZ" "dist/registry/registry.json" --clobber
           fi
 
       - name: Prepare package.json for GitHub Packages (@imdvlpr99/nativra-cli)
@@ -84,4 +84,11 @@ jobs:
         working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm publish --no-git-checks || true
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          # Re-runs of an already published version are skipped explicitly; any other failure fails the job.
+          if npm view "@imdvlpr99/nativra-cli@$VERSION" version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "@imdvlpr99/nativra-cli@$VERSION is already published; skipping."
+          else
+            pnpm publish --no-git-checks
+          fi
