@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add checkbox
+ * Install: npx nativra-cli add checkbox
  */
 import React from "react";
 import {
@@ -96,3 +96,4 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+

@@ -4,7 +4,7 @@
  * @target nativewind
  * @platforms android, ios
  *
- * Install: npx nativra add badge
+ * Install: npx nativra-cli add badge
  */
 import React from "react";
 import { View, Text } from "react-native";

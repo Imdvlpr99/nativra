@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add avatar
+ * Install: npx nativra-cli add avatar
  */
 import React, { useState } from "react";
 import {
@@ -97,3 +97,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+

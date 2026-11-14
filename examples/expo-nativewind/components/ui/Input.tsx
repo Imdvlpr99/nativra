@@ -1,4 +1,4 @@
-/** Nativra — Input (NativeWind). Install: npx nativra add input */
+/** Nativra — Input (NativeWind). Install: npx nativra-cli add input */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 

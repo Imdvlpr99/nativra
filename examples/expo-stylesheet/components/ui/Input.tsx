@@ -1,4 +1,4 @@
-/** Nativra — Input (StyleSheet). Install: npx nativra add input */
+/** Nativra — Input (StyleSheet). Install: npx nativra-cli add input */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
 

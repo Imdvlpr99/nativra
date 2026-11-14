@@ -1,4 +1,4 @@
-/** Nativra — Card (NativeWind). Install: npx nativra add card */
+/** Nativra — Card (NativeWind). Install: npx nativra-cli add card */
 import React from "react";
 import { View, type ViewProps } from "react-native";
 

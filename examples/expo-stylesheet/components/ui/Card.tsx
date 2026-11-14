@@ -1,4 +1,4 @@
-/** Nativra — Card (StyleSheet). Install: npx nativra add card */
+/** Nativra — Card (StyleSheet). Install: npx nativra-cli add card */
 import React from "react";
 import { StyleSheet, View, useColorScheme, type ViewProps } from "react-native";
 

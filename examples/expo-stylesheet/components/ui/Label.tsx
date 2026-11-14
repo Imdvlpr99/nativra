@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add label
+ * Install: npx nativra-cli add label
  */
 import React from "react";
 import {
@@ -76,3 +76,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+

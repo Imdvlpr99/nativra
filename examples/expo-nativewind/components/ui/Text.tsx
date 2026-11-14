@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add text
+ * Install: npx nativra-cli add text
  */
 import React from "react";
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
@@ -32,3 +32,4 @@ export function Text({ variant = "p", className = "", style, ...props }: TextPro
   const variantClass = VARIANTS[variant] ?? VARIANTS.p;
   return <RNText className={`${variantClass} ${className}`.trim()} style={style} {...props} />;
 }
+

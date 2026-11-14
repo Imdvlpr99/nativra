@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add checkbox
+ * Install: npx nativra-cli add checkbox
  */
 import React from "react";
 import { Pressable, View, Text } from "react-native";
@@ -57,3 +57,4 @@ export function Checkbox({
     </Pressable>
   );
 }
+

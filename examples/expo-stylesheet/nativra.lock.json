@@ -1,0 +1,76 @@
+{
+  "items": {
+    "avatar": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Avatar.tsx": "630e72715a619203401b43e2737bb02ba7edc90c2051eeef666a7094ae10776a"
+      }
+    },
+    "badge": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Badge.tsx": "6597d92af9cbd5dae1f620e14a7d9a06ff9ab5882ef5ddf92a57d1986c4b4e53"
+      }
+    },
+    "button": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Button.tsx": "1dba77674ab46c26179bfb016af7eea2d662edd95924d5c0b2ab27ed25cf273f"
+      }
+    },
+    "card": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Card.tsx": "a5d894b5404467799c295f266b6e1c409e2226824fc4c06fe4f24911b9510d20"
+      }
+    },
+    "checkbox": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Checkbox.tsx": "fd0630d0ac334ee79ea8bfd9b4ace0d234d5d3b1502ce08f08936869fbc737a5"
+      }
+    },
+    "input": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Input.tsx": "9d8758be5e5a382c51385385d7c8392185a38c245f8a29d86e22374e7d022bba"
+      }
+    },
+    "label": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Label.tsx": "e5acb1b94d357482c16ef3efaeb99e2c05b7ad5a9825ae413dbd20e7b1dc4534"
+      }
+    },
+    "separator": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Separator.tsx": "09d938b6683313beaa4e71377bdd6dd504c627b9d566fe8ea7417d2c1b27a607"
+      }
+    },
+    "skeleton": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Skeleton.tsx": "61ef868df6f397fe150f168af869c679956a127d3c1fe5d0b02685a4bbe74e25"
+      }
+    },
+    "spinner": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Spinner.tsx": "f5bd28312ba8d46a463e929a043619b400eaeb463a78e4448e01496df1df89f2"
+      }
+    },
+    "switch": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Switch.tsx": "a003f8a06c5c353f27e681506d8327141ebe2e2e0f4810a6b46d44052946e74f"
+      }
+    },
+    "text": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Text.tsx": "4cbe6078db935ee01f50c6d73d2c8dee41dfe6d76af8d0014eb41fccf58e0b19"
+      }
+    }
+  }
+}
