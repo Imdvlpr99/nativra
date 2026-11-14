@@ -1,4 +1,7 @@
-/** Nativra theme — Slate. Edit freely; you own this file. */
+/**
+ * Nativra theme — Slate. Edit freely; you own this file.
+ * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
+ */
 export const slate = {
   background: "#ffffff",
   foreground: "#0f172a",
@@ -21,5 +24,26 @@ export const slate = {
   ring: "#0f172a",
 } as const;
 
-export type SlateTheme = typeof slate;
+export const slateDark = {
+  background: "#020617",
+  foreground: "#f8fafc",
+  card: "#020617",
+  "card-foreground": "#f8fafc",
+  popover: "#020617",
+  "popover-foreground": "#f8fafc",
+  primary: "#f8fafc",
+  "primary-foreground": "#0f172a",
+  secondary: "#1e293b",
+  "secondary-foreground": "#f8fafc",
+  muted: "#1e293b",
+  "muted-foreground": "#94a3b8",
+  accent: "#1e293b",
+  "accent-foreground": "#f8fafc",
+  destructive: "#7f1d1d",
+  "destructive-foreground": "#f8fafc",
+  border: "#1e293b",
+  input: "#1e293b",
+  ring: "#cbd5e1",
+} as const;
 
+export type SlateTheme = typeof slate;

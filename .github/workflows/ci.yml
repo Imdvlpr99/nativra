@@ -69,8 +69,10 @@ jobs:
           node-version: "22"
       - uses: pnpm/action-setup@v6
       - run: pnpm install --frozen-lockfile
-      - name: Build registry-builder
-        run: pnpm --filter @nativra/registry-builder... build
+      - name: Build registry-builder and theme-engine
+        run: pnpm --filter @nativra/registry-builder... --filter @nativra/theme-engine build
+      - name: Check registry themes match theme-engine
+        run: node scripts/generate-themes.mjs --check
       - name: Build registry
         run: node scripts/build-registry.mjs
 

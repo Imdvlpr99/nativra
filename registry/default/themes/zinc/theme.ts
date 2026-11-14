@@ -1,4 +1,7 @@
-/** Nativra theme — Zinc. Edit freely; you own this file. */
+/**
+ * Nativra theme — Zinc (Default). Edit freely; you own this file.
+ * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
+ */
 export const zinc = {
   background: "#ffffff",
   foreground: "#09090b",
@@ -18,8 +21,29 @@ export const zinc = {
   "destructive-foreground": "#fafafa",
   border: "#e4e4e7",
   input: "#e4e4e7",
-  ring: "#71717a",
+  ring: "#18181b",
+} as const;
+
+export const zincDark = {
+  background: "#09090b",
+  foreground: "#fafafa",
+  card: "#09090b",
+  "card-foreground": "#fafafa",
+  popover: "#09090b",
+  "popover-foreground": "#fafafa",
+  primary: "#fafafa",
+  "primary-foreground": "#18181b",
+  secondary: "#27272a",
+  "secondary-foreground": "#fafafa",
+  muted: "#27272a",
+  "muted-foreground": "#a1a1aa",
+  accent: "#27272a",
+  "accent-foreground": "#fafafa",
+  destructive: "#7f1d1d",
+  "destructive-foreground": "#fafafa",
+  border: "#27272a",
+  input: "#27272a",
+  ring: "#d4d4d8",
 } as const;
 
 export type ZincTheme = typeof zinc;
-

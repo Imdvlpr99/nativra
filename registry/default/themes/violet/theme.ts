@@ -1,4 +1,7 @@
-/** Nativra theme — Violet. Edit freely; you own this file. */
+/**
+ * Nativra theme — Violet. Edit freely; you own this file.
+ * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
+ */
 export const violet = {
   background: "#ffffff",
   foreground: "#2e1065",
@@ -21,5 +24,26 @@ export const violet = {
   ring: "#7c3aed",
 } as const;
 
-export type VioletTheme = typeof violet;
+export const violetDark = {
+  background: "#0f0728",
+  foreground: "#f5f3ff",
+  card: "#1e103a",
+  "card-foreground": "#f5f3ff",
+  popover: "#1e103a",
+  "popover-foreground": "#f5f3ff",
+  primary: "#8b5cf6",
+  "primary-foreground": "#0f0728",
+  secondary: "#2e1065",
+  "secondary-foreground": "#f5f3ff",
+  muted: "#2e1065",
+  "muted-foreground": "#c4b5fd",
+  accent: "#3b0764",
+  "accent-foreground": "#f5f3ff",
+  destructive: "#7f1d1d",
+  "destructive-foreground": "#ffffff",
+  border: "#3b0764",
+  input: "#3b0764",
+  ring: "#8b5cf6",
+} as const;
 
+export type VioletTheme = typeof violet;

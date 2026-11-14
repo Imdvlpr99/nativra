@@ -1,4 +1,7 @@
-/** Nativra theme — Rose. Edit freely; you own this file. */
+/**
+ * Nativra theme — Rose. Edit freely; you own this file.
+ * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
+ */
 export const rose = {
   background: "#ffffff",
   foreground: "#4c0519",
@@ -21,5 +24,26 @@ export const rose = {
   ring: "#e11d48",
 } as const;
 
-export type RoseTheme = typeof rose;
+export const roseDark = {
+  background: "#2a040e",
+  foreground: "#fff1f2",
+  card: "#4c0519",
+  "card-foreground": "#fff1f2",
+  popover: "#4c0519",
+  "popover-foreground": "#fff1f2",
+  primary: "#f43f5e",
+  "primary-foreground": "#2a040e",
+  secondary: "#881337",
+  "secondary-foreground": "#fff1f2",
+  muted: "#881337",
+  "muted-foreground": "#fda4af",
+  accent: "#9f1239",
+  "accent-foreground": "#fff1f2",
+  destructive: "#7f1d1d",
+  "destructive-foreground": "#ffffff",
+  border: "#9f1239",
+  input: "#9f1239",
+  ring: "#f43f5e",
+} as const;
 
+export type RoseTheme = typeof rose;

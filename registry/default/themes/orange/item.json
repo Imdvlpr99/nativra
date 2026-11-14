@@ -1,0 +1,25 @@
+{
+  "id": "orange",
+  "name": "Orange",
+  "description": "The orange theme token set (light and dark).",
+  "type": "theme",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "theme.ts"
+    }
+  ],
+  "tags": [
+    "theme",
+    "orange",
+    "tokens"
+  ]
+}
