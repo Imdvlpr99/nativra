@@ -1,6 +1,6 @@
 {
   "id": "header-bar",
-  "name": "HeaderBar",
+  "name": "Header Bar",
   "description": "Mobile screen navigation bar with back action, title, subtitle, and right action button.",
   "type": "component",
   "status": "stable",

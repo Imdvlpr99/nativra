@@ -1,6 +1,6 @@
 {
   "id": "bottom-tab-bar",
-  "name": "BottomTabBar",
+  "name": "Bottom Tab Bar",
   "description": "Native-feeling bottom tab navigation bar with active indicator pill and notification badge counts.",
   "type": "component",
   "status": "stable",

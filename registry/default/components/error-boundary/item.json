@@ -1,6 +1,6 @@
 {
   "id": "error-boundary",
-  "name": "ErrorBoundary",
+  "name": "Error Boundary",
   "description": "Mobile crash recovery error boundary card with diagnostic summary and retry action.",
   "type": "component",
   "status": "stable",

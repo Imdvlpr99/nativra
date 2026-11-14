@@ -1,6 +1,6 @@
 {
   "id": "radio-group",
-  "name": "RadioGroup",
+  "name": "Radio Group",
   "description": "An accessible group of radio buttons with keyboard and screen reader support.",
   "type": "component",
   "status": "stable",

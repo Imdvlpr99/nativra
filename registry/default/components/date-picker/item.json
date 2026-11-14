@@ -1,6 +1,6 @@
 {
   "id": "date-picker",
-  "name": "DatePicker",
+  "name": "Date Picker",
   "description": "Native-feeling calendar date and quick-preset selector input for mobile forms and scheduling.",
   "type": "component",
   "status": "stable",

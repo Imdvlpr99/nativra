@@ -1,6 +1,6 @@
 {
   "id": "action-tile",
-  "name": "ActionTile",
+  "name": "Action Tile",
   "description": "Quick-action icon button tile for mobile dashboards, wallets, and launcher grids.",
   "type": "component",
   "status": "stable",

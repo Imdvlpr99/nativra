@@ -1,6 +1,6 @@
 {
   "id": "pagination-dots",
-  "name": "PaginationDots",
+  "name": "Pagination Dots",
   "description": "Step and carousel pagination dot indicator with active pill expansion and interactive dot press.",
   "type": "component",
   "status": "stable",
