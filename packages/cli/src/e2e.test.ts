@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const CLI = resolve(__dirname, "../dist/cli.js");
@@ -299,6 +299,15 @@ describe("nativra CLI (src/ project with tsconfig alias)", () => {
   });
 
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("accepts a relative --cwd without doubling paths", () => {
+    execFileSync("node", [CLI, "add", "label", "--yes", "--cwd", basename(dir), "--registry", REGISTRY], {
+      cwd: dirname(dir),
+      encoding: "utf8",
+    });
+    expect(existsSync(join(dir, "src/components/ui/Label.tsx"))).toBe(true);
+    expect(existsSync(join(dir, basename(dir)))).toBe(false);
+  });
 
   it("installs into src/ but imports through the alias", () => {
     runIn("add", "badge", "--yes");
