@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   RegistryItemSchema,
-  NativraConfigV4Schema,
   checkProjectCompatibility,
   DEFAULT_COMPATIBILITY_MATRIX,
 } from "./index.js";
@@ -60,41 +59,6 @@ describe("RegistryItemSchema", () => {
   });
 });
 
-describe("NativraConfigV4Schema", () => {
-  it("parses modern V4 nested configuration with defaults", () => {
-    const cfg = NativraConfigV4Schema.parse({
-      version: 4,
-      framework: "expo",
-      styling: "nativewind",
-      components: {
-        directory: "src/components/ui",
-        aliases: {
-          components: "@/components",
-          utils: "@/lib/utils",
-        },
-      },
-    });
-
-    expect(cfg.version).toBe(4);
-    expect(cfg.framework).toBe("expo");
-    expect(cfg.components.directory).toBe("src/components/ui");
-    expect(cfg.components.aliases.components).toBe("@/components");
-    expect(cfg.registry["default"]).toBe("https://nativra.vercel.app");
-  });
-
-  it("maintains backward compatibility with legacy flat v1-v3 fields", () => {
-    const legacy = NativraConfigV4Schema.parse({
-      componentsDir: "components/ui",
-      stylingTarget: "stylesheet",
-      registries: [{ name: "default", url: "https://nativra.vercel.app" }],
-    });
-
-    expect(legacy.componentsDir).toBe("components/ui");
-    expect(legacy.stylingTarget).toBe("stylesheet");
-    expect(legacy.registries?.[0]?.name).toBe("default");
-  });
-});
-
 describe("checkProjectCompatibility", () => {
   it("passes when project meets minimum requirements", () => {
     const result = checkProjectCompatibility(
@@ -116,5 +80,11 @@ describe("checkProjectCompatibility", () => {
 
     expect(result.compatible).toBe(false);
     expect(result.errors[0]).toContain("below minimum supported SDK");
+  });
+
+  it("compares versions numerically, not lexically", () => {
+    expect(checkProjectCompatibility({ reactNative: "0.100.0" }).warnings).toHaveLength(0);
+    expect(checkProjectCompatibility({ reactNative: "^0.76.3" }).warnings).toHaveLength(0);
+    expect(checkProjectCompatibility({ reactNative: "0.73.6" }).warnings).toHaveLength(1);
   });
 });

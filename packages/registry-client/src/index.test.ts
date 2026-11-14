@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
-import { createLocalRegistryClient } from "./index.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { MAX_RESPONSE_BYTES, RegistryClient, createLocalRegistryClient } from "./index.js";
 
 const REGISTRY = resolve(__dirname, "../../../dist/registry");
 
@@ -39,3 +39,22 @@ describe("RegistryClient (local)", () => {
 });
 
 
+
+describe("RegistryClient (remote)", () => {
+  const remote = () => new RegistryClient([{ kind: "remote", location: "https://registry.test", name: "default" }]);
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("rejects a redirect from https to http", async () => {
+    const res = new Response("{}", { status: 200 });
+    Object.defineProperty(res, "url", { value: "http://evil.test/registry.json" });
+    vi.stubGlobal("fetch", vi.fn(async () => res));
+    await expect(remote().getManifest()).rejects.toThrow(/insecure/);
+  });
+
+  it("rejects oversized responses", async () => {
+    const big = "x".repeat(MAX_RESPONSE_BYTES + 1);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(big, { status: 200 })));
+    await expect(remote().getManifest()).rejects.toThrow(/too large/);
+  });
+});

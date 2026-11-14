@@ -4,6 +4,32 @@ import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { ITEM_ID_REGEX, RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 
+/** Upper bound for a single registry JSON document (items embed source, schema caps files at 512 KB × 50). */
+export const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
+
+async function readLimitedText(response: Response, limit: number, url: string): Promise<string> {
+  const declared = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > limit) {
+    throw new Error(`Registry response too large (${declared} bytes > ${limit}): ${url}`);
+  }
+  if (!response.body) return response.text();
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > limit) {
+      await reader.cancel();
+      throw new Error(`Registry response too large (> ${limit} bytes): ${url}`);
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
 function isSafeRelativePath(targetPath: string): boolean {
   if (!targetPath || typeof targetPath !== "string") return false;
   if (
@@ -216,12 +242,16 @@ export class RegistryClient {
 
     try {
       const response = await fetch(url, { signal: controller.signal });
+      // fetch follows redirects; never accept a downgrade from https to plain http
+      if (url.startsWith("https:") && response.url && !response.url.startsWith("https:")) {
+        throw new Error(`Registry redirect to insecure URL rejected: "${response.url}"`);
+      }
       if (!response.ok) {
         throw new Error(
           `Failed to fetch registry resource "${url}": ${response.status} ${response.statusText}`
         );
       }
-      return (await response.json()) as T;
+      return JSON.parse(await readLimitedText(response, MAX_RESPONSE_BYTES, url)) as T;
     } catch (err) {
       if (controller.signal.aborted) {
         throw new Error(`Registry request timed out after ${this.timeoutMs}ms: ${url}`);
@@ -247,16 +277,3 @@ export function createLocalRegistryClient(
     options
   );
 }
-
-/** Create a client targeting a remote registry URL */
-export function createRemoteRegistryClient(
-  baseUrl: string,
-  options?: RegistryClientOptions
-): RegistryClient {
-  return new RegistryClient(
-    [{ kind: "remote", location: baseUrl, name: "default" }],
-    options
-  );
-}
-
-
