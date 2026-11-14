@@ -84,4 +84,16 @@ describe("buildRegistry", () => {
     const r = await buildRegistry({ sourceDir: src, outDir: out });
     expect(r.errors.join()).toMatch(/not listed in stylingTargets/);
   });
+
+  it("hydrates docs from docsPath and reports a missing docs file", async () => {
+    const ok = await setup(item({ docsPath: "docs.mdx" }));
+    await writeFile(join(ok.src, "default", "components", "thing", "docs.mdx"), "# Thing");
+    const r = await buildRegistry({ sourceDir: ok.src, outDir: ok.out });
+    expect(r.errors).toEqual([]);
+    expect(r.items[0]?.docs).toBe("# Thing");
+
+    const missing = await setup(item({ docsPath: "nope.mdx" }));
+    const r2 = await buildRegistry({ sourceDir: missing.src, outDir: missing.out });
+    expect(r2.errors.join()).toMatch(/Could not read docs file/);
+  });
 });

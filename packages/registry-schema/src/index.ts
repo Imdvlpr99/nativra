@@ -174,8 +174,10 @@ export const RegistryItemSchema = z.object({
   tags: z.array(z.string().max(64)).max(50).optional(),
   /** Relative path to preview image or gif */
   previewImage: z.string().optional(),
-  /** Relative path to documentation MDX file */
+  /** Relative path to the item's Markdown documentation file */
   docsPath: z.string().optional(),
+  /** Markdown documentation, hydrated from `docsPath` at build time */
+  docs: z.string().max(262144).optional(),
   /** Deprecation message, set when status is "deprecated" */
   deprecationMessage: z.string().optional(),
   /** ISO date when this item was added */

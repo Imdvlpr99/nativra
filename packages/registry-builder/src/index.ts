@@ -131,6 +131,21 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           }
         }
 
+        // Hydrate Markdown documentation
+        const docsPath = def["docsPath"];
+        if (typeof docsPath === "string") {
+          const docsSource = resolve(itemDir, docsPath);
+          if (!isSafeRelativePath(docsPath) || !docsSource.startsWith(resolve(itemDir) + sep)) {
+            errors.push(`[${entry}] Unsafe docsPath rejected: ${docsPath}`);
+          } else {
+            try {
+              def["docs"] = await readFile(docsSource, "utf8");
+            } catch {
+              errors.push(`[${entry}] Could not read docs file: ${docsPath}`);
+            }
+          }
+        }
+
         // Set updatedAt to now if not present
         if (!def["updatedAt"]) {
           def["updatedAt"] = new Date().toISOString();

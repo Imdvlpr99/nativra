@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getComponents, getItem } from "@/lib/registry";
 import { ComponentPreview } from "@/components/ComponentPreview";
 import { CodeViewer } from "@/components/CodeViewer";
+import { MarkdownDocs } from "@/components/MarkdownDocs";
 import {
   CheckCircle2,
   ChevronRight,
@@ -460,6 +461,14 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
         </div>
         <ComponentPreview item={item} />
       </section>
+
+      {/* Item documentation (from the item's docs.mdx) */}
+      {item.docs && (
+        <section className="space-y-2 pt-4">
+          <h2 className="text-lg font-bold tracking-tight text-foreground">Documentation</h2>
+          <MarkdownDocs source={item.docs} />
+        </section>
+      )}
 
       {/* Source Code Viewer (Dual Target: NativeWind & StyleSheet) */}
       <section className="space-y-4 pt-4">
