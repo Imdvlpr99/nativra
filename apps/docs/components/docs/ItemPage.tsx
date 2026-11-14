@@ -10,7 +10,8 @@ import { TYPE_META, catalogHref, itemHref } from "@/lib/item-types";
 import { COMPONENT_PROPS_MAP } from "@/lib/component-props";
 import { SITE } from "@/lib/site";
 import { ComponentPreview } from "@/components/ComponentPreview";
-import { CodeViewer } from "@/components/CodeViewer";
+import { highlight, langFromPath } from "@/lib/highlight";
+import { SourceViewer, type HighlightedFile } from "./SourceViewer";
 import { MarkdownDocs } from "@/components/MarkdownDocs";
 import { InstallTabs, type InstallInfo } from "./InstallTabs";
 import { ThemePreview, ThemeTokenTable } from "./ThemePreview";
@@ -107,6 +108,14 @@ async function ItemPage({ type, id }: { type: RegistryItemType; id: string }) {
     item.platforms.web && "Web",
   ].filter(Boolean) as string[];
 
+  const sources: HighlightedFile[] = await Promise.all(
+    item.files.map(async (f) => ({
+      path: f.path,
+      ...(f.target ? { target: f.target } : {}),
+      code: f.content ?? "",
+      html: await highlight(f.content ?? "", langFromPath(f.path)),
+    }))
+  );
   const snippet = importSnippet(item);
   const install: InstallInfo = {
     id: item.id,
@@ -239,7 +248,7 @@ async function ItemPage({ type, id }: { type: RegistryItemType; id: string }) {
       )}
 
       <Section id="source" title="Source" description="This is exactly what the CLI writes, before your import aliases are applied.">
-        <CodeViewer files={item.files} defaultTarget="nativewind" />
+        <SourceViewer files={sources} />
       </Section>
 
       {(deps.length > 0 || install.npmDeps.length > 0 || dependents.length > 0) && (

@@ -1,158 +1,146 @@
 import type { Metadata } from "next";
+import { CommandLine } from "@/components/docs/CopyButton";
+import { Callout, CodeBlock, Defs, DocsHeader, DocsSection, NextStep, P, Step, Steps } from "@/components/docs/Prose";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contribution Guide — Authoring React Native Components for Nativra",
+  title: "Contributing — Add a Component to the Nativra Registry",
   description:
-    "Learn how to author, test, and contribute new React Native components, blocks, and templates to the open-source Nativra registry.",
-  alternates: {
-    canonical: "/docs/contributing",
-  },
+    "How to author a Nativra registry item: folder layout, item.json, NativeWind and StyleSheet sources, docs, building and validating the registry.",
+  alternates: { canonical: "/docs/contributing" },
 };
+
+const TREE = `registry/default/components/rating-stars/
+├── item.json              # metadata, dependencies, files
+├── docs.mdx               # Markdown shown on the docs page
+├── nativewind/
+│   └── RatingStars.tsx
+└── stylesheet/
+    └── RatingStars.tsx`;
+
+const ITEM = `{
+  "id": "rating-stars",
+  "name": "Rating Stars",
+  "description": "A star rating display and input.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/RatingStars.tsx", "target": "nativewind" },
+    { "path": "stylesheet/RatingStars.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [{ "id": "text", "registry": "default" }],
+  "npmDependencies": [],
+  "tags": ["rating", "input", "review"],
+  "docsPath": "docs.mdx"
+}`;
 
 export default function ContributingPage() {
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="space-y-3 border-b border-border pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300">
-          Open Source
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Contribution Guide
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Nativra welcomes contributions! Learn how to author new mobile components that satisfy our dual styling targets (NativeWind + StyleSheet) and quality bar.
-        </p>
-      </div>
+    <>
+      <DocsHeader
+        eyebrow="Project"
+        title="Contributing"
+        description="Every registry item is a folder of plain files. This guide walks through adding one, from folder to pull request."
+        meta="pnpm 9 · Node.js 20+"
+      />
 
-      <div className="space-y-8 text-foreground">
-        {/* Step 1 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              1
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Define the Component Contract
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            All components begin with a framework-agnostic TypeScript contract in <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">packages/component-contracts/src/index.ts</code>. This guarantees both styling targets share identical prop interfaces.
-          </p>
-          <div className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-200 overflow-x-auto">
-{`export interface SliderBaseProps extends AccessibleProps {
-  value: number;
-  min?: number;
-  max?: number;
-  step?: number;
-  disabled?: boolean;
-  onValueChange?: (val: number) => void;
-}`}
-          </div>
-        </section>
+      <DocsSection id="setup" title="Set up the repository">
+        <CodeBlock
+          lang="bash"
+          title="terminal"
+          code={`git clone ${SITE.repo}.git
+cd nativra
+pnpm install
+pnpm build`}
+        />
+        <Defs
+          items={[
+            { term: "registry/default/", desc: "Authored items: components, blocks, templates, hooks, utilities, themes." },
+            { term: "packages/cli", desc: "nativra-cli." },
+            { term: "packages/registry-builder", desc: "Validates items and builds the static registry JSON." },
+            { term: "packages/theme-engine", desc: "Theme presets — the source of truth for registry theme files." },
+            { term: "apps/docs · apps/native-preview", desc: "This site, and an Expo app for checking items on devices." },
+          ]}
+        />
+      </DocsSection>
 
-        {/* Step 2 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              2
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Implement Dual Source Files
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Create both implementations in the registry directory:
-          </p>
-          <ul className="list-disc pl-5 space-y-1.5 text-xs text-muted-foreground">
+      <DocsSection id="add-item" title="Add an item">
+        <Steps>
+          <Step title="Create the folder">
+            <CodeBlock code={TREE} lang="text" title="layout" />
+            <P>
+              <p>The folder name must equal the item&apos;s <code>id</code>.</p>
+            </P>
+          </Step>
+          <Step title="Describe it in item.json">
+            <CodeBlock code={ITEM} lang="json" title="item.json" />
+          </Step>
+          <Step title="Write both implementations">
+            <P>
+              <p>
+                The NativeWind and StyleSheet files export the same component with the same props. Import shared code through
+                the canonical aliases — <code>@/components/ui</code>, <code>@/lib/utils</code>, <code>@/hooks</code> — so the CLI
+                can rewrite them to each user&apos;s paths.
+              </p>
+            </P>
+          </Step>
+          <Step title="Document it">
+            <P>
+              <p>
+                <code>docs.mdx</code> is plain Markdown: a short usage example, variants and accessibility notes. It is rendered
+                on the item&apos;s page.
+              </p>
+            </P>
+          </Step>
+          <Step title="Build and validate">
+            <CommandLine command="node scripts/build-registry.mjs" />
+            <P>
+              <p>
+                The build fails if the schema is invalid, the id doesn&apos;t match the folder, a dependency doesn&apos;t exist, or a
+                file targets an undeclared styling target.
+              </p>
+            </P>
+          </Step>
+        </Steps>
+      </DocsSection>
+
+      <DocsSection id="preview" title="Preview and test">
+        <Defs
+          items={[
+            { term: "pnpm dev", desc: "Runs this docs site with your item at /docs/<type>/<id>." },
+            { term: "pnpm --filter @nativra/native-preview sync", desc: "Copies registry components into the Expo preview app; then start it to test on iOS/Android." },
+            { term: "pnpm typecheck · pnpm lint · pnpm test", desc: "What CI runs. CLI end-to-end tests install items from the built registry." },
+          ]}
+        />
+        <Callout type="note" title="Themes are generated">
+          Don&apos;t edit <code>registry/default/themes/*/theme.ts</code> by hand. Change the preset in{" "}
+          <code>packages/theme-engine</code> and run <code>pnpm themes:generate</code>; CI checks they match.
+        </Callout>
+      </DocsSection>
+
+      <DocsSection id="checklist" title="Pull request checklist">
+        <P>
+          <ul>
+            <li>Both targets have identical props and behavior, verified in light and dark mode.</li>
             <li>
-              <code className="font-mono text-foreground">registry/default/components/nativewind/Slider.tsx</code> (Tailwind CSS v4 classes via NativeWind)
+              Interactive elements set <code>accessibilityRole</code> and a label, and have a touch area of at least 44×44pt
+              (use <code>hitSlop</code> for smaller visuals).
             </li>
             <li>
-              <code className="font-mono text-foreground">registry/default/components/stylesheet/Slider.tsx</code> (Pure React Native StyleSheet and useColorScheme)
+              No <code>allowFontScaling={"{false}"}</code>; text respects Dynamic Type.
             </li>
+            <li>
+              TypeScript is strict — no <code>any</code> without a comment explaining why.
+            </li>
+            <li>New npm dependencies are declared in <code>npmDependencies</code> and justified in the PR.</li>
           </ul>
-        </section>
+        </P>
+      </DocsSection>
 
-        {/* Step 3 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              3
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Export Component Metadata
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Each component file exports a typed <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">componentMeta</code> object so tooling can introspect without parsing arbitrary JSX:
-          </p>
-          <div className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-200 overflow-x-auto">
-{`export const componentMeta: ComponentMeta = {
-  id: "slider",
-  name: "Slider",
-  description: "Accessible continuous range slider control.",
-  stylingTarget: "nativewind",
-  platforms: { android: true, ios: true },
-  version: "0.1.0",
-};`}
-          </div>
-        </section>
-
-        {/* Step 4 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              4
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Compile & Validate the Registry
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Run the automated registry builder to generate JSON metadata and compute SHA-256 integrity hashes:
-          </p>
-          <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-            pnpm registry:build{"\n"}
-            pnpm test
-          </pre>
-        </section>
-
-        {/* Step 5 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              5
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Pull Request Quality Checklist
-            </h2>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-2 text-xs">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" readOnly checked className="rounded text-sky-600" />
-              <span>Minimum 44x44pt touch area for interactive elements</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" readOnly checked className="rounded text-sky-600" />
-              <span>Semantic <code className="font-mono">accessibilityRole</code> and <code className="font-mono">accessibilityState</code> defined</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" readOnly checked className="rounded text-sky-600" />
-              <span>Verified in both Light and Dark appearances</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" readOnly checked className="rounded text-sky-600" />
-              <span>Zero external runtime package dependencies beyond react-native / nativewind</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" readOnly checked className="rounded text-sky-600" />
-              <span>TypeScript compiles cleanly with no `any` types</span>
-            </label>
-          </div>
-        </section>
-      </div>
-    </div>
+      <NextStep href="/docs/changelog" title="Changelog" description="What changed in each release." />
+    </>
   );
 }
-

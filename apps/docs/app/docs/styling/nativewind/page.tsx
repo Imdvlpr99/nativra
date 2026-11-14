@@ -1,116 +1,130 @@
-import React from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { CommandLine } from "@/components/docs/CopyButton";
+import { Callout, CodeBlock, DocsHeader, DocsSection, NextStep, P, Step, Steps } from "@/components/docs/Prose";
 
 export const metadata: Metadata = {
-  title: "NativeWind v4 Setup Guide — Tailwind CSS for React Native & Expo",
+  title: "NativeWind v4 setup — Tailwind classes for Nativra components",
   description:
-    "Complete configuration guide for using Nativra UI components with NativeWind v4, Tailwind CSS variables, Metro bundler, and dark mode in Expo.",
-  alternates: {
-    canonical: "/docs/styling/nativewind",
-  },
+    "Configure NativeWind v4 in an Expo app (Tailwind config, Babel, Metro, global.css) so Nativra's NativeWind components render their styles.",
+  alternates: { canonical: "/docs/styling/nativewind" },
 };
 
-export default function NativeWindGuidePage() {
-  return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="space-y-3 border-b border-border pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300">
-          Styling Target
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          NativeWind v4 Guide
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
-          NativeWind v4 brings Tailwind CSS compilation to React Native with zero runtime style overhead, CSS variables, and full dark mode support.
-        </p>
-      </div>
-
-      {/* Step 1: Install Dependencies */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          1. Install NativeWind and Tailwind CSS
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          In your Expo or React Native project root, install NativeWind v4 and its peer dependencies:
-        </p>
-        <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-          npx expo install nativewind react-native-reanimated react-native-safe-area-context{"\n"}
-          npm install --save-dev tailwindcss@^3.4.0
-        </pre>
-      </section>
-
-      {/* Step 2: Configure tailwind.config.js */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          2. Configure tailwind.config.js
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Include your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui</code> folder in the content array so Tailwind generates styles for your Nativra components:
-        </p>
-        <div className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-200 overflow-x-auto">
-{`/** @type {import('tailwindcss').Config} */
+const TAILWIND = `/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-  ],
+  // Include every folder Nativra writes to (see componentsDir in nativra.json)
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
-  theme: {
-    extend: {
-      colors: {
-        border: "hsl(var(--border))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-      },
-    },
-  },
+  theme: { extend: {} },
   plugins: [],
-};`}
-        </div>
-      </section>
+};`;
 
-      {/* Step 3: Global CSS Setup */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          3. Set Up global.css
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Create a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">global.css</code> file in your project root with the standard Tailwind directives:
-        </p>
-        <div className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-200 overflow-x-auto">
-{`@tailwind base;
+const BABEL = `module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+      "nativewind/babel",
+    ],
+  };
+};`;
+
+const METRO = `const { getDefaultConfig } = require("expo/metro-config");
+const { withNativeWind } = require("nativewind/metro");
+
+const config = getDefaultConfig(__dirname);
+
+module.exports = withNativeWind(config, { input: "./global.css" });`;
+
+const CSS = `@tailwind base;
 @tailwind components;
-@tailwind utilities;`}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Import this file at the top of your root layout (e.g., <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">app/_layout.tsx</code>):
-        </p>
-        <pre className="rounded-lg border border-border bg-zinc-950 p-3 font-mono text-xs text-zinc-300">
-          import &quot;../global.css&quot;;
-        </pre>
-      </section>
+@tailwind utilities;`;
 
-      {/* Step 4: Initialize Nativra with NativeWind Target */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">
-          4. Initialize Nativra for NativeWind
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Run the Nativra initialization command and choose <strong className="text-foreground">NativeWind</strong>:
-        </p>
-        <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-          npx nativra-cli init
-        </pre>
-        <p className="text-xs text-muted-foreground">
-          Now, whenever you run <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">npx nativra-cli add button</code>, you receive class-based NativeWind components configured with your design tokens.
-        </p>
-      </section>
-    </div>
+const LAYOUT = `import "../global.css";
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return <Stack />;
+}`;
+
+export default function NativeWindPage() {
+  return (
+    <>
+      <DocsHeader
+        eyebrow="Guides"
+        title="NativeWind"
+        description="Nativra's NativeWind components style themselves with Tailwind classes. NativeWind v4 compiles those classes at build time — set it up once, then every component just works."
+        meta="5 min · NativeWind v4 · Tailwind CSS 3.4"
+      />
+
+      <Callout type="tip" title="Prefer zero setup?">
+        Choose the <Link className="link" href="/docs/styling/stylesheet">StyleSheet</Link> target instead — those components
+        need no Babel, Metro or Tailwind configuration.
+      </Callout>
+
+      <DocsSection id="setup" title="Set up NativeWind">
+        <Steps>
+          <Step title="Install the packages">
+            <CommandLine command="npx expo install nativewind react-native-reanimated react-native-safe-area-context" />
+            <CommandLine command="npm install --save-dev tailwindcss@^3.4.17" switcher />
+          </Step>
+          <Step title="Configure Tailwind">
+            <CodeBlock code={TAILWIND} lang="js" title="tailwind.config.js" />
+            <P>
+              <p>
+                The <code>content</code> globs must cover your <code>componentsDir</code>, or Tailwind will not generate the
+                classes Nativra components use.
+              </p>
+            </P>
+          </Step>
+          <Step title="Add the Babel preset">
+            <CodeBlock code={BABEL} lang="js" title="babel.config.js" />
+          </Step>
+          <Step title="Wrap the Metro config">
+            <CodeBlock code={METRO} lang="js" title="metro.config.js" />
+          </Step>
+          <Step title="Create and import global.css">
+            <CodeBlock code={CSS} lang="css" title="global.css" />
+            <CodeBlock code={LAYOUT} title="app/_layout.tsx" />
+          </Step>
+          <Step title="Add the TypeScript types">
+            <CodeBlock code={`/// <reference types="nativewind/types" />`} lang="ts" title="nativewind-env.d.ts" />
+          </Step>
+        </Steps>
+      </DocsSection>
+
+      <DocsSection id="nativra" title="Point Nativra at NativeWind">
+        <P>
+          <p>
+            <code>init</code> picks NativeWind automatically when it finds <code>nativewind</code> or a Tailwind config. If you
+            initialized earlier with StyleSheet, set <code>&quot;stylingTarget&quot;: &quot;nativewind&quot;</code> in{" "}
+            <code>nativra.json</code>; new <code>add</code> runs then install the NativeWind versions.
+          </p>
+        </P>
+        <CommandLine command="npx nativra-cli add button" switcher />
+      </DocsSection>
+
+      <DocsSection id="troubleshooting" title="Troubleshooting">
+        <P>
+          <ul>
+            <li>
+              <strong>Components render unstyled</strong> — the Metro wrapper or the <code>global.css</code> import is missing, or
+              <code> content</code> doesn&apos;t include your components folder. Restart Metro with <code>--clear</code> after
+              config changes.
+            </li>
+            <li>
+              <strong>className type errors</strong> — add <code>nativewind-env.d.ts</code> and make sure it is included by
+              your tsconfig.
+            </li>
+            <li>
+              <strong>Still stuck?</strong> Run <code>npx nativra-cli doctor</code> — it checks the NativeWind setup and can
+              scaffold a missing Tailwind config with <code>--fix</code>.
+            </li>
+          </ul>
+        </P>
+      </DocsSection>
+
+      <NextStep href="/docs/styling/stylesheet" title="StyleSheet" description="The zero-configuration alternative." />
+    </>
   );
 }
-

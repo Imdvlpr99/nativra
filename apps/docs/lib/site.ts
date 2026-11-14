@@ -42,17 +42,18 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     links: [
       { title: "Introduction", href: "/docs" },
       { title: "Installation", href: "/docs/installation" },
+      { title: "Quick start", href: "/docs/quickstart" },
       { title: "Principles", href: "/docs/principles" },
-      { title: "Compatibility", href: "/docs/compatibility" },
     ],
   },
   {
     title: "Guides",
     links: [
       { title: "CLI reference", href: "/docs/cli" },
-      { title: "Theming & tokens", href: "/docs/theming" },
-      { title: "NativeWind v4", href: "/docs/styling/nativewind" },
+      { title: "Theming", href: "/docs/theming" },
+      { title: "NativeWind", href: "/docs/styling/nativewind" },
       { title: "StyleSheet", href: "/docs/styling/stylesheet" },
+      { title: "Compatibility", href: "/docs/compatibility" },
     ],
   },
   {

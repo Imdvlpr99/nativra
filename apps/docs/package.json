@@ -9,10 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "pretypecheck": "node ../../scripts/build-registry.mjs",
+    "pretypecheck": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs",
     "clean": "rimraf .next out",
-    "prebuild": "node ../../scripts/build-registry.mjs",
-    "predev": "node ../../scripts/build-registry.mjs"
+    "prebuild": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs",
+    "predev": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs"
   },
   "dependencies": {
     "@nativra/registry-schema": "workspace:*",
@@ -22,11 +22,13 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
     "@nativra/registry-builder": "workspace:*",
+    "nativra-cli": "workspace:*",
     "@types/node": "^22.10.1",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",

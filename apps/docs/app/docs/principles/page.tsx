@@ -1,140 +1,96 @@
-import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  ShieldCheck,
-  Layers,
-  Sparkles,
-  GitPullRequest,
-} from "lucide-react";
+import { CodeBlock, Defs, DocsHeader, DocsSection, NextStep, P } from "@/components/docs/Prose";
 
 export const metadata: Metadata = {
-  title: "Principles & Architecture — Why Source-First UI Beats Runtime Libraries",
+  title: "Principles — Why Source-First UI for React Native",
   description:
-    "Discover the architectural principles behind Nativra: 100% source code ownership, dual NativeWind/StyleSheet parity, SHA-256 lockfile safety, and native accessibility.",
-  alternates: {
-    canonical: "/docs/principles",
-  },
+    "The ideas behind Nativra: you own the source, two styling targets with one API, a registry you can inspect, and updates that never overwrite your edits.",
+  alternates: { canonical: "/docs/principles" },
 };
+
+const LOCK = `{
+  "items": {
+    "button": {
+      "version": "0.1.0",
+      "files": {
+        "components/ui/Button.tsx": "9f2c…e41a"
+      }
+    },
+    "login-form": {
+      "version": "0.1.0",
+      "files": { "components/ui/LoginForm.tsx": "51b0…7c3d" },
+      "dependencies": ["card", "button", "input", "label", "separator", "text"]
+    }
+  }
+}`;
 
 export default function PrinciplesPage() {
   return (
-    <div className="space-y-10">
-      {/* Page Header */}
-      <div className="space-y-3 border-b border-border pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300">
-          Architecture
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Principles & Architecture
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Nativra is built on a simple premise: mobile developers should own their UI code without sacrificing speed, accessibility, or platform-native polish.
-        </p>
-      </div>
+    <>
+      <DocsHeader
+        eyebrow="Getting started"
+        title="Principles"
+        description="Four ideas explain every decision in Nativra. If you understand these, the CLI and the registry will behave the way you expect."
+        meta="4 min read"
+      />
 
-      {/* Principle 1: Source Ownership */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
-            <ShieldCheck className="h-4 w-4" />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            1. Source Ownership Over Package Dependency
-          </h2>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground leading-relaxed space-y-3">
+      <DocsSection id="ownership" title="You own the source">
+        <P>
           <p>
-            When you install a traditional UI library via <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npm install &lt;library&gt;</code>, your project inherits its build setup, hidden dependencies, and rigid abstraction boundaries. When you inevitably need to tweak an Android elevation shadow, adjust touch hit-slops, or migrate to a new React Native architecture, you are stuck waiting on an upstream release.
+            A component library installed from npm is a black box with its own release schedule. When you need a different
+            shadow on Android or a larger touch area, you wait or fork.
           </p>
           <p>
-            With Nativra, you run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">npx nativra-cli add &lt;component&gt;</code> and the exact, readable TypeScript source file is copied into your repository&apos;s <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/</code> folder. You can commit it to Git, edit any line, and refactor whenever you need to.
+            Nativra copies readable TypeScript into your repository instead. After <code>add</code>, the file is yours: commit
+            it, edit any line, delete what you don&apos;t need. There is no Nativra runtime package in your app.
           </p>
-        </div>
-      </section>
+        </P>
+      </DocsSection>
 
-      {/* Principle 2: Dual Styling Targets */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
-            <Layers className="h-4 w-4" />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            2. Dual Styling Targets (NativeWind & StyleSheet)
-          </h2>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground leading-relaxed space-y-3">
+      <DocsSection id="two-targets" title="Two styling targets, one API">
+        <P>
           <p>
-            The React Native ecosystem is divided between utility-first Tailwind styling (NativeWind v4) and pure platform <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">StyleSheet.create()</code>. Nativra does not force you to pick a side.
+            Every component, block and template is written twice — once with NativeWind v4 classes, once with{" "}
+            <code>StyleSheet.create</code> — with the same props and behavior. You choose a target once in{" "}
+            <code>nativra.json</code>, and the CLI only installs that version.
           </p>
           <p>
-            Every single component, block, and theme in Nativra is simultaneously authored in both targets. During <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra init</code>, you choose your preferred styling target. From that point on, all added components automatically match your architecture.
+            Both versions ship with the same neutral look and light/dark support. Because the colors live in your copy of the
+            file, restyling is an edit, not an override. <a href="/docs/theming">Themes</a> give you matching token sets to use
+            in your own screens.
           </p>
-        </div>
-      </section>
+        </P>
+      </DocsSection>
 
-      {/* Principle 3: Native First Quality Bar */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            3. Native First Quality Bar
-          </h2>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground leading-relaxed space-y-3">
+      <DocsSection id="registry" title="An open, inspectable registry">
+        <P>
           <p>
-            Web ports often feel sluggish on mobile. Nativra components are written specifically for React Native:
+            The registry is static JSON: a <code>registry.json</code> index and one file per item with its source, dependencies
+            and SHA-256 hashes. The CLI verifies each hash before writing, refuses unsafe paths, and only talks to HTTPS
+            registries. You can host your own registry and add it next to the default one.
           </p>
-          <ul className="list-disc pl-5 space-y-1.5 text-xs">
-            <li>
-              <strong className="text-foreground">Touch Target Sizing:</strong> Interactive elements follow Apple Human Interface Guidelines and Google Material guidelines (minimum 44x44pt touch areas).
-            </li>
-            <li>
-              <strong className="text-foreground">Accessibility First:</strong> Components carry semantic <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">accessibilityRole</code> and <code className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">accessibilityState</code> for TalkBack and VoiceOver out of the box.
-            </li>
-            <li>
-              <strong className="text-foreground">Zero Layout Shift:</strong> Dimensions and font sizes are tuned to prevent reflows during async data rendering.
-            </li>
-          </ul>
-        </div>
-      </section>
+        </P>
+      </DocsSection>
 
-      {/* Principle 4: Conflict-Free Upgrades */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-            <GitPullRequest className="h-4 w-4" />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            4. Safe, Conflict-Free Updates
-          </h2>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground leading-relaxed space-y-3">
+      <DocsSection id="safe-updates" title="Updates never overwrite your edits">
+        <P>
           <p>
-            A common worry with copied code is: &ldquo;How do I receive upstream bug fixes without losing my custom modifications?&rdquo;
+            Copied code usually means giving up upstream fixes. Nativra keeps them by recording a hash of every file it writes
+            in <code>nativra.lock.json</code>:
           </p>
-          <p>
-            Nativra solves this with cryptographic SHA-256 file hashing stored in your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra.json</code>. When you run <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra diff</code> or <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra update</code>, the CLI detects whether you have edited the file locally. If you have, it will never overwrite your changes without warning and showing an interactive diff.
-          </p>
-        </div>
-      </section>
+        </P>
+        <CodeBlock code={LOCK} lang="json" title="nativra.lock.json" />
+        <Defs
+          items={[
+            { term: "diff", desc: "Compares your file with what the registry would install today, with your import aliases applied." },
+            { term: "update", desc: "Changes a file only if its hash still matches the lockfile — i.e. you haven't edited it — unless you pass --force." },
+            { term: "rollback", desc: "Every update snapshots the files it changes; rollback restores the newest snapshot, then the one before." },
+            { term: "remove", desc: "Refuses to delete files you modified, or items other installed items depend on, unless you pass --force." },
+          ]}
+        />
+      </DocsSection>
 
-      {/* Next Steps CTA */}
-      <div className="flex items-center justify-between rounded-xl border border-border bg-muted/40 p-5">
-        <div>
-          <h3 className="text-sm font-bold text-foreground">Ready to get started?</h3>
-          <p className="text-xs text-muted-foreground">Follow our step-by-step setup guide for Expo or React Native.</p>
-        </div>
-        <Link
-          href="/docs/installation"
-          className="rounded-lg bg-foreground px-4 py-2 text-xs font-semibold text-background transition-colors hover:opacity-90"
-        >
-          View Installation Guide →
-        </Link>
-      </div>
-    </div>
+      <NextStep href="/docs/cli" title="CLI reference" description="Every command and flag, generated from the CLI itself." />
+    </>
   );
 }
-

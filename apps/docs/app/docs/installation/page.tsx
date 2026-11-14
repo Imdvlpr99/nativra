@@ -1,125 +1,126 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { CommandLine } from "@/components/docs/CopyButton";
+import { Callout, CodeBlock, Defs, DocsHeader, DocsSection, NextStep, P, Step, Steps } from "@/components/docs/Prose";
 
 export const metadata: Metadata = {
-  title: "Installation Guide — Set Up Nativra in Expo & React Native",
+  title: "Installation — Set Up Nativra in Expo & React Native",
   description:
-    "Step-by-step installation guide to initialize Nativra (`npx nativra-cli init`) in your Expo SDK 52+ or React Native 0.76+ project in under two minutes.",
-  alternates: {
-    canonical: "/docs/installation",
-  },
+    "Install Nativra in an Expo SDK 51+ or React Native 0.74+ project: run npx nativra-cli init, review nativra.json and add your first component.",
+  alternates: { canonical: "/docs/installation" },
 };
 
-export default function InstallationPage() {
-  return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="space-y-3 border-b border-border pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300">
-          Getting Started
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Installation
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Set up Nativra in an existing or new Expo project in less than two minutes.
-        </p>
-      </div>
+const CONFIG = `{
+  "$schema": "https://nativra.vercel.app/schema.json",
+  "version": 4,
+  "registries": [{ "name": "default", "url": "https://nativra.vercel.app" }],
+  "stylingTarget": "nativewind",
+  "componentsDir": "components/ui",
+  "hooksDir": "hooks",
+  "utilsDir": "lib/utils",
+  "themesDir": "lib/themes",
+  "aliasPrefix": "@/"
+}`;
 
-      <div className="space-y-10 text-foreground">
-        {/* Step 1 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              1
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Create or open your Expo project
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Nativra works seamlessly with Expo SDK 51+ and React Native 0.74+.
-          </p>
-          <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-100 overflow-x-auto">
-            npx create-expo-app@latest my-app --template default{"\n"}
-            cd my-app
-          </pre>
-        </section>
-
-        {/* Step 2 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              2
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Initialize Nativra
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Run the initialization command. It detects your package manager, TypeScript configuration, and prompts for your preferred styling target (NativeWind v4 or React Native StyleSheet).
-          </p>
-          <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-            npx nativra-cli init
-          </pre>
-          <p className="text-xs text-muted-foreground">
-            This creates a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">nativra.json</code> configuration file in your project root.
-          </p>
-        </section>
-
-        {/* Step 3 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              3
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Add components
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Install the components you need into your project with a single command:
-          </p>
-          <pre className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-sky-400 overflow-x-auto">
-            npx nativra-cli add button input card
-          </pre>
-          <p className="text-xs text-muted-foreground">
-            Files are written directly into <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">components/ui/</code>.
-          </p>
-        </section>
-
-        {/* Step 4 */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white dark:bg-white dark:text-zinc-900">
-              4
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
-              Use in your screens
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Import components directly from your local components directory:
-          </p>
-          <div className="rounded-xl border border-border bg-zinc-950 p-4 font-mono text-xs text-zinc-100 overflow-x-auto">
-{`import React from "react";
-import { View } from "react-native";
-import { Button } from "./components/ui/Button";
-import { Card } from "./components/ui/Card";
+const USAGE = `import { View } from "react-native";
+import { Button } from "@/components/ui/Button";
 
 export default function HomeScreen() {
   return (
-    <View style={{ flex: 1, padding: 24, justifyContent: "center" }}>
-      <Card elevated padding="lg">
-        <Button variant="primary" size="lg" onPress={() => console.log("Pressed!")}>
-          Get Started
-        </Button>
-      </Card>
+    <View style={{ flex: 1, justifyContent: "center", padding: 24 }}>
+      <Button variant="primary" onPress={() => console.log("pressed")}>
+        Continue
+      </Button>
     </View>
   );
-}`}
-          </div>
-        </section>
-      </div>
-    </div>
+}`;
+
+export default function InstallationPage() {
+  return (
+    <>
+      <DocsHeader
+        eyebrow="Getting started"
+        title="Installation"
+        description="Add Nativra to a new or existing Expo project. It takes about two minutes and changes nothing until you add a component."
+        meta="2 min · requires Node.js 20+"
+      />
+
+      <DocsSection id="requirements" title="Requirements">
+        <Defs
+          items={[
+            { term: "Node.js", desc: "20 or newer (for the CLI only — nothing runs in your app)." },
+            { term: "Expo / React Native", desc: "Expo SDK 51+ or React Native 0.74+. The New Architecture is supported." },
+            { term: "Styling", desc: <>NativeWind v4 <em>or</em> plain StyleSheet. You pick one during <code className="font-mono text-foreground">init</code>.</> },
+            { term: "TypeScript", desc: "Recommended. Components are written in TypeScript." },
+          ]}
+        />
+      </DocsSection>
+
+      <DocsSection id="setup" title="Set up your project">
+        <Steps>
+          <Step title="Create or open an Expo app">
+            <P>
+              <p>Skip this step if you already have a project.</p>
+            </P>
+            <CommandLine command="npx create-expo-app@latest my-app" switcher />
+          </Step>
+          <Step title="Initialize Nativra">
+            <P>
+              <p>
+                Run this in the project root. It detects Expo vs. bare React Native, NativeWind, a <code>src/</code> folder,
+                your package manager and your <code>tsconfig.json</code> path alias, then asks you to confirm.
+              </p>
+            </P>
+            <CommandLine command="npx nativra-cli init" switcher />
+            <P>
+              <p>
+                It writes <code>nativra.json</code> and adds <code>.nativra/</code> (local update backups) to your{" "}
+                <code>.gitignore</code>.
+              </p>
+            </P>
+          </Step>
+          <Step title="Add a component">
+            <CommandLine command="npx nativra-cli add button" switcher />
+            <P>
+              <p>
+                The source lands in <code>components/ui/Button.tsx</code> with imports rewritten to your aliases, and its hash is
+                recorded in <code>nativra.lock.json</code>. Commit both files.
+              </p>
+            </P>
+          </Step>
+          <Step title="Use it">
+            <CodeBlock code={USAGE} title="app/index.tsx" />
+          </Step>
+        </Steps>
+      </DocsSection>
+
+      <DocsSection id="configuration" title="What init writes">
+        <P>
+          <p>
+            <code>nativra.json</code> tells the CLI where files go and how imports should look. You can edit it at any time;
+            it only affects future <code>add</code> and <code>update</code> runs.
+          </p>
+        </P>
+        <CodeBlock code={CONFIG} lang="json" title="nativra.json" />
+        <Defs
+          items={[
+            { term: "stylingTarget", desc: <>Which implementation to install: <code className="font-mono text-foreground">nativewind</code> or <code className="font-mono text-foreground">stylesheet</code>.</> },
+            { term: "componentsDir", desc: "Destination for components, blocks and templates." },
+            { term: "hooksDir · utilsDir · themesDir", desc: "Destinations for hooks, utilities and theme token files." },
+            { term: "aliasPrefix · aliases", desc: <>How installed files import each other (<code className="font-mono text-foreground">@/components/ui/…</code>). <code className="font-mono text-foreground">init</code> derives these from your tsconfig.</> },
+            { term: "registries", desc: <>Where items are fetched from. Add private registries with <Link className="link" href="/docs/cli#registry-add">registry add</Link>.</> },
+          ]}
+        />
+      </DocsSection>
+
+      <DocsSection id="nativewind" title="Using NativeWind?">
+        <Callout type="tip" title="Set up NativeWind first">
+          NativeWind needs its Babel/Metro config and a Tailwind config before NativeWind components render styles. Follow the{" "}
+          <Link className="link" href="/docs/styling/nativewind">NativeWind guide</Link>, or choose the StyleSheet target, which needs no setup.
+        </Callout>
+      </DocsSection>
+
+      <NextStep href="/docs/quickstart" title="Quick start" description="Build a sign-in screen, customize it, and update it safely." />
+    </>
   );
 }

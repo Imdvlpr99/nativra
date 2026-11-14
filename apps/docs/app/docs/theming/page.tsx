@@ -1,122 +1,147 @@
 import type { Metadata } from "next";
-import { ThemeGallery } from "@/components/ThemeGallery";
-import { TokenAndTypeVisualizer } from "@/components/TokenAndTypeVisualizer";
+import Link from "next/link";
+import { THEME_PRESETS, toCssVariables, zincTheme } from "@nativra/theme-engine";
+import { getItemsByType } from "@/lib/registry";
+import { itemHref } from "@/lib/item-types";
+import { CommandLine } from "@/components/docs/CopyButton";
+import { Callout, CodeBlock, Defs, DocsHeader, DocsSection, NextStep, P } from "@/components/docs/Prose";
 
 export const metadata: Metadata = {
-  title: "Theme Engine & Design Tokens — Dark Mode & Presets for React Native",
+  title: "Theming — Semantic Tokens and Theme Presets for React Native",
   description:
-    "Explore Nativra's 3-layer design token system, interactive theme gallery, and automatic CSS variable / StyleSheet token compilers for React Native.",
-  alternates: {
-    canonical: "/docs/theming",
-  },
+    "Nativra themes are semantic color tokens with light and dark palettes. Install one as a TypeScript file or as CSS variables for NativeWind.",
+  alternates: { canonical: "/docs/theming" },
 };
 
-export default function ThemingPage() {
+const TOKEN_DOCS = [
+  { term: "background · foreground", desc: "Screen surface and the default text on it." },
+  { term: "card · popover", desc: "Raised surfaces (cards, sheets, menus) and their text (-foreground)." },
+  { term: "primary", desc: "The main action color — primary buttons, active states, focus rings." },
+  { term: "secondary · accent", desc: "Low-emphasis fills for secondary buttons, chips and hovered rows." },
+  { term: "muted", desc: "Subtle backgrounds; muted-foreground is for helper text and placeholders." },
+  { term: "destructive", desc: "Errors and destructive actions." },
+  { term: "border · input · ring", desc: "Dividers, input outlines and the keyboard focus ring." },
+];
+
+const TS_USAGE = `import { StyleSheet, useColorScheme } from "react-native";
+import { midnight, midnightDark } from "@/lib/themes/theme";
+
+export function useTokens() {
+  return useColorScheme() === "dark" ? midnightDark : midnight;
+}
+
+// in a component
+const t = useTokens();
+<View style={{ backgroundColor: t.background, borderColor: t.border }} />`;
+
+const TAILWIND = `// tailwind.config.js
+module.exports = {
+  presets: [require("nativewind/preset")],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--color-background)",
+        foreground: "var(--color-foreground)",
+        primary: "var(--color-primary)",
+        "primary-foreground": "var(--color-primary-foreground)",
+        muted: "var(--color-muted)",
+        border: "var(--color-border)",
+      },
+    },
+  },
+};`;
+
+export default async function ThemingPage() {
+  const themes = (await getItemsByType("theme")).filter((t) => THEME_PRESETS[t.id]);
+  // Real adapter output, trimmed to the color block for readability.
+  const css = toCssVariables(zincTheme).split("\n").slice(0, 8).join("\n") + "\n  /* … */\n}";
+
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="space-y-3 border-b border-border pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300">
-          Design System
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Theming & Semantic Tokens
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Learn how Nativra maps design intent to semantic slots, inspect themes in our live gallery, and compile tokens for both NativeWind v4 and React Native StyleSheet.
-        </p>
-      </div>
+    <>
+      <DocsHeader
+        eyebrow="Guides"
+        title="Theming"
+        description="A theme is a set of semantic color tokens with a light and a dark palette. Install one as a TypeScript file, or as CSS variables for NativeWind."
+        meta={`${themes.length} presets · light and dark`}
+      />
 
-      {/* Interactive Theme Gallery */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            Theme Presets Gallery
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Explore ready-to-use palettes with live swatch inspectors and installation commands.
+      <DocsSection id="how-it-works" title="How theming works">
+        <P>
+          <p>
+            Components ship with a neutral palette and light/dark support built in. Because their colors live in your copy of
+            each file, you restyle a component by editing it.
           </p>
-        </div>
-        <ThemeGallery />
-      </section>
-
-      <div className="pt-4 border-t border-border">
-        <TokenAndTypeVisualizer />
-      </div>
-
-      <div className="space-y-8 text-foreground pt-4 border-t border-border">
-        {/* Semantic Model */}
-        <section className="space-y-3">
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            Semantic Token Model
-          </h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Instead of hardcoding color hexes or arbitrary shades like &ldquo;blue-600&rdquo;, Nativra maps all component styles to semantic intent tokens:
+          <p>
+            Themes are for the rest of your app: they give your own screens the same vocabulary — <code>background</code>,{" "}
+            <code>primary</code>, <code>muted</code> — so you never hard-code a hex value twice.
           </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {[
-              { slot: "background", desc: "Main app background screen surface" },
-              { slot: "foreground", desc: "Default high-contrast text color" },
-              { slot: "card", desc: "Elevated surface for cards, sheets, and popovers" },
-              { slot: "primary", desc: "Primary brand accent for key actions and buttons" },
-              { slot: "secondary", desc: "Subtle backgrounds for chips, tags, and badges" },
-              { slot: "muted", desc: "Helper text, placeholders, and subtle borders" },
-              { slot: "destructive", desc: "Errors, destructive buttons, and alerts" },
-              { slot: "border", desc: "Default stroke color for inputs, cards, and dividers" },
-            ].map((t) => (
-              <div
-                key={t.slot}
-                className="rounded-xl border border-border bg-card p-3.5"
-              >
-                <code className="font-mono text-xs font-semibold text-sky-600 dark:text-sky-400">
-                  {t.slot}
-                </code>
-                <p className="text-xs text-muted-foreground mt-1">{t.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        </P>
+        <Callout type="note" title="Installing a theme doesn't restyle installed components">
+          Components use their own colors today. To align a component with a theme, replace its color values with the theme&apos;s
+          tokens — it&apos;s your code.
+        </Callout>
+      </DocsSection>
 
-        {/* Dual Adapters */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            Dual Output Adapters
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-card p-4 space-y-2">
-              <h3 className="font-semibold text-foreground text-sm">
-                NativeWind Adapter
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Converts tokens into CSS variables in your <code className="font-mono text-foreground">global.css</code> and maps them in Tailwind.
-              </p>
-              <div className="rounded-lg bg-zinc-950 p-3 font-mono text-[11px] text-zinc-200 overflow-x-auto">
-{`:root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-}`}
-              </div>
-            </div>
+      <DocsSection id="tokens" title="Token reference">
+        <Defs items={TOKEN_DOCS} />
+        <P>
+          <p>
+            Each token has a matching <code>-foreground</code> where text sits on it (for example{" "}
+            <code>primary-foreground</code> for text on a primary button).
+          </p>
+        </P>
+      </DocsSection>
 
-            <div className="rounded-xl border border-border bg-card p-4 space-y-2">
-              <h3 className="font-semibold text-foreground text-sm">
-                StyleSheet Adapter
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Exports a typed theme object that components consume alongside <code className="font-mono text-foreground">useColorScheme()</code>.
-              </p>
-              <div className="rounded-lg bg-zinc-950 p-3 font-mono text-[11px] text-zinc-200 overflow-x-auto">
-{`export const midnight = {
-  background: "#0b0f19",
-  foreground: "#f8fafc",
-  primary: "#38bdf8",
-};`}
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
+      <DocsSection id="presets" title="Presets">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {themes.map((t) => {
+            const p = THEME_PRESETS[t.id]!;
+            return (
+              <li key={t.id}>
+                <Link href={itemHref("theme", t.id)} className="group block rounded-lg border border-border p-2 transition-colors hover:border-foreground/30">
+                  <span className="grid h-14 grid-cols-2 overflow-hidden rounded-md" aria-hidden="true">
+                    <span className="flex items-end p-2" style={{ background: String(p.light.background) }}>
+                      <span className="h-3 w-8 rounded-sm" style={{ background: String(p.light.primary) }} />
+                    </span>
+                    <span className="flex items-end p-2" style={{ background: String(p.dark.background) }}>
+                      <span className="h-3 w-8 rounded-sm" style={{ background: String(p.dark.primary) }} />
+                    </span>
+                  </span>
+                  <span className="mt-2 block px-1 text-sm font-medium">{t.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </DocsSection>
+
+      <DocsSection id="stylesheet" title="With StyleSheet">
+        <P>
+          <p>
+            <code>theme add</code> writes a typed token file with both palettes to your <code>themesDir</code>{" "}
+            (default <code>lib/themes</code>):
+          </p>
+        </P>
+        <CommandLine command="npx nativra-cli theme add midnight" switcher />
+        <CodeBlock code={TS_USAGE} title="hooks/use-tokens.ts" />
+      </DocsSection>
+
+      <DocsSection id="nativewind" title="With NativeWind">
+        <P>
+          <p>
+            Add <code>--apply-css</code> to also write the tokens as CSS variables into your <code>global.css</code> (between
+            marker comments, so running it again replaces the block):
+          </p>
+        </P>
+        <CommandLine command="npx nativra-cli theme add midnight --apply-css" switcher />
+        <CodeBlock code={css} lang="css" title="global.css (generated)" />
+        <P>
+          <p>Then map the variables to Tailwind colors so classes like <code>bg-background</code> work:</p>
+        </P>
+        <CodeBlock code={TAILWIND} lang="js" title="tailwind.config.js" />
+      </DocsSection>
+
+      <NextStep href="/docs/styling/nativewind" title="NativeWind setup" description="Configure NativeWind v4 for Nativra components." />
+    </>
   );
 }

@@ -2,9 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { RUNNERS, forRunner, useRunner, type Runner } from "./runner";
 
-/** Icon button that copies `value`; announces success to screen readers. */
-export function CopyButton({ value, label = "Copy", className = "" }: { value: string; label?: string; className?: string }) {
+/** Icon button that copies `value`; announces the result to screen readers. */
+export function CopyButton({
+  value,
+  label = "Copy",
+  className = "",
+  tone = "default",
+}: {
+  value: string;
+  label?: string;
+  className?: string;
+  /** "code" for use on dark code surfaces */
+  tone?: "default" | "code";
+}) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
 
   useEffect(() => {
@@ -22,16 +34,21 @@ export function CopyButton({ value, label = "Copy", className = "" }: { value: s
     }
   };
 
+  const toneClass =
+    tone === "code"
+      ? "text-code-muted hover:bg-white/10 hover:text-code-fg"
+      : "text-muted-foreground hover:bg-accent hover:text-foreground";
+
   return (
     <button
       type="button"
       onClick={copy}
-      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${className}`}
+      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${toneClass} ${className}`}
       aria-label={label}
       title={label}
     >
       {state === "copied" ? (
-        <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+        <Check className="h-4 w-4 text-green-400" aria-hidden="true" />
       ) : (
         <Copy className="h-4 w-4" aria-hidden="true" />
       )}
@@ -42,17 +59,44 @@ export function CopyButton({ value, label = "Copy", className = "" }: { value: s
   );
 }
 
-/** A single shell/code line with a copy button. */
-export function CommandLine({ command, prompt = "$" }: { command: string; prompt?: string }) {
+/**
+ * A copyable shell command on a dark surface. npm-style commands follow the shared
+ * package-runner preference; pass `switcher` to show the npm/pnpm/yarn/bun selector.
+ */
+export function CommandLine({ command, switcher = false, prompt = "$" }: { command: string; switcher?: boolean; prompt?: string }) {
+  const [runner, setRunner] = useRunner();
+  const adaptable = /^(npx|npm install) /.test(command);
+  const shown = adaptable ? forRunner(command, runner) : command;
+
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 py-1 pl-4 pr-1 font-mono text-[13px]">
-      {prompt && (
-        <span className="select-none text-muted-foreground" aria-hidden="true">
-          {prompt}
-        </span>
+    <div className="overflow-hidden rounded-lg border border-code-border bg-code text-code-fg">
+      {switcher && adaptable && (
+        <div role="radiogroup" aria-label="Package manager" className="flex gap-1 border-b border-code-border px-2 py-1.5">
+          {(Object.keys(RUNNERS) as Runner[]).map((r) => (
+            <button
+              key={r}
+              type="button"
+              role="radio"
+              aria-checked={runner === r}
+              onClick={() => setRunner(r)}
+              className={`rounded px-2 py-0.5 font-mono text-xs transition-colors ${
+                runner === r ? "bg-white/10 text-code-fg" : "text-code-muted hover:text-code-fg"
+              }`}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
       )}
-      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap py-1.5">{command}</code>
-      <CopyButton value={command} label={`Copy: ${command}`} />
+      <div className="flex items-center gap-3 py-1 pl-4 pr-1 font-mono text-[13px]">
+        {prompt && (
+          <span className="select-none text-green-400" aria-hidden="true">
+            {prompt}
+          </span>
+        )}
+        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap py-2">{shown}</code>
+        <CopyButton value={shown} label={`Copy command: ${shown}`} tone="code" />
+      </div>
     </div>
   );
 }

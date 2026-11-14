@@ -41,16 +41,11 @@ export function HomeHeroPlayground() {
   };
 
   return (
-    <div className="w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl text-foreground">
+    <div className="w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-sm text-foreground">
       {/* Top Header Bar */}
       <div className="flex flex-wrap items-center justify-between border-b border-border bg-muted/30 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-red-500/80" />
-            <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-            <div className="h-3 w-3 rounded-full bg-green-500/80" />
-          </div>
-          <span className="ml-2 font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-xs text-muted-foreground">
             Live Component Playground
           </span>
         </div>
@@ -171,7 +166,7 @@ export function HomeHeroPlayground() {
 
           {/* Quick Controls */}
           <div className="pt-4 border-t border-border flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {activeTab === "button" && (
                 <>
                   <button

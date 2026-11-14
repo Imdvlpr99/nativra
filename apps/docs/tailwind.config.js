@@ -33,6 +33,13 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        brand: "hsl(var(--brand))",
+        code: {
+          DEFAULT: "hsl(var(--code-bg))",
+          border: "hsl(var(--code-border))",
+          fg: "hsl(var(--code-fg))",
+          muted: "hsl(var(--code-muted))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

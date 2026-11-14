@@ -17,10 +17,12 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
         </aside>
 
         <main id="main-content" tabIndex={-1} className="min-w-0 py-8 outline-none lg:py-10">
-          <div id="docs-content" className="mx-auto max-w-3xl xl:max-w-none">
+          <div id="docs-content" className="mx-auto w-full max-w-[50rem]">
             {children}
           </div>
-          <DocsPager sections={sections} />
+          <div className="mx-auto w-full max-w-[50rem]">
+            <DocsPager sections={sections} />
+          </div>
         </main>
 
         <aside className="sticky top-[var(--header-height)] hidden h-[calc(100vh-var(--header-height))] overflow-y-auto py-10 xl:block">

@@ -202,7 +202,7 @@ export default async function HomePage() {
         <ul className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, body }) => (
             <li key={title} className="space-y-3 bg-background p-6">
-              <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+              <Icon className="h-5 w-5 text-brand" aria-hidden="true" />
               <h3 className="font-semibold">{title}</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
             </li>

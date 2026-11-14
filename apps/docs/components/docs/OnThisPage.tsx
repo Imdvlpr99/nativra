@@ -33,7 +33,7 @@ export function OnThisPage() {
     const found: Heading[] = [];
     root.querySelectorAll<HTMLHeadingElement>("h2, h3").forEach((el) => {
       if (el.closest("[data-toc-skip]")) return;
-      const text = el.textContent?.trim() ?? "";
+      const text = (el.dataset.title ?? el.textContent ?? "").trim();
       if (!text) return;
       let id = el.id || slug(text) || "section";
       while (used.has(id) || (!el.id && document.getElementById(id))) id = `${id}-x`;

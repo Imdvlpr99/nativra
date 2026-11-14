@@ -1,17 +1,8 @@
 "use client";
 
-import React, { useEffect, useId, useState } from "react";
+import React, { useId, useState } from "react";
 import Link from "next/link";
 import { CommandLine } from "./CopyButton";
-
-const RUNNERS = {
-  npm: "npx",
-  pnpm: "pnpm dlx",
-  yarn: "yarn dlx",
-  bun: "bunx",
-} as const;
-type Runner = keyof typeof RUNNERS;
-const RUNNER_KEY = "nativra-docs-runner";
 
 export interface InstallInfo {
   id: string;
@@ -27,30 +18,11 @@ export interface InstallInfo {
 /** Install instructions: CLI (with package-runner choice) or manual copy steps. */
 export function InstallTabs({ info }: { info: InstallInfo }) {
   const [tab, setTab] = useState<"cli" | "manual">("cli");
-  const [runner, setRunner] = useState<Runner>("npm");
   const baseId = useId();
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(RUNNER_KEY);
-      if (saved && saved in RUNNERS) setRunner(saved as Runner);
-    } catch {
-      // Storage unavailable: keep npm.
-    }
-  }, []);
-
-  const chooseRunner = (r: Runner) => {
-    setRunner(r);
-    try {
-      localStorage.setItem(RUNNER_KEY, r);
-    } catch {
-      // Ignore: preference just won't persist.
-    }
-  };
-
   const cliCommand = info.isTheme
-    ? `${RUNNERS[runner]} nativra-cli theme add ${info.id}`
-    : `${RUNNERS[runner]} nativra-cli add ${info.id}`;
+    ? `npx nativra-cli theme add ${info.id}`
+    : `npx nativra-cli add ${info.id}`;
   const npmInstall = info.npmDeps.length
     ? `npx expo install ${info.npmDeps.map((d) => d.package).join(" ")}`
     : "";
@@ -83,23 +55,7 @@ export function InstallTabs({ info }: { info: InstallInfo }) {
 
       {tab === "cli" ? (
         <div role="tabpanel" id={`${baseId}-cli-panel`} aria-labelledby={`${baseId}-cli`} className="space-y-3">
-          <div className="flex flex-wrap gap-1" role="radiogroup" aria-label="Package runner">
-            {(Object.keys(RUNNERS) as Runner[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                role="radio"
-                aria-checked={runner === r}
-                onClick={() => chooseRunner(r)}
-                className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
-                  runner === r ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-          <CommandLine command={cliCommand} />
+          <CommandLine command={cliCommand} switcher />
           <p className="text-sm text-muted-foreground">
             Writes the {info.files.length > 1 ? "files" : "file"} to <code className="font-mono text-foreground">{info.destination}</code>,
             rewrites imports to your aliases, records hashes in <code className="font-mono text-foreground">nativra.lock.json</code>
