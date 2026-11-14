@@ -1,6 +1,7 @@
 /** Nativra — Accordion (StyleSheet). Install: npx nativra-cli add accordion */
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface AccordionItem {
   id: string;
@@ -14,10 +15,11 @@ export interface AccordionProps {
 }
 
 export function Accordion({ items, allowMultiple = false }: AccordionProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
-  const dark = useColorScheme() === "dark";
-  const fg = dark ? "#fafafa" : "#18181b";
-  const border = dark ? "#27272a" : "#e4e4e7";
+  const fg = c.foreground;
+  const border = c.border;
 
   const toggle = (id: string) => {
     setOpenIds((prev) => {
@@ -36,7 +38,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
       style={[
         styles.container,
         {
-          backgroundColor: dark ? "#18181b" : "#ffffff",
+          backgroundColor: c.background,
           borderColor: border,
         },
       ]}
@@ -58,7 +60,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
             </Pressable>
             {isOpen ? (
               <View style={styles.body}>
-                <Text style={[styles.content, { color: dark ? "#a1a1aa" : "#71717a" }]}>
+                <Text style={[styles.content, { color: c["muted-foreground"] }]}>
                   {item.content}
                 </Text>
               </View>
@@ -70,12 +72,12 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: { width: "100%", borderRadius: 16, borderWidth: 1, overflow: "hidden" },
   itemWrap: { width: "100%" },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 16 },
   title: { fontSize: 16, fontWeight: "600", flex: 1, paddingRight: 12 },
-  arrow: { fontSize: 10, color: "#a1a1aa" },
+  arrow: { fontSize: 10, color: c["muted-foreground"] },
   arrowOpen: { transform: [{ rotate: "180deg" }] },
   body: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 4 },
   content: { fontSize: 14, lineHeight: 20 },

@@ -95,7 +95,7 @@ export function SegmentedControl({
     <View
       onLayout={handleLayout}
       accessibilityRole="tablist"
-      className={`relative w-full flex-row items-center rounded-2xl bg-zinc-100 p-1 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 ${heightClass} ${
+      className={`relative w-full flex-row items-center rounded-2xl bg-muted p-1 border border-border ${heightClass} ${
         disabled ? "opacity-50" : ""
       } ${className}`.trim()}
       style={style}
@@ -111,7 +111,7 @@ export function SegmentedControl({
             width: itemWidth,
             transform: [{ translateX }],
           }}
-          className="rounded-xl bg-white shadow-sm dark:bg-zinc-800"
+          className="rounded-xl bg-background shadow-sm"
         />
       )}
 
@@ -133,8 +133,8 @@ export function SegmentedControl({
             <Text
               className={`${textClass} transition-colors ${
                 isSelected
-                  ? "text-zinc-950 dark:text-white font-semibold"
-                  : "text-zinc-600 dark:text-zinc-400"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground"
               }`}
               numberOfLines={1}
             >
@@ -144,15 +144,15 @@ export function SegmentedControl({
               <View
                 className={`ml-1 rounded-full px-1.5 py-0.2 ${
                   isSelected
-                    ? "bg-zinc-900 text-white dark:bg-white"
-                    : "bg-zinc-200 dark:bg-zinc-800"
+                    ? "bg-foreground text-background"
+                    : "bg-muted"
                 }`}
               >
                 <Text
                   className={`text-[10px] font-bold ${
                     isSelected
-                      ? "text-white dark:text-zinc-950"
-                      : "text-zinc-600 dark:text-zinc-300"
+                      ? "text-background"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {option.badge}

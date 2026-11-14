@@ -8,8 +8,8 @@ const fabVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-sky-500 text-white shadow-sky-500/30",
-        secondary: "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900",
+        primary: "bg-primary text-primary-foreground shadow-primary/30",
+        secondary: "bg-foreground text-background",
         accent: "bg-emerald-500 text-white shadow-emerald-500/30",
       },
       size: {
@@ -70,7 +70,11 @@ export function Fab({
       {...props}
     >
       {children}
-      {label && <Text className="font-semibold text-white text-sm">{label}</Text>}
+      {label && (
+        <Text className={cn("font-semibold text-sm", variant === "secondary" ? "text-background" : variant === "accent" ? "text-white" : "text-primary-foreground")}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

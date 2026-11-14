@@ -8,6 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ export function BottomSheet({
   children,
   style,
 }: BottomSheetProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   if (!isOpen) return null;
 
   return (
@@ -57,7 +60,7 @@ export function BottomSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
@@ -68,8 +71,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderTopWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
+    borderColor: c.border,
+    backgroundColor: c.background,
     padding: 24,
     paddingBottom: 40,
     shadowColor: "#000",
@@ -86,12 +89,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 5,
     borderRadius: 9999,
-    backgroundColor: "#D4D4D8",
+    backgroundColor: c.input,
   },
   titleText: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#18181B",
+    color: c.foreground,
     marginBottom: 16,
   },
 });

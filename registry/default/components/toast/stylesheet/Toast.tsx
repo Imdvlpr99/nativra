@@ -1,6 +1,7 @@
 /** Nativra — Toast (StyleSheet). Install: npx nativra-cli add toast */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface ToastProps {
   title: string;
@@ -15,6 +16,8 @@ export function Toast({
   variant = "default",
   onDismiss,
 }: ToastProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const bgColors = {
     default: "#18181b",
     success: "#064e3b",
@@ -60,14 +63,14 @@ export function Toast({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   toast: { width: "100%", maxWidth: 360, flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", borderRadius: 16, borderWidth: 1, padding: 16, shadowColor: "#000", shadowOpacity: 0.25, shadowRadius: 8, elevation: 5 },
   content: { flexDirection: "row", alignItems: "flex-start", gap: 12, flex: 1, paddingRight: 8 },
   dot: { width: 8, height: 8, borderRadius: 4, marginTop: 5 },
   textWrap: { flex: 1 },
-  title: { fontSize: 14, fontWeight: "600", color: "#ffffff" },
-  description: { fontSize: 12, color: "#d4d4d8", marginTop: 2, lineHeight: 16 },
+  title: { fontSize: 14, fontWeight: "600", color: c["primary-foreground"] },
+  description: { fontSize: 12, color: c["muted-foreground"], marginTop: 2, lineHeight: 16 },
   closeBtn: { width: 24, height: 24, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
-  closeText: { fontSize: 11, fontWeight: "700", color: "#d4d4d8" },
+  closeText: { fontSize: 11, fontWeight: "700", color: c["muted-foreground"] },
 });
 

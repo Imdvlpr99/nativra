@@ -39,8 +39,8 @@ export function PaginationDots({
             accessibilityState={{ selected: isActive }}
             className={`h-2 rounded-full ${
               isActive
-                ? "w-6 bg-sky-600 dark:bg-sky-400"
-                : "w-2 bg-zinc-300 dark:bg-zinc-700"
+                ? "w-6 bg-primary"
+                : "w-2 bg-muted"
             }`}
           />
         );

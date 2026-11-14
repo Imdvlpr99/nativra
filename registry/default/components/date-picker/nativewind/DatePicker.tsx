@@ -44,7 +44,7 @@ export function DatePicker({
   return (
     <View style={style} className={`w-full ${className}`} {...rest}>
       {label ? (
-        <Text className="mb-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+        <Text className="mb-1.5 text-xs font-semibold text-foreground">
           {label}
         </Text>
       ) : null}
@@ -55,24 +55,24 @@ export function DatePicker({
         accessibilityRole="button"
         accessibilityLabel={label ?? "Select date"}
         accessibilityState={{ expanded: open, disabled }}
-        className={`flex-row items-center justify-between rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 dark:border-zinc-800 dark:bg-zinc-900 ${
+        className={`flex-row items-center justify-between rounded-xl border border-border bg-card px-3.5 py-2.5 ${
           disabled ? "opacity-50" : "active:opacity-80"
         }`}
       >
         <View className="flex-row items-center gap-2">
           <Text className="text-sm">📅</Text>
-          <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <Text className="text-sm font-medium text-foreground">
             {displayValue}
           </Text>
         </View>
-        <Text className="text-xs font-semibold text-sky-600 dark:text-sky-400">
+        <Text className="text-xs font-semibold text-primary">
           {open ? "Close" : "Change"}
         </Text>
       </Pressable>
 
       {open ? (
-        <View className="mt-2 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+        <View className="mt-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+          <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             November 2026
           </Text>
           <View className="flex-row flex-wrap gap-1.5">
@@ -86,13 +86,13 @@ export function DatePicker({
                   accessibilityState={{ selected: isSelected }}
                   className={`rounded-lg px-2.5 py-1.5 border ${
                     isSelected
-                      ? "bg-sky-600 border-sky-600"
-                      : "bg-zinc-50 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
+                      ? "bg-primary border-primary"
+                      : "bg-muted border-border"
                   }`}
                 >
                   <Text
                     className={`text-xs font-medium ${
-                      isSelected ? "text-white" : "text-zinc-700 dark:text-zinc-200"
+                      isSelected ? "text-primary-foreground" : "text-foreground"
                     }`}
                   >
                     {item.label} ({item.display.replace(", 2026", "")})

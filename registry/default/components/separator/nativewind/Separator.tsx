@@ -12,7 +12,7 @@ export function Separator({ orientation = "horizontal", className = "", style, .
     <View
       accessibilityRole="none"
       style={style}
-      className={`bg-zinc-200 dark:bg-zinc-800 ${
+      className={`bg-muted ${
         orientation === "horizontal" ? "h-px w-full" : "h-full w-px"
       } ${className}`}
       {...rest}

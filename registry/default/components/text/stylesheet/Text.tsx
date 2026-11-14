@@ -11,10 +11,10 @@ import React from "react";
 import {
   Text as RNText,
   StyleSheet,
-  useColorScheme,
   type TextProps as RNTextProps,
   type TextStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export type TextVariant = "h1" | "h2" | "h3" | "h4" | "p" | "lead" | "muted" | "code";
 
@@ -23,8 +23,7 @@ export interface TextProps extends RNTextProps {
 }
 
 export function Text({ variant = "p", style, ...props }: TextProps) {
-  const isDark = useColorScheme() === "dark";
-  const color = isDark ? colorsDark[variant] : colorsLight[variant];
+  const color = variantColor(useThemeColors(), variant);
 
   return (
     <RNText
@@ -34,27 +33,15 @@ export function Text({ variant = "p", style, ...props }: TextProps) {
   );
 }
 
-const colorsLight: Record<TextVariant, string> = {
-  h1: "#09090b",
-  h2: "#09090b",
-  h3: "#09090b",
-  h4: "#09090b",
-  p: "#27272a",
-  lead: "#52525b",
-  muted: "#71717a",
-  code: "#27272a",
-};
-
-const colorsDark: Record<TextVariant, string> = {
-  h1: "#fafafa",
-  h2: "#fafafa",
-  h3: "#fafafa",
-  h4: "#fafafa",
-  p: "#e4e4e7",
-  lead: "#d4d4d8",
-  muted: "#a1a1aa",
-  code: "#e4e4e7",
-};
+function variantColor(c: ThemeColors, variant: TextVariant): string {
+  switch (variant) {
+    case "lead":
+    case "muted":
+      return c["muted-foreground"];
+    default:
+      return c.foreground;
+  }
+}
 
 const styles = StyleSheet.create({
   base: {

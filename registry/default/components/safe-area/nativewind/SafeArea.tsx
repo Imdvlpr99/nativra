@@ -24,7 +24,7 @@ export function SafeArea({
   return (
     <SafeView
       edges={edges}
-      className={cn("flex-1 bg-white dark:bg-zinc-950", className)}
+      className={cn("flex-1 bg-background", className)}
       {...props}
     >
       {children}

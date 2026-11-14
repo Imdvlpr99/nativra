@@ -16,6 +16,7 @@ import {
   StyleSheet,
   type ViewProps,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -46,6 +47,8 @@ export function DataTable<T extends Record<string, any>>({
   style,
   ...props
 }: DataTableProps<T>) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const getAlignStyle = (align?: "left" | "center" | "right") => {
     switch (align) {
       case "center":
@@ -142,12 +145,12 @@ export function DataTable<T extends Record<string, any>>({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    borderColor: c.border,
+    backgroundColor: c.card,
     overflow: "hidden",
   },
   contentTable: {
@@ -156,8 +159,8 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
-    backgroundColor: "#202024",
+    borderBottomColor: c.border,
+    backgroundColor: c.muted,
     paddingVertical: 12,
     paddingHorizontal: 16,
   },
@@ -166,12 +169,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
   row: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
+    borderBottomColor: c.border,
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
@@ -180,7 +183,7 @@ const styles = StyleSheet.create({
   },
   cellText: {
     fontSize: 14,
-    color: "#f4f4f5",
+    color: c.foreground,
   },
   alignLeft: {
     justifyContent: "center",
@@ -211,19 +214,19 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: "#71717a",
+    color: c["muted-foreground"],
   },
   footerContainer: {
     borderTopWidth: 1,
-    borderTopColor: "#27272a",
-    backgroundColor: "#202024",
+    borderTopColor: c.border,
+    backgroundColor: c.muted,
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
   defaultFooter: {
     borderTopWidth: 1,
-    borderTopColor: "#27272a",
-    backgroundColor: "#202024",
+    borderTopColor: c.border,
+    backgroundColor: c.muted,
     paddingHorizontal: 16,
     paddingVertical: 8,
     flexDirection: "row",
@@ -232,7 +235,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
 });
 

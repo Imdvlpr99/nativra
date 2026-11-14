@@ -23,27 +23,27 @@ export interface AlertProps extends ViewProps {
 }
 
 const CONTAINER_VARIANTS: Record<AlertVariant, string> = {
-  default: "bg-zinc-100 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800",
-  info: "bg-sky-50 border-sky-200 dark:bg-sky-950/40 dark:border-sky-800/60",
+  default: "bg-muted border-border",
+  info: "bg-primary/10 border-primary/30",
   success: "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/60",
   warning: "bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/60",
-  destructive: "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800/60",
+  destructive: "bg-destructive/10 border-destructive/30",
 };
 
 const TITLE_VARIANTS: Record<AlertVariant, string> = {
-  default: "text-zinc-900 dark:text-zinc-100",
-  info: "text-sky-900 dark:text-sky-200",
+  default: "text-foreground",
+  info: "text-foreground",
   success: "text-emerald-900 dark:text-emerald-200",
   warning: "text-amber-900 dark:text-amber-200",
-  destructive: "text-red-900 dark:text-red-200",
+  destructive: "text-destructive",
 };
 
 const DESC_VARIANTS: Record<AlertVariant, string> = {
-  default: "text-zinc-600 dark:text-zinc-400",
-  info: "text-sky-700 dark:text-sky-300",
+  default: "text-muted-foreground",
+  info: "text-primary",
   success: "text-emerald-700 dark:text-emerald-300",
   warning: "text-amber-700 dark:text-amber-300",
-  destructive: "text-red-700 dark:text-red-300",
+  destructive: "text-destructive",
 };
 
 export function Alert({

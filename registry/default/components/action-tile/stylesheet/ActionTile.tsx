@@ -1,6 +1,7 @@
 /** Nativra — ActionTile (StyleSheet). Install: npx nativra-cli add action-tile */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface ActionTileProps extends Omit<PressableProps, "style"> {
   label: string;
@@ -22,6 +23,8 @@ export function ActionTile({
   style,
   ...rest
 }: ActionTileProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const isPrimary = variant === "primary";
 
   return (
@@ -55,7 +58,7 @@ export function ActionTile({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     flex: 1,
     alignItems: "center",
@@ -64,25 +67,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 14,
   },
-  default: { backgroundColor: "#ffffff", borderColor: "#e4e4e7" },
-  primary: { backgroundColor: "#0284c7", borderColor: "#0284c7" },
-  outline: { backgroundColor: "transparent", borderColor: "#e4e4e7" },
+  default: { backgroundColor: c.background, borderColor: c.border },
+  primary: { backgroundColor: c.primary, borderColor: c.primary },
+  outline: { backgroundColor: "transparent", borderColor: c.border },
   disabled: { opacity: 0.5 },
   pressed: { opacity: 0.8 },
   iconWrap: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "#f0f9ff",
+    backgroundColor: alpha(c.primary, 0.08),
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
   },
   iconWrapPrimary: { backgroundColor: "rgba(255,255,255,0.2)" },
   iconText: { fontSize: 16 },
-  label: { fontSize: 12, fontWeight: "700", color: "#18181b" },
-  labelPrimary: { color: "#ffffff" },
-  subtitle: { fontSize: 10, color: "#71717a", marginTop: 2 },
-  subtitlePrimary: { color: "#e0f2fe" },
+  label: { fontSize: 12, fontWeight: "700", color: c.foreground },
+  labelPrimary: { color: c["primary-foreground"] },
+  subtitle: { fontSize: 10, color: c["muted-foreground"], marginTop: 2 },
+  subtitlePrimary: { color: alpha(c["primary-foreground"], 0.8) },
 });
 

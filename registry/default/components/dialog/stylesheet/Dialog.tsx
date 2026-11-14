@@ -1,6 +1,7 @@
 /** Nativra — Dialog (StyleSheet). Install: npx nativra-cli add dialog */
 import React from "react";
-import { Modal, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface DialogProps {
   open: boolean;
@@ -27,7 +28,7 @@ export function Dialog({
   destructive = false,
   children,
 }: DialogProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
 
   const handleCancel = () => {
     onCancel?.();
@@ -48,10 +49,10 @@ export function Dialog({
     >
       <View style={styles.backdrop}>
         <Pressable style={styles.dismissOverlay} onPress={handleCancel} />
-        <View style={[styles.card, { backgroundColor: dark ? "#18181b" : "#ffffff", borderColor: dark ? "#27272a" : "#e4e4e7" }]}>
-          <Text style={[styles.title, { color: dark ? "#fafafa" : "#18181b" }]}>{title}</Text>
+        <View style={[styles.card, { backgroundColor: c.background, borderColor: c.border }]}>
+          <Text style={[styles.title, { color: c.foreground }]}>{title}</Text>
           {description ? (
-            <Text style={[styles.description, { color: dark ? "#a1a1aa" : "#71717a" }]}>
+            <Text style={[styles.description, { color: c["muted-foreground"] }]}>
               {description}
             </Text>
           ) : null}
@@ -61,9 +62,9 @@ export function Dialog({
           <View style={styles.actions}>
             <Pressable
               onPress={handleCancel}
-              style={[styles.cancelBtn, { borderColor: dark ? "#3f3f46" : "#d4d4d8" }]}
+              style={[styles.cancelBtn, { borderColor: c.input }]}
             >
-              <Text style={[styles.cancelText, { color: dark ? "#d4d4d8" : "#3f3f46" }]}>
+              <Text style={[styles.cancelText, { color: c.foreground }]}>
                 {cancelText}
               </Text>
             </Pressable>
@@ -71,13 +72,13 @@ export function Dialog({
               onPress={handleConfirm}
               style={[
                 styles.confirmBtn,
-                { backgroundColor: destructive ? "#dc2626" : dark ? "#fafafa" : "#18181b" },
+                { backgroundColor: destructive ? c.destructive : c.foreground },
               ]}
             >
               <Text
                 style={[
                   styles.confirmText,
-                  { color: destructive ? "#ffffff" : dark ? "#18181b" : "#ffffff" },
+                  { color: destructive ? c["destructive-foreground"] : c.background },
                 ]}
               >
                 {confirmText}

@@ -17,6 +17,7 @@ import {
   type LayoutChangeEvent,
   type ViewProps,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface SegmentedControlOption {
   value: string;
@@ -45,6 +46,8 @@ export function SegmentedControl({
   style,
   ...props
 }: SegmentedControlProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const options: SegmentedControlOption[] = React.useMemo(() => {
     if (providedOptions) return providedOptions;
     if (values) return values.map((v) => ({ value: v, label: v }));
@@ -156,16 +159,16 @@ export function SegmentedControl({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     position: "relative",
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 16,
-    backgroundColor: "#18181b",
+    backgroundColor: c.muted,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: c.border,
     padding: 4,
   },
   containerSm: {
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   indicator: {
     position: "absolute",
     borderRadius: 12,
-    backgroundColor: "#27272a",
+    backgroundColor: c.background,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -218,11 +221,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   textSelected: {
-    color: "#ffffff",
+    color: c.foreground,
     fontWeight: "600",
   },
   textUnselected: {
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
   badge: {
     marginLeft: 6,
@@ -231,20 +234,20 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
   },
   badgeSelected: {
-    backgroundColor: "#ffffff",
+    backgroundColor: c.muted,
   },
   badgeUnselected: {
-    backgroundColor: "#27272a",
+    backgroundColor: c.background,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
   },
   badgeTextSelected: {
-    color: "#09090b",
+    color: c.foreground,
   },
   badgeTextUnselected: {
-    color: "#d4d4d8",
+    color: c["muted-foreground"],
   },
 });
 

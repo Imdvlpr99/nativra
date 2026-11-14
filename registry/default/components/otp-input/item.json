@@ -5,7 +5,10 @@
   "type": "component",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -24,13 +27,23 @@
   ],
   "registryDependencies": [
     {
+      "id": "use-theme-colors",
+      "registry": "default"
+    },
+    {
       "id": "cn",
       "registry": "default"
     }
   ],
   "npmDependencies": [],
-  "tags": ["input", "otp", "pin", "verification", "code", "security"],
+  "tags": [
+    "input",
+    "otp",
+    "pin",
+    "verification",
+    "code",
+    "security"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

@@ -5,16 +5,38 @@
   "type": "component",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
-  "platforms": { "android": true, "ios": true, "expoGo": true },
-  "files": [
-    { "path": "nativewind/RadioGroup.tsx", "target": "nativewind" },
-    { "path": "stylesheet/RadioGroup.tsx", "target": "stylesheet" }
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
   ],
-  "registryDependencies": [],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/RadioGroup.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/RadioGroup.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["radio", "radiogroup", "form", "selection"],
+  "tags": [
+    "radio",
+    "radiogroup",
+    "form",
+    "selection"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

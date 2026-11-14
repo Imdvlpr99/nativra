@@ -39,18 +39,18 @@ export function Checkbox({
       <View
         className={`h-5 w-5 rounded border items-center justify-center ${
           checked
-            ? "bg-zinc-900 border-zinc-900 dark:bg-zinc-50 dark:border-zinc-50"
-            : "border-zinc-400 bg-transparent dark:border-zinc-600"
+            ? "bg-foreground border-foreground"
+            : "border-input bg-transparent"
         }`}
       >
         {checked && (
-          <Text className="text-white dark:text-zinc-900 text-xs font-bold leading-none">
+          <Text className="text-background text-xs font-bold leading-none">
             ✓
           </Text>
         )}
       </View>
       {label ? (
-        <Text className="ml-2 text-sm text-zinc-900 dark:text-zinc-100 font-medium">
+        <Text className="ml-2 text-sm text-foreground font-medium">
           {label}
         </Text>
       ) : null}

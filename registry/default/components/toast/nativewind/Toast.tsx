@@ -18,7 +18,7 @@ export function Toast({
   const variantStyles = {
     default: "border-zinc-800 bg-zinc-900 text-zinc-100",
     success: "border-emerald-600/50 bg-emerald-950/90 text-emerald-100",
-    error: "border-red-600/50 bg-red-950/90 text-red-100",
+    error: "border-destructive/50 bg-red-950/90 text-red-100",
     warning: "border-amber-600/50 bg-amber-950/90 text-amber-100",
   };
 

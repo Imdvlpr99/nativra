@@ -5,7 +5,10 @@
   "type": "component",
   "status": "stable",
   "version": "0.2.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -13,13 +16,29 @@
     "expoGo": true
   },
   "files": [
-    { "path": "nativewind/ErrorBoundary.tsx", "target": "nativewind" },
-    { "path": "stylesheet/ErrorBoundary.tsx", "target": "stylesheet" }
+    {
+      "path": "nativewind/ErrorBoundary.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/ErrorBoundary.tsx",
+      "target": "stylesheet"
+    }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["error-boundary", "error", "fallback", "crash", "recovery"],
+  "tags": [
+    "error-boundary",
+    "error",
+    "fallback",
+    "crash",
+    "recovery"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2026-11-09T00:00:00.000Z"
 }
-

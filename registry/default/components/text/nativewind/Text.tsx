@@ -18,14 +18,14 @@ export interface TextProps extends RNTextProps {
 }
 
 const VARIANTS: Record<TextVariant, string> = {
-  h1: "text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50",
-  h2: "text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50",
-  h3: "text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50",
-  h4: "text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50",
-  p: "text-base leading-7 text-zinc-800 dark:text-zinc-200",
-  lead: "text-lg text-zinc-600 dark:text-zinc-300",
-  muted: "text-sm text-zinc-500 dark:text-zinc-400",
-  code: "font-mono text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 px-1 py-0.5 rounded",
+  h1: "text-3xl font-bold tracking-tight text-foreground",
+  h2: "text-2xl font-semibold tracking-tight text-foreground",
+  h3: "text-xl font-semibold tracking-tight text-foreground",
+  h4: "text-lg font-semibold tracking-tight text-foreground",
+  p: "text-base leading-7 text-foreground",
+  lead: "text-lg text-muted-foreground",
+  muted: "text-sm text-muted-foreground",
+  code: "font-mono text-sm bg-muted text-foreground px-1 py-0.5 rounded",
 };
 
 export function Text({ variant = "p", className = "", style, ...props }: TextProps) {

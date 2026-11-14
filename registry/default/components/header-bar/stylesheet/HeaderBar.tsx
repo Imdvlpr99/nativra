@@ -1,6 +1,7 @@
 /** Nativra — HeaderBar (StyleSheet). Install: npx nativra-cli add header-bar */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface HeaderBarProps extends ViewProps {
   title: string;
@@ -22,6 +23,8 @@ export function HeaderBar({
   style,
   ...rest
 }: HeaderBarProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <View
       accessibilityRole="header"
@@ -71,14 +74,14 @@ export function HeaderBar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
+    borderBottomColor: c.border,
+    backgroundColor: c.background,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -92,17 +95,17 @@ const styles = StyleSheet.create({
   sideLeft: { width: 64, alignItems: "flex-start" },
   sideRight: { width: 64, alignItems: "flex-end" },
   backBtn: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 },
-  backChevron: { fontSize: 16, fontWeight: "700", color: "#0284c7" },
-  backText: { fontSize: 12, fontWeight: "600", color: "#0284c7" },
+  backChevron: { fontSize: 16, fontWeight: "700", color: c.primary },
+  backText: { fontSize: 12, fontWeight: "600", color: c.primary },
   center: { flex: 1, alignItems: "center", paddingHorizontal: 8 },
-  title: { fontSize: 14, fontWeight: "700", color: "#18181b" },
-  subtitle: { fontSize: 11, color: "#71717a", marginTop: 1 },
+  title: { fontSize: 14, fontWeight: "700", color: c.foreground },
+  subtitle: { fontSize: 11, color: c["muted-foreground"], marginTop: 1 },
   rightBtn: {
     borderRadius: 8,
-    backgroundColor: "#f0f9ff",
+    backgroundColor: alpha(c.primary, 0.08),
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  rightText: { fontSize: 12, fontWeight: "600", color: "#0284c7" },
+  rightText: { fontSize: 12, fontWeight: "600", color: c.primary },
 });
 

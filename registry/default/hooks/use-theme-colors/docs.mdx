@@ -1,0 +1,33 @@
+# useThemeColors
+
+Returns the semantic colors of your installed theme for the current light or dark scheme.
+
+## Usage
+
+```tsx
+import { View, Text } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+
+export function Banner() {
+  const c = useThemeColors();
+  return (
+    <View style={{ backgroundColor: c.muted, borderColor: c.border, borderWidth: 1 }}>
+      <Text style={{ color: c.foreground }}>Hello</Text>
+    </View>
+  );
+}
+```
+
+## How it works
+
+The hook reads `themeColors` from `lib/themes/theme.ts`. That file is installed with the default
+**zinc** theme the first time you add a component. Switch every component to another palette with:
+
+```bash
+npx nativra-cli theme add midnight --overwrite
+```
+
+## Tokens
+
+`background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`,
+`destructive` (each with a `-foreground` pair), plus `border`, `input` and `ring`.

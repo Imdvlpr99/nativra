@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export type FabVariant = "primary" | "secondary" | "accent";
 export type FabSize = "sm" | "md" | "lg";
@@ -34,6 +35,8 @@ export function Fab({
   onPress,
   ...props
 }: FabProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const isExtended = Boolean(label);
 
   return (
@@ -61,7 +64,7 @@ export function Fab({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     position: "absolute",
     zIndex: 50,
@@ -79,14 +82,14 @@ const styles = StyleSheet.create({
   md: { width: 56, height: 56 },
   lg: { width: 64, height: 64 },
   extended: { width: "auto", paddingHorizontal: 20, gap: 8 },
-  primary: { backgroundColor: "#0284C7" },
-  secondary: { backgroundColor: "#18181B" },
+  primary: { backgroundColor: c.primary },
+  secondary: { backgroundColor: c.foreground },
   accent: { backgroundColor: "#10B981" },
   "bottom-right": { bottom: 24, right: 24 },
   "bottom-left": { bottom: 24, left: 24 },
   "bottom-center": { bottom: 24, alignSelf: "center" },
   labelText: {
-    color: "#FFFFFF",
+    color: c["primary-foreground"],
     fontWeight: "700",
     fontSize: 14,
   },

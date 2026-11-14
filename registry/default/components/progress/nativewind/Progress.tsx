@@ -27,10 +27,10 @@ const HEIGHT_CLASSES: Record<ProgressSize, string> = {
 };
 
 const FILL_CLASSES: Record<ProgressVariant, string> = {
-  default: "bg-zinc-900 dark:bg-zinc-100",
-  primary: "bg-sky-500",
+  default: "bg-foreground",
+  primary: "bg-primary",
   success: "bg-emerald-500",
-  destructive: "bg-red-500",
+  destructive: "bg-destructive",
 };
 
 export function Progress({
@@ -46,7 +46,7 @@ export function Progress({
     <View
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: clamped }}
-      className={`w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden ${HEIGHT_CLASSES[size]} ${className}`.trim()}
+      className={`w-full rounded-full bg-muted overflow-hidden ${HEIGHT_CLASSES[size]} ${className}`.trim()}
       {...props}
     >
       <View

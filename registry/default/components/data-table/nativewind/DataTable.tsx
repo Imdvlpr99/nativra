@@ -60,21 +60,21 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <View
-      className={`rounded-2xl border border-zinc-200 bg-white overflow-hidden dark:border-zinc-800 dark:bg-zinc-950 ${className}`.trim()}
+      className={`rounded-2xl border border-border bg-background overflow-hidden ${className}`.trim()}
       style={style}
       {...props}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="min-w-full">
           {/* Header */}
-          <View className="flex-row border-b border-zinc-200 bg-zinc-50 py-3 px-4 dark:border-zinc-800 dark:bg-zinc-900/60">
+          <View className="flex-row border-b border-border bg-muted py-3 px-4">
             {columns.map((col, idx) => (
               <View
                 key={String(col.key || idx)}
                 style={{ width: col.width || 120 }}
                 className={`justify-center ${getAlignClass(col.align)}`}
               >
-                <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {col.title}
                 </Text>
               </View>
@@ -84,7 +84,7 @@ export function DataTable<T extends Record<string, any>>({
           {/* Rows */}
           {data.length === 0 ? (
             <View className="py-8 px-4 items-center justify-center">
-              <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+              <Text className="text-sm text-muted-foreground">
                 {emptyMessage}
               </Text>
             </View>
@@ -98,8 +98,8 @@ export function DataTable<T extends Record<string, any>>({
                   key={rowKey}
                   disabled={!onRowPress}
                   onPress={() => onRowPress?.(item, rowIndex)}
-                  className={`flex-row border-b border-zinc-100 py-3.5 px-4 dark:border-zinc-800/60 active:opacity-70 ${
-                    isStriped ? "bg-zinc-50/70 dark:bg-zinc-900/30" : "bg-transparent"
+                  className={`flex-row border-b border-border py-3.5 px-4 active:opacity-70 ${
+                    isStriped ? "bg-muted/50" : "bg-transparent"
                   }`}
                 >
                   {columns.map((col, colIdx) => {
@@ -114,7 +114,7 @@ export function DataTable<T extends Record<string, any>>({
                           col.render(rawVal, item, rowIndex)
                         ) : (
                           <Text
-                            className="text-sm text-zinc-800 dark:text-zinc-200"
+                            className="text-sm text-foreground"
                             numberOfLines={1}
                           >
                             {rawVal !== undefined && rawVal !== null ? String(rawVal) : "-"}
@@ -132,12 +132,12 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Footer */}
       {footer ? (
-        <View className="border-t border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/40">
+        <View className="border-t border-border bg-muted px-4 py-2.5">
           {footer}
         </View>
       ) : (
-        <View className="flex-row items-center justify-between border-t border-zinc-200 bg-zinc-50/50 px-4 py-2 dark:border-zinc-800 dark:bg-zinc-900/30">
-          <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+        <View className="flex-row items-center justify-between border-t border-border bg-muted px-4 py-2">
+          <Text className="text-xs text-muted-foreground">
             Total {data.length} records
           </Text>
         </View>

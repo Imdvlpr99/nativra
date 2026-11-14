@@ -5,7 +5,10 @@
   "type": "component",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -24,6 +27,10 @@
   ],
   "registryDependencies": [
     {
+      "id": "use-theme-colors",
+      "registry": "default"
+    },
+    {
       "id": "cn",
       "registry": "default"
     }
@@ -34,8 +41,13 @@
       "version": "^0.7.1"
     }
   ],
-  "tags": ["action", "icon", "button", "touchable", "accessible"],
+  "tags": [
+    "action",
+    "icon",
+    "button",
+    "touchable",
+    "accessible"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

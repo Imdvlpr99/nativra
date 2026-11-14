@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, StyleSheet, type ViewProps } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export type ProgressSize = "sm" | "md" | "lg";
 export type ProgressVariant = "default" | "primary" | "success" | "destructive";
@@ -25,12 +26,12 @@ const HEIGHTS: Record<ProgressSize, number> = {
   lg: 16,
 };
 
-const COLORS: Record<ProgressVariant, string> = {
-  default: "#18181b",
-  primary: "#0ea5e9",
+const COLORS = (c: ThemeColors): Record<ProgressVariant, string> => ({
+  default: c.foreground,
+  primary: c.primary,
   success: "#10b981",
-  destructive: "#ef4444",
-};
+  destructive: c.destructive,
+});
 
 export function Progress({
   value = 0,
@@ -39,6 +40,8 @@ export function Progress({
   style,
   ...props
 }: ProgressProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const clamped = Math.min(100, Math.max(0, value));
 
   return (
@@ -57,7 +60,7 @@ export function Progress({
           styles.fill,
           {
             width: `${clamped}%`,
-            backgroundColor: COLORS[variant],
+            backgroundColor: COLORS(c)[variant],
           },
         ]}
       />
@@ -65,11 +68,11 @@ export function Progress({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   track: {
     width: "100%",
     borderRadius: 9999,
-    backgroundColor: "#e4e4e7",
+    backgroundColor: c.muted,
     overflow: "hidden",
   },
   fill: {

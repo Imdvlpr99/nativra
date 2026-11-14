@@ -8,12 +8,12 @@ const iconButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900",
-        primary: "bg-sky-500 text-white shadow-sm shadow-sky-500/20",
-        secondary: "bg-zinc-100 text-zinc-900 border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100",
-        destructive: "bg-red-600 text-white shadow-sm shadow-red-600/20",
-        outline: "border border-zinc-300 bg-transparent text-zinc-900 dark:border-zinc-700 dark:text-zinc-100",
-        ghost: "bg-transparent text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800",
+        default: "bg-foreground text-background",
+        primary: "bg-primary text-primary-foreground shadow-sm shadow-primary/20",
+        secondary: "bg-muted text-foreground border border-border",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm shadow-red-600/20",
+        outline: "border border-input bg-transparent text-foreground",
+        ghost: "bg-transparent text-foreground hover:bg-muted",
       },
       size: {
         sm: "h-9 w-9 rounded-lg",

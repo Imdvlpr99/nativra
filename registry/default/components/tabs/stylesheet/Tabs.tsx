@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface TabItem {
   value: string;
@@ -31,6 +32,8 @@ export function Tabs({
   style,
   ...props
 }: TabsProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const isPill = variant === "pill";
 
   return (
@@ -90,7 +93,7 @@ export function Tabs({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
     flexDirection: "row",
@@ -99,13 +102,13 @@ const styles = StyleSheet.create({
   pillContainer: {
     padding: 4,
     borderRadius: 16,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: c.muted,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
+    borderColor: c.border,
   },
   underlineContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: "#e4e4e7",
+    borderBottomColor: c.border,
   },
   tab: {
     flex: 1,
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   tabPillSelected: {
-    backgroundColor: "#ffffff",
+    backgroundColor: c.background,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -127,16 +130,16 @@ const styles = StyleSheet.create({
   },
   tabUnderlineSelected: {
     borderBottomWidth: 2,
-    borderBottomColor: "#0ea5e9",
+    borderBottomColor: c.primary,
     marginBottom: -1,
   },
   tabLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#71717a",
+    color: c["muted-foreground"],
   },
   tabLabelSelected: {
-    color: "#09090b",
+    color: c.foreground,
     fontWeight: "700",
   },
   badge: {
@@ -145,20 +148,20 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   badgeDefault: {
-    backgroundColor: "#e4e4e7",
+    backgroundColor: c.muted,
   },
   badgeSelected: {
-    backgroundColor: "#e0f2fe",
+    backgroundColor: alpha(c.primary, 0.12),
   },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
   },
   badgeTextDefault: {
-    color: "#71717a",
+    color: c["muted-foreground"],
   },
   badgeTextSelected: {
-    color: "#0284c7",
+    color: c.primary,
   },
 });
 

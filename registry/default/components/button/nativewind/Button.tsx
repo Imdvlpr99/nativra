@@ -41,23 +41,23 @@ const BASE =
   "flex-row items-center justify-center rounded-lg active:opacity-80";
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  default:     "bg-zinc-900 dark:bg-zinc-50",
-  primary:     "bg-sky-600 dark:bg-sky-500",
-  secondary:   "bg-zinc-100 dark:bg-zinc-800",
-  destructive: "bg-red-500 dark:bg-red-600",
-  outline:     "border border-zinc-300 bg-transparent dark:border-zinc-700",
+  default:     "bg-foreground",
+  primary:     "bg-primary",
+  secondary:   "bg-muted",
+  destructive: "bg-destructive",
+  outline:     "border border-input bg-transparent",
   ghost:       "bg-transparent",
   link:        "bg-transparent",
 };
 
 const TEXT_VARIANTS: Record<ButtonVariant, string> = {
-  default:     "text-white dark:text-zinc-900",
-  primary:     "text-white",
-  secondary:   "text-zinc-900 dark:text-zinc-50",
-  destructive: "text-white",
-  outline:     "text-zinc-900 dark:text-zinc-50",
-  ghost:       "text-zinc-900 dark:text-zinc-50",
-  link:        "text-sky-600 underline dark:text-sky-400",
+  default:     "text-background",
+  primary:     "text-primary-foreground",
+  secondary:   "text-foreground",
+  destructive: "text-destructive-foreground",
+  outline:     "text-foreground",
+  ghost:       "text-foreground",
+  link:        "text-primary underline",
 };
 
 const SIZES: Record<ButtonSize, string> = {

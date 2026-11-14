@@ -5,7 +5,10 @@
   "type": "component",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -22,10 +25,20 @@
       "target": "stylesheet"
     }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["progress", "bar", "indicator", "loading", "status"],
+  "tags": [
+    "progress",
+    "bar",
+    "indicator",
+    "loading",
+    "status"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

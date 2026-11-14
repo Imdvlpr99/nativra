@@ -8,6 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface OtpInputProps {
   length?: number;
@@ -28,6 +29,8 @@ export function OtpInput({
   secureTextEntry = false,
   style,
 }: OtpInputProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const inputRef = React.useRef<TextInput>(null);
   const [isFocused, setIsFocused] = React.useState(false);
 
@@ -87,7 +90,7 @@ export function OtpInput({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
     alignItems: "center",
@@ -110,8 +113,8 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
+    borderColor: c.border,
+    backgroundColor: c.background,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -121,15 +124,15 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   filledCell: {
-    borderColor: "#71717A",
+    borderColor: c.ring,
   },
   activeCell: {
-    borderColor: "#0284C7",
-    backgroundColor: "#F0F9FF",
+    borderColor: c.primary,
+    backgroundColor: alpha(c.primary, 0.08),
   },
   errorCell: {
-    borderColor: "#EF4444",
-    backgroundColor: "#FEF2F2",
+    borderColor: c.destructive,
+    backgroundColor: alpha(c.destructive, 0.08),
   },
   disabledCell: {
     opacity: 0.5,
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     fontFamily: "monospace",
-    color: "#18181B",
+    color: c.foreground,
   },
 });
 

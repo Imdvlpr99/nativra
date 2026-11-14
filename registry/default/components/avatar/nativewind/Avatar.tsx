@@ -49,7 +49,7 @@ export function Avatar({
     <View
       accessibilityRole="image"
       accessibilityLabel={accessibilityLabel ?? fallback}
-      className={`rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 items-center justify-center ${SIZE_CONTAINER[size]} ${className}`.trim()}
+      className={`rounded-full overflow-hidden bg-muted items-center justify-center ${SIZE_CONTAINER[size]} ${className}`.trim()}
       style={style}
       {...props}
     >
@@ -61,7 +61,7 @@ export function Avatar({
         />
       ) : (
         <Text
-          className={`font-semibold text-zinc-700 dark:text-zinc-200 ${SIZE_TEXT[size]}`}
+          className={`font-semibold text-foreground ${SIZE_TEXT[size]}`}
         >
           {fallback.slice(0, 2).toUpperCase()}
         </Text>

@@ -19,19 +19,19 @@ export interface BadgeProps {
 }
 
 const CONTAINER: Record<BadgeVariant, string> = {
-  default:     "bg-zinc-900 dark:bg-zinc-50",
-  primary:     "bg-sky-100 dark:bg-sky-900",
-  secondary:   "bg-zinc-100 dark:bg-zinc-800",
-  destructive: "bg-red-100 dark:bg-red-900",
-  outline:     "border border-zinc-300 bg-transparent dark:border-zinc-600",
+  default:     "bg-foreground",
+  primary:     "bg-primary/10",
+  secondary:   "bg-muted",
+  destructive: "bg-destructive/10",
+  outline:     "border border-input bg-transparent",
 };
 
 const LABEL: Record<BadgeVariant, string> = {
-  default:     "text-white dark:text-zinc-900",
-  primary:     "text-sky-800 dark:text-sky-200",
-  secondary:   "text-zinc-700 dark:text-zinc-300",
-  destructive: "text-red-800 dark:text-red-200",
-  outline:     "text-zinc-700 dark:text-zinc-300",
+  default:     "text-background",
+  primary:     "text-foreground",
+  secondary:   "text-foreground",
+  destructive: "text-destructive",
+  outline:     "text-foreground",
 };
 
 const SIZE: Record<BadgeSize, string> = {

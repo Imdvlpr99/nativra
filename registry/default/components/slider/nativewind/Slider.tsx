@@ -50,17 +50,17 @@ export function Slider({
       {...props}
     >
       {/* Background Track */}
-      <View className="h-2 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+      <View className="h-2 w-full rounded-full bg-muted overflow-hidden">
         {/* Active Fill Track */}
         <View
-          className="h-full rounded-full bg-sky-500"
+          className="h-full rounded-full bg-primary"
           style={{ width: `${percentage}%` }}
         />
       </View>
 
       {/* Draggable Thumb Knob */}
       <View
-        className="absolute top-1/2 -mt-3.5 h-7 w-7 rounded-full bg-white dark:bg-zinc-100 shadow-md border-2 border-sky-500 items-center justify-center -ml-3.5"
+        className="absolute top-1/2 -mt-3.5 h-7 w-7 rounded-full bg-background shadow-md border-2 border-primary items-center justify-center -ml-3.5"
         style={{ left: `${percentage}%` }}
       />
     </Pressable>

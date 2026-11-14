@@ -37,17 +37,17 @@ export function BottomSheet({
         {/* Sheet Content Panel */}
         <View
           className={cn(
-            "w-full rounded-t-3xl border-t border-zinc-200 bg-white p-6 pb-10 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900",
+            "w-full rounded-t-3xl border-t border-border bg-card p-6 pb-10 shadow-2xl",
             className
           )}
         >
           {/* Grab Handle */}
           <View className="mb-4 items-center">
-            <View className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <View className="h-1.5 w-12 rounded-full bg-muted" />
           </View>
 
           {title && (
-            <Text className="mb-4 text-base font-bold text-zinc-900 dark:text-zinc-50">
+            <Text className="mb-4 text-base font-bold text-foreground">
               {title}
             </Text>
           )}

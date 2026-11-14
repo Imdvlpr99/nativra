@@ -5,6 +5,7 @@ import {
   useSafeAreaInsets,
   type Edge,
 } from "react-native-safe-area-context";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface SafeAreaProps extends ViewProps {
   edges?: Edge[];
@@ -20,6 +21,8 @@ export function SafeArea({
   children,
   ...props
 }: SafeAreaProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <SafeView edges={edges} style={[styles.container, style]} {...props}>
       {children}
@@ -33,10 +36,10 @@ export function SafeAreaInsetSpacer({ edge = "top" }: { edge?: "top" | "bottom" 
   return <View style={{ height }} />;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: c.background,
   },
 });
 

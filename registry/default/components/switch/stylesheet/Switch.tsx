@@ -13,6 +13,7 @@ import {
   useColorScheme,
   type SwitchProps as RNSwitchProps,
 } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface SwitchProps extends Omit<RNSwitchProps, "value" | "onValueChange"> {
   value: boolean;
@@ -26,10 +27,11 @@ export function Switch({
   style,
   ...props
 }: SwitchProps) {
+  const c = useThemeColors();
   const isDark = useColorScheme() === "dark";
-  const activeTrack = isDark ? "#fafafa" : "#18181b";
-  const inactiveTrack = isDark ? "#3f3f46" : "#e4e4e7";
-  const thumb = isDark ? (value ? "#18181b" : "#a1a1aa") : (value ? "#ffffff" : "#f4f4f5");
+  const activeTrack = c.foreground;
+  const inactiveTrack = c.muted;
+  const thumb = value ? c.background : c.input;
 
   return (
     <RNSwitch

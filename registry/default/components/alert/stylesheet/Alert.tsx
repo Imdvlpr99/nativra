@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
+import { alpha, type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export type AlertVariant = "default" | "info" | "success" | "warning" | "destructive";
 
@@ -21,16 +22,16 @@ export interface AlertProps extends ViewProps {
   children?: React.ReactNode;
 }
 
-const THEMES: Record<
+const THEMES = (c: ThemeColors): Record<
   AlertVariant,
   { bg: string; border: string; title: string; desc: string }
-> = {
-  default: { bg: "#f4f4f5", border: "#e4e4e7", title: "#18181b", desc: "#71717a" },
-  info: { bg: "#f0f9ff", border: "#bae6fd", title: "#0369a1", desc: "#0284c7" },
+> => ({
+  default: { bg: c.muted, border: c.border, title: c.foreground, desc: c["muted-foreground"] },
+  info: { bg: alpha(c.primary, 0.08), border: c.primary, title: c.primary, desc: c.primary },
   success: { bg: "#f0fdf4", border: "#bbf7d0", title: "#15803d", desc: "#16a34a" },
   warning: { bg: "#fffbeb", border: "#fde68a", title: "#b45309", desc: "#d97706" },
-  destructive: { bg: "#fef2f2", border: "#fecaca", title: "#b91c1c", desc: "#dc2626" },
-};
+  destructive: { bg: alpha(c.destructive, 0.08), border: c.destructive, title: c.destructive, desc: c.destructive },
+});
 
 export function Alert({
   variant = "default",
@@ -42,7 +43,9 @@ export function Alert({
   style,
   ...props
 }: AlertProps) {
-  const theme = THEMES[variant] ?? THEMES.default;
+  const c = useThemeColors();
+  const themes = THEMES(c);
+  const theme = themes[variant] ?? themes.default;
 
   return (
     <View

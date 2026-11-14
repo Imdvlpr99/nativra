@@ -1,6 +1,7 @@
 /** Nativra — DatePicker (StyleSheet). Install: npx nativra-cli add date-picker */
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface DatePickerProps extends ViewProps {
   label?: string;
@@ -27,6 +28,8 @@ export function DatePicker({
   style,
   ...rest
 }: DatePickerProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const [open, setOpen] = useState(false);
   const [internalVal, setInternalVal] = useState(value ?? "2026-11-09");
   const activeVal = value !== undefined ? value : internalVal;
@@ -90,17 +93,17 @@ export function DatePicker({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: { width: "100%" },
-  label: { marginBottom: 6, fontSize: 12, fontWeight: "600", color: "#3f3f46" },
+  label: { marginBottom: 6, fontSize: 12, fontWeight: "600", color: c.foreground },
   trigger: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
+    borderColor: c.border,
+    backgroundColor: c.background,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
@@ -108,14 +111,14 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.8 },
   triggerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
   icon: { fontSize: 14 },
-  valueText: { fontSize: 14, fontWeight: "500", color: "#18181b" },
-  actionText: { fontSize: 12, fontWeight: "600", color: "#0284c7" },
+  valueText: { fontSize: 14, fontWeight: "500", color: c.foreground },
+  actionText: { fontSize: 12, fontWeight: "600", color: c.primary },
   dropdown: {
     marginTop: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
+    borderColor: c.border,
+    backgroundColor: c.background,
     padding: 12,
   },
   monthHeader: {
@@ -123,19 +126,19 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 0.6,
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
   presetGrid: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   presetBtn: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#fafafa",
+    borderColor: c.border,
+    backgroundColor: c.background,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  presetBtnSelected: { backgroundColor: "#0284c7", borderColor: "#0284c7" },
-  presetText: { fontSize: 12, fontWeight: "500", color: "#3f3f46" },
-  presetTextSelected: { color: "#ffffff", fontWeight: "600" },
+  presetBtnSelected: { backgroundColor: c.primary, borderColor: c.primary },
+  presetText: { fontSize: 12, fontWeight: "500", color: c.foreground },
+  presetTextSelected: { color: c["primary-foreground"], fontWeight: "600" },
 });
 

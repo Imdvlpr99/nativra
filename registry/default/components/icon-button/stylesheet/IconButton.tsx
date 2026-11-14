@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
 
 export type IconButtonVariant = "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost";
 export type IconButtonSize = "sm" | "md" | "lg";
@@ -35,6 +36,8 @@ export function IconButton({
   onPress,
   ...props
 }: IconButtonProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <Pressable
       accessibilityRole="button"
@@ -58,7 +61,7 @@ export function IconButton({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "outline" || variant === "ghost" ? "#71717A" : "#FFFFFF"}
+          color={variant === "outline" || variant === "ghost" ? c["muted-foreground"] : variant === "default" ? c.background : variant === "destructive" ? c["destructive-foreground"] : c["primary-foreground"]}
         />
       ) : (
         children
@@ -67,7 +70,7 @@ export function IconButton({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     alignItems: "center",
     justifyContent: "center",
@@ -91,23 +94,23 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   default: {
-    backgroundColor: "#18181B",
+    backgroundColor: c.foreground,
   },
   primary: {
-    backgroundColor: "#0284C7",
+    backgroundColor: c.primary,
   },
   secondary: {
-    backgroundColor: "#F4F4F5",
+    backgroundColor: c.muted,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
+    borderColor: c.border,
   },
   destructive: {
-    backgroundColor: "#DC2626",
+    backgroundColor: c.destructive,
   },
   outline: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#D4D4D8",
+    borderColor: c.input,
   },
   ghost: {
     backgroundColor: "transparent",

@@ -46,10 +46,10 @@ export function Dialog({
     >
       <View className="flex-1 items-center justify-center bg-black/60 px-6">
         <Pressable className="absolute inset-0" onPress={handleCancel} />
-        <View className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 z-10">
-          <Text className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{title}</Text>
+        <View className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl z-10">
+          <Text className="text-lg font-bold text-foreground">{title}</Text>
           {description ? (
-            <Text className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <Text className="mt-2 text-sm text-muted-foreground leading-relaxed">
               {description}
             </Text>
           ) : null}
@@ -59,21 +59,21 @@ export function Dialog({
           <View className="mt-6 flex-row justify-end gap-3">
             <Pressable
               onPress={handleCancel}
-              className="h-10 px-4 rounded-xl border border-zinc-300 dark:border-zinc-700 items-center justify-center active:opacity-75"
+              className="h-10 px-4 rounded-xl border border-input items-center justify-center active:opacity-75"
             >
-              <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+              <Text className="text-sm font-semibold text-foreground">
                 {cancelText}
               </Text>
             </Pressable>
             <Pressable
               onPress={handleConfirm}
               className={`h-10 px-4 rounded-xl items-center justify-center active:opacity-75 ${
-                destructive ? "bg-red-600" : "bg-zinc-900 dark:bg-zinc-50"
+                destructive ? "bg-destructive" : "bg-foreground"
               }`}
             >
               <Text
                 className={`text-sm font-semibold ${
-                  destructive ? "text-white" : "text-white dark:text-zinc-900"
+                  destructive ? "text-destructive-foreground" : "text-background"
                 }`}
               >
                 {confirmText}

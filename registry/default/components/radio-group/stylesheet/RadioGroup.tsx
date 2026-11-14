@@ -1,6 +1,7 @@
 /** Nativra — RadioGroup (StyleSheet). Install: npx nativra-cli add radio-group */
 import React from "react";
-import { Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface RadioOption {
   label: string;
@@ -22,7 +23,8 @@ export function RadioGroup({
   onValueChange,
   disabled = false,
 }: RadioGroupProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
+  const styles = createStyles(c);
 
   return (
     <View accessibilityRole="radiogroup" style={styles.group}>
@@ -41,11 +43,11 @@ export function RadioGroup({
               styles.item,
               {
                 backgroundColor: isSelected
-                  ? dark ? "#082f49" : "#f0f9ff"
-                  : dark ? "#18181b" : "#ffffff",
+                  ? alpha(c.primary, 0.08)
+                  : c.background,
                 borderColor: isSelected
-                  ? "#0284c7"
-                  : dark ? "#27272a" : "#e4e4e7",
+                  ? c.primary
+                  : c.border,
               },
               isDisabled && styles.disabled,
             ]}
@@ -53,18 +55,18 @@ export function RadioGroup({
             <View
               style={[
                 styles.circle,
-                { borderColor: isSelected ? "#0284c7" : dark ? "#52525b" : "#a1a1aa" },
+                { borderColor: isSelected ? c.primary : c.input },
               ]}
             >
               {isSelected ? <View style={styles.dot} /> : null}
             </View>
 
             <View style={styles.textWrap}>
-              <Text style={[styles.label, { color: dark ? "#fafafa" : "#18181b" }]}>
+              <Text style={[styles.label, { color: c.foreground }]}>
                 {opt.label}
               </Text>
               {opt.description ? (
-                <Text style={[styles.description, { color: dark ? "#a1a1aa" : "#71717a" }]}>
+                <Text style={[styles.description, { color: c["muted-foreground"] }]}>
                   {opt.description}
                 </Text>
               ) : null}
@@ -76,12 +78,12 @@ export function RadioGroup({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   group: { width: "100%", gap: 12 },
   item: { flexDirection: "row", alignItems: "flex-start", gap: 12, borderRadius: 14, borderWidth: 1, padding: 14 },
   disabled: { opacity: 0.5 },
   circle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: "center", justifyContent: "center", marginTop: 2 },
-  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#0284c7" },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: c.primary },
   textWrap: { flex: 1 },
   label: { fontSize: 14, fontWeight: "600" },
   description: { fontSize: 12, marginTop: 2, lineHeight: 16 },
