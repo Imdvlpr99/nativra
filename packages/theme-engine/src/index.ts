@@ -857,16 +857,12 @@ export function resolveThemeTokens(
 export function toCssVariables(theme: NativraThemeTokens): string {
   const lines: string[] = [];
 
-  const pushColorVars = (colors: SemanticColors, selector: string) => {
-    lines.push(`${selector} {`);
-    for (const [key, value] of Object.entries(colors)) {
-      lines.push(`  --color-${key}: ${value};`);
-    }
-    lines.push(`}`);
-  };
+  const colorVars = (colors: SemanticColors, indent: string) =>
+    Object.entries(colors).map(([key, value]) => `${indent}--color-${key}: ${value};`);
 
-  pushColorVars(theme.light, ":root");
-  pushColorVars(theme.dark, "@media (prefers-color-scheme: dark) :root");
+  lines.push(":root {", ...colorVars(theme.light, "  "), "}");
+  // A media query needs its own block around the rule; "@media (...) :root {" is invalid CSS.
+  lines.push("@media (prefers-color-scheme: dark) {", "  :root {", ...colorVars(theme.dark, "    "), "  }", "}");
 
   lines.push(`:root {`);
   for (const [key, value] of Object.entries(theme.space)) {

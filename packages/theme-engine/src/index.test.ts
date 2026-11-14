@@ -24,6 +24,14 @@ describe("theme-engine", () => {
     expect(css).toContain("--radius-md: 8px;");
   });
 
+  it("wraps dark tokens in a valid media block", () => {
+    const css = toCssVariables(defaultTheme);
+    expect(css).toContain("@media (prefers-color-scheme: dark) {\n  :root {");
+    expect(css).not.toMatch(/@media \([^)]*\) :root/);
+    // braces balance
+    expect(css.split("{").length).toBe(css.split("}").length);
+  });
+
   it("provides all 8 official theme presets", () => {
     const expected = ["zinc", "slate", "emerald", "violet", "rose", "amber", "orange", "cyan"];
     for (const id of expected) {
