@@ -23,6 +23,8 @@ export function importSnippet(item: ItemSummary): string | undefined {
       return `import { ${item.id} } from "@/lib/utils";`;
     case "theme":
       return `import { themeColors } from "@/lib/themes/theme";`;
+    case "style":
+      return `import { themeStyle } from "@/hooks/use-theme-colors";`;
     default:
       return `import { ${name} } from "@/components/ui/${name}";`;
   }

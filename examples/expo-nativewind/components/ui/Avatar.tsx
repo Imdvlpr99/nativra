@@ -28,10 +28,10 @@ const SIZE_CONTAINER: Record<AvatarSize, string> = {
 };
 
 const SIZE_TEXT: Record<AvatarSize, string> = {
-  sm: "text-xs",
-  md: "text-sm",
-  lg: "text-lg",
-  xl: "text-2xl",
+  sm: "type-xs",
+  md: "type-sm",
+  lg: "type-lg",
+  xl: "type-2xl",
 };
 
 export function Avatar({
@@ -61,7 +61,7 @@ export function Avatar({
         />
       ) : (
         <Text
-          className={`font-semibold text-foreground ${SIZE_TEXT[size]}`}
+          className={`weight-label text-foreground ${SIZE_TEXT[size]}`}
         >
           {fallback.slice(0, 2).toUpperCase()}
         </Text>

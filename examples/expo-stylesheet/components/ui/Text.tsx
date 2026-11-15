@@ -14,7 +14,7 @@ import {
   type TextProps as RNTextProps,
   type TextStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, ts } from "@/hooks/use-theme-colors";
 
 export type TextVariant = "h1" | "h2" | "h3" | "h4" | "p" | "lead" | "muted" | "code";
 
@@ -51,45 +51,46 @@ const styles = StyleSheet.create({
 
 const variantStyles: Record<TextVariant, TextStyle> = StyleSheet.create({
   h1: {
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: "700",
-    letterSpacing: -0.5,
+    fontSize: ts(30),
+    lineHeight: ts(36),
+    fontWeight: themeStyle.fontWeight.heading,
+    letterSpacing: themeStyle.headingLetterSpacing * 1.25,
   },
   h2: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: "600",
-    letterSpacing: -0.3,
+    fontSize: ts(24),
+    lineHeight: ts(30),
+    fontWeight: themeStyle.fontWeight.heading,
+    letterSpacing: themeStyle.headingLetterSpacing,
   },
   h3: {
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: "600",
+    fontSize: ts(20),
+    lineHeight: ts(26),
+    fontWeight: themeStyle.fontWeight.title,
+    letterSpacing: themeStyle.headingLetterSpacing * 0.5,
   },
   h4: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: "600",
+    fontSize: ts(18),
+    lineHeight: ts(24),
+    fontWeight: themeStyle.fontWeight.title,
   },
   p: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: ts(16),
+    lineHeight: ts(24),
     fontWeight: "400",
   },
   lead: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: ts(18),
+    lineHeight: ts(26),
     fontWeight: "400",
   },
   muted: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: ts(14),
+    lineHeight: ts(20),
     fontWeight: "400",
   },
   code: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: ts(14),
+    lineHeight: ts(20),
     fontWeight: "400",
     fontFamily: "Courier",
   },

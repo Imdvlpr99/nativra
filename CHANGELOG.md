@@ -7,6 +7,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### 🎭 Styles: five complete looks, independent of color
+- **New item type `style`**: the UI's character (radii by role, type scale, density, how cards and inputs are drawn, shadows, press feedback, dialog backdrop) now lives in `lib/themes/style.ts`, separate from the colors in `theme.ts`. Any of the 10 themes works with any style.
+- **Five presets:** `soft` (the previous look and still the default), `crisp` (shadcn/ui-like: small radii, hairline borders, compact), `tailwind` (Tailwind UI-like: rings with layered shadows, roomy), `material` (Material 3-like: tonal surfaces, filled fields, lighter headings) and `ios` (iOS-like: grey grouped surfaces, larger type, dimming press feedback).
+- **CLI:** `nativra init --style <id>` (or the new prompt) saves the choice in `nativra.json`, and components then install with that style. `nativra style add <id>` switches the whole app (with a backup) and `nativra style list` shows the presets. NativeWind projects get the matching classes in `global.css`.
+- **All 65 components, blocks and templates** read the style in both targets:
+  - **Font sizes:** `ts()` in StyleSheet, `type-*` classes in NativeWind.
+  - **Weights:** from the style's heading, title and label weights.
+  - **Spacing:** `sp()` in StyleSheet; in NativeWind, density-aware `sp-p-4`, `sp-gap-2`, … that mirror Tailwind's spacing scaled by the style's density, leaving Tailwind's own `p-4` untouched for the rest of the app.
+  - **Card surfaces:** `surface(c)` / `surface`.
+  - **Inputs:** `field(c)` / `field`, with a focus state.
+  - **Control heights:** the style's control height for buttons, inputs and selects.
+  - **Press feedback:** shrink or dim, depending on the style.
+- **Hook:** `use-theme-colors` 0.2.0 adds `ts`, `sp`, `surface`, `field` and a style-aware `elevation`/`pressedStyle`. Theme files no longer carry `themeStyle`. Projects installed before styles existed get `style.ts` (their configured style, or `soft`) on the next `nativra update`, and keep working until then.
+- **Docs:** a style picker in every live preview (remembered across pages), a Styles section, and each style's page renders real blocks in that style.
+- Every restyled item is version-bumped, so `update` picks it up.
+
 ### 🎨 Soft & friendly: every item restyled and theme-driven
 - **Style tokens:** themes now carry `themeStyle`: radii by role (`button`, `control`, `card`, `surface`, `chip`, `small`), border width, three soft shadow levels, press feedback and heading weights. The `use-theme-colors` hook exposes them with `elevation()` and `pressedStyle()` helpers, and falls back to the defaults for theme files from earlier versions.
 - **Status colors:** every theme has `success`, `warning` and `info` (each with a `-foreground`), in light and dark.

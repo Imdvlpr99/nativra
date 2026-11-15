@@ -21,16 +21,16 @@ const TOKEN_DOCS = [
 ];
 
 const STYLE_DOCS = [
-  { term: "radius.button · chip", desc: "Buttons and badges. Soft & friendly: 9999 (pills)." },
-  { term: "radius.control", desc: "Inputs, selects, segmented controls and small tiles (14)." },
-  { term: "radius.card · surface", desc: "Cards and list groups (20); dialogs, sheets and toasts (28)." },
-  { term: "shadow.card · raised · overlay", desc: "Resting cards, floating menus and toasts, dialogs and sheets. Apply with elevation(level)." },
-  { term: "pressedScale", desc: "How far pressables shrink while held (0.97). Apply with pressedStyle(pressed)." },
-  { term: "fontWeight · headingLetterSpacing", desc: "Heading, title and label weights, and heading tracking, used by Text and Button." },
+  { term: "radius.button · control · card · surface · chip · small", desc: "Corner radii by role: buttons, inputs, cards, dialogs and sheets, badges, and small marks." },
+  { term: "typeScale · fontWeight · headingLetterSpacing", desc: "Every font size is multiplied by typeScale (ts(16) in StyleSheet, type-base in NativeWind); heading, title and label weights; heading tracking." },
+  { term: "density · control", desc: "Padding and gaps are multiplied by density (sp(12)); control.height and paddingX size buttons and inputs." },
+  { term: "surface", desc: "How cards stand off the page: shadow, ring, border, tonal (tinted) or fill (grey). Apply with surface(c) or the surface class." },
+  { term: "field", desc: "Inputs are outlined or filled. Apply with field(c, focused) or the field class." },
+  { term: "shadow · press · scrimOpacity", desc: "Shadow levels (elevation(level)), press feedback that shrinks or dims (pressedStyle(pressed)), and the dialog backdrop (scrim())." },
 ];
 
 const STYLE_USAGE = `import { Pressable, Text } from "react-native";
-import { elevation, pressedStyle, themeStyle, useThemeColors } from "@/hooks/use-theme-colors";
+import { pressedStyle, sp, surface, themeStyle, ts, useThemeColors } from "@/hooks/use-theme-colors";
 
 export function PromoCard({ onPress }: { onPress: () => void }) {
   const c = useThemeColors();
@@ -38,15 +38,25 @@ export function PromoCard({ onPress }: { onPress: () => void }) {
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
-        { backgroundColor: c.card, borderRadius: themeStyle.radius.card, padding: 20 },
-        elevation("card"),
+        surface(c),
+        { borderRadius: themeStyle.radius.card, padding: sp(20) },
         pressedStyle(pressed),
       ]}
     >
-      <Text style={{ color: c.foreground, fontWeight: themeStyle.fontWeight.title }}>Matches the theme's shape</Text>
+      <Text style={{ color: c.foreground, fontSize: ts(16), fontWeight: themeStyle.fontWeight.title }}>
+        Matches the installed style
+      </Text>
     </Pressable>
   );
 }`;
+
+const STYLE_PRESET_DOCS = [
+  { term: "soft (default)", desc: "Pill buttons, generous rounding, soft layered shadows, shrink on press." },
+  { term: "crisp", desc: "In the spirit of shadcn/ui: small radii, hairline borders instead of shadows, compact type and spacing." },
+  { term: "tailwind", desc: "In the spirit of Tailwind UI: medium radii, faint rings with layered shadows, roomy spacing, bold headings." },
+  { term: "material", desc: "In the spirit of Material 3: large radii, tonal (tinted) surfaces, filled fields, lighter headings." },
+  { term: "ios", desc: "In the spirit of iOS: grey grouped surfaces, hairline separators, larger type, dimming press feedback." },
+];
 
 const TS_USAGE = `import { View, Text } from "react-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
@@ -150,23 +160,35 @@ export default function Theming() {
         </P>
       </Section>
 
-      <Section id="style" title="Style tokens: shape and depth">
+      <Section id="style" title="Styles: shape, type and density">
         <P>
           <p>
-            A theme sets more than color. <code>theme.ts</code> also exports <code>themeStyle</code>: corner radii by role, a
-            border width, three soft shadow levels, press feedback and heading weights. Components read radii by{" "}
-            <em>role</em> rather than size, so a theme can make every button a pill and another make it a crisp rectangle,
-            without touching component code. Every preset ships the <strong>Soft &amp; friendly</strong> style.
+            Colors are half the look. The other half is the <Link to="/docs/styles">style</Link> in{" "}
+            <code>lib/themes/style.ts</code>: corner radii by role, a type scale, density, how cards and inputs are drawn,
+            shadows and press feedback. It is independent of the theme, so any of the {themes.length} color themes works
+            with any style. Every component reads it, so one command changes the whole UI&apos;s character:
+          </p>
+        </P>
+        <CommandLine command="npx nativra-cli style add ios" switcher />
+        <Defs items={STYLE_PRESET_DOCS} />
+        <P>
+          <p>
+            Choose one at <code>npx nativra-cli init</code> (or <code>--style crisp</code>); it is saved in{" "}
+            <code>nativra.json</code> and installed with your first component. Try them all in any component&apos;s live
+            preview with the style picker.
           </p>
         </P>
         <Defs items={STYLE_DOCS} />
         <CodeBlock code={STYLE_USAGE} title="components/PromoCard.tsx" />
         <P>
           <p>
-            NativeWind components use semantic classes for the same roles (<code>rounded-button</code>,{" "}
-            <code>rounded-card</code>, <code>rounded-t-surface</code>, …). The CLI generates them into <code>global.css</code>{" "}
-            together with the color variables, and refreshes an older block automatically on <code>add</code> and{" "}
-            <code>update</code>.
+            NativeWind components use classes for the same tokens: <code>rounded-card</code> and the other radius roles,{" "}
+            <code>type-sm</code> … <code>type-4xl</code>, <code>weight-heading</code>, <code>weight-title</code>,{" "}
+            <code>weight-label</code>, <code>surface</code>, <code>field</code>, <code>h-control</code>,{" "}
+            <code>px-control</code>, and density-aware spacing (<code>sp-p-4</code>, <code>sp-gap-2</code>, … mirror
+            Tailwind&apos;s <code>p-4</code> and <code>gap-2</code>, scaled by the style&apos;s density, while Tailwind&apos;s own
+            classes stay unchanged for the rest of your app). The CLI generates them into <code>global.css</code> from the
+            installed style, together with the color variables, and rewrites them when you switch styles.
           </p>
         </P>
       </Section>

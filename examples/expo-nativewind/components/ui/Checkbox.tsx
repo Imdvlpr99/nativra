@@ -37,20 +37,20 @@ export function Checkbox({
       className={`flex-row items-center ${disabled ? "opacity-50" : ""} ${className}`.trim()}
     >
       <View
-        className={`h-5 w-5 rounded border items-center justify-center ${
+        className={`h-5 w-5 rounded-small border items-center justify-center ${
           checked
             ? "bg-foreground border-foreground"
             : "border-input bg-transparent"
         }`}
       >
         {checked && (
-          <Text className="text-background text-xs font-bold leading-none">
+          <Text className="text-background type-xs weight-title leading-none">
             ✓
           </Text>
         )}
       </View>
       {label ? (
-        <Text className="ml-2 text-sm text-foreground font-medium">
+        <Text className="ml-2 type-sm text-foreground font-medium">
           {label}
         </Text>
       ) : null}

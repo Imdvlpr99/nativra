@@ -3,6 +3,12 @@
  * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
  */
 export const zinc = {
+  success: "#15803d",
+  "success-foreground": "#ffffff",
+  warning: "#b45309",
+  "warning-foreground": "#ffffff",
+  info: "#0369a1",
+  "info-foreground": "#ffffff",
   background: "#ffffff",
   foreground: "#09090b",
   card: "#ffffff",
@@ -25,6 +31,12 @@ export const zinc = {
 } as const;
 
 export const zincDark = {
+  success: "#4ade80",
+  "success-foreground": "#052e16",
+  warning: "#fbbf24",
+  "warning-foreground": "#451a03",
+  info: "#38bdf8",
+  "info-foreground": "#082f49",
   background: "#09090b",
   foreground: "#fafafa",
   card: "#09090b",
@@ -39,8 +51,8 @@ export const zincDark = {
   "muted-foreground": "#a1a1aa",
   accent: "#27272a",
   "accent-foreground": "#fafafa",
-  destructive: "#7f1d1d",
-  "destructive-foreground": "#fafafa",
+  destructive: "#f87171",
+  "destructive-foreground": "#450a0a",
   border: "#27272a",
   input: "#27272a",
   ring: "#d4d4d8",
@@ -50,6 +62,7 @@ export type ZincTheme = typeof zinc;
 
 /**
  * The active palette pair. Components read this through the use-theme-colors hook, so
- * installing a different theme over this file restyles every component.
+ * installing a different theme over this file restyles every component. Shape, type and
+ * density live separately in style.ts (npx nativra-cli style add <id>).
  */
 export const themeColors = { light: zinc, dark: zincDark } as const;

@@ -1,7 +1,7 @@
 import raw from "@/generated/docs-index.json";
 
 /** Item types, in the order the docs present them. */
-export type ItemType = "component" | "block" | "template" | "hook" | "utility" | "theme";
+export type ItemType = "component" | "block" | "template" | "hook" | "utility" | "theme" | "style";
 export type StylingTarget = "nativewind" | "stylesheet";
 
 export interface ItemSummary {

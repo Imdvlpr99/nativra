@@ -10,7 +10,7 @@ export interface ItemTypeMeta {
   dir: string;
 }
 
-export const ITEM_TYPE_ORDER: ItemType[] = ["component", "block", "template", "hook", "utility", "theme"];
+export const ITEM_TYPE_ORDER: ItemType[] = ["component", "block", "template", "hook", "utility", "theme", "style"];
 
 export const TYPE_META: Record<ItemType, ItemTypeMeta> = {
   component: {
@@ -55,6 +55,13 @@ export const TYPE_META: Record<ItemType, ItemTypeMeta> = {
     dir: "lib/themes",
     blurb: "Semantic color tokens with light and dark palettes, installed as source and as CSS variables.",
   },
+  style: {
+    label: "Style",
+    plural: "Styles",
+    segment: "styles",
+    dir: "lib/themes",
+    blurb: "The UI's character, independent of its colors: shape, type, density, surfaces and press feedback, from shadcn-crisp to iOS.",
+  },
 };
 
 export function itemHref(type: ItemType, id: string): string {
@@ -69,7 +76,9 @@ export function typeFromSegment(segment: string): ItemType | undefined {
   return ITEM_TYPE_ORDER.find((t) => TYPE_META[t].segment === segment);
 }
 
-/** The command that installs an item. Themes have their own subcommand. */
+/** The command that installs an item. Themes and styles have their own subcommands. */
 export function installCommand(type: ItemType, id: string): string {
-  return type === "theme" ? `npx nativra-cli theme add ${id}` : `npx nativra-cli add ${id}`;
+  if (type === "theme") return `npx nativra-cli theme add ${id}`;
+  if (type === "style") return `npx nativra-cli style add ${id}`;
+  return `npx nativra-cli add ${id}`;
 }

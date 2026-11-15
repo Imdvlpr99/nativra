@@ -35,20 +35,20 @@ const LABEL: Record<BadgeVariant, string> = {
 };
 
 const SIZE: Record<BadgeSize, string> = {
-  sm: "px-1.5 py-0.5",
-  md: "px-2.5 py-0.5",
-  lg: "px-3 py-1",
+  sm: "sp-px-1.5 sp-py-0.5",
+  md: "sp-px-2.5 sp-py-0.5",
+  lg: "sp-px-3 sp-py-1",
 };
 
 const TEXT_SIZE: Record<BadgeSize, string> = {
-  sm: "text-xs",
-  md: "text-xs font-medium",
-  lg: "text-sm font-medium",
+  sm: "type-xs",
+  md: "type-xs font-medium",
+  lg: "type-sm font-medium",
 };
 
 export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
   return (
-    <View className={`flex-row items-center rounded-full ${CONTAINER[variant]} ${SIZE[size]}`}>
+    <View className={`flex-row items-center rounded-chip ${CONTAINER[variant]} ${SIZE[size]}`}>
       <Text className={`${LABEL[variant]} ${TEXT_SIZE[size]}`}>{label}</Text>
     </View>
   );

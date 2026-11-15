@@ -80,6 +80,7 @@ export default function HowItWorks() {
             { term: "hook", desc: <>Behaviour helpers such as <C>useThemeColors</C> and <C>useHaptics</C>. Installed to <C>hooksDir</C>.</> },
             { term: "utility", desc: <>Shared helpers such as <C>cn()</C>. Installed to <C>utilsDir</C>.</> },
             { term: "theme", desc: <>Semantic color tokens for light and dark. Installed as <C>theme.ts</C> in <C>themesDir</C>.</> },
+            { term: "style", desc: <>The UI&apos;s shape, type, density, surfaces and press feedback. Installed as <C>style.ts</C> in <C>themesDir</C>.</> },
           ]}
         />
       </Section>

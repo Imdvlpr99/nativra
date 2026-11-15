@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { THEME_PRESETS } from "@nativra/theme-engine";
 import { dependentsOf, findItem, type ItemSummary, type ItemType } from "@/lib/data";
-import { TYPE_META, catalogHref, itemHref } from "@/lib/item-types";
+import { TYPE_META, catalogHref, installCommand, itemHref } from "@/lib/item-types";
 import { COMPONENT_PROPS_MAP } from "@/lib/component-props";
 import { loadItem } from "@/lib/load-item";
 import { Seo } from "@/lib/head";
@@ -96,7 +96,7 @@ export default function ItemPage({ type }: { type: ItemType }) {
     <article className="space-y-16">
       <Seo
         title={`${item.name} — React Native ${meta.label}`}
-        description={`${item.description} Install with npx nativra-cli ${type === "theme" ? "theme add" : "add"} ${item.id}: source you own, for React Native and Expo.`}
+        description={`${item.description} Install with ${installCommand(type, item.id).replace(/^npx /, "")}: source you own, for React Native and Expo.`}
         path={path}
         type="article"
         jsonLd={{
@@ -155,6 +155,13 @@ export default function ItemPage({ type }: { type: ItemType }) {
       {theme ? (
         <Block id="preview" title="Preview" description="Rendered with this theme's own tokens.">
           <ThemePreview theme={theme} />
+        </Block>
+      ) : type === "style" ? (
+        <Block id="preview" title="Preview" description="Real blocks rendered with this style. Pick any theme for the colors.">
+          <div className="space-y-6">
+            <PreviewFrame id="login-form" type="block" fixedStyle={item.id} />
+            <PreviewFrame id="settings-list" type="block" fixedStyle={item.id} />
+          </div>
         </Block>
       ) : PREVIEWABLE.has(type) ? (
         <Block id="preview" title="Preview">
