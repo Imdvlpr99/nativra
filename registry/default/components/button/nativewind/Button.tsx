@@ -8,7 +8,8 @@
  * Install: npx nativra-cli add button
  */
 import React from "react";
-import { Pressable, Text, ActivityIndicator, type PressableProps } from "react-native";
+import { Pressable, Text, ActivityIndicator, type PressableProps, type ViewStyle } from "react-native";
+import { elevation, useThemeColors } from "@/hooks/use-theme-colors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,7 +39,7 @@ export interface ButtonProps extends Omit<PressableProps, "children"> {
 // ---------------------------------------------------------------------------
 
 const BASE =
-  "flex-row items-center justify-center rounded-lg active:opacity-80";
+  "flex-row items-center justify-center rounded-button active:opacity-90 active:scale-[0.97]";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   default:     "bg-foreground",
@@ -61,19 +62,19 @@ const TEXT_VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  xs: "px-2.5 py-1 gap-1",
-  sm: "px-3 py-1.5 gap-1.5",
-  md: "px-4 py-2.5 gap-2",
-  lg: "px-5 py-3 gap-2",
-  xl: "px-6 py-3.5 gap-2.5",
+  xs: "px-3 py-1.5 gap-1",
+  sm: "px-4 py-2 gap-1.5",
+  md: "px-5 py-3 gap-2",
+  lg: "px-6 py-3.5 gap-2",
+  xl: "px-7 py-4 gap-2.5",
 };
 
 const TEXT_SIZES: Record<ButtonSize, string> = {
-  xs: "text-xs",
-  sm: "text-sm",
-  md: "text-sm font-semibold",
+  xs: "text-xs font-semibold",
+  sm: "text-sm font-semibold",
+  md: "text-[15px] font-semibold",
   lg: "text-base font-semibold",
-  xl: "text-base font-bold",
+  xl: "text-[17px] font-semibold",
 };
 
 // ---------------------------------------------------------------------------
@@ -89,7 +90,10 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
+  const c = useThemeColors();
   const isDisabled = disabled || loading;
+  // Solid buttons get the theme's soft resting shadow.
+  const solid = variant === "default" || variant === "primary" || variant === "destructive";
 
   const containerClass = [BASE, VARIANTS[variant], SIZES[size], isDisabled && "opacity-50"]
     .filter(Boolean)
@@ -103,13 +107,13 @@ export function Button({
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
-      style={style}
+      style={[solid && !isDisabled ? elevation("card") : undefined, style as ViewStyle]}
       {...rest}
     >
       {loading && (
         <ActivityIndicator
           size="small"
-          color={variant === "default" || variant === "primary" || variant === "destructive" ? "#fff" : "#18181b"}
+          color={variant === "default" ? c.background : variant === "primary" ? c["primary-foreground"] : variant === "destructive" ? c["destructive-foreground"] : c.foreground}
         />
       )}
       <Text className={textClass}>{children}</Text>

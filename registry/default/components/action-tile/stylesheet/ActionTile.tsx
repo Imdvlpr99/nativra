@@ -1,7 +1,7 @@
 /** Nativra — ActionTile (StyleSheet). Install: npx nativra-cli add action-tile */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface ActionTileProps extends Omit<PressableProps, "style"> {
   label: string;
@@ -63,7 +63,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     padding: 14,
   },
@@ -75,13 +75,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     backgroundColor: alpha(c.primary, 0.08),
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
   },
-  iconWrapPrimary: { backgroundColor: "rgba(255,255,255,0.2)" },
+  iconWrapPrimary: { backgroundColor: alpha(c["primary-foreground"], 0.2) },
   iconText: { fontSize: 16 },
   label: { fontSize: 12, fontWeight: "700", color: c.foreground },
   labelPrimary: { color: c["primary-foreground"] },

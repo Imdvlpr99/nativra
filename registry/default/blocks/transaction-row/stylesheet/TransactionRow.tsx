@@ -11,6 +11,7 @@ import React from "react";
 import { StyleSheet, View, TouchableOpacity, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface TransactionRowProps {
   title: string;
@@ -35,6 +36,8 @@ export function TransactionRow({
   onPress,
   style,
 }: TransactionRowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const isIncome = type === "income";
 
   const statusVariant =
@@ -79,17 +82,17 @@ export function TransactionRow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 16,
-    backgroundColor: "rgba(24, 24, 27, 0.7)",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: alpha(palette.card, 0.7),
     borderWidth: 1,
-    borderColor: "rgba(39, 39, 42, 0.8)",
+    borderColor: alpha(palette.border, 0.8),
   },
   leftCol: {
     flexDirection: "row",
@@ -101,24 +104,24 @@ const styles = StyleSheet.create({
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: 12,
-    backgroundColor: "#27272a",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.muted,
     borderWidth: 1,
-    borderColor: "#3f3f46",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#e4e4e7",
+    color: palette.foreground,
   },
   metaCol: {
     flex: 1,
   },
   title: {
     fontWeight: "600",
-    color: "#f4f4f5",
+    color: palette.foreground,
     fontSize: 14,
   },
   subRow: {
@@ -129,15 +132,15 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   dot: {
     fontSize: 12,
-    color: "#52525b",
+    color: palette["muted-foreground"],
   },
   dateText: {
     fontSize: 12,
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   rightCol: {
     alignItems: "flex-end",
@@ -148,10 +151,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   incomeText: {
-    color: "#34d399",
+    color: palette.success,
   },
   expenseText: {
-    color: "#f4f4f5",
+    color: palette.foreground,
   },
 });
 

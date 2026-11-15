@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export interface OrderItem {
   id: string;
@@ -45,6 +46,8 @@ export function OrderSummary({
   buttonLabel = "Proceed to Payment",
   onCheckout,
 }: OrderSummaryProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -114,41 +117,37 @@ export function OrderSummary({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
+    ...elevation("card"),
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "between",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#09090b",
+    color: palette.foreground,
   },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 9999,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
   },
   badgeText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   itemList: {
     marginTop: 16,
@@ -161,22 +160,22 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 12,
-    color: "#71717a",
+    color: palette["muted-foreground"],
     flex: 1,
     marginRight: 8,
   },
   qtyText: {
     fontWeight: "700",
-    color: "#09090b",
+    color: palette.foreground,
   },
   itemPrice: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#09090b",
+    color: palette.foreground,
   },
   separator: {
     height: 1,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
     marginVertical: 16,
   },
   breakdown: {
@@ -184,12 +183,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   value: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#18181b",
+    color: palette.foreground,
   },
   voucherContainer: {
     flexDirection: "row",
@@ -199,18 +198,18 @@ const styles = StyleSheet.create({
   voucherBadge: {
     paddingHorizontal: 6,
     paddingVertical: 1,
-    borderRadius: 6,
-    backgroundColor: "#e0f2fe",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: alpha(palette.primary, 0.15),
   },
   voucherText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#0284c7",
+    color: palette.primary,
   },
   discountText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#16a34a",
+    color: palette.success,
   },
   totalRow: {
     flexDirection: "row",
@@ -221,22 +220,22 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#09090b",
+    color: palette.foreground,
   },
   totalValue: {
     fontSize: 22,
     fontWeight: "900",
-    color: "#09090b",
+    color: palette.foreground,
   },
   checkoutBtn: {
-    borderRadius: 14,
-    backgroundColor: "#0ea5e9",
+    borderRadius: themeStyle.radius.button,
+    backgroundColor: palette.primary,
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   btnText: {
-    color: "#ffffff",
+    color: palette["primary-foreground"],
     fontSize: 14,
     fontWeight: "700",
   },

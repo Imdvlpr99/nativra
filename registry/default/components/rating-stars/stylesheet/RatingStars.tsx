@@ -28,6 +28,7 @@ export function RatingStars({
   style,
   ...props
 }: RatingStarsProps) {
+  const palette = useThemeColors();
   const c = useThemeColors();
   const fontSize = size === "sm" ? 18 : size === "lg" ? 30 : 22;
 
@@ -46,7 +47,7 @@ export function RatingStars({
           <Text
             style={{
               fontSize,
-              color: isFilled ? "#f59e0b" : c["muted-foreground"],
+              color: isFilled ? c.warning : c["muted-foreground"],
               lineHeight: fontSize + 2,
             }}
           >

@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface OnboardingSlide {
   id: string;
@@ -53,6 +54,8 @@ export function OnboardingFlow({
   onSkip,
   style,
 }: OnboardingFlowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const currentSlide = slides[currentIndex] ?? slides[0];
   const isLast = currentIndex === slides.length - 1;
@@ -121,12 +124,12 @@ export function OnboardingFlow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
     padding: 32,
-    backgroundColor: "#09090B",
+    backgroundColor: palette.background,
   },
   header: {
     flexDirection: "row",
@@ -141,13 +144,13 @@ const styles = StyleSheet.create({
   badgeDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
-    backgroundColor: "#38BDF8",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.primary,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#A1A1AA",
+    color: palette["muted-foreground"],
     textTransform: "uppercase",
     fontFamily: "monospace",
   },
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
   skipText: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#71717A",
+    color: palette["muted-foreground"],
   },
   body: {
     alignItems: "center",
@@ -167,10 +170,10 @@ const styles = StyleSheet.create({
   artBox: {
     width: 120,
     height: 120,
-    borderRadius: 28,
-    backgroundColor: "#18181B",
+    borderRadius: themeStyle.radius.surface,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272A",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -184,12 +187,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 24,
     fontWeight: "900",
-    color: "#FFFFFF",
+    color: palette.foreground,
     textAlign: "center",
   },
   descText: {
     fontSize: 14,
-    color: "#A1A1AA",
+    color: palette["muted-foreground"],
     textAlign: "center",
     lineHeight: 20,
   },
@@ -204,20 +207,20 @@ const styles = StyleSheet.create({
   },
   dot: {
     height: 8,
-    borderRadius: 4,
+    borderRadius: themeStyle.radius.small,
   },
   activeDot: {
     width: 32,
-    backgroundColor: "#38BDF8",
+    backgroundColor: palette.primary,
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "#27272A",
+    backgroundColor: palette.muted,
   },
   actionBtn: {
     width: "100%",
-    borderRadius: 16,
-    backgroundColor: "#0284C7",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.primary,
     paddingVertical: 15,
     alignItems: "center",
     justifyContent: "center",
@@ -227,7 +230,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   actionBtnText: {
-    color: "#FFFFFF",
+    color: palette["primary-foreground"],
     fontWeight: "700",
     fontSize: 15,
   },

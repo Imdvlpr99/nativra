@@ -65,11 +65,11 @@ export function FilterSheet({
   };
 
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
+    <BottomSheet isOpen={open} onClose={() => onOpenChange(false)}>
       <View className="px-5 pb-8 pt-3 gap-5">
         {/* Header */}
-        <View className="flex-row items-center justify-between pb-3 border-b border-zinc-800">
-          <Text className="text-lg font-bold text-zinc-100">Filter Results</Text>
+        <View className="flex-row items-center justify-between pb-3 border-b border-border">
+          <Text className="text-lg font-bold text-foreground">Filter Results</Text>
           <TouchableOpacity
             onPress={() => {
               setCurrentCategory("all");
@@ -77,13 +77,13 @@ export function FilterSheet({
               onReset?.();
             }}
           >
-            <Text className="text-xs font-semibold text-sky-400">Reset</Text>
+            <Text className="text-xs font-semibold text-primary">Reset</Text>
           </TouchableOpacity>
         </View>
 
         {/* Categories Chips */}
         <View className="gap-2.5">
-          <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Category
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
@@ -96,13 +96,13 @@ export function FilterSheet({
                   onPress={() => handleCategoryPress(c.id)}
                   className={`px-3.5 py-1.5 rounded-full border ${
                     active
-                      ? "bg-sky-500 border-sky-400"
-                      : "bg-zinc-800/80 border-zinc-700"
+                      ? "bg-primary border-primary"
+                      : "bg-muted/80 border-border"
                   }`}
                 >
                   <Text
                     className={`text-xs font-semibold ${
-                      active ? "text-white" : "text-zinc-300"
+                      active ? "text-primary-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {c.label}
@@ -116,10 +116,10 @@ export function FilterSheet({
         {/* Price Range */}
         <View className="gap-2.5">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Max Budget
             </Text>
-            <Text className="text-sm font-bold text-zinc-100">
+            <Text className="text-sm font-bold text-foreground">
               ${Math.round(currentPrice)}
             </Text>
           </View>

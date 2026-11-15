@@ -1,7 +1,7 @@
 /** Nativra — Chip (StyleSheet). Install: npx nativra-cli add chip */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface ChipProps extends Omit<PressableProps, "style"> {
   label: string;
@@ -75,7 +75,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 9999,
+    borderRadius: themeStyle.radius.chip,
     borderWidth: 1,
   },
   sizeSm: { height: 28, paddingHorizontal: 10 },
@@ -95,8 +95,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginLeft: 6,
     width: 16,
     height: 16,
-    borderRadius: 9999,
-    backgroundColor: "rgba(0,0,0,0.1)",
+    borderRadius: themeStyle.radius.chip,
+    backgroundColor: alpha(c.foreground, 0.1),
     alignItems: "center",
     justifyContent: "center",
   },

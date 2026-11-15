@@ -10,6 +10,7 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface NavItem {
   id: string;
@@ -55,8 +56,8 @@ const DEFAULT_GROUPS: NavGroup[] = [
   },
 ];
 
-function renderIcon(name?: string, active = false) {
-  const color = active ? "#38bdf8" : "#a1a1aa";
+/** Sidebar icon in the given theme color (active: primary, otherwise muted). */
+function renderIcon(name: string | undefined, color: string) {
   const size = 18;
   switch (name) {
     case "LayoutDashboard":
@@ -87,16 +88,17 @@ export function AppSidebar({
   onLogoutPress,
   groups = DEFAULT_GROUPS,
 }: AppSidebarProps) {
+  const palette = useThemeColors();
   return (
-    <View className="flex-1 w-full max-w-xs bg-zinc-950 border-r border-zinc-800 flex-col justify-between">
+    <View className="flex-1 w-full max-w-xs bg-background border-r border-border flex-col justify-between">
       {/* Brand Header */}
-      <View className="p-4 border-b border-zinc-800/80 flex-row items-center gap-3">
-        <View className="h-9 w-9 rounded-xl bg-sky-500/20 border border-sky-500/40 items-center justify-center">
-          <Text className="text-base font-extrabold text-sky-400 font-mono">N</Text>
+      <View className="p-4 border-b border-border/80 flex-row items-center gap-3">
+        <View className="h-9 w-9 rounded-control bg-primary/20 border border-primary/40 items-center justify-center">
+          <Text className="text-base font-extrabold text-primary font-mono">N</Text>
         </View>
         <View>
-          <Text className="text-sm font-bold text-white tracking-tight">Nativra Workspace</Text>
-          <Text className="text-[11px] text-zinc-400 font-mono">v4.0.0 Enterprise</Text>
+          <Text className="text-sm font-bold text-foreground tracking-tight">Nativra Workspace</Text>
+          <Text className="text-[11px] text-muted-foreground font-mono">v4.0.0 Enterprise</Text>
         </View>
       </View>
 
@@ -105,7 +107,7 @@ export function AppSidebar({
         {groups.map((group, gIdx) => (
           <View key={gIdx} className="space-y-1">
             {group.title && (
-              <Text className="text-[10px] font-bold text-zinc-500 tracking-wider uppercase px-2 mb-1.5">
+              <Text className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase px-2 mb-1.5">
                 {group.title}
               </Text>
             )}
@@ -118,17 +120,17 @@ export function AppSidebar({
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  className={`flex-row items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
+                  className={`flex-row items-center justify-between px-3 py-2.5 rounded-control transition-colors ${
                     isActive
-                      ? "bg-sky-500/15 border border-sky-500/30 text-white font-semibold"
-                      : "bg-transparent text-zinc-400 active:bg-zinc-900"
+                      ? "bg-primary/15 border border-primary/30 text-foreground font-semibold"
+                      : "bg-transparent text-muted-foreground active:bg-card"
                   }`}
                 >
                   <View className="flex-row items-center gap-2.5">
-                    {renderIcon(item.icon, isActive)}
+                    {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
                     <Text
                       className={`text-xs ${
-                        isActive ? "text-white font-semibold" : "text-zinc-300 font-normal"
+                        isActive ? "text-foreground font-semibold" : "text-muted-foreground font-normal"
                       }`}
                     >
                       {item.label}
@@ -138,28 +140,28 @@ export function AppSidebar({
                   <View className="flex-row items-center gap-1.5">
                     {item.badge !== undefined && (
                       <View
-                        className={`px-1.5 py-0.5 rounded-md ${
+                        className={`px-1.5 py-0.5 rounded-small ${
                           item.badgeVariant === "primary"
-                            ? "bg-sky-500/20 border border-sky-500/40"
+                            ? "bg-primary/20 border border-primary/40"
                             : item.badgeVariant === "destructive"
-                            ? "bg-rose-500/20 border border-rose-500/40"
-                            : "bg-zinc-800 border border-zinc-700"
+                            ? "bg-destructive/20 border border-destructive/40"
+                            : "bg-muted border border-border"
                         }`}
                       >
                         <Text
                           className={`text-[10px] font-bold ${
                             item.badgeVariant === "primary"
-                              ? "text-sky-400"
+                              ? "text-primary"
                               : item.badgeVariant === "destructive"
-                              ? "text-rose-400"
-                              : "text-zinc-400"
+                              ? "text-destructive"
+                              : "text-muted-foreground"
                           }`}
                         >
                           {item.badge}
                         </Text>
                       </View>
                     )}
-                    {isActive && <ChevronRight size={14} color="#38bdf8" />}
+                    {isActive && <ChevronRight size={14} color={palette.primary} />}
                   </View>
                 </TouchableOpacity>
               );
@@ -169,23 +171,23 @@ export function AppSidebar({
       </ScrollView>
 
       {/* User Profile & Actions Footer */}
-      <View className="p-3 border-t border-zinc-800/80 bg-zinc-900/40">
+      <View className="p-3 border-t border-border/80 bg-card/40">
         <TouchableOpacity
           onPress={onProfilePress}
           activeOpacity={0.7}
-          className="flex-row items-center justify-between p-2 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700"
+          className="flex-row items-center justify-between p-2 rounded-control bg-card/80 border border-border hover:border-border"
         >
           <View className="flex-row items-center gap-2.5 flex-1 mr-2">
-            <View className="h-9 w-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 items-center justify-center">
-              <Text className="text-xs font-bold text-emerald-400 font-mono">
+            <View className="h-9 w-9 rounded-full bg-success/20 border border-success/40 items-center justify-center">
+              <Text className="text-xs font-bold text-success font-mono">
                 {avatarFallback}
               </Text>
             </View>
             <View className="flex-1">
-              <Text className="text-xs font-bold text-white truncate" numberOfLines={1}>
+              <Text className="text-xs font-bold text-foreground truncate" numberOfLines={1}>
                 {userName}
               </Text>
-              <Text className="text-[10px] text-zinc-400 truncate" numberOfLines={1}>
+              <Text className="text-[10px] text-muted-foreground truncate" numberOfLines={1}>
                 {userEmail}
               </Text>
             </View>
@@ -196,9 +198,9 @@ export function AppSidebar({
               onPress={onLogoutPress}
               accessibilityRole="button"
               accessibilityLabel="Log out"
-              className="h-8 w-8 rounded-lg bg-zinc-800/80 items-center justify-center active:bg-rose-500/20"
+              className="h-8 w-8 rounded-control bg-muted/80 items-center justify-center active:bg-destructive/20"
             >
-              <LogOut size={14} color="#a1a1aa" />
+              <LogOut size={14} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           )}
         </TouchableOpacity>

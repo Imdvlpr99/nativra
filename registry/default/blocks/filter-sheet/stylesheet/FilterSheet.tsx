@@ -13,6 +13,7 @@ import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { Slider } from "./Slider";
 import { Text } from "./Text";
+import { useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface FilterOption {
   id: string;
@@ -51,6 +52,8 @@ export function FilterSheet({
   onApply,
   onReset,
 }: FilterSheetProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [currentCategory, setCurrentCategory] = useState(selectedCategory);
   const [currentPrice, setCurrentPrice] = useState(price);
 
@@ -65,7 +68,7 @@ export function FilterSheet({
   };
 
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
+    <BottomSheet isOpen={open} onClose={() => onOpenChange(false)}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -145,7 +148,7 @@ export function FilterSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingBottom: 32,
@@ -158,17 +161,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
+    borderBottomColor: palette.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#f4f4f5",
+    color: palette.foreground,
   },
   resetBtn: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#38bdf8",
+    color: palette.primary,
   },
   section: {
     gap: 10,
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   chipsRow: {
     flexDirection: "row",
@@ -191,22 +194,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipActive: {
-    backgroundColor: "#0284c7",
-    borderColor: "#38bdf8",
+    backgroundColor: palette.primary,
+    borderColor: palette.primary,
   },
   chipInactive: {
-    backgroundColor: "rgba(39, 39, 42, 0.8)",
-    borderColor: "#3f3f46",
+    backgroundColor: alpha(palette.muted, 0.8),
+    borderColor: palette.border,
   },
   chipText: {
     fontSize: 12,
     fontWeight: "600",
   },
   chipTextActive: {
-    color: "#ffffff",
+    color: palette["primary-foreground"],
   },
   chipTextInactive: {
-    color: "#d4d4d8",
+    color: palette["muted-foreground"],
   },
   priceRow: {
     flexDirection: "row",
@@ -216,7 +219,7 @@ const styles = StyleSheet.create({
   priceVal: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#f4f4f5",
+    color: palette.foreground,
   },
   btnRow: {
     flexDirection: "row",

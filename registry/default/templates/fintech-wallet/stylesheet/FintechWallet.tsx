@@ -22,8 +22,11 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export function FintechWallet() {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [hideBalance, setHideBalance] = useState(false);
 
   const assets = [
@@ -140,8 +143,8 @@ export function FintechWallet() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#09090b" },
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: palette.background },
   scroll: { flex: 1 },
   container: { paddingHorizontal: 16, paddingVertical: 24 },
   header: {
@@ -150,22 +153,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 24,
   },
-  title: { fontSize: 24, fontWeight: "900", color: "#ffffff", letterSpacing: -0.5 },
-  subtitle: { fontSize: 12, color: "#a1a1aa", marginTop: 4 },
+  title: { fontSize: 24, fontWeight: "900", color: palette.foreground, letterSpacing: -0.5 },
+  subtitle: { fontSize: 12, color: palette["muted-foreground"], marginTop: 4 },
   hideBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#18181b",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
   },
-  hideText: { fontSize: 12, fontWeight: "600", color: "#d4d4d8" },
+  hideText: { fontSize: 12, fontWeight: "600", color: palette["muted-foreground"] },
   heroCard: {
-    borderRadius: 24,
-    backgroundColor: "rgba(16, 185, 129, 0.12)",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: alpha(palette.success, 0.12),
     borderWidth: 1,
-    borderColor: "rgba(52, 211, 153, 0.25)",
+    borderColor: alpha(palette.success, 0.25),
     padding: 20,
     marginBottom: 24,
   },
@@ -174,50 +177,50 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  heroLabel: { fontSize: 12, fontWeight: "600", textTransform: "uppercase", color: "#34d399", letterSpacing: 0.5 },
-  heroAmount: { fontSize: 32, fontWeight: "900", color: "#ffffff", marginTop: 12 },
-  heroSub: { fontSize: 12, color: "#a1a1aa", marginTop: 4 },
+  heroLabel: { fontSize: 12, fontWeight: "600", textTransform: "uppercase", color: palette.success, letterSpacing: 0.5 },
+  heroAmount: { fontSize: 32, fontWeight: "900", color: palette.foreground, marginTop: 12 },
+  heroSub: { fontSize: 12, color: palette["muted-foreground"], marginTop: 4 },
   actionRow: { flexDirection: "row", gap: 8, marginTop: 20 },
   flexOne: { flex: 1 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#ffffff", marginBottom: 12 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: palette.foreground, marginBottom: 12 },
   assetList: { gap: 12 },
   assetCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    borderRadius: 16,
-    backgroundColor: "#18181b",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
   },
   assetLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
   symbolAvatar: {
     width: 40,
     height: 40,
-    borderRadius: 12,
-    backgroundColor: "#27272a",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.muted,
     borderWidth: 1,
-    borderColor: "#3f3f46",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
-  symbolText: { fontSize: 12, fontWeight: "900", color: "#ffffff" },
-  assetName: { fontSize: 14, fontWeight: "700", color: "#ffffff" },
-  assetBal: { fontSize: 12, color: "#a1a1aa", marginTop: 2 },
+  symbolText: { fontSize: 12, fontWeight: "900", color: palette.foreground },
+  assetName: { fontSize: 14, fontWeight: "700", color: palette.foreground },
+  assetBal: { fontSize: 12, color: palette["muted-foreground"], marginTop: 2 },
   assetRight: { alignItems: "flex-end" },
-  assetFiat: { fontSize: 14, fontWeight: "700", color: "#ffffff" },
+  assetFiat: { fontSize: 14, fontWeight: "700", color: palette.foreground },
   assetChange: { fontSize: 12, fontWeight: "600", marginTop: 2 },
-  posText: { color: "#34d399" },
-  negText: { color: "#fb7185" },
-  txCard: { borderRadius: 24, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a", padding: 16, marginBottom: 32 },
+  posText: { color: palette.success },
+  negText: { color: palette.destructive },
+  txCard: { borderRadius: themeStyle.radius.card, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border, padding: 16, marginBottom: 32 },
   txList: { gap: 12, marginTop: 4 },
   txRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 4 },
-  txCounterparty: { fontSize: 14, fontWeight: "600", color: "#f4f4f5" },
-  txDate: { fontSize: 12, color: "#71717a", marginTop: 2 },
+  txCounterparty: { fontSize: 14, fontWeight: "600", color: palette.foreground },
+  txDate: { fontSize: 12, color: palette["muted-foreground"], marginTop: 2 },
   txAmount: { fontSize: 14, fontWeight: "700" },
-  txNeutral: { color: "#e4e4e7" },
-  sep: { backgroundColor: "#27272a", marginVertical: 4 },
+  txNeutral: { color: palette.foreground },
+  sep: { backgroundColor: palette.muted, marginVertical: 4 },
 });
 

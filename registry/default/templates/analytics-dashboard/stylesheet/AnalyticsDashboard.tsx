@@ -21,15 +21,18 @@ import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export function AnalyticsDashboard() {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [activeTab, setActiveTab] = useState("7d");
 
   const channels = [
-    { name: "Direct Traffic", share: 44, color: "#0ea5e9", visitors: "24,800" },
-    { name: "Organic Search", share: 32, color: "#10b981", visitors: "18,200" },
-    { name: "Social Referrals", share: 16, color: "#a855f7", visitors: "9,100" },
-    { name: "Email Campaigns", share: 8, color: "#f59e0b", visitors: "4,550" },
+    { name: "Direct Traffic", share: 44, color: palette.primary, visitors: "24,800" },
+    { name: "Organic Search", share: 32, color: palette.success, visitors: "18,200" },
+    { name: "Social Referrals", share: 16, color: palette.primary, visitors: "9,100" },
+    { name: "Email Campaigns", share: 8, color: palette.warning, visitors: "4,550" },
   ];
 
   const recentLogs = [
@@ -166,8 +169,8 @@ export function AnalyticsDashboard() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#09090b" },
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: palette.background },
   scroll: { flex: 1 },
   container: { paddingHorizontal: 16, paddingVertical: 24 },
   header: {
@@ -176,48 +179,48 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 24,
   },
-  title: { fontSize: 24, fontWeight: "900", color: "#ffffff", letterSpacing: -0.5 },
-  subtitle: { fontSize: 12, color: "#a1a1aa", marginTop: 4 },
+  title: { fontSize: 24, fontWeight: "900", color: palette.foreground, letterSpacing: -0.5 },
+  subtitle: { fontSize: 12, color: palette["muted-foreground"], marginTop: 4 },
   filterBar: {
     flexDirection: "row",
     alignItems: "center",
     padding: 4,
-    borderRadius: 16,
-    backgroundColor: "#18181b",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
     marginBottom: 24,
   },
-  filterTab: { flex: 1, paddingVertical: 8, alignItems: "center", borderRadius: 12 },
-  filterTabActive: { backgroundColor: "#27272a" },
-  filterTabText: { fontSize: 12, fontWeight: "600", color: "#a1a1aa" },
-  filterTabTextActive: { color: "#ffffff" },
+  filterTab: { flex: 1, paddingVertical: 8, alignItems: "center", borderRadius: themeStyle.radius.control },
+  filterTabActive: { backgroundColor: palette.muted },
+  filterTabText: { fontSize: 12, fontWeight: "600", color: palette["muted-foreground"] },
+  filterTabTextActive: { color: palette.foreground },
   kpiContainer: { gap: 14, marginBottom: 24 },
   kpiRow: { flexDirection: "row", gap: 14 },
-  kpiCard: { flex: 1, borderRadius: 16, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a" },
-  kpiLabel: { fontSize: 12, fontWeight: "500", color: "#a1a1aa" },
-  kpiValue: { fontSize: 24, fontWeight: "900", color: "#ffffff", marginTop: 8 },
+  kpiCard: { flex: 1, borderRadius: themeStyle.radius.card, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border },
+  kpiLabel: { fontSize: 12, fontWeight: "500", color: palette["muted-foreground"] },
+  kpiValue: { fontSize: 24, fontWeight: "900", color: palette.foreground, marginTop: 8 },
   kpiFooter: { marginTop: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  kpiSub: { fontSize: 12, color: "#71717a" },
-  channelCard: { borderRadius: 24, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a", marginBottom: 24 },
+  kpiSub: { fontSize: 12, color: palette["muted-foreground"] },
+  channelCard: { borderRadius: themeStyle.radius.card, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border, marginBottom: 24 },
   cardHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
-  cardTitle: { fontSize: 16, fontWeight: "700", color: "#ffffff" },
-  cardSub: { fontSize: 12, color: "#a1a1aa" },
+  cardTitle: { fontSize: 16, fontWeight: "700", color: palette.foreground },
+  cardSub: { fontSize: 12, color: palette["muted-foreground"] },
   channelList: { gap: 14 },
   channelItem: { gap: 6 },
   channelMeta: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  channelName: { fontSize: 12, fontWeight: "500", color: "#d4d4d8" },
-  channelShare: { fontSize: 12, fontWeight: "600", color: "#a1a1aa" },
-  track: { height: 8, width: "100%", borderRadius: 9999, backgroundColor: "#27272a", overflow: "hidden" },
+  channelName: { fontSize: 12, fontWeight: "500", color: palette["muted-foreground"] },
+  channelShare: { fontSize: 12, fontWeight: "600", color: palette["muted-foreground"] },
+  track: { height: 8, width: "100%", borderRadius: 9999, backgroundColor: palette.muted, overflow: "hidden" },
   fill: { height: "100%", borderRadius: 9999 },
-  logCard: { borderRadius: 24, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a", marginBottom: 32 },
+  logCard: { borderRadius: themeStyle.radius.card, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border, marginBottom: 32 },
   logList: { gap: 12, marginTop: 12 },
   logRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 4 },
-  logAction: { fontSize: 14, fontWeight: "600", color: "#f4f4f5" },
-  logTime: { fontSize: 12, color: "#71717a", marginTop: 2 },
+  logAction: { fontSize: 14, fontWeight: "600", color: palette.foreground },
+  logTime: { fontSize: 12, color: palette["muted-foreground"], marginTop: 2 },
   logAmount: { fontSize: 14, fontWeight: "700" },
-  logPositive: { color: "#34d399" },
-  logNeutral: { color: "#e4e4e7" },
-  sep: { backgroundColor: "#27272a", marginVertical: 4 },
+  logPositive: { color: palette.success },
+  logNeutral: { color: palette.foreground },
+  sep: { backgroundColor: palette.muted, marginVertical: 4 },
 });
 

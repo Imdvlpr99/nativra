@@ -1,7 +1,7 @@
 /** Nativra — Select (StyleSheet). Install: npx nativra-cli add select */
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface SelectOption {
   label: string;
@@ -107,17 +107,17 @@ export function Select({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
   label: { fontSize: 14, fontWeight: "500" },
-  trigger: { height: 44, borderRadius: 12, borderWidth: 1, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  trigger: { height: 44, borderRadius: themeStyle.radius.control, borderWidth: 1, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   triggerText: { fontSize: 16 },
   arrow: { fontSize: 10, color: c["muted-foreground"] },
   disabled: { opacity: 0.5 },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" },
   flex1: { flex: 1 },
-  sheet: { maxHeight: "60%", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20 },
+  sheet: { maxHeight: "60%", borderTopLeftRadius: themeStyle.radius.surface, borderTopRightRadius: themeStyle.radius.surface, padding: 20 },
   sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 8 },
   sheetTitle: { fontSize: 16, fontWeight: "700" },
   doneBtn: { fontSize: 15, fontWeight: "600", color: c.primary },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12 },
+  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 14, paddingHorizontal: 12, borderRadius: themeStyle.radius.control },
   rowText: { fontSize: 16 },
   check: { fontSize: 14, fontWeight: "700", color: c.primary },
 });

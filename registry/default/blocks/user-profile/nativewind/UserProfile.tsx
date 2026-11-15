@@ -48,7 +48,7 @@ export function UserProfile({
   className = "",
 }: UserProfileProps) {
   return (
-    <Card elevated padding="lg" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Avatar size="lg" fallback={avatarFallback} />
         {verified && <Badge variant="primary" size="sm" label="Verified Pro" />}
@@ -57,7 +57,7 @@ export function UserProfile({
       <View className="mt-4">
         <Text variant="h3">{name}</Text>
         <Text variant="muted" className="text-xs">{handle}</Text>
-        <Text variant="p" className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+        <Text variant="p" className="mt-2 text-xs leading-relaxed text-muted-foreground">
           {bio}
         </Text>
       </View>

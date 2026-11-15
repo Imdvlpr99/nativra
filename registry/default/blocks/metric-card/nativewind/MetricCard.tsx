@@ -33,7 +33,7 @@ export function MetricCard({
   className = "",
 }: MetricCardProps) {
   return (
-    <Card elevated padding="lg" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Text variant="muted" className="text-xs font-medium uppercase tracking-wider">
           {title}
@@ -46,12 +46,12 @@ export function MetricCard({
       </View>
 
       <View className="mt-3">
-        <Text variant="h1" className="text-3xl font-black text-zinc-900 dark:text-zinc-50">
+        <Text variant="h1" className="text-3xl font-black text-foreground">
           {value}
         </Text>
       </View>
 
-      <View className="mt-4 flex-row items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800">
+      <View className="mt-4 flex-row items-center justify-between pt-2 border-t border-border">
         <Text variant="muted" className="text-xs">{timeframe}</Text>
         <Text variant="muted" className="text-xs font-medium">{subtitle}</Text>
       </View>

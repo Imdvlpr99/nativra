@@ -51,7 +51,7 @@ export function Chip({
       accessibilityState={{ selected, disabled }}
       accessibilityLabel={label}
       style={style}
-      className={`flex-row items-center rounded-full border ${sizeClasses} ${surfaceClasses} ${
+      className={`flex-row items-center rounded-chip border ${sizeClasses} ${surfaceClasses} ${
         disabled ? "opacity-50" : "active:opacity-80"
       } ${className}`}
       {...rest}
@@ -63,7 +63,7 @@ export function Chip({
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${label}`}
-          className="ml-1.5 h-4 w-4 items-center justify-center rounded-full bg-foreground/10"
+          className="ml-1.5 h-4 w-4 items-center justify-center rounded-chip bg-foreground/10"
         >
           <View className="items-center justify-center">
             <Text className={`text-[10px] leading-none ${selected ? "text-primary-foreground" : "text-muted-foreground"}`}>

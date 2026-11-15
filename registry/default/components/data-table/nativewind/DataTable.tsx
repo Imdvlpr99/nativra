@@ -60,7 +60,7 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <View
-      className={`rounded-2xl border border-border bg-background overflow-hidden ${className}`.trim()}
+      className={`rounded-card border border-border bg-background overflow-hidden ${className}`.trim()}
       style={style}
       {...props}
     >

@@ -32,37 +32,37 @@ export function FintechWallet() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
       <ScrollView className="flex-1 px-4 py-6" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-2xl font-black text-white">Wallet</Text>
-            <Text className="text-xs text-zinc-400 mt-1">Multi-Chain Vault</Text>
+            <Text className="text-2xl font-black text-foreground">Wallet</Text>
+            <Text className="text-xs text-muted-foreground mt-1">Multi-Chain Vault</Text>
           </View>
           <TouchableOpacity
             onPress={() => setHideBalance((h) => !h)}
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800"
+            className="px-3 py-1.5 rounded-control bg-card border border-border"
           >
-            <Text className="text-xs font-semibold text-zinc-300">
+            <Text className="text-xs font-semibold text-muted-foreground">
               {hideBalance ? "Reveal" : "Hide Balance"}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Total Net Worth Card */}
-        <Card elevated padding="lg" className="rounded-3xl bg-emerald-600/15 border border-emerald-500/25 p-5 mb-6">
+        <Card elevated padding="lg" className="rounded-card bg-success/15 border border-success/25 p-5 mb-6">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+            <Text className="text-xs font-semibold uppercase tracking-wider text-success">
               Total Portfolio Valuation
             </Text>
             <Badge size="sm" variant="primary" label="+8.4% (24h)" />
           </View>
-          <Text className="text-4xl font-black text-white mt-3">
+          <Text className="text-4xl font-black text-foreground mt-3">
             {hideBalance ? "••••••••" : "$160,523.00"}
           </Text>
-          <Text className="text-xs text-zinc-400 mt-1">
+          <Text className="text-xs text-muted-foreground mt-1">
             +$12,480.00 unrealized gains this month
           </Text>
 
@@ -71,10 +71,10 @@ export function FintechWallet() {
             <Button variant="primary" className="flex-1 h-10">
               Send
             </Button>
-            <Button variant="outline" className="flex-1 h-10 bg-zinc-900/60 border-zinc-700">
+            <Button variant="outline" className="flex-1 h-10 bg-card/60 border-border">
               Receive
             </Button>
-            <Button variant="outline" className="flex-1 h-10 bg-zinc-900/60 border-zinc-700">
+            <Button variant="outline" className="flex-1 h-10 bg-card/60 border-border">
               Swap
             </Button>
           </View>
@@ -82,32 +82,32 @@ export function FintechWallet() {
 
         {/* Assets List */}
         <View className="mb-6">
-          <Text className="text-base font-bold text-white mb-3">Allocated Assets</Text>
+          <Text className="text-base font-bold text-foreground mb-3">Allocated Assets</Text>
           <View className="gap-3">
             {assets.map((asset) => (
               <Card
                 key={asset.id}
                 elevated
                 padding="md"
-                className="rounded-2xl bg-zinc-900/80 border border-zinc-800 p-4 flex-row items-center justify-between"
+                className="rounded-card bg-card/80 border border-border p-4 flex-row items-center justify-between"
               >
                 <View className="flex-row items-center gap-3">
-                  <View className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 items-center justify-center">
-                    <Text className="text-xs font-black text-white">{asset.symbol.slice(0, 3)}</Text>
+                  <View className="w-10 h-10 rounded-control bg-muted border border-border items-center justify-center">
+                    <Text className="text-xs font-black text-foreground">{asset.symbol.slice(0, 3)}</Text>
                   </View>
                   <View>
-                    <Text className="font-bold text-white text-sm">{asset.name}</Text>
-                    <Text className="text-xs text-zinc-400 mt-0.5">{asset.balance}</Text>
+                    <Text className="font-bold text-foreground text-sm">{asset.name}</Text>
+                    <Text className="text-xs text-muted-foreground mt-0.5">{asset.balance}</Text>
                   </View>
                 </View>
 
                 <View className="items-end">
-                  <Text className="font-bold text-white text-sm">
+                  <Text className="font-bold text-foreground text-sm">
                     {hideBalance ? "••••" : asset.fiat}
                   </Text>
                   <Text
                     className={`text-xs font-semibold mt-0.5 ${
-                      asset.isPos ? "text-emerald-400" : "text-rose-400"
+                      asset.isPos ? "text-success" : "text-destructive"
                     }`}
                   >
                     {asset.change}
@@ -119,25 +119,25 @@ export function FintechWallet() {
         </View>
 
         {/* Recent Activity */}
-        <Card elevated padding="lg" className="rounded-3xl bg-zinc-900/90 border border-zinc-800 mb-8 p-4">
-          <Text className="text-base font-bold text-white mb-3">Recent Ledger</Text>
+        <Card elevated padding="lg" className="rounded-card bg-card/90 border border-border mb-8 p-4">
+          <Text className="text-base font-bold text-foreground mb-3">Recent Ledger</Text>
           <View className="gap-3">
             {recentTx.map((tx, idx) => (
               <React.Fragment key={tx.id}>
                 <View className="flex-row items-center justify-between py-1">
                   <View>
-                    <Text className="font-semibold text-sm text-zinc-200">{tx.counterparty}</Text>
-                    <Text className="text-xs text-zinc-500 mt-0.5">{tx.date}</Text>
+                    <Text className="font-semibold text-sm text-foreground">{tx.counterparty}</Text>
+                    <Text className="text-xs text-muted-foreground mt-0.5">{tx.date}</Text>
                   </View>
                   <Text
                     className={`font-bold text-sm ${
-                      tx.isIncome ? "text-emerald-400" : "text-zinc-200"
+                      tx.isIncome ? "text-success" : "text-foreground"
                     }`}
                   >
                     {tx.amount}
                   </Text>
                 </View>
-                {idx < recentTx.length - 1 && <Separator className="bg-zinc-800/80 my-1" />}
+                {idx < recentTx.length - 1 && <Separator className="bg-muted/80 my-1" />}
               </React.Fragment>
             ))}
           </View>

@@ -48,7 +48,7 @@ const TEXT_SIZE: Record<BadgeSize, string> = {
 
 export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
   return (
-    <View className={`flex-row items-center rounded-full ${CONTAINER[variant]} ${SIZE[size]}`}>
+    <View className={`flex-row items-center rounded-chip ${CONTAINER[variant]} ${SIZE[size]}`}>
       <Text className={`${LABEL[variant]} ${TEXT_SIZE[size]}`}>{label}</Text>
     </View>
   );

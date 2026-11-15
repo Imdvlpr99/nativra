@@ -1,7 +1,7 @@
 /** Nativra — StatTile (StyleSheet). Install: npx nativra-cli add stat-tile */
 import React from "react";
 import { StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface StatTileProps extends ViewProps {
   label: string;
@@ -63,7 +63,7 @@ export function StatTile({
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     borderColor: c.border,
     backgroundColor: c.background,
@@ -72,11 +72,11 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   label: { fontSize: 12, fontWeight: "500", color: c["muted-foreground"] },
   badge: { borderRadius: 9999, paddingHorizontal: 8, paddingVertical: 2 },
-  badgeUp: { backgroundColor: "#ecfdf5" },
+  badgeUp: { backgroundColor: alpha(c.success, 0.1) },
   badgeDown: { backgroundColor: alpha(c.destructive, 0.08) },
   badgeNeutral: { backgroundColor: c.muted },
   badgeText: { fontSize: 10, fontWeight: "700" },
-  badgeTextUp: { color: "#047857" },
+  badgeTextUp: { color: c.success },
   badgeTextDown: { color: c.destructive },
   badgeTextNeutral: { color: c.foreground },
   value: { marginTop: 6, fontSize: 24, fontWeight: "800", color: c.foreground },

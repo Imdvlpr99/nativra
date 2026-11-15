@@ -1,7 +1,7 @@
 /** Nativra — Textarea (StyleSheet). Install: npx nativra-cli add textarea */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface TextareaProps extends TextInputProps {
   label?: string;
@@ -52,7 +52,7 @@ export function Textarea({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
   label: { fontSize: 14, fontWeight: "500" },
-  textarea: { minHeight: 96, borderWidth: 1, borderRadius: 12, padding: 12, fontSize: 16 },
+  textarea: { minHeight: 96, borderWidth: 1, borderRadius: themeStyle.radius.control, padding: 12, fontSize: 16 },
   disabled: { opacity: 0.5 },
   error: { fontSize: 12, color: c.destructive },
 });

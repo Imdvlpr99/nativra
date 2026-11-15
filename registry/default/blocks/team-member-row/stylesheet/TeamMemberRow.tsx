@@ -10,8 +10,9 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
 import { MoreVertical, Shield } from "lucide-react-native";
+import { useThemeColors, alpha, type ThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
-export interface TeamMemberRowProps extends ViewProps {
+export interface TeamMemberRowProps extends Omit<ViewProps, "role"> {
   name: string;
   email: string;
   role: "Owner" | "Admin" | "Member" | "Viewer" | string;
@@ -32,6 +33,8 @@ export function TeamMemberRow({
   style,
   ...props
 }: TeamMemberRowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const displayInitials =
     initials ||
     name
@@ -74,7 +77,7 @@ export function TeamMemberRow({
 
       <View style={styles.rightCol}>
         <View style={[styles.rolePill, isHighPrivilege ? styles.roleHigh : styles.roleStandard]}>
-          {isHighPrivilege && <Shield size={12} color="#0284c7" />}
+          {isHighPrivilege && <Shield size={12} color={palette.primary} />}
           <Text style={[styles.roleText, isHighPrivilege ? styles.roleHighText : styles.roleStandardText]}>
             {role}
           </Text>
@@ -90,7 +93,7 @@ export function TeamMemberRow({
             }}
             style={styles.optionsBtn}
           >
-            <MoreVertical size={16} color="#71717a" />
+            <MoreVertical size={16} color={palette["muted-foreground"]} />
           </Pressable>
         )}
       </View>
@@ -98,15 +101,15 @@ export function TeamMemberRow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 14,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 14,
   },
   leftCol: {
@@ -120,16 +123,16 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     borderWidth: 1,
-    borderColor: "#3f3f46",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   textCol: {
     flex: 1,
@@ -142,16 +145,16 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   youPill: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   emailText: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   rightCol: {
@@ -168,20 +171,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   roleHigh: {
-    backgroundColor: "rgba(2, 132, 199, 0.1)",
+    backgroundColor: alpha(palette.primary, 0.1),
   },
   roleStandard: {
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
   },
   roleText: {
     fontSize: 12,
     fontWeight: "600",
   },
   roleHighText: {
-    color: "#38bdf8",
+    color: palette.primary,
   },
   roleStandardText: {
-    color: "#d4d4d8",
+    color: palette["muted-foreground"],
   },
   optionsBtn: {
     padding: 6,

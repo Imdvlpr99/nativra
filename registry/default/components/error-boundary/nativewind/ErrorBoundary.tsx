@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <View
           accessibilityRole="alert"
-          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-5"
+          className="rounded-card border border-destructive/30 bg-destructive/10 p-5"
         >
           <View className="flex-row items-center gap-2">
             <Text className="text-base">⚠️</Text>
@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             onPress={this.handleReset}
             accessibilityRole="button"
             accessibilityLabel="Try again"
-            className="mt-4 self-start rounded-xl bg-destructive px-4 py-2 active:opacity-80"
+            className="mt-4 self-start rounded-control bg-destructive px-4 py-2 active:opacity-80"
           >
             <Text className="text-xs font-semibold text-destructive-foreground">Try Again</Text>
           </Pressable>

@@ -1,7 +1,7 @@
 /** Nativra — Input (StyleSheet). Install: npx nativra-cli add input */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -39,7 +39,7 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
   label: { fontSize: 14, fontWeight: "500" },
-  input: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
+  input: { borderWidth: 1, borderRadius: themeStyle.radius.control, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
   disabled: { opacity: 0.5 },
   error: { fontSize: 12, color: c.destructive },
 });

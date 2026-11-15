@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultTheme,
+  toStyleCss,
   toCssVariables,
   toStyleSheetTokens,
   toTailwindPreset,
@@ -92,5 +93,24 @@ describe("theme-engine", () => {
     expect(resolved.colors.foreground).toBe("#ffffff");
     expect(resolved.space["4"]).toBe(Math.round(defaultTheme.space["4"] * 0.85));
     expect(resolved.typography.body.fontSize).toBeGreaterThan(15);
+  });
+});
+
+describe("style tokens and status colors", () => {
+  it("gives every preset status colors in both palettes", () => {
+    for (const theme of Object.values(THEME_PRESETS)) {
+      for (const palette of [theme.light, theme.dark]) {
+        expect(palette.success).toMatch(/^#[0-9a-f]{6}$/i);
+        expect(palette["warning-foreground"]).toMatch(/^#[0-9a-f]{6}$/i);
+        expect(palette.info).toMatch(/^#[0-9a-f]{6}$/i);
+      }
+    }
+    expect(toCssVariables(defaultTheme)).toContain("--color-success:");
+  });
+
+  it("emits semantic radius classes from the style tokens", () => {
+    const css = toStyleCss(defaultTheme);
+    expect(css).toContain(`.rounded-button { border-radius: ${defaultTheme.style.radius.button}px; }`);
+    expect(css).toContain(".rounded-t-surface { border-top-left-radius:");
   });
 });

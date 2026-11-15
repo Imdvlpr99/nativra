@@ -38,7 +38,7 @@ export function Select({
         accessibilityState={{ disabled, expanded: open }}
         onPress={() => !disabled && setOpen(true)}
         disabled={disabled}
-        className={`h-11 flex-row items-center justify-between rounded-xl border border-input bg-card px-4 ${
+        className={`h-11 flex-row items-center justify-between rounded-control border border-input bg-card px-4 ${
           disabled ? "opacity-50" : "active:opacity-85"
         }`}
       >
@@ -53,9 +53,9 @@ export function Select({
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View className="flex-1 justify-end bg-black/60">
+        <View className="flex-1 justify-end bg-foreground/60">
           <Pressable className="flex-1" onPress={() => setOpen(false)} />
-          <View className="max-h-[60%] rounded-t-3xl border-t border-border bg-card p-5">
+          <View className="max-h-[60%] rounded-t-surface border-t border-border bg-card p-5">
             <View className="mb-4 flex-row items-center justify-between pb-2 border-b border-border">
               <Text className="text-base font-bold text-foreground">
                 {label ?? "Select an option"}
@@ -76,7 +76,7 @@ export function Select({
                       onValueChange(item.value);
                       setOpen(false);
                     }}
-                    className={`flex-row items-center justify-between py-3.5 px-3 rounded-xl ${
+                    className={`flex-row items-center justify-between py-3.5 px-3 rounded-control ${
                       isSelected ? "bg-primary/10" : "active:bg-muted"
                     }`}
                   >

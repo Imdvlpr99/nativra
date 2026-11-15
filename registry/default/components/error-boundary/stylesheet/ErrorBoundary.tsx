@@ -1,7 +1,7 @@
 /** Nativra — ErrorBoundary (StyleSheet). Install: npx nativra-cli add error-boundary */
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -69,7 +69,7 @@ function ErrorFallback({ title, message, onReset }: { title: string; message: st
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     borderColor: alpha(c.destructive, 0.3),
     backgroundColor: alpha(c.destructive, 0.08),
@@ -82,7 +82,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   button: {
     marginTop: 16,
     alignSelf: "flex-start",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     backgroundColor: c.destructive,
     paddingHorizontal: 16,
     paddingVertical: 8,

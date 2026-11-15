@@ -1,6 +1,7 @@
 /** Nativra — Textarea (NativeWind). Install: npx nativra-cli add textarea */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface TextareaProps extends TextInputProps {
   label?: string;
@@ -18,6 +19,7 @@ export function Textarea({
   rows = 4,
   ...rest
 }: TextareaProps) {
+  const palette = useThemeColors();
   return (
     <View className="w-full gap-1.5">
       {label ? (
@@ -30,8 +32,8 @@ export function Textarea({
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
-        className={`min-h-[96px] rounded-xl border p-3 text-base text-foreground ${
+        placeholderTextColor={palette["muted-foreground"]}
+        className={`min-h-[96px] rounded-control border p-3 text-base text-foreground ${
           error ? "border-destructive" : "border-input"
         } ${disabled ? "opacity-50" : ""}`}
         {...rest}

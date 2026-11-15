@@ -3,6 +3,12 @@
  * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
  */
 export const violet = {
+  success: "#15803d",
+  "success-foreground": "#ffffff",
+  warning: "#b45309",
+  "warning-foreground": "#ffffff",
+  info: "#0369a1",
+  "info-foreground": "#ffffff",
   background: "#ffffff",
   foreground: "#2e1065",
   card: "#ffffff",
@@ -25,6 +31,12 @@ export const violet = {
 } as const;
 
 export const violetDark = {
+  success: "#4ade80",
+  "success-foreground": "#052e16",
+  warning: "#fbbf24",
+  "warning-foreground": "#451a03",
+  info: "#38bdf8",
+  "info-foreground": "#082f49",
   background: "#0f0728",
   foreground: "#f5f3ff",
   card: "#1e103a",
@@ -39,8 +51,8 @@ export const violetDark = {
   "muted-foreground": "#c4b5fd",
   accent: "#3b0764",
   "accent-foreground": "#f5f3ff",
-  destructive: "#7f1d1d",
-  "destructive-foreground": "#ffffff",
+  destructive: "#f87171",
+  "destructive-foreground": "#450a0a",
   border: "#3b0764",
   input: "#3b0764",
   ring: "#8b5cf6",
@@ -53,3 +65,46 @@ export type VioletTheme = typeof violet;
  * installing a different theme over this file restyles every component.
  */
 export const themeColors = { light: violet, dark: violetDark } as const;
+
+/**
+ * Shape, depth and type character. Components read radii by role (button, control, card,
+ * surface, chip, small), shadows by level and heading weights from here, in both styling targets.
+ */
+export const themeStyle = {
+  radius: {
+    button: 9999,
+    control: 14,
+    card: 20,
+    surface: 28,
+    chip: 9999,
+    small: 8,
+  },
+  borderWidth: 1,
+  shadow: {
+    card: {
+      offsetY: 4,
+      radius: 16,
+      opacity: 0.06,
+      elevation: 2,
+    },
+    raised: {
+      offsetY: 8,
+      radius: 24,
+      opacity: 0.1,
+      elevation: 6,
+    },
+    overlay: {
+      offsetY: 16,
+      radius: 40,
+      opacity: 0.18,
+      elevation: 12,
+    },
+  },
+  pressedScale: 0.97,
+  fontWeight: {
+    heading: "700",
+    title: "600",
+    label: "600",
+  },
+  headingLetterSpacing: -0.4,
+} as const;

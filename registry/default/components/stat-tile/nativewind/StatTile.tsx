@@ -23,7 +23,7 @@ export function StatTile({
 }: StatTileProps) {
   const badgeClasses =
     trend === "up"
-      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
+      ? "bg-success/10 text-success"
       : trend === "down"
       ? "bg-destructive/10 text-destructive"
       : "bg-muted text-foreground";
@@ -32,7 +32,7 @@ export function StatTile({
     <View
       accessibilityRole="summary"
       style={style}
-      className={`rounded-2xl border border-border bg-card p-4 shadow-sm ${className}`}
+      className={`rounded-card border border-border bg-card p-4 shadow-sm ${className}`}
       {...rest}
     >
       <View className="flex-row items-center justify-between">

@@ -10,6 +10,7 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
 import { CheckCircle2, Trash2 } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface PaymentMethodCardProps extends ViewProps {
   brand?: "visa" | "mastercard" | "amex" | "applepay";
@@ -34,6 +35,8 @@ export function PaymentMethodCard({
   style,
   ...props
 }: PaymentMethodCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const brandLabel =
     brand === "mastercard"
       ? "Mastercard"
@@ -84,10 +87,10 @@ export function PaymentMethodCard({
               }}
               style={styles.iconBtn}
             >
-              <Trash2 size={16} color="#71717a" />
+              <Trash2 size={16} color={palette["muted-foreground"]} />
             </Pressable>
           )}
-          {selected && <CheckCircle2 size={20} color="#0284c7" />}
+          {selected && <CheckCircle2 size={20} color={palette.primary} />}
         </View>
       </View>
 
@@ -100,19 +103,19 @@ export function PaymentMethodCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     padding: 18,
   },
   cardUnselected: {
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
   },
   cardSelected: {
-    borderColor: "#0284c7",
-    backgroundColor: "rgba(2, 132, 199, 0.1)",
+    borderColor: palette.primary,
+    backgroundColor: alpha(palette.primary, 0.1),
   },
   topRow: {
     flexDirection: "row",
@@ -127,10 +130,10 @@ const styles = StyleSheet.create({
   brandBox: {
     height: 40,
     width: 56,
-    borderRadius: 10,
-    backgroundColor: "#09090b",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.background,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 6,
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
   brandText: {
     fontSize: 11,
     fontWeight: "900",
-    color: "#ffffff",
+    color: palette.foreground,
     letterSpacing: 0.5,
   },
   panRow: {
@@ -149,22 +152,22 @@ const styles = StyleSheet.create({
   panText: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   defaultPill: {
     borderRadius: 9999,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
   defaultPillText: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#d4d4d8",
+    color: palette["muted-foreground"],
   },
   expiryText: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   actionsRow: {
@@ -178,13 +181,13 @@ const styles = StyleSheet.create({
   holderRow: {
     marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(39, 39, 42, 0.8)",
+    borderTopColor: alpha(palette.border, 0.8),
     paddingTop: 8,
   },
   holderText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     letterSpacing: 0.5,
   },
 });

@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -75,11 +75,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.background,
     padding: 24,
     paddingBottom: 40,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 12,
+    ...elevation("overlay"),
+    shadowOffset: { width: 0, height: -themeStyle.shadow.overlay.offsetY },
   },
   handleContainer: {
     alignItems: "center",

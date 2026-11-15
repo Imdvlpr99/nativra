@@ -4,13 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const fabVariants = cva(
-  "absolute z-50 flex-row items-center justify-center rounded-full shadow-lg shadow-black/25 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none",
+  "absolute z-50 flex-row items-center justify-center rounded-full shadow-lg shadow-foreground/25 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none",
   {
     variants: {
       variant: {
         primary: "bg-primary text-primary-foreground shadow-primary/30",
         secondary: "bg-foreground text-background",
-        accent: "bg-emerald-500 text-white shadow-emerald-500/30",
+        accent: "bg-success text-success-foreground shadow-success/30",
       },
       size: {
         sm: "h-10 w-10",
@@ -71,7 +71,7 @@ export function Fab({
     >
       {children}
       {label && (
-        <Text className={cn("font-semibold text-sm", variant === "secondary" ? "text-background" : variant === "accent" ? "text-white" : "text-primary-foreground")}>
+        <Text className={cn("font-semibold text-sm", variant === "secondary" ? "text-background" : variant === "accent" ? "text-success-foreground" : "text-primary-foreground")}>
           {label}
         </Text>
       )}

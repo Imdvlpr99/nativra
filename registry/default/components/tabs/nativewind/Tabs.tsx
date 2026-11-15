@@ -37,7 +37,7 @@ export function Tabs({
       accessibilityRole="tablist"
       className={`w-full flex-row items-center p-1 ${
         variant === "pill"
-          ? "rounded-2xl bg-muted border border-border"
+          ? "rounded-control bg-muted border border-border"
           : "border-b border-border"
       } ${className}`.trim()}
       {...props}
@@ -50,7 +50,7 @@ export function Tabs({
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected }}
             onPress={() => onValueChange(tab.value)}
-            className={`flex-1 py-2 px-3 items-center justify-center rounded-xl flex-row gap-1.5 transition-all active:opacity-75 ${
+            className={`flex-1 py-2 px-3 items-center justify-center rounded-small flex-row gap-1.5 transition-all active:opacity-75 ${
               variant === "pill"
                 ? isSelected
                   ? "bg-background shadow-sm"

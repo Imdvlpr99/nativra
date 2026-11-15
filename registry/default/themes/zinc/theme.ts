@@ -3,6 +3,12 @@
  * Generated from @nativra/theme-engine by scripts/generate-themes.mjs — do not edit in the registry.
  */
 export const zinc = {
+  success: "#15803d",
+  "success-foreground": "#ffffff",
+  warning: "#b45309",
+  "warning-foreground": "#ffffff",
+  info: "#0369a1",
+  "info-foreground": "#ffffff",
   background: "#ffffff",
   foreground: "#09090b",
   card: "#ffffff",
@@ -25,6 +31,12 @@ export const zinc = {
 } as const;
 
 export const zincDark = {
+  success: "#4ade80",
+  "success-foreground": "#052e16",
+  warning: "#fbbf24",
+  "warning-foreground": "#451a03",
+  info: "#38bdf8",
+  "info-foreground": "#082f49",
   background: "#09090b",
   foreground: "#fafafa",
   card: "#09090b",
@@ -39,8 +51,8 @@ export const zincDark = {
   "muted-foreground": "#a1a1aa",
   accent: "#27272a",
   "accent-foreground": "#fafafa",
-  destructive: "#7f1d1d",
-  "destructive-foreground": "#fafafa",
+  destructive: "#f87171",
+  "destructive-foreground": "#450a0a",
   border: "#27272a",
   input: "#27272a",
   ring: "#d4d4d8",
@@ -53,3 +65,46 @@ export type ZincTheme = typeof zinc;
  * installing a different theme over this file restyles every component.
  */
 export const themeColors = { light: zinc, dark: zincDark } as const;
+
+/**
+ * Shape, depth and type character. Components read radii by role (button, control, card,
+ * surface, chip, small), shadows by level and heading weights from here, in both styling targets.
+ */
+export const themeStyle = {
+  radius: {
+    button: 9999,
+    control: 14,
+    card: 20,
+    surface: 28,
+    chip: 9999,
+    small: 8,
+  },
+  borderWidth: 1,
+  shadow: {
+    card: {
+      offsetY: 4,
+      radius: 16,
+      opacity: 0.06,
+      elevation: 2,
+    },
+    raised: {
+      offsetY: 8,
+      radius: 24,
+      opacity: 0.1,
+      elevation: 6,
+    },
+    overlay: {
+      offsetY: 16,
+      radius: 40,
+      opacity: 0.18,
+      elevation: 12,
+    },
+  },
+  pressedScale: 0.97,
+  fontWeight: {
+    heading: "700",
+    title: "600",
+    label: "600",
+  },
+  headingLetterSpacing: -0.4,
+} as const;

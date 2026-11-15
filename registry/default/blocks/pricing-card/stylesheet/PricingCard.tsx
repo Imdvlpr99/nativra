@@ -14,6 +14,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface PricingCardProps {
   planName?: string;
@@ -41,6 +42,8 @@ export function PricingCard({
   buttonText = "Start 14-Day Free Trial",
   onSubscribe,
 }: PricingCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <Card elevated padding="lg" style={styles.card}>
       <View style={styles.header}>
@@ -80,11 +83,11 @@ export function PricingCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     flexDirection: "row",
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#059669",
+    color: palette.success,
   },
   featureText: {
     fontSize: 12,

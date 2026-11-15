@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface AppHeaderProps {
   title: string;
@@ -34,6 +35,8 @@ export function AppHeader({
   onAvatarPress,
   rightAction,
 }: AppHeaderProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={styles.container}>
       {/* Top Bar: Brand, Title, Actions */}
@@ -47,7 +50,7 @@ export function AppHeader({
               accessibilityLabel="Go back"
               style={styles.iconBtn}
             >
-              <ChevronLeft size={20} color="#e4e4e7" />
+              <ChevronLeft size={20} color={palette.foreground} />
             </TouchableOpacity>
           )}
 
@@ -75,7 +78,7 @@ export function AppHeader({
               accessibilityLabel="Notifications"
               style={styles.iconBtn}
             >
-              <Bell size={18} color="#a1a1aa" />
+              <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>
@@ -105,12 +108,12 @@ export function AppHeader({
       {/* Integrated Search Bar */}
       {showSearch && (
         <View style={styles.searchBar}>
-          <Search size={16} color="#71717a" />
+          <Search size={16} color={palette["muted-foreground"]} />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
-            placeholderTextColor="#71717a"
+            placeholderTextColor={palette["muted-foreground"]}
             style={styles.searchInput}
             autoCapitalize="none"
           />
@@ -120,7 +123,7 @@ export function AppHeader({
               accessibilityRole="button"
               accessibilityLabel="Clear search"
             >
-              <X size={14} color="#a1a1aa" />
+              <X size={14} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           )}
         </View>
@@ -129,11 +132,11 @@ export function AppHeader({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
-    backgroundColor: "#09090b",
+    backgroundColor: palette.background,
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
+    borderBottomColor: palette.border,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -155,12 +158,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
     letterSpacing: -0.2,
   },
   subtitleText: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   rightSection: {
@@ -171,10 +174,10 @@ const styles = StyleSheet.create({
   iconBtn: {
     height: 36,
     width: 36,
-    borderRadius: 10,
-    backgroundColor: "#18181b",
+    borderRadius: themeStyle.radius.button,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -187,25 +190,25 @@ const styles = StyleSheet.create({
     height: 18,
     paddingHorizontal: 4,
     borderRadius: 9,
-    backgroundColor: "#f43f5e",
+    backgroundColor: palette.destructive,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
-    borderColor: "#09090b",
+    borderColor: palette.border,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette["destructive-foreground"],
     lineHeight: 12,
   },
   avatarBtn: {
     height: 36,
     width: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    backgroundColor: alpha(palette.primary, 0.15),
     borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.4)",
+    borderColor: alpha(palette.primary, 0.4),
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 4,
@@ -213,16 +216,16 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#38bdf8",
+    color: palette.primary,
   },
   searchBar: {
     marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#18181b",
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
-    borderRadius: 12,
+    borderColor: palette.border,
+    borderRadius: themeStyle.radius.control,
     paddingHorizontal: 12,
     height: 40,
   },
@@ -230,7 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 13,
-    color: "#ffffff",
+    color: palette.foreground,
   },
 });
 

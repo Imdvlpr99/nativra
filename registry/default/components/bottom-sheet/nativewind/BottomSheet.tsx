@@ -26,7 +26,7 @@ export function BottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-black/50">
+      <View className="flex-1 justify-end bg-foreground/50">
         {/* Backdrop Dismiss */}
         <Pressable
           className="absolute inset-0"
@@ -37,7 +37,7 @@ export function BottomSheet({
         {/* Sheet Content Panel */}
         <View
           className={cn(
-            "w-full rounded-t-3xl border-t border-border bg-card p-6 pb-10 shadow-2xl",
+            "w-full rounded-t-surface border-t border-border bg-card p-6 pb-10 shadow-2xl",
             className
           )}
         >

@@ -37,7 +37,7 @@ export function KPIComparisonCard({
   const clamped = Math.min(100, Math.max(0, progressPercent));
 
   return (
-    <Card elevated padding="lg" className={`w-full rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Text variant="muted" className="text-xs font-semibold uppercase tracking-wider">
           {title}
@@ -51,22 +51,22 @@ export function KPIComparisonCard({
 
       <View className="mt-4 flex-row items-baseline justify-between">
         <View>
-          <Text variant="h1" className="text-3xl font-black text-zinc-900 dark:text-zinc-50">
+          <Text variant="h1" className="text-3xl font-black text-foreground">
             {currentValue}
           </Text>
           <Text variant="muted" className="text-xs mt-0.5">
             Target: {targetValue} ({period})
           </Text>
         </View>
-        <Text className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+        <Text className="text-base font-bold text-foreground">
           {clamped}%
         </Text>
       </View>
 
       {/* Progress Bar Container */}
-      <View className="mt-4 h-2 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+      <View className="mt-4 h-2 w-full rounded-full bg-accent overflow-hidden">
         <View
-          className={`h-full rounded-full ${isPositive ? "bg-emerald-500" : "bg-rose-500"}`}
+          className={`h-full rounded-full ${isPositive ? "bg-success" : "bg-destructive"}`}
           style={{ width: `${clamped}%` }}
         />
       </View>

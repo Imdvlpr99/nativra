@@ -29,7 +29,7 @@ const HEIGHT_CLASSES: Record<ProgressSize, string> = {
 const FILL_CLASSES: Record<ProgressVariant, string> = {
   default: "bg-foreground",
   primary: "bg-primary",
-  success: "bg-emerald-500",
+  success: "bg-success",
   destructive: "bg-destructive",
 };
 

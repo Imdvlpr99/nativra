@@ -52,6 +52,15 @@ export interface SemanticColors {
   "accent-foreground": ColorValue;
   destructive: ColorValue;
   "destructive-foreground": ColorValue;
+  /** Positive states: completed, received, up-trends */
+  success: ColorValue;
+  "success-foreground": ColorValue;
+  /** Caution states: pending, low balance, expiring */
+  warning: ColorValue;
+  "warning-foreground": ColorValue;
+  /** Neutral information: tips, links to details */
+  info: ColorValue;
+  "info-foreground": ColorValue;
   border: ColorValue;
   input: ColorValue;
   ring: ColorValue;
@@ -93,6 +102,56 @@ export interface FontSizeScale {
   "4xl": FontSizeValue;
 }
 
+/** One shadow level, applied as iOS shadow* props plus Android elevation. */
+export interface ShadowToken {
+  offsetY: number;
+  /** Blur radius */
+  radius: number;
+  opacity: number;
+  /** Android elevation */
+  elevation: number;
+}
+
+/**
+ * The theme's character beyond color: shape, depth, press feedback and heading type.
+ * Components read radii by role (not by size), so one theme can make every button a pill
+ * and another make it a crisp rectangle without touching component code.
+ */
+export interface ThemeStyle {
+  radius: {
+    /** Buttons and icon buttons */
+    button: RadiusValue;
+    /** Inputs, selects, segmented controls, small tiles */
+    control: RadiusValue;
+    /** Cards, list groups, stat tiles */
+    card: RadiusValue;
+    /** Dialogs, sheets, popovers, toasts */
+    surface: RadiusValue;
+    /** Badges, chips, tags */
+    chip: RadiusValue;
+    /** Checkboxes, tooltips, inline marks */
+    small: RadiusValue;
+  };
+  borderWidth: number;
+  shadow: {
+    /** Resting cards */
+    card: ShadowToken;
+    /** Menus, toasts, floating buttons */
+    raised: ShadowToken;
+    /** Dialogs and sheets */
+    overlay: ShadowToken;
+  };
+  /** Scale applied while a pressable is held */
+  pressedScale: number;
+  fontWeight: {
+    heading: "500" | "600" | "700" | "800";
+    title: "500" | "600" | "700";
+    label: "500" | "600";
+  };
+  /** Letter spacing for headings, in dp */
+  headingLetterSpacing: number;
+}
+
 export interface NativraThemeTokens {
   /** Theme identifier */
   id: string;
@@ -105,6 +164,8 @@ export interface NativraThemeTokens {
   space: SpaceScale;
   radius: RadiusScale;
   fontSize: FontSizeScale;
+  /** Shape, depth and type character */
+  style: ThemeStyle;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,6 +197,43 @@ export const defaultRadius: RadiusScale = {
   full: 9999,
 };
 
+/**
+ * "Soft & friendly": pill buttons, generous rounding, soft layered shadows, confident headings.
+ * The default character for every preset.
+ */
+export const softStyle: ThemeStyle = {
+  radius: { button: 9999, control: 14, card: 20, surface: 28, chip: 9999, small: 8 },
+  borderWidth: 1,
+  shadow: {
+    card: { offsetY: 4, radius: 16, opacity: 0.06, elevation: 2 },
+    raised: { offsetY: 8, radius: 24, opacity: 0.1, elevation: 6 },
+    overlay: { offsetY: 16, radius: 40, opacity: 0.18, elevation: 12 },
+  },
+  pressedScale: 0.97,
+  fontWeight: { heading: "700", title: "600", label: "600" },
+  headingLetterSpacing: -0.4,
+};
+
+/** Status colors shared by every preset (light). Each is >= 4.5:1 against its foreground. */
+export const STATUS_LIGHT = {
+  success: "#15803d",
+  "success-foreground": "#ffffff",
+  warning: "#b45309",
+  "warning-foreground": "#ffffff",
+  info: "#0369a1",
+  "info-foreground": "#ffffff",
+} as const;
+
+/** Status colors shared by every preset (dark). */
+export const STATUS_DARK = {
+  success: "#4ade80",
+  "success-foreground": "#052e16",
+  warning: "#fbbf24",
+  "warning-foreground": "#451a03",
+  info: "#38bdf8",
+  "info-foreground": "#082f49",
+} as const;
+
 export const defaultFontSize: FontSizeScale = {
   xs: 12,
   sm: 14,
@@ -155,6 +253,7 @@ export const zincTheme: NativraThemeTokens = {
   id: "zinc",
   name: "Zinc (Default)",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#09090b",
     card: "#ffffff",
@@ -176,6 +275,7 @@ export const zincTheme: NativraThemeTokens = {
     ring: "#18181b",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#09090b",
     foreground: "#fafafa",
     card: "#09090b",
@@ -190,8 +290,8 @@ export const zincTheme: NativraThemeTokens = {
     "muted-foreground": "#a1a1aa",
     accent: "#27272a",
     "accent-foreground": "#fafafa",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#fafafa",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#27272a",
     input: "#27272a",
     ring: "#d4d4d8",
@@ -199,12 +299,14 @@ export const zincTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const slateTheme: NativraThemeTokens = {
   id: "slate",
   name: "Slate",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#0f172a",
     card: "#ffffff",
@@ -226,6 +328,7 @@ export const slateTheme: NativraThemeTokens = {
     ring: "#0f172a",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#020617",
     foreground: "#f8fafc",
     card: "#020617",
@@ -240,8 +343,8 @@ export const slateTheme: NativraThemeTokens = {
     "muted-foreground": "#94a3b8",
     accent: "#1e293b",
     "accent-foreground": "#f8fafc",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#f8fafc",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#1e293b",
     input: "#1e293b",
     ring: "#cbd5e1",
@@ -249,12 +352,14 @@ export const slateTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const emeraldTheme: NativraThemeTokens = {
   id: "emerald",
   name: "Emerald",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#064e3b",
     card: "#ffffff",
@@ -276,6 +381,7 @@ export const emeraldTheme: NativraThemeTokens = {
     ring: "#059669",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#022c22",
     foreground: "#ecfdf5",
     card: "#064e3b",
@@ -290,8 +396,8 @@ export const emeraldTheme: NativraThemeTokens = {
     "muted-foreground": "#6ee7b7",
     accent: "#047857",
     "accent-foreground": "#ecfdf5",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#047857",
     input: "#047857",
     ring: "#10b981",
@@ -299,12 +405,14 @@ export const emeraldTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const violetTheme: NativraThemeTokens = {
   id: "violet",
   name: "Violet",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#2e1065",
     card: "#ffffff",
@@ -326,6 +434,7 @@ export const violetTheme: NativraThemeTokens = {
     ring: "#7c3aed",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#0f0728",
     foreground: "#f5f3ff",
     card: "#1e103a",
@@ -340,8 +449,8 @@ export const violetTheme: NativraThemeTokens = {
     "muted-foreground": "#c4b5fd",
     accent: "#3b0764",
     "accent-foreground": "#f5f3ff",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#3b0764",
     input: "#3b0764",
     ring: "#8b5cf6",
@@ -349,12 +458,14 @@ export const violetTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const roseTheme: NativraThemeTokens = {
   id: "rose",
   name: "Rose",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#4c0519",
     card: "#ffffff",
@@ -376,6 +487,7 @@ export const roseTheme: NativraThemeTokens = {
     ring: "#e11d48",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#2a040e",
     foreground: "#fff1f2",
     card: "#4c0519",
@@ -390,8 +502,8 @@ export const roseTheme: NativraThemeTokens = {
     "muted-foreground": "#fda4af",
     accent: "#9f1239",
     "accent-foreground": "#fff1f2",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#9f1239",
     input: "#9f1239",
     ring: "#f43f5e",
@@ -399,12 +511,14 @@ export const roseTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const amberTheme: NativraThemeTokens = {
   id: "amber",
   name: "Amber",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#451a03",
     card: "#ffffff",
@@ -426,6 +540,7 @@ export const amberTheme: NativraThemeTokens = {
     ring: "#d97706",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#1c0b02",
     foreground: "#fffbeb",
     card: "#451a03",
@@ -440,8 +555,8 @@ export const amberTheme: NativraThemeTokens = {
     "muted-foreground": "#fcd34d",
     accent: "#92400e",
     "accent-foreground": "#fffbeb",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#92400e",
     input: "#92400e",
     ring: "#f59e0b",
@@ -449,12 +564,14 @@ export const amberTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const orangeTheme: NativraThemeTokens = {
   id: "orange",
   name: "Orange",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#431407",
     card: "#ffffff",
@@ -476,6 +593,7 @@ export const orangeTheme: NativraThemeTokens = {
     ring: "#ea580c",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#1e0903",
     foreground: "#fff7ed",
     card: "#431407",
@@ -490,8 +608,8 @@ export const orangeTheme: NativraThemeTokens = {
     "muted-foreground": "#fdba74",
     accent: "#9a3412",
     "accent-foreground": "#fff7ed",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#9a3412",
     input: "#9a3412",
     ring: "#f97316",
@@ -499,12 +617,14 @@ export const orangeTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const cyanTheme: NativraThemeTokens = {
   id: "cyan",
   name: "Cyan",
   light: {
+    ...STATUS_LIGHT,
     background: "#ffffff",
     foreground: "#083344",
     card: "#ffffff",
@@ -526,6 +646,7 @@ export const cyanTheme: NativraThemeTokens = {
     ring: "#0891b2",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#031d28",
     foreground: "#ecfeff",
     card: "#083344",
@@ -540,8 +661,8 @@ export const cyanTheme: NativraThemeTokens = {
     "muted-foreground": "#67e8f9",
     accent: "#164e63",
     "accent-foreground": "#ecfeff",
-    destructive: "#7f1d1d",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#164e63",
     input: "#164e63",
     ring: "#06b6d4",
@@ -549,12 +670,14 @@ export const cyanTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const midnightTheme: NativraThemeTokens = {
   id: "midnight",
   name: "Midnight",
   light: {
+    ...STATUS_LIGHT,
     background: "#f8fafc",
     foreground: "#0b0f19",
     card: "#ffffff",
@@ -576,6 +699,7 @@ export const midnightTheme: NativraThemeTokens = {
     ring: "#1d4ed8",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#0b0f19",
     foreground: "#f8fafc",
     card: "#111827",
@@ -590,8 +714,8 @@ export const midnightTheme: NativraThemeTokens = {
     "muted-foreground": "#94a3b8",
     accent: "#1d4ed8",
     "accent-foreground": "#ffffff",
-    destructive: "#ef4444",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#1f2937",
     input: "#1f2937",
     ring: "#60a5fa",
@@ -599,12 +723,14 @@ export const midnightTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const darkSlateTheme: NativraThemeTokens = {
   id: "dark-slate",
   name: "Dark Slate",
   light: {
+    ...STATUS_LIGHT,
     background: "#f8fafc",
     foreground: "#0f172a",
     card: "#ffffff",
@@ -626,6 +752,7 @@ export const darkSlateTheme: NativraThemeTokens = {
     ring: "#0284c7",
   },
   dark: {
+    ...STATUS_DARK,
     background: "#0f172a",
     foreground: "#f8fafc",
     card: "#1e293b",
@@ -640,8 +767,8 @@ export const darkSlateTheme: NativraThemeTokens = {
     "muted-foreground": "#94a3b8",
     accent: "#0369a1",
     "accent-foreground": "#ffffff",
-    destructive: "#ef4444",
-    "destructive-foreground": "#ffffff",
+    destructive: "#f87171",
+    "destructive-foreground": "#450a0a",
     border: "#334155",
     input: "#334155",
     ring: "#38bdf8",
@@ -649,6 +776,7 @@ export const darkSlateTheme: NativraThemeTokens = {
   space: defaultSpace,
   radius: defaultRadius,
   fontSize: defaultFontSize,
+  style: softStyle,
 };
 
 export const THEME_PRESETS: Record<string, NativraThemeTokens> = {
@@ -684,6 +812,7 @@ export function toStyleSheetTokens(theme: NativraThemeTokens, colorScheme: "ligh
     space: theme.space,
     radius: theme.radius,
     fontSize: theme.fontSize,
+    style: theme.style,
   };
 }
 
@@ -893,6 +1022,27 @@ export function toCssVariables(theme: NativraThemeTokens): string {
 /**
  * Converts theme tokens into a Tailwind CSS theme.extend configuration object.
  */
+/**
+ * Semantic shape classes for NativeWind components (`rounded-button`, `rounded-card`,
+ * `rounded-t-surface`, ...), generated from the theme's style tokens. The CLI writes them into
+ * global.css next to the color variables, so installing a theme changes the UI's shape too.
+ */
+export function toStyleCss(theme: NativraThemeTokens): string {
+  const sides: Record<string, string[]> = {
+    "": ["border-radius"],
+    t: ["border-top-left-radius", "border-top-right-radius"],
+    b: ["border-bottom-left-radius", "border-bottom-right-radius"],
+  };
+  const rules: string[] = [];
+  for (const [role, value] of Object.entries(theme.style.radius)) {
+    for (const [side, props] of Object.entries(sides)) {
+      const name = side ? `rounded-${side}-${role}` : `rounded-${role}`;
+      rules.push(`.${name} { ${props.map((p) => `${p}: ${value}px;`).join(" ")} }`);
+    }
+  }
+  return rules.join("\n");
+}
+
 export function toTailwindPreset(theme: NativraThemeTokens): Record<string, unknown> {
   return {
     theme: {
@@ -927,6 +1077,18 @@ export function toTailwindPreset(theme: NativraThemeTokens): Record<string, unkn
           destructive: {
             DEFAULT: "rgb(var(--color-destructive) / <alpha-value>)",
             foreground: "rgb(var(--color-destructive-foreground) / <alpha-value>)",
+          },
+          success: {
+            DEFAULT: "rgb(var(--color-success) / <alpha-value>)",
+            foreground: "rgb(var(--color-success-foreground) / <alpha-value>)",
+          },
+          warning: {
+            DEFAULT: "rgb(var(--color-warning) / <alpha-value>)",
+            foreground: "rgb(var(--color-warning-foreground) / <alpha-value>)",
+          },
+          info: {
+            DEFAULT: "rgb(var(--color-info) / <alpha-value>)",
+            foreground: "rgb(var(--color-info-foreground) / <alpha-value>)",
           },
           border: "rgb(var(--color-border) / <alpha-value>)",
           input: "rgb(var(--color-input) / <alpha-value>)",

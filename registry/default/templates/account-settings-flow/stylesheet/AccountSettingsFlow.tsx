@@ -22,8 +22,11 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export function AccountSettingsFlow() {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [activeTab, setActiveTab] = useState<"profile" | "team" | "security" | "billing">("profile");
 
   const [emailAlerts, setEmailAlerts] = useState(true);
@@ -137,7 +140,7 @@ export function AccountSettingsFlow() {
                   <Switch
                     value={emailAlerts}
                     onValueChange={setEmailAlerts}
-                    trackColor={{ false: "#27272a", true: "#0284c7" }}
+                    trackColor={{ false: palette.muted, true: palette.primary }}
                   />
                 </View>
 
@@ -149,7 +152,7 @@ export function AccountSettingsFlow() {
                   <Switch
                     value={securityAlerts}
                     onValueChange={setSecurityAlerts}
-                    trackColor={{ false: "#27272a", true: "#0284c7" }}
+                    trackColor={{ false: palette.muted, true: palette.primary }}
                   />
                 </View>
               </View>
@@ -176,7 +179,7 @@ export function AccountSettingsFlow() {
             <Card style={styles.card}>
               <View style={[styles.rowBetween, { marginBottom: 16 }]}>
                 <Text style={styles.cardTitle}>Assigned Members</Text>
-                <Button size="sm" variant="default" label="+ Invite" />
+                <Button size="sm" variant="default">+ Invite</Button>
               </View>
 
               <View style={styles.listCol}>
@@ -214,7 +217,7 @@ export function AccountSettingsFlow() {
                 <Switch
                   value={twoFactorEnabled}
                   onValueChange={setTwoFactorEnabled}
-                  trackColor={{ false: "#27272a", true: "#10b981" }}
+                  trackColor={{ false: palette.muted, true: palette.success }}
                 />
               </View>
             </Card>
@@ -306,10 +309,10 @@ export function AccountSettingsFlow() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#09090b",
+    backgroundColor: palette.background,
   },
   scroll: {
     flex: 1,
@@ -327,13 +330,13 @@ const styles = StyleSheet.create({
   avatar: {
     height: 56,
     width: 56,
-    borderRadius: 16,
-    backgroundColor: "#0284c7",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: "#ffffff",
+    color: palette["primary-foreground"],
     fontSize: 18,
     fontWeight: "700",
   },
@@ -343,66 +346,66 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 20,
     fontWeight: "900",
-    color: "#ffffff",
+    color: palette.foreground,
     marginRight: 8,
   },
   userEmail: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   navBar: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 4,
     marginBottom: 24,
   },
   navTab: {
     flex: 1,
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     paddingVertical: 8,
   },
   navTabActive: {
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
   },
   navTabText: {
     fontSize: 12,
     fontWeight: "600",
   },
   navTabTextActive: {
-    color: "#ffffff",
+    color: palette.foreground,
   },
   navTabTextInactive: {
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   tabContent: {
     gap: 16,
   },
   card: {
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 20,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   cardSubtitle: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 4,
   },
   separator: {
     marginVertical: 16,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
   },
   fieldGroup: {
     gap: 12,
@@ -410,25 +413,25 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginBottom: 4,
   },
   fieldInput: {
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#09090b",
+    borderColor: palette.border,
+    backgroundColor: palette.background,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   fieldText: {
     fontSize: 14,
-    color: "#d4d4d8",
+    color: palette["muted-foreground"],
   },
   fieldTextBold: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   toggleRow: {
     flexDirection: "row",
@@ -442,24 +445,24 @@ const styles = StyleSheet.create({
   toggleTitle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   toggleSub: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   progressBarBg: {
     height: 8,
     width: "100%",
     borderRadius: 9999,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     overflow: "hidden",
     marginTop: 12,
   },
   progressBarFill: {
     height: "100%",
     borderRadius: 9999,
-    backgroundColor: "#0284c7",
+    backgroundColor: palette.primary,
   },
   listCol: {
     gap: 12,
@@ -468,17 +471,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "rgba(39, 39, 42, 0.6)",
-    backgroundColor: "rgba(9, 9, 11, 0.6)",
+    borderColor: alpha(palette.border, 0.6),
+    backgroundColor: alpha(palette.background, 0.6),
     padding: 12,
   },
   memberAvatar: {
     height: 36,
     width: 36,
     borderRadius: 18,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -486,79 +489,79 @@ const styles = StyleSheet.create({
   memberAvatarText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   memberName: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#ffffff",
+    color: palette.foreground,
     marginRight: 8,
   },
   memberEmail: {
     fontSize: 12,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   revokeBtn: {
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "rgba(244, 63, 94, 0.3)",
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
+    borderColor: alpha(palette.destructive, 0.3),
+    backgroundColor: alpha(palette.destructive, 0.1),
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   revokeBtnText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#fb7185",
+    color: palette.destructive,
   },
   signOutAllBtn: {
     marginTop: 16,
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "rgba(244, 63, 94, 0.4)",
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
+    borderColor: alpha(palette.destructive, 0.4),
+    backgroundColor: alpha(palette.destructive, 0.1),
     paddingVertical: 12,
   },
   signOutAllText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#fb7185",
+    color: palette.destructive,
   },
   planKicker: {
     fontSize: 12,
     fontWeight: "500",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   planTitle: {
     fontSize: 22,
     fontWeight: "900",
-    color: "#ffffff",
+    color: palette.foreground,
     marginTop: 4,
   },
   planPrice: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
     marginTop: 8,
   },
   paymentBox: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#09090b",
+    borderColor: palette.border,
+    backgroundColor: palette.background,
     padding: 12,
   },
   cardBrand: {
     height: 28,
     width: 40,
-    borderRadius: 4,
-    backgroundColor: "#27272a",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.muted,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -566,30 +569,30 @@ const styles = StyleSheet.create({
   cardBrandText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   cardNumber: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   cardExp: {
     fontSize: 10,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   invoiceId: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   invoiceDate: {
     fontSize: 10,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   invoiceAmount: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
     marginRight: 12,
   },
   row: {

@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export type FabVariant = "primary" | "secondary" | "accent";
 export type FabSize = "sm" | "md" | "lg";
@@ -72,11 +72,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 9999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
+    ...elevation("raised"),
   },
   sm: { width: 40, height: 40 },
   md: { width: 56, height: 56 },
@@ -84,7 +80,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   extended: { width: "auto", paddingHorizontal: 20, gap: 8 },
   primary: { backgroundColor: c.primary },
   secondary: { backgroundColor: c.foreground },
-  accent: { backgroundColor: "#10B981" },
+  accent: { backgroundColor: c.success },
   "bottom-right": { bottom: 24, right: 24 },
   "bottom-left": { bottom: 24, left: 24 },
   "bottom-center": { bottom: 24, alignSelf: "center" },

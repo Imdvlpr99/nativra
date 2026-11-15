@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export interface StatProgressCardProps {
   goalTitle?: string;
@@ -27,6 +28,8 @@ export function StatProgressCard({
   unit = "sessions completed",
   streakDays = 14,
 }: StatProgressCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const clamped = Math.min(100, Math.max(0, progressPercent));
 
   return (
@@ -59,20 +62,16 @@ export function StatProgressCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
+    ...elevation("card"),
   },
   header: {
     flexDirection: "row",
@@ -84,18 +83,18 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   streakBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 9999,
-    backgroundColor: "#e0f2fe",
+    backgroundColor: alpha(palette.primary, 0.15),
   },
   streakText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#0284c7",
+    color: palette.primary,
   },
   numbersRow: {
     marginTop: 16,
@@ -111,47 +110,47 @@ const styles = StyleSheet.create({
   current: {
     fontSize: 30,
     fontWeight: "900",
-    color: "#09090b",
+    color: palette.foreground,
   },
   target: {
     fontSize: 12,
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   percent: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0ea5e9",
+    color: palette.primary,
   },
   track: {
     marginTop: 12,
     height: 10,
     width: "100%",
     borderRadius: 9999,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
     overflow: "hidden",
   },
   fill: {
     height: "100%",
     borderRadius: 9999,
-    backgroundColor: "#0ea5e9",
+    backgroundColor: palette.primary,
   },
   footer: {
     marginTop: 14,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "#f4f4f5",
+    borderTopColor: palette.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   footerText: {
     fontSize: 11,
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   statusText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#16a34a",
+    color: palette.success,
   },
 });
 

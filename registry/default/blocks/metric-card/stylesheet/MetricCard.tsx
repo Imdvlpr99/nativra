@@ -12,6 +12,7 @@ import { View, StyleSheet } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface MetricCardProps {
   title?: string;
@@ -30,6 +31,8 @@ export function MetricCard({
   positive = true,
   subtitle = "High organic growth",
 }: MetricCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <Card elevated padding="lg" style={styles.card}>
       <View style={styles.header}>
@@ -57,11 +60,11 @@ export function MetricCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     flexDirection: "row",
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "#f4f4f5",
+    borderTopColor: palette.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

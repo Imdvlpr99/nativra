@@ -5,7 +5,10 @@
   "type": "block",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,12 +26,32 @@
     }
   ],
   "registryDependencies": [
-    { "id": "card", "registry": "default" },
-    { "id": "badge", "registry": "default" },
-    { "id": "text", "registry": "default" }
+    {
+      "id": "card",
+      "registry": "default"
+    },
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "text",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["block", "stat", "progress", "goal", "kpi", "fitness", "budget"],
+  "tags": [
+    "block",
+    "stat",
+    "progress",
+    "goal",
+    "kpi",
+    "fitness",
+    "budget"
+  ],
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

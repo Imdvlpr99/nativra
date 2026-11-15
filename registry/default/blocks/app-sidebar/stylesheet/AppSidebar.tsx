@@ -10,6 +10,7 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface NavItem {
   id: string;
@@ -55,8 +56,8 @@ const DEFAULT_GROUPS: NavGroup[] = [
   },
 ];
 
-function renderIcon(name?: string, active = false) {
-  const color = active ? "#38bdf8" : "#a1a1aa";
+/** Sidebar icon in the given theme color (active: primary, otherwise muted). */
+function renderIcon(name: string | undefined, color: string) {
   const size = 18;
   switch (name) {
     case "LayoutDashboard":
@@ -87,6 +88,8 @@ export function AppSidebar({
   onLogoutPress,
   groups = DEFAULT_GROUPS,
 }: AppSidebarProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={styles.container}>
       {/* Brand Header */}
@@ -117,7 +120,7 @@ export function AppSidebar({
                   style={[styles.navItem, isActive && styles.navItemActive]}
                 >
                   <View style={styles.navItemLeft}>
-                    {renderIcon(item.icon, isActive)}
+                    {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
                     <Text style={[styles.navItemLabel, isActive && styles.navItemLabelActive]}>
                       {item.label}
                     </Text>
@@ -143,7 +146,7 @@ export function AppSidebar({
                         </Text>
                       </View>
                     )}
-                    {isActive && <ChevronRight size={14} color="#38bdf8" />}
+                    {isActive && <ChevronRight size={14} color={palette.primary} />}
                   </View>
                 </TouchableOpacity>
               );
@@ -180,7 +183,7 @@ export function AppSidebar({
               accessibilityLabel="Log out"
               style={styles.logoutBtn}
             >
-              <LogOut size={14} color="#a1a1aa" />
+              <LogOut size={14} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           )}
         </TouchableOpacity>
@@ -189,20 +192,20 @@ export function AppSidebar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
     maxWidth: 300,
-    backgroundColor: "#09090b",
+    backgroundColor: palette.background,
     borderRightWidth: 1,
-    borderRightColor: "#27272a",
+    borderRightColor: palette.border,
     justifyContent: "space-between",
   },
   brandHeader: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(39, 39, 42, 0.8)",
+    borderBottomColor: alpha(palette.border, 0.8),
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
@@ -210,27 +213,27 @@ const styles = StyleSheet.create({
   brandLogo: {
     height: 36,
     width: 36,
-    borderRadius: 10,
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: alpha(palette.primary, 0.15),
     borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.4)",
+    borderColor: alpha(palette.primary, 0.4),
     alignItems: "center",
     justifyContent: "center",
   },
   brandLogoText: {
     fontSize: 16,
     fontWeight: "800",
-    color: "#38bdf8",
+    color: palette.primary,
   },
   brandTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
     letterSpacing: -0.2,
   },
   brandSubtitle: {
     fontSize: 11,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   scroll: {
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#71717a",
+    color: palette["muted-foreground"],
     letterSpacing: 0.8,
     paddingHorizontal: 8,
     marginBottom: 6,
@@ -258,12 +261,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
   },
   navItemActive: {
-    backgroundColor: "rgba(56, 189, 248, 0.12)",
+    backgroundColor: alpha(palette.primary, 0.12),
     borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.3)",
+    borderColor: alpha(palette.primary, 0.3),
   },
   navItemLeft: {
     flexDirection: "row",
@@ -272,10 +275,10 @@ const styles = StyleSheet.create({
   },
   navItemLabel: {
     fontSize: 13,
-    color: "#d4d4d8",
+    color: palette["muted-foreground"],
   },
   navItemLabelActive: {
-    color: "#ffffff",
+    color: palette.foreground,
     fontWeight: "600",
   },
   navItemRight: {
@@ -286,45 +289,45 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 6,
-    backgroundColor: "#27272a",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.muted,
     borderWidth: 1,
-    borderColor: "#3f3f46",
+    borderColor: palette.border,
   },
   badgePrimary: {
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
-    borderColor: "rgba(56, 189, 248, 0.35)",
+    backgroundColor: alpha(palette.primary, 0.15),
+    borderColor: alpha(palette.primary, 0.35),
   },
   badgeDestructive: {
-    backgroundColor: "rgba(244, 63, 94, 0.15)",
-    borderColor: "rgba(244, 63, 94, 0.35)",
+    backgroundColor: alpha(palette.destructive, 0.15),
+    borderColor: alpha(palette.destructive, 0.35),
   },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   badgeTextPrimary: {
-    color: "#38bdf8",
+    color: palette.primary,
   },
   badgeTextDestructive: {
-    color: "#f43f5e",
+    color: palette.destructive,
   },
   footerContainer: {
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(39, 39, 42, 0.8)",
-    backgroundColor: "rgba(24, 24, 27, 0.4)",
+    borderTopColor: alpha(palette.border, 0.8),
+    backgroundColor: alpha(palette.card, 0.4),
   },
   profileCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 8,
-    borderRadius: 12,
-    backgroundColor: "rgba(24, 24, 27, 0.8)",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: alpha(palette.card, 0.8),
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
   },
   profileLeft: {
     flexDirection: "row",
@@ -337,16 +340,16 @@ const styles = StyleSheet.create({
     height: 36,
     width: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(16, 185, 129, 0.15)",
+    backgroundColor: alpha(palette.success, 0.15),
     borderWidth: 1,
-    borderColor: "rgba(16, 185, 129, 0.35)",
+    borderColor: alpha(palette.success, 0.35),
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#10b981",
+    color: palette.success,
   },
   profileDetails: {
     flex: 1,
@@ -354,17 +357,17 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.foreground,
   },
   profileEmail: {
     fontSize: 10,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   logoutBtn: {
     height: 32,
     width: 32,
-    borderRadius: 8,
-    backgroundColor: "rgba(39, 39, 42, 0.8)",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: alpha(palette.muted, 0.8),
     alignItems: "center",
     justifyContent: "center",
   },

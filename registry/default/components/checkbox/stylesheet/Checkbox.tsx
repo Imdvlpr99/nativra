@@ -16,7 +16,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface CheckboxProps {
   checked: boolean;
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   box: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: themeStyle.radius.small,
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",

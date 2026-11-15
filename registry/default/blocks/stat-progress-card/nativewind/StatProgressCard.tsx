@@ -35,7 +35,7 @@ export function StatProgressCard({
   const clamped = Math.min(100, Math.max(0, progressPercent));
 
   return (
-    <Card elevated padding="lg" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Text variant="muted" className="text-xs font-semibold uppercase tracking-wider">
           {goalTitle}
@@ -45,7 +45,7 @@ export function StatProgressCard({
 
       <View className="mt-4 flex-row items-baseline justify-between">
         <View className="flex-row items-baseline gap-1.5">
-          <Text variant="h1" className="text-3xl font-black text-zinc-900 dark:text-zinc-50 font-mono">
+          <Text variant="h1" className="text-3xl font-black text-foreground font-mono">
             {currentValue}
           </Text>
           <Text variant="muted" className="text-xs">
@@ -53,22 +53,22 @@ export function StatProgressCard({
           </Text>
         </View>
 
-        <Text className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono">
+        <Text className="text-sm font-bold text-primary font-mono">
           {clamped}%
         </Text>
       </View>
 
       {/* Progress Track */}
-      <View className="mt-3 h-3 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+      <View className="mt-3 h-3 w-full rounded-full bg-muted overflow-hidden">
         <View
-          className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 transition-all"
+          className="h-full rounded-full bg-gradient-to-r from-primary to-primary transition-all"
           style={{ width: `${clamped}%` }}
         />
       </View>
 
-      <View className="mt-3 flex-row items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800">
+      <View className="mt-3 flex-row items-center justify-between pt-2 border-t border-border">
         <Text variant="muted" className="text-[11px] font-medium">{unit}</Text>
-        <Text variant="muted" className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+        <Text variant="muted" className="text-[11px] font-bold text-success">
           On track for target
         </Text>
       </View>

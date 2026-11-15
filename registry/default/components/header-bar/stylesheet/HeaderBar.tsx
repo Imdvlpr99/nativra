@@ -1,7 +1,7 @@
 /** Nativra — HeaderBar (StyleSheet). Install: npx nativra-cli add header-bar */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
 
 export interface HeaderBarProps extends ViewProps {
   title: string;
@@ -86,11 +86,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical: 12,
   },
   elevated: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    ...elevation("card"),
   },
   sideLeft: { width: 64, alignItems: "flex-start" },
   sideRight: { width: 64, alignItems: "flex-end" },
@@ -101,7 +97,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   title: { fontSize: 14, fontWeight: "700", color: c.foreground },
   subtitle: { fontSize: 11, color: c["muted-foreground"], marginTop: 1 },
   rightBtn: {
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.button,
     backgroundColor: alpha(c.primary, 0.08),
     paddingHorizontal: 10,
     paddingVertical: 4,

@@ -16,7 +16,7 @@ import {
   StyleSheet,
   type ViewProps,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -147,7 +147,7 @@ export function DataTable<T extends Record<string, any>>({
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     borderColor: c.border,
     backgroundColor: c.card,
@@ -179,7 +179,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 16,
   },
   stripedRow: {
-    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    backgroundColor: alpha(c.muted, 0.5),
   },
   cellText: {
     fontSize: 14,

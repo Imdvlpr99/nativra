@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
 
 export interface OtpInputProps {
   length?: number;
@@ -111,17 +111,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   cell: {
     width: 48,
     height: 56,
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 2,
     borderColor: c.border,
     backgroundColor: c.background,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    ...elevation("card"),
   },
   filledCell: {
     borderColor: c.ring,

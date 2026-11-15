@@ -29,7 +29,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   };
 
   return (
-    <View className="w-full divide-y divide-border rounded-2xl border border-border bg-card overflow-hidden">
+    <View className="w-full divide-y divide-border rounded-card border border-border bg-card overflow-hidden">
       {items.map((item) => {
         const isOpen = openIds.has(item.id);
         return (

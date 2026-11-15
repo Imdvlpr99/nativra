@@ -24,26 +24,26 @@ export interface AlertProps extends ViewProps {
 
 const CONTAINER_VARIANTS: Record<AlertVariant, string> = {
   default: "bg-muted border-border",
-  info: "bg-primary/10 border-primary/30",
-  success: "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/60",
-  warning: "bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/60",
-  destructive: "bg-destructive/10 border-destructive/30",
+  info: "bg-info/10 border-info/25",
+  success: "bg-success/10 border-success/25",
+  warning: "bg-warning/10 border-warning/25",
+  destructive: "bg-destructive/10 border-destructive/25",
 };
 
 const TITLE_VARIANTS: Record<AlertVariant, string> = {
   default: "text-foreground",
-  info: "text-foreground",
-  success: "text-emerald-900 dark:text-emerald-200",
-  warning: "text-amber-900 dark:text-amber-200",
+  info: "text-info",
+  success: "text-success",
+  warning: "text-warning",
   destructive: "text-destructive",
 };
 
 const DESC_VARIANTS: Record<AlertVariant, string> = {
   default: "text-muted-foreground",
-  info: "text-primary",
-  success: "text-emerald-700 dark:text-emerald-300",
-  warning: "text-amber-700 dark:text-amber-300",
-  destructive: "text-destructive",
+  info: "text-foreground/80",
+  success: "text-foreground/80",
+  warning: "text-foreground/80",
+  destructive: "text-foreground/80",
 };
 
 export function Alert({
@@ -59,7 +59,7 @@ export function Alert({
   return (
     <View
       accessibilityRole="alert"
-      className={`w-full rounded-2xl border p-4 flex-row items-start gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
+      className={`w-full rounded-card border p-4 flex-row items-start gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
       {...props}
     >
       {icon && <View className="mt-0.5 shrink-0">{icon}</View>}
@@ -83,7 +83,7 @@ export function Alert({
           accessibilityRole="button"
           accessibilityLabel="Dismiss alert"
           onPress={onClose}
-          className="p-1 -mr-1 -mt-1 rounded-lg active:opacity-60"
+          className="p-1 -mr-1 -mt-1 rounded-control active:opacity-60"
         >
           <Text className={`text-xs font-bold ${DESC_VARIANTS[variant]}`}>✕</Text>
         </Pressable>

@@ -17,7 +17,7 @@ import {
   type LayoutChangeEvent,
   type ViewProps,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
 
 export interface SegmentedControlOption {
   value: string;
@@ -165,7 +165,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.control,
     backgroundColor: c.muted,
     borderWidth: 1,
     borderColor: c.border,
@@ -185,13 +185,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   indicator: {
     position: "absolute",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.small,
     backgroundColor: c.background,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    ...elevation("card"),
   },
   item: {
     flex: 1,

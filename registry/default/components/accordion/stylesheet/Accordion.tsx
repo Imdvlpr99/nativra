@@ -1,7 +1,7 @@
 /** Nativra — Accordion (StyleSheet). Install: npx nativra-cli add accordion */
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface AccordionItem {
   id: string;
@@ -73,7 +73,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { width: "100%", borderRadius: 16, borderWidth: 1, overflow: "hidden" },
+  container: { width: "100%", borderRadius: themeStyle.radius.card, borderWidth: 1, overflow: "hidden" },
   itemWrap: { width: "100%" },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 16 },
   title: { fontSize: 16, fontWeight: "600", flex: 1, paddingRight: 12 },

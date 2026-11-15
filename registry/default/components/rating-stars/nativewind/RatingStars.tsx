@@ -45,7 +45,7 @@ export function RatingStars({
 
         const starElement = (
           <Text
-            className={isFilled ? "text-amber-500" : "text-muted-foreground"}
+            className={isFilled ? "text-warning" : "text-muted-foreground"}
             style={{
               fontSize,
               lineHeight: fontSize + 2,

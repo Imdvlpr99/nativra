@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
 
 export interface TabItem {
   value: string;
@@ -101,7 +101,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   pillContainer: {
     padding: 4,
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.control,
     backgroundColor: c.muted,
     borderWidth: 1,
     borderColor: c.border,
@@ -117,16 +117,12 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.small,
     gap: 6,
   },
   tabPillSelected: {
     backgroundColor: c.background,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    ...elevation("card"),
   },
   tabUnderlineSelected: {
     borderBottomWidth: 2,

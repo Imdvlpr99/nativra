@@ -5,7 +5,10 @@
   "type": "template",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,16 +26,44 @@
     }
   ],
   "registryDependencies": [
-    { "id": "cn", "registry": "default" },
-    { "id": "avatar", "registry": "default" },
-    { "id": "card", "registry": "default" },
-    { "id": "switch", "registry": "default" },
-    { "id": "separator", "registry": "default" },
-    { "id": "button", "registry": "default" }
+    {
+      "id": "cn",
+      "registry": "default"
+    },
+    {
+      "id": "avatar",
+      "registry": "default"
+    },
+    {
+      "id": "card",
+      "registry": "default"
+    },
+    {
+      "id": "switch",
+      "registry": "default"
+    },
+    {
+      "id": "separator",
+      "registry": "default"
+    },
+    {
+      "id": "button",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["template", "settings", "preferences", "account", "profile", "flow"],
+  "tags": [
+    "template",
+    "settings",
+    "preferences",
+    "account",
+    "profile",
+    "flow"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

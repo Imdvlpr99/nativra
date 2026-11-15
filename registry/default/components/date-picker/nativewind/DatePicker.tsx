@@ -1,6 +1,7 @@
 /** Nativra — DatePicker (NativeWind). Install: npx nativra-cli add date-picker */
 import React, { useState } from "react";
 import { Pressable, Text, View, type ViewProps } from "react-native";
+import { elevation } from "@/hooks/use-theme-colors";
 
 export interface DatePickerProps extends ViewProps {
   label?: string;
@@ -55,7 +56,7 @@ export function DatePicker({
         accessibilityRole="button"
         accessibilityLabel={label ?? "Select date"}
         accessibilityState={{ expanded: open, disabled }}
-        className={`flex-row items-center justify-between rounded-xl border border-border bg-card px-3.5 py-2.5 ${
+        className={`flex-row items-center justify-between rounded-surface border border-border bg-card px-3.5 py-2.5 ${
           disabled ? "opacity-50" : "active:opacity-80"
         }`}
       >
@@ -71,7 +72,7 @@ export function DatePicker({
       </Pressable>
 
       {open ? (
-        <View className="mt-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+        <View className="mt-2 rounded-surface border border-border bg-card p-3" style={elevation("raised")}>
           <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             November 2026
           </Text>
@@ -84,7 +85,7 @@ export function DatePicker({
                   onPress={() => handleSelect(item.value)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isSelected }}
-                  className={`rounded-lg px-2.5 py-1.5 border ${
+                  className={`rounded-small px-2.5 py-1.5 border ${
                     isSelected
                       ? "bg-primary border-primary"
                       : "bg-muted border-border"

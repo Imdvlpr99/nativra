@@ -15,6 +15,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle } from "@/hooks/use-theme-colors";
 
 export interface UserProfileStats {
   followers?: string;
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     flexDirection: "row",

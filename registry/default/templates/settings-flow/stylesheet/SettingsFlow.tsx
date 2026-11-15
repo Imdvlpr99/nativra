@@ -9,6 +9,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export interface SettingsFlowProps {
   userName?: string;
@@ -23,6 +24,8 @@ export function SettingsFlow({
   onLogout,
   style,
 }: SettingsFlowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [pushEnabled, setPushEnabled] = React.useState(true);
   const [biometrics, setBiometrics] = React.useState(true);
   const [haptics, setHaptics] = React.useState(true);
@@ -111,10 +114,10 @@ export function SettingsFlow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: palette.background,
   },
   scrollContent: {
     padding: 20,
@@ -125,27 +128,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...elevation("card"),
   },
   avatar: {
     width: 56,
     height: 56,
-    borderRadius: 18,
-    backgroundColor: "#0284C7",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: "#FFFFFF",
+    color: palette["primary-foreground"],
     fontSize: 18,
     fontWeight: "800",
   },
@@ -161,23 +160,23 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#18181B",
+    color: palette.foreground,
   },
   proBadge: {
     borderRadius: 9999,
-    backgroundColor: "#D1FAE5",
+    backgroundColor: alpha(palette.success, 0.15),
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
   proBadgeText: {
     fontSize: 10,
     fontWeight: "800",
-    color: "#059669",
+    color: palette.success,
     fontFamily: "monospace",
   },
   emailText: {
     fontSize: 12,
-    color: "#71717A",
+    color: palette["muted-foreground"],
   },
   section: {
     gap: 8,
@@ -188,20 +187,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#71717A",
+    color: palette["muted-foreground"],
   },
   card: {
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
+    borderColor: palette.border,
+    backgroundColor: palette.card,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...elevation("card"),
   },
   row: {
     flexDirection: "row",
@@ -217,22 +212,22 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#18181B",
+    color: palette.foreground,
   },
   rowDesc: {
     fontSize: 12,
-    color: "#71717A",
+    color: palette["muted-foreground"],
   },
   divider: {
     height: 1,
-    backgroundColor: "#F4F4F5",
+    backgroundColor: palette.muted,
   },
   logoutBtn: {
     width: "100%",
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#FEE2E2",
-    backgroundColor: "#FEF2F2",
+    borderColor: alpha(palette.destructive, 0.3),
+    backgroundColor: alpha(palette.destructive, 0.1),
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
@@ -243,7 +238,7 @@ const styles = StyleSheet.create({
   logoutBtnText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#DC2626",
+    color: palette.destructive,
   },
 });
 

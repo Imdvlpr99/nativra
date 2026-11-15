@@ -29,7 +29,7 @@ const HEIGHTS: Record<ProgressSize, number> = {
 const COLORS = (c: ThemeColors): Record<ProgressVariant, string> => ({
   default: c.foreground,
   primary: c.primary,
-  success: "#10b981",
+  success: c.success,
   destructive: c.destructive,
 });
 

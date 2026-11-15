@@ -95,7 +95,7 @@ export function SegmentedControl({
     <View
       onLayout={handleLayout}
       accessibilityRole="tablist"
-      className={`relative w-full flex-row items-center rounded-2xl bg-muted p-1 border border-border ${heightClass} ${
+      className={`relative w-full flex-row items-center rounded-control bg-muted p-1 border border-border ${heightClass} ${
         disabled ? "opacity-50" : ""
       } ${className}`.trim()}
       style={style}
@@ -111,7 +111,7 @@ export function SegmentedControl({
             width: itemWidth,
             transform: [{ translateX }],
           }}
-          className="rounded-xl bg-background shadow-sm"
+          className="rounded-small bg-background shadow-sm"
         />
       )}
 

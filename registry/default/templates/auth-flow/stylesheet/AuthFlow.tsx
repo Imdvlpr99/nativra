@@ -9,6 +9,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { themeStyle, useThemeColors, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export type AuthStep = "login" | "signup" | "forgot" | "otp";
 
@@ -25,6 +26,8 @@ export function AuthFlow({
   onSuccess,
   style,
 }: AuthFlowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [step, setStep] = React.useState<AuthStep>(initialStep);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -175,86 +178,82 @@ export function AuthFlow({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FAFAFA" },
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: palette.background },
   scrollContent: { flexGrow: 1, justifyContent: "center", padding: 24 },
   contentWrap: { width: "100%", maxWidth: 380, alignSelf: "center", gap: 24 },
   header: { alignItems: "center", gap: 8 },
   logoBadge: {
     width: 48,
     height: 48,
-    borderRadius: 16,
-    backgroundColor: "#0284C7",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.primary,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#0284C7",
+    shadowColor: palette.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
-  logoText: { color: "#FFFFFF", fontSize: 20, fontWeight: "900" },
-  titleText: { fontSize: 22, fontWeight: "900", color: "#18181B", textAlign: "center" },
-  subtitleText: { fontSize: 13, color: "#71717A", textAlign: "center", lineHeight: 18 },
+  logoText: { color: palette["primary-foreground"], fontSize: 20, fontWeight: "900" },
+  titleText: { fontSize: 22, fontWeight: "900", color: palette.foreground, textAlign: "center" },
+  subtitleText: { fontSize: 13, color: palette["muted-foreground"], textAlign: "center", lineHeight: 18 },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
+    backgroundColor: palette.card,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
+    borderColor: palette.border,
     padding: 24,
     gap: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+    ...elevation("card"),
   },
   inputGroup: { gap: 6 },
-  label: { fontSize: 12, fontWeight: "700", color: "#3F3F46" },
+  label: { fontSize: 12, fontWeight: "700", color: palette.foreground },
   input: {
     width: "100%",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#F8FAFC",
+    borderColor: palette.border,
+    backgroundColor: palette.background,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: "#18181B",
+    color: palette.foreground,
   },
   passwordHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  forgotText: { fontSize: 12, fontWeight: "600", color: "#0284C7" },
+  forgotText: { fontSize: 12, fontWeight: "600", color: palette.primary },
   otpSection: { gap: 12, alignItems: "center" },
   otpGrid: { flexDirection: "row", gap: 8 },
   otpCell: {
     width: 40,
     height: 48,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.control,
     borderWidth: 2,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#F8FAFC",
+    borderColor: palette.border,
+    backgroundColor: palette.background,
     alignItems: "center",
     justifyContent: "center",
   },
-  otpDigit: { fontSize: 18, fontWeight: "700", color: "#18181B", fontFamily: "monospace" },
+  otpDigit: { fontSize: 18, fontWeight: "700", color: palette.foreground, fontFamily: "monospace" },
   otpInputHidden: { textAlign: "center", fontSize: 12 },
   submitBtn: {
     width: "100%",
-    borderRadius: 14,
-    backgroundColor: "#0284C7",
+    borderRadius: themeStyle.radius.button,
+    backgroundColor: palette.primary,
     paddingVertical: 13,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#0284C7",
+    shadowColor: palette.primary,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 3,
   },
   btnPressed: { transform: [{ scale: 0.97 }], opacity: 0.9 },
-  submitBtnText: { color: "#FFFFFF", fontWeight: "700", fontSize: 14 },
+  submitBtnText: { color: palette["primary-foreground"], fontWeight: "700", fontSize: 14 },
   footerRow: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 6 },
-  footerText: { fontSize: 13, color: "#71717A" },
-  switchAuthText: { fontSize: 13, fontWeight: "700", color: "#0284C7" },
+  footerText: { fontSize: 13, color: palette["muted-foreground"] },
+  switchAuthText: { fontSize: 13, fontWeight: "700", color: palette.primary },
 });
 

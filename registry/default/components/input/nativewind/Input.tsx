@@ -1,6 +1,7 @@
 /** Nativra — Input (NativeWind). Install: npx nativra-cli add input */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -10,6 +11,7 @@ export interface InputProps extends TextInputProps {
 }
 
 export function Input({ label, error = false, errorMessage, disabled = false, ...rest }: InputProps) {
+  const palette = useThemeColors();
   return (
     <View className="w-full gap-1.5">
       {label ? <Text className="text-sm font-medium text-foreground">{label}</Text> : null}
@@ -17,8 +19,8 @@ export function Input({ label, error = false, errorMessage, disabled = false, ..
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
-        className={`rounded-lg border px-3 py-2.5 text-base text-foreground ${
+        placeholderTextColor={palette["muted-foreground"]}
+        className={`rounded-control border px-3 py-2.5 text-base text-foreground ${
           error ? "border-destructive" : "border-input"
         } ${disabled ? "opacity-50" : ""}`}
         {...rest}

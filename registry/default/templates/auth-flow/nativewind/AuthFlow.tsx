@@ -40,22 +40,22 @@ export function AuthFlow({
 
   return (
     <ScrollView
-      contentContainerClassName="flex-grow justify-center p-6 bg-zinc-50 dark:bg-zinc-950"
+      contentContainerClassName="flex-grow justify-center p-6 bg-background"
       className={cn("w-full", className)}
     >
       <View className="w-full max-w-sm mx-auto space-y-6">
         {/* Header Branding */}
         <View className="items-center space-y-2">
-          <View className="h-12 w-12 rounded-2xl bg-sky-500 items-center justify-center shadow-lg shadow-sky-500/20">
-            <Text className="text-xl font-black text-white">NV</Text>
+          <View className="h-12 w-12 rounded-card bg-primary items-center justify-center shadow-lg shadow-primary/20">
+            <Text className="text-xl font-black text-primary-foreground">NV</Text>
           </View>
-          <Text className="text-2xl font-black text-zinc-900 dark:text-zinc-50">
+          <Text className="text-2xl font-black text-primary-foreground">
             {step === "login" && `Welcome to ${appName}`}
             {step === "signup" && "Create an Account"}
             {step === "forgot" && "Reset Password"}
             {step === "otp" && "Verify Code"}
           </Text>
-          <Text className="text-xs text-zinc-500 text-center">
+          <Text className="text-xs text-muted-foreground text-center">
             {step === "login" && "Enter your credentials to access your mobile workspace."}
             {step === "signup" && "Join thousands of developers building native UI."}
             {step === "forgot" && "We will send a 6-digit one-time code to your email."}
@@ -64,29 +64,29 @@ export function AuthFlow({
         </View>
 
         {/* Form Body */}
-        <View className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
+        <View className="rounded-card border border-border bg-card p-6 shadow-xl space-y-4">
           {step === "signup" && (
             <View className="space-y-1.5">
-              <Text className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Full Name</Text>
+              <Text className="text-xs font-semibold text-foreground">Full Name</Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
                 placeholder="Alex Morgan"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
               />
             </View>
           )}
 
           {(step === "login" || step === "signup" || step === "forgot") && (
             <View className="space-y-1.5">
-              <Text className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Email Address</Text>
+              <Text className="text-xs font-semibold text-foreground">Email Address</Text>
               <TextInput
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholder="alex@example.com"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
               />
             </View>
           )}
@@ -94,10 +94,10 @@ export function AuthFlow({
           {(step === "login" || step === "signup") && (
             <View className="space-y-1.5">
               <View className="flex-row items-center justify-between">
-                <Text className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Password</Text>
+                <Text className="text-xs font-semibold text-foreground">Password</Text>
                 {step === "login" && (
                   <Pressable onPress={() => setStep("forgot")}>
-                    <Text className="text-[11px] font-medium text-sky-500">Forgot?</Text>
+                    <Text className="text-[11px] font-medium text-primary">Forgot?</Text>
                   </Pressable>
                 )}
               </View>
@@ -106,7 +106,7 @@ export function AuthFlow({
                 onChangeText={setPassword}
                 secureTextEntry
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
               />
             </View>
           )}
@@ -117,9 +117,9 @@ export function AuthFlow({
                 {[0, 1, 2, 3, 4, 5].map((idx) => (
                   <View
                     key={idx}
-                    className="h-12 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950"
+                    className="h-12 w-10 items-center justify-center rounded-control border-2 border-border bg-background"
                   >
-                    <Text className="text-lg font-bold font-mono text-zinc-900 dark:text-zinc-50">
+                    <Text className="text-lg font-bold font-mono text-foreground">
                       {otp[idx] ?? ""}
                     </Text>
                   </View>
@@ -131,7 +131,7 @@ export function AuthFlow({
                 keyboardType="number-pad"
                 maxLength={6}
                 placeholder="Type 6 digits..."
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-center text-xs text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+                className="w-full rounded-control border border-border bg-background px-3 py-2 text-center text-xs text-foreground"
               />
             </View>
           )}
@@ -140,9 +140,9 @@ export function AuthFlow({
           <Pressable
             disabled={loading}
             onPress={handleSubmit}
-            className="w-full items-center justify-center rounded-xl bg-sky-500 py-3 shadow-md shadow-sky-500/20 active:scale-95 transition-all"
+            className="w-full items-center justify-center rounded-control bg-primary py-3 shadow-md shadow-primary/20 active:scale-95 transition-all"
           >
-            <Text className="text-sm font-bold text-white">
+            <Text className="text-sm font-bold text-primary-foreground">
               {loading
                 ? "Processing..."
                 : step === "login"
@@ -158,13 +158,13 @@ export function AuthFlow({
 
         {/* Footer Toggle Navigation */}
         <View className="flex-row items-center justify-center gap-1.5 text-xs">
-          <Text className="text-zinc-500 text-xs">
+          <Text className="text-muted-foreground text-xs">
             {step === "login" ? "Don't have an account?" : "Already have an account?"}
           </Text>
           <Pressable
             onPress={() => setStep(step === "login" ? "signup" : "login")}
           >
-            <Text className="text-xs font-bold text-sky-500">
+            <Text className="text-xs font-bold text-primary">
               {step === "login" ? "Sign Up" : "Sign In"}
             </Text>
           </Pressable>

@@ -35,7 +35,7 @@ export function RadioGroup({
             accessibilityState={{ selected: isSelected, disabled: isDisabled }}
             onPress={() => !isDisabled && onValueChange(opt.value)}
             disabled={isDisabled}
-            className={`flex-row items-start gap-3 rounded-xl border p-3.5 transition-colors ${
+            className={`flex-row items-start gap-3 rounded-control border p-3.5 transition-colors ${
               isSelected
                 ? "border-primary bg-primary/10"
                 : "border-border bg-card"

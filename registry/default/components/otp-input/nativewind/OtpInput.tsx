@@ -65,7 +65,7 @@ export function OtpInput({
             <View
               key={idx}
               className={cn(
-                "h-14 w-12 items-center justify-center rounded-2xl border-2 bg-card transition-all shadow-sm",
+                "h-14 w-12 items-center justify-center rounded-control border-2 bg-card transition-all shadow-sm",
                 error
                   ? "border-destructive bg-destructive/10"
                   : isActive

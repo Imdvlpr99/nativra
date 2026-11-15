@@ -1,7 +1,7 @@
 /** Nativra — DatePicker (StyleSheet). Install: npx nativra-cli add date-picker */
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface DatePickerProps extends ViewProps {
   label?: string;
@@ -100,7 +100,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.surface,
     borderWidth: 1,
     borderColor: c.border,
     backgroundColor: c.background,
@@ -115,7 +115,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   actionText: { fontSize: 12, fontWeight: "600", color: c.primary },
   dropdown: {
     marginTop: 8,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.surface,
     borderWidth: 1,
     borderColor: c.border,
     backgroundColor: c.background,
@@ -130,7 +130,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   presetGrid: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   presetBtn: {
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.small,
     borderWidth: 1,
     borderColor: c.border,
     backgroundColor: c.background,

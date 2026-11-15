@@ -15,6 +15,8 @@ import { Switch } from "./Switch";
 import { Badge } from "./Badge";
 import { Separator } from "./Separator";
 
+const noop = () => {};
+
 export interface SettingsListProps {
   title?: string;
   notifications?: boolean;
@@ -39,7 +41,7 @@ export function SettingsList({
   className = "",
 }: SettingsListProps) {
   return (
-    <Card elevated padding="md" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="md" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="mb-2 px-1">
         <Text variant="h3">{title}</Text>
         <Text variant="muted" className="text-xs">Manage your mobile app experience</Text>
@@ -55,7 +57,7 @@ export function SettingsList({
           <Text variant="p" className="font-medium text-sm">Push Notifications</Text>
           <Text variant="muted" className="text-xs">Receive updates and mentions</Text>
         </View>
-        <Switch value={notifications} onValueChange={onNotificationsChange} />
+        <Switch value={notifications} onValueChange={onNotificationsChange ?? noop} />
       </View>
 
       <Separator />
@@ -66,7 +68,7 @@ export function SettingsList({
           <Text variant="p" className="font-medium text-sm">Dark Theme</Text>
           <Text variant="muted" className="text-xs">Switch to midnight dark palette</Text>
         </View>
-        <Switch value={darkMode} onValueChange={onDarkModeChange} />
+        <Switch value={darkMode} onValueChange={onDarkModeChange ?? noop} />
       </View>
 
       <Separator />
@@ -80,7 +82,7 @@ export function SettingsList({
           </View>
           <Text variant="muted" className="text-xs">Require authentication on launch</Text>
         </View>
-        <Switch value={biometrics} onValueChange={onBiometricsChange} />
+        <Switch value={biometrics} onValueChange={onBiometricsChange ?? noop} />
       </View>
 
       <Separator />

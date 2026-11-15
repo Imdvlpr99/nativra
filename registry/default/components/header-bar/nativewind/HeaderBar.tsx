@@ -39,7 +39,7 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            className="flex-row items-center gap-1 rounded-lg py-1 pr-2 active:opacity-70"
+            className="flex-row items-center gap-1 rounded-button py-1 pr-2 active:opacity-70"
           >
             <Text className="text-base font-bold text-primary">‹</Text>
             <Text className="text-xs font-semibold text-primary">Back</Text>
@@ -68,7 +68,7 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={rightLabel}
-            className="rounded-lg bg-primary/10 px-2.5 py-1 active:opacity-75"
+            className="rounded-button bg-primary/10 px-2.5 py-1 active:opacity-75"
           >
             <Text className="text-xs font-semibold text-primary">
               {rightLabel}

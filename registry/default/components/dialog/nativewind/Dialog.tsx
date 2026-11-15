@@ -1,6 +1,7 @@
 /** Nativra — Dialog (NativeWind). Install: npx nativra-cli add dialog */
 import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
+import { elevation } from "@/hooks/use-theme-colors";
 
 export interface DialogProps {
   open: boolean;
@@ -44,9 +45,9 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View className="flex-1 items-center justify-center bg-black/60 px-6">
+      <View className="flex-1 items-center justify-center bg-foreground/60 px-6">
         <Pressable className="absolute inset-0" onPress={handleCancel} />
-        <View className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl z-10">
+        <View className="w-full max-w-sm rounded-surface border border-border bg-card p-6 z-10" style={elevation("overlay")}>
           <Text className="text-lg font-bold text-foreground">{title}</Text>
           {description ? (
             <Text className="mt-2 text-sm text-muted-foreground leading-relaxed">
@@ -59,7 +60,7 @@ export function Dialog({
           <View className="mt-6 flex-row justify-end gap-3">
             <Pressable
               onPress={handleCancel}
-              className="h-10 px-4 rounded-xl border border-input items-center justify-center active:opacity-75"
+              className="h-10 px-4 rounded-control border border-input items-center justify-center active:opacity-75"
             >
               <Text className="text-sm font-semibold text-foreground">
                 {cancelText}
@@ -67,7 +68,7 @@ export function Dialog({
             </Pressable>
             <Pressable
               onPress={handleConfirm}
-              className={`h-10 px-4 rounded-xl items-center justify-center active:opacity-75 ${
+              className={`h-10 px-4 rounded-control items-center justify-center active:opacity-75 ${
                 destructive ? "bg-destructive" : "bg-foreground"
               }`}
             >

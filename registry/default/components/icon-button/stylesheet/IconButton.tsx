@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export type IconButtonVariant = "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost";
 export type IconButtonSize = "sm" | "md" | "lg";
@@ -78,17 +78,17 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   sm: {
     width: 36,
     height: 36,
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.button,
   },
   md: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.button,
   },
   lg: {
     width: 52,
     height: 52,
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.button,
   },
   full: {
     borderRadius: 9999,

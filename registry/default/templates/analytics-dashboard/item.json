@@ -5,7 +5,10 @@
   "type": "template",
   "status": "stable",
   "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,17 +26,48 @@
     }
   ],
   "registryDependencies": [
-    { "id": "card", "registry": "default" },
-    { "id": "badge", "registry": "default" },
-    { "id": "button", "registry": "default" },
-    { "id": "separator", "registry": "default" },
-    { "id": "tabs", "registry": "default" },
-    { "id": "text", "registry": "default" },
-    { "id": "metric-card", "registry": "default" }
+    {
+      "id": "card",
+      "registry": "default"
+    },
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "button",
+      "registry": "default"
+    },
+    {
+      "id": "separator",
+      "registry": "default"
+    },
+    {
+      "id": "tabs",
+      "registry": "default"
+    },
+    {
+      "id": "text",
+      "registry": "default"
+    },
+    {
+      "id": "metric-card",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["template", "analytics", "dashboard", "kpi", "metronic", "screen"],
+  "tags": [
+    "template",
+    "analytics",
+    "dashboard",
+    "kpi",
+    "metronic",
+    "screen"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

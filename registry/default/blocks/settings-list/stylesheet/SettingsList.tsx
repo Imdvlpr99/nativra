@@ -14,6 +14,9 @@ import { Text } from "./Text";
 import { Switch } from "./Switch";
 import { Badge } from "./Badge";
 import { Separator } from "./Separator";
+import { themeStyle } from "@/hooks/use-theme-colors";
+
+const noop = () => {};
 
 export interface SettingsListProps {
   title?: string;
@@ -53,7 +56,7 @@ export function SettingsList({
           <Text variant="p" style={styles.rowTitle}>Push Notifications</Text>
           <Text variant="muted" style={styles.rowDesc}>Receive updates and mentions</Text>
         </View>
-        <Switch value={notifications} onValueChange={onNotificationsChange} />
+        <Switch value={notifications} onValueChange={onNotificationsChange ?? noop} />
       </View>
 
       <Separator />
@@ -64,7 +67,7 @@ export function SettingsList({
           <Text variant="p" style={styles.rowTitle}>Dark Theme</Text>
           <Text variant="muted" style={styles.rowDesc}>Switch to midnight dark palette</Text>
         </View>
-        <Switch value={darkMode} onValueChange={onDarkModeChange} />
+        <Switch value={darkMode} onValueChange={onDarkModeChange ?? noop} />
       </View>
 
       <Separator />
@@ -78,7 +81,7 @@ export function SettingsList({
           </View>
           <Text variant="muted" style={styles.rowDesc}>Require authentication on launch</Text>
         </View>
-        <Switch value={biometrics} onValueChange={onBiometricsChange} />
+        <Switch value={biometrics} onValueChange={onBiometricsChange ?? noop} />
       </View>
 
       <Separator />
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     paddingHorizontal: 4,

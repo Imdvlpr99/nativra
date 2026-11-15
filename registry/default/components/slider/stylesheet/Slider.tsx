@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Pressable, StyleSheet, type GestureResponderEvent, type ViewProps } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation } from "@/hooks/use-theme-colors";
 
 export interface SliderProps extends ViewProps {
   value?: number;
@@ -91,11 +91,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.background,
     borderWidth: 2,
     borderColor: c.primary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    ...elevation("card"),
   },
 });
 

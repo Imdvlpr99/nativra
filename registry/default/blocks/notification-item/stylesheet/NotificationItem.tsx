@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export interface NotificationItemProps {
   avatarFallback?: string;
@@ -31,6 +32,8 @@ export function NotificationItem({
   category = "Workspace",
   onPress,
 }: NotificationItemProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <Pressable
       accessibilityRole="button"
@@ -69,21 +72,21 @@ export function NotificationItem({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 18,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     padding: 14,
   },
   cardUnread: {
-    backgroundColor: "#f0f9ff",
-    borderColor: "#bae6fd",
+    backgroundColor: alpha(palette.primary, 0.1),
+    borderColor: alpha(palette.primary, 0.3),
   },
   cardRead: {
-    backgroundColor: "#ffffff",
-    borderColor: "#e4e4e7",
+    backgroundColor: palette.card,
+    borderColor: palette.border,
   },
   contentRow: {
     flexDirection: "row",
@@ -97,12 +100,12 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#0ea5e9",
+    backgroundColor: palette.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: "#ffffff",
+    color: palette["primary-foreground"],
     fontSize: 14,
     fontWeight: "700",
   },
@@ -112,10 +115,10 @@ const styles = StyleSheet.create({
     right: -2,
     height: 12,
     width: 12,
-    borderRadius: 6,
-    backgroundColor: "#0ea5e9",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.primary,
     borderWidth: 2,
-    borderColor: "#ffffff",
+    borderColor: alpha(palette["primary-foreground"], 0.2),
   },
   details: {
     flex: 1,
@@ -132,38 +135,38 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   badgeUnread: {
-    backgroundColor: "#e0f2fe",
+    backgroundColor: alpha(palette.primary, 0.15),
   },
   badgeRead: {
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
   },
   badgeTextUnread: {
-    color: "#0369a1",
+    color: palette.primary,
   },
   badgeTextRead: {
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   timeAgo: {
     fontSize: 11,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
     fontFamily: "monospace",
   },
   message: {
     fontSize: 12,
     lineHeight: 18,
-    color: "#3f3f46",
+    color: palette.foreground,
   },
   sender: {
     fontWeight: "700",
-    color: "#09090b",
+    color: palette.foreground,
   },
   resource: {
     fontWeight: "600",
-    color: "#0ea5e9",
+    color: palette.primary,
   },
 });
 

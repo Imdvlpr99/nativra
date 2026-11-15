@@ -47,7 +47,24 @@ export type ${pascal(theme.id)}Theme = typeof ${name};
  * installing a different theme over this file restyles every component.
  */
 export const themeColors = { light: ${name}, dark: ${name}Dark } as const;
+
+/**
+ * Shape, depth and type character. Components read radii by role (button, control, card,
+ * surface, chip, small), shadows by level and heading weights from here, in both styling targets.
+ */
+export const themeStyle = ${renderStyle(theme.style)} as const;
 `;
+}
+
+/** Pretty-prints the style tokens as a TypeScript object literal. */
+function renderStyle(style) {
+  const lit = (value, indent) => {
+    if (typeof value !== "object") return JSON.stringify(value);
+    const pad = "  ".repeat(indent + 1);
+    const entries = Object.entries(value).map(([k, v]) => `${pad}${k}: ${lit(v, indent + 1)},`);
+    return `{\n${entries.join("\n")}\n${"  ".repeat(indent)}}`;
+  };
+  return lit(style, 0);
 }
 
 function renderItem(theme) {

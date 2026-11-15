@@ -21,8 +21,11 @@ import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
 
 export function EcommerceFlow() {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [selectedCat, setSelectedCat] = useState("all");
   const [cartCount, setCartCount] = useState(2);
 
@@ -155,8 +158,8 @@ export function EcommerceFlow() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#09090b" },
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: palette.background },
   scroll: { flex: 1 },
   container: { paddingHorizontal: 16, paddingVertical: 24 },
   header: {
@@ -165,48 +168,48 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 24,
   },
-  title: { fontSize: 24, fontWeight: "900", color: "#ffffff", letterSpacing: -0.5 },
-  subtitle: { fontSize: 12, color: "#a1a1aa", marginTop: 4 },
+  title: { fontSize: 24, fontWeight: "900", color: palette.foreground, letterSpacing: -0.5 },
+  subtitle: { fontSize: 12, color: palette["muted-foreground"], marginTop: 4 },
   cartBtn: {
     height: 40,
     paddingHorizontal: 14,
-    borderRadius: 12,
-    backgroundColor: "#18181b",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.card,
     borderWidth: 1,
-    borderColor: "#27272a",
+    borderColor: palette.border,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  cartText: { fontSize: 12, fontWeight: "600", color: "#e4e4e7" },
+  cartText: { fontSize: 12, fontWeight: "600", color: palette.foreground },
   heroCard: {
-    borderRadius: 24,
-    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: alpha(palette.primary, 0.12),
     borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.25)",
+    borderColor: alpha(palette.primary, 0.25),
     marginBottom: 24,
     padding: 20,
   },
   badgeWrap: { marginBottom: 8, alignItems: "flex-start" },
-  heroTitle: { fontSize: 20, fontWeight: "900", color: "#ffffff", lineHeight: 26 },
-  heroSub: { fontSize: 12, color: "#cbd5e1", marginTop: 4, maxWidth: 260 },
+  heroTitle: { fontSize: 20, fontWeight: "900", color: palette.foreground, lineHeight: 26 },
+  heroSub: { fontSize: 12, color: palette["muted-foreground"], marginTop: 4, maxWidth: 260 },
   heroBtnWrap: { marginTop: 16, alignItems: "flex-start" },
   catScroll: { flexDirection: "row", gap: 8, marginBottom: 24 },
-  catPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, borderWidth: 1 },
-  catPillActive: { backgroundColor: "#0284c7", borderColor: "#38bdf8" },
-  catPillInactive: { backgroundColor: "#18181b", borderColor: "#27272a" },
+  catPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: themeStyle.radius.control, borderWidth: 1 },
+  catPillActive: { backgroundColor: palette.primary, borderColor: palette.primary },
+  catPillInactive: { backgroundColor: palette.card, borderColor: palette.border },
   catText: { fontSize: 12, fontWeight: "600" },
-  catTextActive: { color: "#ffffff" },
-  catTextInactive: { color: "#d4d4d8" },
+  catTextActive: { color: palette["primary-foreground"] },
+  catTextInactive: { color: palette["muted-foreground"] },
   grid: { gap: 14, marginBottom: 32 },
-  productCard: { borderRadius: 16, backgroundColor: "#18181b", borderWidth: 1, borderColor: "#27272a" },
+  productCard: { borderRadius: themeStyle.radius.card, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border },
   productRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
   productMeta: { flex: 1, marginRight: 12 },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  brandText: { fontSize: 12, color: "#a1a1aa", fontWeight: "500" },
-  productName: { fontSize: 16, fontWeight: "700", color: "#ffffff", marginTop: 4 },
-  ratingText: { fontSize: 12, color: "#fbbf24", fontWeight: "600", marginTop: 4 },
+  brandText: { fontSize: 12, color: palette["muted-foreground"], fontWeight: "500" },
+  productName: { fontSize: 16, fontWeight: "700", color: palette.foreground, marginTop: 4 },
+  ratingText: { fontSize: 12, color: palette.warning, fontWeight: "600", marginTop: 4 },
   actionCol: { alignItems: "flex-end", gap: 8 },
-  priceText: { fontSize: 18, fontWeight: "900", color: "#ffffff" },
+  priceText: { fontSize: 18, fontWeight: "900", color: palette.foreground },
 });
 

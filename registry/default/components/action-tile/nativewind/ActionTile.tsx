@@ -44,12 +44,12 @@ export function ActionTile({
       accessibilityState={{ disabled }}
       accessibilityLabel={label}
       style={style}
-      className={`flex-1 items-center justify-center rounded-2xl border p-3.5 shadow-sm ${surfaceClasses} ${
+      className={`flex-1 items-center justify-center rounded-card border p-3.5 shadow-sm ${surfaceClasses} ${
         disabled ? "opacity-50" : "active:opacity-80"
       } ${className}`}
       {...rest}
     >
-      <View className={`mb-2 h-10 w-10 items-center justify-center rounded-xl ${iconWrapClasses}`}>
+      <View className={`mb-2 h-10 w-10 items-center justify-center rounded-control ${iconWrapClasses}`}>
         <Text className="text-base">{icon}</Text>
       </View>
       <Text

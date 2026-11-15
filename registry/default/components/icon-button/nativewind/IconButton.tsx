@@ -2,26 +2,27 @@ import * as React from "react";
 import { Pressable, ActivityIndicator, type PressableProps } from "react-native";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 const iconButtonVariants = cva(
-  "items-center justify-center rounded-xl transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50",
+  "items-center justify-center rounded-button transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default: "bg-foreground text-background",
         primary: "bg-primary text-primary-foreground shadow-sm shadow-primary/20",
         secondary: "bg-muted text-foreground border border-border",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm shadow-red-600/20",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm shadow-destructive/20",
         outline: "border border-input bg-transparent text-foreground",
         ghost: "bg-transparent text-foreground hover:bg-muted",
       },
       size: {
-        sm: "h-9 w-9 rounded-lg",
-        md: "h-11 w-11 rounded-xl",
-        lg: "h-13 w-13 rounded-2xl",
+        sm: "h-9 w-9 rounded-button",
+        md: "h-11 w-11 rounded-button",
+        lg: "h-13 w-13 rounded-button",
       },
       rounded: {
-        default: "rounded-xl",
+        default: "rounded-button",
         full: "rounded-full",
       },
     },
@@ -56,6 +57,7 @@ export function IconButton({
   onPress,
   ...props
 }: IconButtonProps) {
+  const palette = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -71,7 +73,7 @@ export function IconButton({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "outline" || variant === "ghost" ? "#71717A" : "#FFFFFF"}
+          color={variant === "outline" || variant === "ghost" ? palette["muted-foreground"] : palette["primary-foreground"]}
         />
       ) : (
         children

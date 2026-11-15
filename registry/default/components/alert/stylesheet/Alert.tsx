@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { alpha, type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { alpha, type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export type AlertVariant = "default" | "info" | "success" | "warning" | "destructive";
 
@@ -26,11 +26,12 @@ const THEMES = (c: ThemeColors): Record<
   AlertVariant,
   { bg: string; border: string; title: string; desc: string }
 > => ({
+  // Status variants: a soft tint of the status color, its title in full color, body text readable.
   default: { bg: c.muted, border: c.border, title: c.foreground, desc: c["muted-foreground"] },
-  info: { bg: alpha(c.primary, 0.08), border: c.primary, title: c.primary, desc: c.primary },
-  success: { bg: "#f0fdf4", border: "#bbf7d0", title: "#15803d", desc: "#16a34a" },
-  warning: { bg: "#fffbeb", border: "#fde68a", title: "#b45309", desc: "#d97706" },
-  destructive: { bg: alpha(c.destructive, 0.08), border: c.destructive, title: c.destructive, desc: c.destructive },
+  info: { bg: alpha(c.info, 0.1), border: alpha(c.info, 0.25), title: c.info, desc: alpha(c.foreground, 0.8) },
+  success: { bg: alpha(c.success, 0.1), border: alpha(c.success, 0.25), title: c.success, desc: alpha(c.foreground, 0.8) },
+  warning: { bg: alpha(c.warning, 0.1), border: alpha(c.warning, 0.25), title: c.warning, desc: alpha(c.foreground, 0.8) },
+  destructive: { bg: alpha(c.destructive, 0.1), border: alpha(c.destructive, 0.25), title: c.destructive, desc: alpha(c.foreground, 0.8) },
 });
 
 export function Alert({
@@ -82,7 +83,7 @@ export function Alert({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.card,
     borderWidth: 1,
     padding: 16,
     flexDirection: "row",

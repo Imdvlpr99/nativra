@@ -1,7 +1,7 @@
 /** Nativra — RadioGroup (StyleSheet). Install: npx nativra-cli add radio-group */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface RadioOption {
   label: string;
@@ -80,7 +80,7 @@ export function RadioGroup({
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   group: { width: "100%", gap: 12 },
-  item: { flexDirection: "row", alignItems: "flex-start", gap: 12, borderRadius: 14, borderWidth: 1, padding: 14 },
+  item: { flexDirection: "row", alignItems: "flex-start", gap: 12, borderRadius: themeStyle.radius.control, borderWidth: 1, padding: 14 },
   disabled: { opacity: 0.5 },
   circle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: "center", justifyContent: "center", marginTop: 2 },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: c.primary },

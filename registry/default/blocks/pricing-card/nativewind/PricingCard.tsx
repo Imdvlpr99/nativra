@@ -44,7 +44,7 @@ export function PricingCard({
   className = "",
 }: PricingCardProps) {
   return (
-    <Card elevated padding="lg" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Text variant="h3">{planName}</Text>
         {popular && <Badge variant="primary" size="sm" label="Most Popular" />}
@@ -64,8 +64,8 @@ export function PricingCard({
       <View className="gap-3">
         {features.map((feature, idx) => (
           <View key={idx} className="flex-row items-center gap-2.5">
-            <Text className="text-xs font-bold text-emerald-600 dark:text-emerald-400">✓</Text>
-            <Text variant="p" className="text-xs text-zinc-700 dark:text-zinc-300">{feature}</Text>
+            <Text className="text-xs font-bold text-success">✓</Text>
+            <Text variant="p" className="text-xs text-foreground">{feature}</Text>
           </View>
         ))}
       </View>
