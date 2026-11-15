@@ -49,6 +49,7 @@ import {
   Textarea,
   Toast,
 } from "./components/nativra";
+import { alpha, useThemeColors } from "./components/nativra/use-theme-colors";
 
 // ---------------------------------------------------------------------------
 // Component Metadata & Categorization
@@ -297,6 +298,40 @@ const CATEGORIES: { key: CategoryKey; label: string }[] = [
 // Interactive Components with Live State
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Theme-aware demo text: the demo wrappers follow ?theme and ?scheme like the components.
+// ---------------------------------------------------------------------------
+
+type DemoTone = "default" | "muted" | "accent" | "warning" | "danger" | "onSecondary" | "onPrimary" | "inverse";
+
+function DemoText({ tone = "default", style, ...rest }: React.ComponentProps<typeof Text> & { tone?: DemoTone }) {
+  const c = useThemeColors();
+  const color = {
+    default: c.foreground,
+    muted: c["muted-foreground"],
+    accent: c.success,
+    warning: c.warning,
+    danger: c.destructive,
+    onSecondary: c["secondary-foreground"],
+    onPrimary: c["primary-foreground"],
+    inverse: c.background,
+  }[tone];
+  return <Text style={[{ color }, style]} {...rest} />;
+}
+
+function SafeAreaDemo(p: PreviewProps) {
+  const c = useThemeColors();
+  return (
+    <SafeArea
+      edges={(p.edges as any) ?? ["top", "bottom"]}
+      style={{ padding: 14, backgroundColor: alpha(c.success, 0.08), borderColor: c.success, borderWidth: 1, borderRadius: 8, width: "100%" }}
+    >
+      <DemoText tone="accent" style={{ fontSize: 12, fontWeight: "600" }}>✓ SafeArea Inset Protected Content</DemoText>
+      <DemoText tone="muted" style={{ fontSize: 11, marginTop: 2 }}>Adapts dynamically to device status bar, notch and home pill.</DemoText>
+    </SafeArea>
+  );
+}
+
 function InteractiveButton(p: PreviewProps) {
   const [clicks, setClicks] = useState(0);
   const baseLabel = String(p.children ?? "Button");
@@ -312,9 +347,9 @@ function InteractiveButton(p: PreviewProps) {
         {clicks > 0 ? `${baseLabel} (${clicks})` : baseLabel}
       </Button>
       {clicks > 0 && (
-        <Text style={{ fontSize: 11, color: "#10b981", fontWeight: "600" }}>
+        <DemoText tone="accent" style={{ fontSize: 11, fontWeight: "600" }}>
           ✓ Tapped {clicks} {clicks === 1 ? "time" : "times"}
-        </Text>
+        </DemoText>
       )}
     </View>
   );
@@ -329,9 +364,9 @@ function InteractiveSwitch(p: PreviewProps) {
         disabled={Boolean(p.disabled)}
         onValueChange={setVal}
       />
-      <Text style={{ fontSize: 13, fontWeight: "600", color: val ? "#10b981" : "#71717a" }}>
+      <DemoText tone={val ? "accent" : "muted"} style={{ fontSize: 13, fontWeight: "600" }}>
         {val ? "Active" : "Inactive"}
-      </Text>
+      </DemoText>
     </View>
   );
 }
@@ -359,20 +394,21 @@ function InteractiveRating(p: PreviewProps) {
         size={(p.size as any) ?? "md"}
         onRatingChange={setRating}
       />
-      <Text style={{ fontSize: 12, color: "#f59e0b", fontWeight: "600" }}>
+      <DemoText tone="warning" style={{ fontSize: 12, fontWeight: "600" }}>
         {rating} of {max} Stars
-      </Text>
+      </DemoText>
     </View>
   );
 }
 
 function InteractiveSlider(p: PreviewProps) {
+  const demo = useThemeColors();
   const [val, setVal] = useState(Number(p.value ?? 50));
   return (
     <View style={{ width: "100%", gap: 8 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text style={{ fontSize: 12, color: "#71717a" }}>Current Value</Text>
-        <Text style={{ fontSize: 13, fontWeight: "700", color: "#10b981" }}>{Math.round(val)}%</Text>
+        <DemoText tone="muted" style={{ fontSize: 12 }}>Current Value</DemoText>
+        <DemoText tone="accent" style={{ fontSize: 13, fontWeight: "700" }}>{Math.round(val)}%</DemoText>
       </View>
       <Slider
         value={val}
@@ -385,15 +421,15 @@ function InteractiveSlider(p: PreviewProps) {
       <View style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}>
         <Pressable
           onPress={() => setVal((v) => Math.max(0, v - 10))}
-          style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6, backgroundColor: "#27272a" }}
+          style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6, backgroundColor: demo.secondary }}
         >
-          <Text style={{ color: "#ffffff", fontSize: 11, fontWeight: "600" }}>-10%</Text>
+          <DemoText tone="onSecondary" style={{ fontSize: 11, fontWeight: "600" }}>-10%</DemoText>
         </Pressable>
         <Pressable
           onPress={() => setVal((v) => Math.min(100, v + 10))}
-          style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6, backgroundColor: "#27272a" }}
+          style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6, backgroundColor: demo.secondary }}
         >
-          <Text style={{ color: "#ffffff", fontSize: 11, fontWeight: "600" }}>+10%</Text>
+          <DemoText tone="onSecondary" style={{ fontSize: 11, fontWeight: "600" }}>+10%</DemoText>
         </Pressable>
       </View>
     </View>
@@ -414,9 +450,9 @@ function InteractiveInput(p: PreviewProps) {
         onChangeText={setText}
       />
       {text.length > 0 && (
-        <Text style={{ fontSize: 11, color: "#71717a", textAlign: "right" }}>
+        <DemoText tone="muted" style={{ fontSize: 11, textAlign: "right" }}>
           {text.length} characters
-        </Text>
+        </DemoText>
       )}
     </View>
   );
@@ -439,6 +475,7 @@ function InteractiveTextarea(p: PreviewProps) {
 }
 
 function InteractiveTabs(p: PreviewProps) {
+  const demo = useThemeColors();
   const items = (p.items as any) ?? [
     { value: "overview", label: "Overview" },
     { value: "activity", label: "Activity" },
@@ -453,10 +490,10 @@ function InteractiveTabs(p: PreviewProps) {
         variant={(p.variant as any) ?? "pill"}
         items={items}
       />
-      <View style={{ padding: 10, borderRadius: 8, backgroundColor: "rgba(120, 120, 128, 0.08)", alignItems: "center" }}>
-        <Text style={{ fontSize: 12, color: "#71717a" }}>
-          Active Tab: <Text style={{ fontWeight: "700", color: "#10b981" }}>{active.toUpperCase()}</Text>
-        </Text>
+      <View style={{ padding: 10, borderRadius: 8, backgroundColor: demo.muted, alignItems: "center" }}>
+        <DemoText tone="muted" style={{ fontSize: 12 }}>
+          Active Tab: <DemoText tone="accent" style={{ fontWeight: "700" }}>{active.toUpperCase()}</DemoText>
+        </DemoText>
       </View>
     </View>
   );
@@ -474,9 +511,9 @@ function InteractiveSegmentedControl(p: PreviewProps) {
         value={val}
         onValueChange={setVal}
       />
-      <Text style={{ fontSize: 11, textAlign: "center", color: "#71717a" }}>
-        Selected timeframe: <Text style={{ fontWeight: "700", color: "#10b981" }}>{val.toUpperCase()}</Text>
-      </Text>
+      <DemoText tone="muted" style={{ fontSize: 11, textAlign: "center" }}>
+        Selected timeframe: <DemoText tone="accent" style={{ fontWeight: "700" }}>{val.toUpperCase()}</DemoText>
+      </DemoText>
     </View>
   );
 }
@@ -494,9 +531,9 @@ function InteractiveSelect(p: PreviewProps) {
         onValueChange={setVal}
       />
       {val && (
-        <Text style={{ fontSize: 11, color: "#10b981", textAlign: "right", fontWeight: "600" }}>
+        <DemoText tone="accent" style={{ fontSize: 11, textAlign: "right", fontWeight: "600" }}>
           ✓ Selected: {val}
-        </Text>
+        </DemoText>
       )}
     </View>
   );
@@ -527,9 +564,9 @@ function InteractiveOtpInput(p: PreviewProps) {
         value={code}
         onChangeText={setCode}
       />
-      <Text style={{ fontSize: 11, color: "#71717a" }}>
-        Entered Code: <Text style={{ fontWeight: "700", color: "#10b981" }}>{code || "----"}</Text>
-      </Text>
+      <DemoText tone="muted" style={{ fontSize: 11 }}>
+        Entered Code: <DemoText tone="accent" style={{ fontWeight: "700" }}>{code || "----"}</DemoText>
+      </DemoText>
     </View>
   );
 }
@@ -548,10 +585,10 @@ function InteractiveBottomSheet(p: PreviewProps) {
         title={title}
       >
         <View style={{ padding: 20, gap: 12 }}>
-          <Text style={{ fontSize: 16, fontWeight: "700" }}>Native Bottom Sheet Modal</Text>
-          <Text style={{ fontSize: 13, color: "#71717a" }}>
+          <DemoText style={{ fontSize: 16, fontWeight: "700" }}>Native Bottom Sheet Modal</DemoText>
+          <DemoText tone="muted" style={{ fontSize: 13 }}>
             This modal supports gestures, backdrop dismissal, and smooth spring transitions.
-          </Text>
+          </DemoText>
           <Button variant="primary" onPress={() => setOpen(false)}>
             Close Sheet
           </Button>
@@ -585,9 +622,9 @@ function InteractiveDialog(p: PreviewProps) {
         }}
       />
       {status && (
-        <Text style={{ fontSize: 11, color: status === "Confirmed" ? "#10b981" : "#ef4444" }}>
+        <DemoText tone={status === "Confirmed" ? "accent" : "danger"} style={{ fontSize: 11 }}>
           Last action: {status}
-        </Text>
+        </DemoText>
       )}
     </View>
   );
@@ -614,12 +651,13 @@ function InteractiveToast(p: PreviewProps) {
 }
 
 function InteractiveProgress(p: PreviewProps) {
+  const demo = useThemeColors();
   const [val, setVal] = useState(Number(p.value ?? 60));
   return (
     <View style={{ width: "100%", gap: 8 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, color: "#71717a" }}>Task Completion</Text>
-        <Text style={{ fontSize: 12, fontWeight: "700", color: "#10b981" }}>{val}%</Text>
+        <DemoText tone="muted" style={{ fontSize: 12 }}>Task Completion</DemoText>
+        <DemoText tone="accent" style={{ fontSize: 12, fontWeight: "700" }}>{val}%</DemoText>
       </View>
       <Progress
         value={val}
@@ -630,15 +668,15 @@ function InteractiveProgress(p: PreviewProps) {
       <View style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}>
         <Pressable
           onPress={() => setVal((v) => Math.max(0, v - 15))}
-          style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, backgroundColor: "#27272a" }}
+          style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, backgroundColor: demo.secondary }}
         >
-          <Text style={{ color: "#ffffff", fontSize: 11, fontWeight: "600" }}>-15%</Text>
+          <DemoText tone="onSecondary" style={{ fontSize: 11, fontWeight: "600" }}>-15%</DemoText>
         </Pressable>
         <Pressable
           onPress={() => setVal((v) => Math.min(100, v + 15))}
-          style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, backgroundColor: "#27272a" }}
+          style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, backgroundColor: demo.secondary }}
         >
-          <Text style={{ color: "#ffffff", fontSize: 11, fontWeight: "600" }}>+15%</Text>
+          <DemoText tone="onSecondary" style={{ fontSize: 11, fontWeight: "600" }}>+15%</DemoText>
         </Pressable>
       </View>
     </View>
@@ -649,7 +687,7 @@ function InteractiveProgress(p: PreviewProps) {
 // Renderers Registry
 // ---------------------------------------------------------------------------
 
-const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
+export const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
   accordion: (p) => (
     <Accordion
       items={(p.items as any) ?? [
@@ -686,10 +724,10 @@ const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
   button: (p) => <InteractiveButton {...p} />,
   card: (p) => (
     <Card elevated={Boolean(p.elevated !== false)} style={{ width: "100%", padding: 16 }}>
-      <Text style={{ fontSize: 15, fontWeight: "700", marginBottom: 4 }}>Native Card Container</Text>
-      <Text style={{ fontSize: 13, color: "#71717a", marginBottom: 12 }}>
+      <DemoText style={{ fontSize: 15, fontWeight: "700", marginBottom: 4 }}>Native Card Container</DemoText>
+      <DemoText tone="muted" style={{ fontSize: 13, marginBottom: 12 }}>
         Modular surface container with responsive corner radius and depth styling.
-      </Text>
+      </DemoText>
       <Button variant="primary" size="sm">Explore Card</Button>
     </Card>
   ),
@@ -722,13 +760,13 @@ const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
   "icon-button": (p) => (
     <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
       <IconButton accessibilityLabel="Star action" variant="default" size="md">
-        <Text style={{ fontSize: 16, color: "#ffffff" }}>★</Text>
+        <DemoText tone="inverse" style={{ fontSize: 16 }}>★</DemoText>
       </IconButton>
       <IconButton accessibilityLabel="Heart action" variant="primary" size="md">
-        <Text style={{ fontSize: 16, color: "#ffffff" }}>♥</Text>
+        <DemoText tone="onPrimary" style={{ fontSize: 16 }}>♥</DemoText>
       </IconButton>
       <IconButton accessibilityLabel="Outline action" variant="outline" size="md">
-        <Text style={{ fontSize: 16 }}>✦</Text>
+        <DemoText style={{ fontSize: 16 }}>✦</DemoText>
       </IconButton>
     </View>
   ),
@@ -736,19 +774,14 @@ const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
   label: ({ children, ...p }) => (
     <View style={{ gap: 6, width: "100%" }}>
       <Label {...(p as object)}>{String(children ?? "Required Field")}</Label>
-      <Text style={{ fontSize: 12, color: "#71717a" }}>Subordinate helper annotation below label</Text>
+      <DemoText tone="muted" style={{ fontSize: 12 }}>Subordinate helper annotation below label</DemoText>
     </View>
   ),
   "otp-input": (p) => <InteractiveOtpInput {...p} />,
   progress: (p) => <InteractiveProgress {...p} />,
   "radio-group": (p) => <InteractiveRadioGroup {...p} />,
   "rating-stars": (p) => <InteractiveRating {...p} />,
-  "safe-area": (p) => (
-    <SafeArea edges={(p.edges as any) ?? ["top", "bottom"]} style={{ padding: 14, backgroundColor: "rgba(16, 185, 129, 0.08)", borderColor: "#10b981", borderWidth: 1, borderRadius: 8, width: "100%" }}>
-      <Text style={{ fontSize: 12, color: "#10b981", fontWeight: "600" }}>✓ SafeArea Inset Protected Content</Text>
-      <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>Adapts dynamically to device status bar, notch and home pill.</Text>
-    </SafeArea>
-  ),
+  "safe-area": (p) => <SafeAreaDemo {...p} />,
   "segmented-control": (p) => <InteractiveSegmentedControl {...p} />,
   select: (p) => <InteractiveSelect {...p} />,
   separator: (p) => (

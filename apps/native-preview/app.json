@@ -26,6 +26,9 @@
     "web": {
       "favicon": "./assets/icon.png",
       "bundler": "metro"
+    },
+    "experiments": {
+      "baseUrl": "/preview"
     }
   }
 }

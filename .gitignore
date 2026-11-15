@@ -17,14 +17,8 @@ nativra.lock.json.bak
 .nativra/
 apps/docs/public/registry.json
 apps/docs/public/items/
+apps/docs/public/schema.json
+apps/docs/public/preview/
 
-# Blueprints & Specifications
-nativra_complete_product_blueprint.docx
-nativrav2.md
-nativrav3.md
-nativrav4.md
-nativra_master_product_blueprint.md
-*blueprint*
-*plan*.md
-apps/docs/components/searchItems.json
-apps/docs/lib/generated/
+apps/docs/dist-server/
+apps/docs/src/generated/

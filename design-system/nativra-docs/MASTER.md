@@ -15,22 +15,28 @@
 
 ## Project adaptations (authoritative — override the generated sections below)
 
-The generated palette is dark-only and its accent fails contrast as text. As implemented in
-`apps/docs/app/globals.css`:
+Style: "Graphite", a dark-first developer UI (from the "Modern Dark Cinema" / Inter pairing), with
+light mode first-class too. As implemented in `apps/docs/src/styles.css` (2026-11-15 Vite remake):
 
-- **Modes:** light and dark are both first-class; the toggle sets `.dark` on `<html>` before paint.
-- **Neutrals:** slate. Light background `#FFFFFF`, text `#0F172A`, muted text `#475569` (7.6:1).
-  Dark background `#020617`, text `#F8FAFC`, muted text `#94A3B8` (7.9:1).
-- **Primary actions:** near-black `#0F172A` in light / `#F8FAFC` in dark — the UI is monochrome.
-- **Accent (green):** used sparingly for prompts, active indicators and success.
-  Text-safe values only: `#15803D` (green-700, 5.0:1 on white) in light, `#4ADE80` (green-400) in dark.
-  Never `#22C55E` as text on white (2.3:1).
-- **Typography:** IBM Plex Sans for all reading text *and* headings (readability for learners);
-  JetBrains Mono only for code, commands, version numbers and small labels. Body 16px / 1.65.
-- **Reading measure:** prose columns max 46rem; previews and tables may use the full content column.
-- **Code:** always dark surfaces, syntax-highlighted at build time (shiki), with a filename/language
-  header and a copy button. Shell commands get a package-manager switch that is remembered.
-- **Learning path:** every guide ends with a "Next" link; Getting started is ordered as a course.
+- **Modes:** the saved or system theme is applied by an inline script in `index.html` before paint;
+  the toggle sets `.dark` on `<html>`.
+- **Neutrals:** graphite. Light background `#FFFFFF`, text `#0D1017`, muted text (7.6:1). Dark
+  background `#0A0B0F`, text `#F3F4F6`, muted text (8.3:1). `surface` for inputs and quiet panels.
+- **Primary actions:** near-black in light / near-white in dark.
+- **Accent (cyan, from the logo):** links, active sidebar/TOC items, focus ring, eyebrows.
+  Text-safe values only: `#0E7490` (cyan-700, 5.4:1 on white) in light, cyan-300 in dark.
+- **Signature:** the logo's lime → emerald → cyan gradient, used only for the 1px header rule, the
+  editor glow and the hero headline. Headline text uses 700-shade stops in light mode (`.text-signature`).
+- **Typography:** Inter for all text (features cv11, ss01, ss03); JetBrains Mono for code, commands
+  and versions. Body 16px / 1.65–1.75.
+- **Shape:** 12px radius (`--radius: 0.75rem`), bordered `.panel` cards, no heavy shadows.
+- **Code:** always on dark "editor" panels in both modes, highlighted with Shiki (github-dark-default,
+  JS regex engine) during prerender and reused on hydration. Shell commands have a remembered
+  npm/pnpm/yarn/bun switch.
+- **Learning path:** sidebar groups Get started → Concepts → Guides → Reference → Library; the
+  pager's "Next" follows that order. Every docs page has an "Edit this page on GitHub" link.
+- **Truthfulness:** numbers and versions on pages are computed from the registry, the CLI's `--help`
+  output and `DEFAULT_COMPATIBILITY_MATRIX`. Never hand-write counts or version ranges.
 
 ---
 

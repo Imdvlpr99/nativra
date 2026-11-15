@@ -2,7 +2,7 @@
 /**
  * scripts/build-cli-docs.mjs
  *
- * Generates apps/docs/lib/generated/cli.json from the built CLI's own `--help` output,
+ * Generates apps/docs/src/generated/cli.json from the built CLI's own `--help` output,
  * so the docs CLI reference can never drift from the real commands and flags.
  *
  * Requires packages/cli/dist/cli.js (run the CLI build first).
@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "packages/cli/dist/cli.js");
-const out = join(root, "apps/docs/lib/generated/cli.json");
+const out = join(root, "apps/docs/src/generated/cli.json");
 
 if (!existsSync(cli)) {
   console.error(`❌ ${cli} not found. Build the CLI first (pnpm --filter nativra-cli build).`);

@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Nativra docs: "graphite" — dark-first developer UI (light mode is first-class too).
+ * Graphite neutrals, monochrome actions, a cyan accent from the logo, editor-dark code panels.
+ * See design-system/nativra-docs/MASTER.md. Every text/background pair meets WCAG AA (4.5:1).
+ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 26% 7%; /* #0d1017 */
+    --surface: 220 16% 97%; /* raised panels, sidebar hover */
+    --card: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --primary: 222 26% 7%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 220 14% 95%;
+    --muted-foreground: 220 9% 34%; /* 7.6:1 on white */
+    --accent: 220 14% 94%;
+    --brand: 192 82% 31%; /* cyan-700: 5.4:1 on white */
+    --destructive: 0 72% 45%;
+    --border: 220 13% 90%;
+    --input: 220 13% 84%;
+    --radius: 0.75rem;
+    --header-height: 4rem;
+    /* Code panels are dark in both modes, like an editor. */
+    --code-bg: 225 18% 8%;
+    --code-border: 225 12% 17%;
+    --code-fg: 220 14% 92%;
+    --code-muted: 220 9% 64%;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 228 20% 5%; /* #0a0b0f */
+    --foreground: 220 14% 96%;
+    --surface: 225 16% 8%;
+    --card: 225 16% 8%;
+    --popover: 225 16% 9%;
+    --primary: 220 14% 96%;
+    --primary-foreground: 228 20% 5%;
+    --muted: 225 14% 11%;
+    --muted-foreground: 220 9% 65%; /* 8.3:1 on background */
+    --accent: 225 13% 13%;
+    --brand: 187 92% 69%; /* cyan-300 */
+    --destructive: 0 72% 63%;
+    --border: 225 12% 15%;
+    --input: 225 12% 22%;
+    --code-bg: 225 18% 7%;
+    --code-border: 225 12% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-padding-top: calc(var(--header-height) + 1.5rem);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-size: 16px;
+    line-height: 1.65;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold text-foreground;
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    @apply bg-brand/25 text-foreground;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  .shiki,
+  .shiki span {
+    background-color: transparent !important;
+  }
+}
+
+@layer components {
+  .container-docs {
+    @apply mx-auto w-full max-w-[90rem] px-4 sm:px-6 lg:px-8;
+  }
+
+  .eyebrow {
+    @apply text-sm font-medium text-brand;
+  }
+
+  .link {
+    @apply font-medium text-brand underline decoration-brand/35 underline-offset-[3px] transition-colors hover:decoration-brand;
+  }
+
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-border bg-background px-1.5 font-mono text-[11px] text-muted-foreground;
+  }
+
+  .btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/85;
+  }
+  .btn-secondary {
+    @apply btn border border-border bg-background text-foreground hover:bg-accent;
+  }
+
+  .code-inline {
+    @apply rounded-md bg-muted px-[0.35em] py-[0.1em] font-mono text-[0.86em] text-foreground;
+  }
+
+  /* Gradient headline text: 700-shade stops in light mode (>= 4.5:1 on white), logo colors in dark. */
+  .text-signature {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #4d7c0f 0%, #047857 45%, #0e7490 100%);
+  }
+  .dark .text-signature {
+    background-image: linear-gradient(90deg, #a3e635 0%, #34d399 45%, #22d3ee 100%);
+  }
+
+  .panel {
+    @apply rounded-xl border border-border bg-card;
+  }
+
+  .prose-docs {
+    @apply max-w-[46rem] text-[16px] leading-[1.75] text-foreground/80;
+  }
+  .prose-docs :where(p, ul, ol) + :where(p, ul, ol) {
+    @apply mt-4;
+  }
+  .prose-docs :where(strong) {
+    @apply font-semibold text-foreground;
+  }
+  .prose-docs :where(a) {
+    @apply link;
+  }
+  .prose-docs :where(ul) {
+    @apply list-disc space-y-1.5 pl-5 marker:text-brand/60;
+  }
+  .prose-docs :where(ol) {
+    @apply list-decimal space-y-1.5 pl-5 marker:text-muted-foreground;
+  }
+  .prose-docs :where(:not(pre) > code) {
+    @apply code-inline;
+  }
+  .prose-docs :where(h3) {
+    @apply pt-4 text-lg;
+  }
+  .prose-docs :where(h4) {
+    @apply pt-2 text-base;
+  }
+}

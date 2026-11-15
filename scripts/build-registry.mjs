@@ -9,7 +9,7 @@
  * Usage: node scripts/build-registry.mjs [--out ./dist/registry] [--pretty]
  */
 import { buildRegistry } from "@nativra/registry-builder";
-import { cp, mkdir, writeFile } from "node:fs/promises";
+import { cp, mkdir } from "node:fs/promises";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -51,106 +51,6 @@ if (outFlag === -1) {
   await mkdir(join(docsPublicDir, "items"), { recursive: true });
   await cp(join(outDir, "registry.json"), join(docsPublicDir, "registry.json"));
   await cp(join(outDir, "items"), join(docsPublicDir, "items"), { recursive: true });
-
-  // Update apps/docs/components/searchItems.json with full catalog
-  const staticDocItems = [
-    {
-      id: "intro",
-      name: "Introduction",
-      category: "Documentation",
-      href: "/docs",
-      description: "Source-first UI philosophy & core principles",
-    },
-    {
-      id: "install",
-      name: "Installation Guide",
-      category: "Documentation",
-      href: "/docs/installation",
-      description: "Expo SDK 51/52, NativeWind, and StyleSheet setup",
-    },
-    {
-      id: "principles",
-      name: "Principles & Architecture",
-      category: "Documentation",
-      href: "/docs/principles",
-      description: "Deep dive into source ownership and dual targets",
-    },
-    {
-      id: "compatibility",
-      name: "Platform Compatibility Matrix",
-      category: "Documentation",
-      href: "/docs/compatibility",
-      description: "Android, iOS, Expo Go, and Fabric verification table",
-    },
-    {
-      id: "cli",
-      name: "CLI Reference",
-      category: "CLI",
-      href: "/docs/cli",
-      description: "Commands for init, add, diff, update, doctor, remove, rollback",
-    },
-    {
-      id: "theming",
-      name: "Theming & Tokens",
-      category: "Documentation",
-      href: "/docs/theming",
-      description: "Semantic color tokens and theme gallery",
-    },
-    {
-      id: "nativewind",
-      name: "NativeWind Guide",
-      category: "Documentation",
-      href: "/docs/styling/nativewind",
-      description: "Tailwind CSS styling for React Native",
-    },
-    {
-      id: "stylesheet",
-      name: "StyleSheet Guide",
-      category: "Documentation",
-      href: "/docs/styling/stylesheet",
-      description: "Pure React Native StyleSheet without dependencies",
-    },
-    {
-      id: "contributing",
-      name: "Contribution Guide",
-      category: "Documentation",
-      href: "/docs/contributing",
-      description: "How to author dual-target components and build the registry",
-    },
-    {
-      id: "changelog",
-      name: "Changelog",
-      category: "Documentation",
-      href: "/docs/changelog",
-      description: "Release notes for every nativra-cli version",
-    },
-  ];
-
-  const searchItems = [
-    ...staticDocItems,
-    ...result.items.map((item) => {
-      // Mirrors apps/docs/lib/item-types.ts: every item has its own page at /docs/<segment>/<id>.
-      const TYPES = {
-        component: ["Component", "components"],
-        block: ["Block", "blocks"],
-        template: ["Template", "templates"],
-        hook: ["Hook", "hooks"],
-        utility: ["Utility", "utilities"],
-        theme: ["Theme", "themes"],
-      };
-      const [category, segment] = TYPES[item.type] ?? ["Component", "components"];
-      return {
-        id: item.id,
-        name: item.name,
-        category,
-        href: `/docs/${segment}/${item.id}`,
-        description: item.description,
-      };
-    }),
-  ];
-
-  const searchItemsPath = resolve(root, "apps/docs/components/searchItems.json");
-  await writeFile(searchItemsPath, JSON.stringify(searchItems, null, 2) + "\n", "utf8");
 }
 
 console.log(`\n✅ Registry built successfully!`);
