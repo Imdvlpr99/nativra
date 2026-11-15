@@ -41,7 +41,7 @@ Developers use Nativra to:
 nativra/
 ├── assets/                # Official brand logos, marks, and favicons
 ├── apps/
-│   ├── docs/              # Public documentation, interactive catalog & live preview (Next.js)
+│   ├── docs/              # Public documentation, interactive catalog & live preview (Vite + React, prerendered)
 │   └── native-preview/    # Expo app for native Android & iOS verification
 ├── packages/
 │   ├── cli/               # nativra — Install, diff, update, and rollback components
