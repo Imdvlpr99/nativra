@@ -7,7 +7,7 @@
     "dev": "vite --port 3000",
     "predev": "node ../../scripts/build-docs-deps.mjs && node ../../scripts/build-registry.mjs &&node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs && node scripts/build-preview.mjs --if-missing",
     "build": "vite build && vite build --ssr src/entry-server.tsx --outDir dist-server && node scripts/prerender.mjs",
-    "prebuild": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs && node scripts/build-preview.mjs",
+    "prebuild": "node ../../scripts/build-docs-deps.mjs && node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs && node scripts/build-preview.mjs",
     "preview": "vite preview --port 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
