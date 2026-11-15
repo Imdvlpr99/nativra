@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://nativra.vercel.app">
-    <img src="../../assets/icon.png" alt="Nativra CLI" width="72" height="72" />
+    <img src="https://nativra.vercel.app/icon.png" alt="Nativra CLI" width="72" height="72" />
   </a>
 </p>
 

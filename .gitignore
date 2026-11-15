@@ -1,7 +1,5 @@
 node_modules/
 dist/
-.next/
-out/
 coverage/
 *.log
 .turbo/
@@ -12,6 +10,7 @@ coverage/
 .env.*.local
 .expo/
 .expo-shared/
+.playwright-cli/
 
 nativra.lock.json.bak
 .nativra/
