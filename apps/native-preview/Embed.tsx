@@ -22,7 +22,8 @@ const fixtureIndex = Number(params.get("fixture") ?? 0) || 0;
 /** Tells the embedding page how tall the preview is (components and blocks only). */
 function postHeight(height: number) {
   if (Platform.OS !== "web" || window.parent === window) return;
-  window.parent.postMessage({ type: "nativra-preview:height", item: itemId, height: Math.ceil(height) }, "*");
+  // The docs site serves the preview from its own /preview path, so only that origin may listen.
+  window.parent.postMessage({ type: "nativra-preview:height", item: itemId, height: Math.ceil(height) }, window.location.origin);
 }
 
 class Boundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {

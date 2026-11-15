@@ -24,12 +24,17 @@ export const ItemStatusSchema = z.enum(["stable", "beta", "experimental", "depre
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
 
 export const ITEM_ID_REGEX = /^[a-z][a-z0-9-]*$/;
-export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
+/**
+ * An npm package name. The first character can't be "-", so a registry can't pass a flag such as
+ * "--global" to the package manager as if it were a package.
+ */
+export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9~][a-z0-9-._~]*\/)?[a-z0-9~][a-z0-9-._~]*$/;
 /**
  * A single semver range token. Whitespace, "|" and other shell syntax are rejected because
  * ranges end up in package-manager install commands; compound ranges ("^1 || ^2") are unsupported.
+ * A leading "-" is rejected for the same reason as in package names.
  */
-export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*+-]+$/i;
+export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*+][a-z0-9^~>=<.*+-]*$/i;
 export const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/i;
 
 // ---------------------------------------------------------------------------
