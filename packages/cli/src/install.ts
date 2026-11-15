@@ -41,6 +41,21 @@ export async function assertNotSymlink(filePath: string): Promise<void> {
   }
 }
 
+/**
+ * Refuses to write through a symlink: neither the target file nor any directory between the
+ * project root and it may be a symbolic link, so a write can never land outside the project.
+ */
+export async function assertSafeWriteTarget(cwd: string, targetPath: string): Promise<string> {
+  const root = resolve(cwd);
+  const abs = assertChildOfRoot(root, targetPath, "write target");
+  let current = root;
+  for (const segment of relative(root, abs).split(sep)) {
+    current = join(current, segment);
+    await assertNotSymlink(current);
+  }
+  return abs;
+}
+
 export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraConfig): string {
   let rawDir: string;
   switch (item.type) {
@@ -177,12 +192,33 @@ export function recordLockEntry(
   lock.items[item.id] = entry;
 }
 
+/**
+ * Reads nativra.lock.json. A missing file is an empty lock; an unreadable one (for example with
+ * git merge-conflict markers) is an error, because writing over it would lose every recorded hash.
+ */
 export async function readLock(cwd: string): Promise<LockFile> {
+  const path = join(cwd, LOCK_FILENAME);
+  let raw: string;
   try {
-    return JSON.parse(await readFile(join(cwd, LOCK_FILENAME), "utf8")) as LockFile;
-  } catch {
-    return { items: {} };
+    raw = await readFile(path, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return { items: {} };
+    throw err;
   }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(
+      `${LOCK_FILENAME} is not valid JSON (${(err as Error).message}). Resolve merge conflicts or restore it from git; ` +
+        `Nativra will not overwrite it.`
+    );
+  }
+  const items = (parsed as { items?: unknown } | null)?.items;
+  if (!items || typeof items !== "object" || Array.isArray(items)) {
+    throw new Error(`${LOCK_FILENAME} has no "items" object. Restore it from git; Nativra will not overwrite it.`);
+  }
+  return { items: items as Record<string, LockEntry> };
 }
 
 /** Atomic lockfile writer using temporary file and atomic rename (Plan Section 3.6) */
@@ -222,6 +258,8 @@ export interface BackupManifest {
   componentId: string;
   createdAt: string;
   files: BackupFileEntry[];
+  /** The item's lockfile entry before the operation, so rollback can restore tracking (e.g. after remove). */
+  lockEntry?: LockEntry;
 }
 
 export const BACKUP_ID_REGEX = /^[a-z][a-z0-9-]*$/;
@@ -244,7 +282,8 @@ export function backupDirFor(cwd: string, componentId: string): string {
 export async function createBackup(
   cwd: string,
   componentId: string,
-  filesToModify: Array<{ destPath: string; exists: boolean }>
+  filesToModify: Array<{ destPath: string; exists: boolean }>,
+  lockEntry?: LockEntry
 ): Promise<string> {
   const componentDir = backupDirFor(cwd, componentId);
   const snapshot = `${Date.now()}-${Math.random().toString(36).slice(2, 8).padEnd(6, "0")}`;
@@ -277,9 +316,25 @@ export async function createBackup(
     componentId,
     createdAt: new Date().toISOString(),
     files: entries,
+    ...(lockEntry ? { lockEntry } : {}),
   };
   await writeFile(join(backupDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   return manifest.backupId;
+}
+
+/**
+ * Deletes one snapshot made by createBackup (its `backupId`, "<component>/<snapshot>"), for an
+ * operation that was undone before it changed anything, so rollback doesn't consume a no-op.
+ */
+export async function discardBackup(cwd: string, backupId: string): Promise<void> {
+  const [componentId, snapshot, ...rest] = backupId.split("/");
+  if (!componentId || !snapshot || rest.length > 0 || !BACKUP_SNAPSHOT_REGEX.test(snapshot)) {
+    throw new Error(`Invalid backup id: "${backupId}"`);
+  }
+  const componentDir = backupDirFor(cwd, componentId);
+  const snapshotDir = assertChildOfRoot(componentDir, join(componentDir, snapshot), "backup snapshot");
+  await assertNotSymlink(snapshotDir);
+  await rm(snapshotDir, { recursive: true, force: true });
 }
 
 /**
@@ -311,13 +366,28 @@ export interface PlannedInstallFile {
   action: "create" | "overwrite" | "skip";
 }
 
+/** An install failed and some files couldn't be put back; any backup of them must be kept. */
+export class PartialRollbackError extends Error {
+  constructor(
+    cause: string,
+    readonly unrestored: string[]
+  ) {
+    super(`Installation failed (${cause}) and these files could not be restored: ${unrestored.join(", ")}`);
+    this.name = "PartialRollbackError";
+  }
+}
+
 export async function executeInstallTransaction(
+  cwd: string,
   plan: PlannedInstallFile[]
 ): Promise<{ installedPaths: string[]; writtenFiles: Record<string, string> }> {
   const writtenFiles: Record<string, string> = {};
   const previousState: Array<{ destPath: string; existed: boolean; originalContent?: string }> = [];
 
   const activePlan = plan.filter((p) => p.action !== "skip");
+
+  // Step 0: refuse symlinked targets before anything is written
+  for (const item of activePlan) await assertSafeWriteTarget(cwd, item.destPath);
 
   // Step 1: Snapshot previous states of files being changed
   for (const item of activePlan) {
@@ -340,13 +410,22 @@ export async function executeInstallTransaction(
     }
     return { installedPaths: modifiedPaths, writtenFiles };
   } catch (err) {
-    // Step 3: Rollback all changes if any write fails
+    // Step 3: Roll back every change; keep going past individual failures so one bad restore
+    // doesn't leave the rest of the files modified.
+    const unrestored: string[] = [];
     for (const prev of previousState) {
-      if (prev.existed && prev.originalContent !== undefined) {
-        await writeFile(prev.destPath, prev.originalContent, "utf8");
-      } else {
-        await rm(prev.destPath, { force: true }).catch(() => {});
+      try {
+        if (prev.existed && prev.originalContent !== undefined) {
+          await writeFile(prev.destPath, prev.originalContent, "utf8");
+        } else {
+          await rm(prev.destPath, { force: true });
+        }
+      } catch {
+        unrestored.push(prev.destPath);
       }
+    }
+    if (unrestored.length > 0) {
+      throw new PartialRollbackError((err as Error).message, unrestored);
     }
     throw new Error(
       `Installation failed and project changes were safely rolled back: ${(err as Error).message}`

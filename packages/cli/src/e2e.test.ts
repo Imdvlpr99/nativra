@@ -123,9 +123,10 @@ describe("nativra CLI (local registry)", () => {
     expect(out).toContain("Button.tsx");
   });
 
-  it("rollback command safely reports or restores", () => {
-    const out = run("rollback", "button");
-    expect(out).toMatch(/backup/i);
+  it("rollback refuses to discard edits made after the update, and restores with --force", () => {
+    // The diff test above edited Button.tsx after the last update; rollback would lose that.
+    expect(() => run("rollback", "button")).toThrow(/changed after/);
+    expect(run("rollback", "button", "--force")).toMatch(/backup/i);
   });
 
   it("rollback walks back through successive backups and refreshes the lock", () => {

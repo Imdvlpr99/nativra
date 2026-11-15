@@ -5,7 +5,8 @@ import chalk from "chalk";
 import prompts from "prompts";
 import { sha256 } from "@nativra/utils";
 import { loadConfig } from "../config.js";
-import { assertNotSymlink, fileExists, findDependents, readLock, resolveLockFilePath, writeLock } from "../install.js";
+import { assertSafeWriteTarget, createBackup, fileExists, findDependents, resolveLockFilePath, writeLock } from "../install.js";
+import { markFailed, readLockOrExit } from "./shared.js";
 
 async function pruneEmptyDir(dir: string, stopAt: string): Promise<void> {
   try {
@@ -43,7 +44,7 @@ export function registerRemoveCommand(program: Command) {
           process.exit(1);
         });
 
-        const lock = await readLock(options.cwd);
+        const lock = await readLockOrExit(options.cwd);
 
         if (Object.keys(lock.items).length === 0) {
           console.log(chalk.yellow("\n⚠ No installed components found in nativra.lock.json.\n"));
@@ -60,6 +61,7 @@ export function registerRemoveCommand(program: Command) {
             console.warn(
               chalk.yellow(`  ⚠ "${componentId}" is not registered in nativra.lock.json. Skipping.`)
             );
+            markFailed();
             continue;
           }
 
@@ -81,8 +83,7 @@ export function registerRemoveCommand(program: Command) {
               initial: false,
             });
             if (!proceedWithDependents) {
-              console.log(chalk.gray(`  Skipped removal of "${componentId}".
-`));
+              console.log(chalk.gray(`  Skipped removal of "${componentId}".\n`));
               continue;
             }
           }
@@ -100,7 +101,7 @@ export function registerRemoveCommand(program: Command) {
           try {
             for (const [fileKey, expectedHash] of Object.entries(lockEntry.files)) {
               const safePath = resolveLockFilePath(options.cwd, fileKey);
-              await assertNotSymlink(safePath);
+              await assertSafeWriteTarget(options.cwd, safePath);
               resolvedEntries.push({ filePath: safePath, expectedHash });
             }
           } catch (err) {
@@ -169,10 +170,25 @@ export function registerRemoveCommand(program: Command) {
             }
           }
 
+          // Back up everything first: `nativra rollback <id>` restores the files and their tracking.
+          const present: Array<{ destPath: string; exists: boolean }> = [];
+          for (const { filePath } of resolvedEntries) {
+            if (await fileExists(filePath)) present.push({ destPath: filePath, exists: true });
+          }
+          if (present.length > 0) {
+            try {
+              await createBackup(options.cwd, componentId, present, lockEntry);
+            } catch (err) {
+              console.error(chalk.red(`  ✗ Could not back up "${componentId}" before removing it: ${(err as Error).message}`));
+              markFailed();
+              continue;
+            }
+          }
+
           // Delete tracked files
           for (const { filePath } of resolvedEntries) {
             if (await fileExists(filePath)) {
-              await assertNotSymlink(filePath);
+              await assertSafeWriteTarget(options.cwd, filePath);
               await rm(filePath, { force: true });
               console.log(chalk.red(`  - Deleted: ${filePath}`));
               await pruneEmptyDir(dirname(filePath), options.cwd);
@@ -183,7 +199,9 @@ export function registerRemoveCommand(program: Command) {
 
           delete lock.items[componentId];
           anyRemoved = true;
-          console.log(chalk.green(`  ✓ Removed "${componentId}" successfully.`));
+          // Persist per item so a later failure can't leave deleted files in the lockfile.
+          await writeLock(options.cwd, lock);
+          console.log(chalk.green(`  ✓ Removed "${componentId}" successfully. Undo with: nativra rollback ${componentId}`));
         }
 
         if (anyRemoved) {

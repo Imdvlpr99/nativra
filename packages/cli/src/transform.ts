@@ -9,18 +9,47 @@ export interface ImportTargets {
   themes: string;
 }
 
+const cleanDir = (d: string) => d.replace(/\\/g, "/").replace(/^\/+/, "").replace(/^[@~]\//, "").replace(/\/+$/, "");
+
+/**
+ * The folder the path alias points at (e.g. "src/" for `"@/*": ["./src/*"]`), inferred from an
+ * explicit alias: utilsDir "src/lib/utils" with alias "@/lib/utils" means the base is "src/".
+ * Lets configs written before `aliases.themes` existed still resolve themes correctly.
+ */
+function inferAliasBase(config: NativraConfig, prefix: string): string | null {
+  const pairs: Array<[string | undefined, string]> = [
+    [config.aliases?.utils, config.utilsDir.replace(/\.(ts|js|tsx)$/, "")],
+    [config.aliases?.hooks, config.hooksDir],
+    [config.aliases?.components, config.componentsDir],
+  ];
+  for (const [alias, dir] of pairs) {
+    if (!alias?.startsWith(prefix)) continue;
+    const aliasPath = cleanDir(alias.slice(prefix.length));
+    const dirPath = cleanDir(dir);
+    if (dirPath === aliasPath) return "";
+    if (dirPath.endsWith(`/${aliasPath}`)) return dirPath.slice(0, dirPath.length - aliasPath.length);
+  }
+  return null;
+}
+
 /** Module specifiers the canonical registry aliases are rewritten to for this project. */
 export function importTargets(config: NativraConfig): ImportTargets {
   const rawPrefix = config.aliasPrefix ?? "@/";
   const prefix = rawPrefix.endsWith("/") ? rawPrefix : `${rawPrefix}/`;
-  const cleanDir = (d: string) => d.replace(/^\/+/, "").replace(/^[@~]\//, "");
+
+  let themes = config.aliases?.themes;
+  if (!themes) {
+    const themesDir = cleanDir(config.themesDir);
+    const base = inferAliasBase(config, prefix);
+    themes = base && themesDir.startsWith(base) ? `${prefix}${themesDir.slice(base.length)}` : `${prefix}${themesDir}`;
+  }
 
   return {
     components: config.aliases?.components ?? `${prefix}${cleanDir(config.componentsDir)}`,
     utils: config.aliases?.utils ?? `${prefix}${cleanDir(config.utilsDir.replace(/\.(ts|js|tsx)$/, ""))}`,
     hooks: config.aliases?.hooks ?? `${prefix}${cleanDir(config.hooksDir)}`,
     blocks: config.aliases?.blocks ?? `${prefix}${cleanDir(config.blocksDir ?? config.componentsDir)}`,
-    themes: config.aliases?.themes ?? `${prefix}${cleanDir(config.themesDir)}`,
+    themes,
   };
 }
 

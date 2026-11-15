@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
 import { loadConfig } from "../config.js";
-import { createBackup, readLock } from "../install.js";
+import { assertSafeWriteTarget, createBackup, readLock } from "../install.js";
 
 export interface AuditFinding {
   file: string;
@@ -120,16 +120,18 @@ export function migrateTouchables(content: string): TouchableMigration {
     return { content: null, reason: "uses Touchable-only props (activeOpacity, underlayColor, ...)" };
   }
 
-  const nextSpecifiers = specifiers.filter((s) => !usedTouchables.includes(s));
+  // Rewrite the JSX first, then drop an import only if nothing else still references it
+  // (e.g. TouchableOpacityProps, Animated.createAnimatedComponent(TouchableOpacity)).
+  const placeholder = "\u0000NATIVRA_RN_IMPORT\u0000";
+  let body = content.replace(importMatch[0], placeholder);
+  for (const t of usedTouchables) {
+    body = body.replace(new RegExp(`<${t}\\b`, "g"), "<Pressable").replace(new RegExp(`</${t}>`, "g"), "</Pressable>");
+  }
+  const stillReferenced = (name: string) => new RegExp(`\\b${name}\\b`).test(body);
+  const nextSpecifiers = specifiers.filter((s) => !usedTouchables.includes(s) || stillReferenced(s));
   if (!nextSpecifiers.includes("Pressable")) nextSpecifiers.push("Pressable");
 
-  let modified = content.replace(importMatch[0], `import { ${nextSpecifiers.join(", ")} } from "react-native";`);
-  for (const t of usedTouchables) {
-    modified = modified
-      .replace(new RegExp(`<${t}\\b`, "g"), "<Pressable")
-      .replace(new RegExp(`</${t}>`, "g"), "</Pressable>");
-  }
-  return { content: modified };
+  return { content: body.replace(placeholder, `import { ${nextSpecifiers.join(", ")} } from "react-native";`) };
 }
 
 export interface FixResult {
@@ -169,6 +171,7 @@ export async function planLegacyTouchableFix(cwd: string): Promise<FixResult> {
 /** Applies a planned fix, backing every file up first (`nativra rollback audit-fix` restores it). */
 export async function applyLegacyTouchableFix(cwd: string, plan: FixResult): Promise<number> {
   if (plan.changed.length === 0) return 0;
+  for (const { file } of plan.changed) await assertSafeWriteTarget(cwd, file);
   await createBackup(
     cwd,
     "audit-fix",
@@ -183,7 +186,8 @@ export async function applyLegacyTouchableFix(cwd: string, plan: FixResult): Pro
 export async function runProjectAudit(cwd: string): Promise<AuditReport> {
   const files = await collectSourceFiles(cwd);
   const dirs = await managedDirs(cwd);
-  const lock = await readLock(cwd);
+  // Read-only: an unusable lockfile just means "no installed items" for scoring.
+  const lock = await readLock(cwd).catch(() => ({ items: {} }));
   const installedItemsCount = Object.keys(lock.items ?? {}).length;
 
   let interactiveElements = 0;
@@ -324,7 +328,16 @@ export function registerAuditCommand(program: Command) {
     .option("--fix", "Migrate legacy <TouchableOpacity>/<TouchableHighlight> to <Pressable> (files are backed up first)")
     .option("--dry-run", "With --fix: list the files that would change without writing them")
     .option("--yes", "With --fix: skip the confirmation prompt")
-    .action(async (options: { cwd: string; json?: boolean; fix?: boolean; dryRun?: boolean; yes?: boolean }) => {
+    .option("--min-score <n>", "Exit with code 1 when the score is below n (0-100), for CI")
+    .action(async (options: { cwd: string; json?: boolean; fix?: boolean; dryRun?: boolean; yes?: boolean; minScore?: string }) => {
+      let minScore: number | undefined;
+      if (options.minScore !== undefined) {
+        minScore = Number(options.minScore);
+        if (!Number.isInteger(minScore) || minScore < 0 || minScore > 100) {
+          console.error(chalk.red(`\n✗ --min-score must be a whole number from 0 to 100 (got "${options.minScore}").\n`));
+          process.exit(1);
+        }
+      }
       let fixedCount = 0;
       if (options.fix) {
         const plan = await planLegacyTouchableFix(options.cwd);
@@ -361,6 +374,9 @@ export function registerAuditCommand(program: Command) {
         report.fixedCount = fixedCount;
       }
 
+      const belowMinimum = minScore !== undefined && report.score < minScore;
+      if (belowMinimum) process.exitCode = 1;
+
       if (options.json) {
         console.log(JSON.stringify(report, null, 2));
         return;
@@ -387,6 +403,10 @@ export function registerAuditCommand(program: Command) {
           `${report.score}/100 (${report.grade})`
         )}\n`
       );
+
+      if (belowMinimum) {
+        console.log(chalk.red(`  ✗ Score ${report.score} is below the required minimum of ${minScore}.\n`));
+      }
 
       if (report.findings.length > 0) {
         console.log(chalk.bold("  Top Actionable Findings:"));

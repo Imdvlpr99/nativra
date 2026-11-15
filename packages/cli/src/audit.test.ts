@@ -120,6 +120,21 @@ describe("migrateTouchables", () => {
     expect(out.reason).toMatch(/activeOpacity/);
   });
 
+  it("keeps the import when the touchable is still referenced outside JSX", () => {
+    const out = migrateTouchables(
+      [
+        'import { Animated, TouchableOpacity, type TouchableOpacityProps } from "react-native";',
+        "const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);",
+        "type P = TouchableOpacityProps;",
+        "const A = () => <TouchableOpacity />;",
+        "",
+      ].join("\n")
+    );
+    expect(out.content).toContain("Animated.createAnimatedComponent(TouchableOpacity)");
+    expect(out.content).toMatch(/import \{[^}]*\bTouchableOpacity\b[^}]*\bPressable\b[^}]*\} from "react-native";/);
+    expect(out.content).toContain("<Pressable />");
+  });
+
   it("refuses touchables imported from react-native-gesture-handler", () => {
     const out = migrateTouchables(
       'import { View } from "react-native";\nimport { TouchableOpacity } from "react-native-gesture-handler";\nconst A = () => <TouchableOpacity />;\n'

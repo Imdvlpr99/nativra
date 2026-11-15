@@ -40,6 +40,22 @@ describe("project config", () => {
     expect(aliasForDir({ prefix: "@/", baseDir: "src" }, "components/ui")).toBeNull();
   });
 
+  it("maps the themes directory through a src-based alias", () => {
+    const { config } = createProjectConfig(srcDirs, { prefix: "@/", baseDir: "src" });
+    expect(config.aliases?.themes).toBe("@/lib/themes");
+    expect(transformFileImports('import { themeColors } from "@/lib/themes/theme";', config)).toBe(
+      'import { themeColors } from "@/lib/themes/theme";'
+    );
+  });
+
+  it("infers the themes alias for configs written before aliases.themes existed", () => {
+    const { config } = createProjectConfig(srcDirs, { prefix: "@/", baseDir: "src" });
+    delete config.aliases?.themes;
+    expect(transformFileImports('import { themeColors } from "@/lib/themes/theme";', config)).toBe(
+      'import { themeColors } from "@/lib/themes/theme";'
+    );
+  });
+
   it("writes each directory once (no nested v4 copy) for root aliases", () => {
     const { config } = createProjectConfig({ ...srcDirs, componentsDir: "components/ui" }, null);
     expect(config.config).toBeUndefined();

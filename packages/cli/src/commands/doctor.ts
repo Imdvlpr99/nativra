@@ -4,9 +4,9 @@ import { join } from "node:path";
 import chalk from "chalk";
 import { checkProjectCompatibility } from "@nativra/registry-schema";
 import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, loadConfig, saveConfig } from "../config.js";
-import { readLock } from "../install.js";
+import { assertSafeWriteTarget, readLock } from "../install.js";
 import { detectProjectEnvironment } from "../detect.js";
-import { TAILWIND_COLORS_SNIPPET, tailwindMapsThemeColors } from "../theme-css.js";
+import { TAILWIND_COLORS_SNIPPET, findTailwindConfig, tailwindMapsThemeColors } from "../theme-css.js";
 
 interface Check {
   name: string;
@@ -98,12 +98,15 @@ export function registerDoctorCommand(program: Command) {
 
       // 2. Check package.json & Ecosystem Compatibility
       let allDeps: Record<string, string> = {};
+      let pkgJson: { type?: string } | undefined;
       try {
         const pkgRaw = await readFile(join(options.cwd, "package.json"), "utf8");
         const pkg = JSON.parse(pkgRaw) as {
           dependencies?: Record<string, string>;
           devDependencies?: Record<string, string>;
+          type?: string;
         };
+        pkgJson = pkg;
         allDeps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) };
         checks.push({ name: "package.json found", pass: true });
 
@@ -197,9 +200,7 @@ export function registerDoctorCommand(program: Command) {
       // 5. NativeWind v4 Configuration (if active)
       if (stylingTarget === "nativewind") {
         const hasNativeWindPkg = Boolean(allDeps["nativewind"]);
-        let hasTailwindConfig =
-          (await fileExists(join(options.cwd, "tailwind.config.js"))) ||
-          (await fileExists(join(options.cwd, "tailwind.config.ts")));
+        let hasTailwindConfig = (await findTailwindConfig(options.cwd)) !== null;
 
         if (!hasTailwindConfig && options.fix) {
           const colors = TAILWIND_COLORS_SNIPPET.split("\n").map((l) => `      ${l}`).join("\n");
@@ -217,12 +218,16 @@ export function registerDoctorCommand(program: Command) {
             "};",
             "",
           ].join("\n");
-          await writeFile(join(options.cwd, "tailwind.config.js"), defaultTailwind, "utf8");
+          // module.exports only loads from a .js file when the package isn't ESM.
+          const isEsm = pkgJson?.type === "module";
+          const configName = isEsm ? "tailwind.config.cjs" : "tailwind.config.js";
+          const configPath = await assertSafeWriteTarget(options.cwd, join(options.cwd, configName));
+          await writeFile(configPath, defaultTailwind, "utf8");
           hasTailwindConfig = true;
           checks.push({
             name: "Tailwind CSS configuration",
             pass: true,
-            detail: chalk.green("⚡ Auto-fixed: Scaffolded tailwind.config.js"),
+            detail: chalk.green(`⚡ Auto-fixed: Scaffolded ${configName}`),
           });
         }
 
@@ -268,11 +273,12 @@ export function registerDoctorCommand(program: Command) {
           pass: true,
           detail: `${itemCount} component(s) tracked`,
         });
-      } catch {
+      } catch (err) {
+        // readLock only throws for a lockfile that exists but can't be used (a missing one is empty).
         checks.push({
-          name: "nativra.lock.json",
-          pass: true,
-          detail: "No components tracked yet",
+          name: "nativra.lock.json integrity",
+          pass: false,
+          detail: (err as Error).message,
         });
       }
 

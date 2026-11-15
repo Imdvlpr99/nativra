@@ -10,7 +10,6 @@ import {
   destPathFor,
   executeInstallTransaction,
   filesForTarget,
-  readLock,
   recordLockEntry,
   renderFile,
   writeLock,
@@ -23,6 +22,9 @@ import {
   getMissingDependencies,
   type PackageDependency,
 } from "../installer.js";
+import { markFailed, readLockOrExit } from "./shared.js";
+import { THEME_PRESETS } from "@nativra/theme-engine";
+import { ensureNativeWindTheme } from "../theme-css.js";
 
 export function registerUpdateCommand(program: Command) {
   program
@@ -37,7 +39,7 @@ export function registerUpdateCommand(program: Command) {
         process.exit(1);
       });
       const client = createClient(config, options.registry);
-      const lock = await readLock(options.cwd);
+      const lock = await readLockOrExit(options.cwd);
       const targets = ids.length > 0 ? ids : Object.keys(lock.items);
 
       if (targets.length === 0) {
@@ -54,6 +56,7 @@ export function registerUpdateCommand(program: Command) {
           items = await client.resolveWithDependencies(id);
         } catch (e) {
           console.error(chalk.red(`  ✗ ${id}: ${(e as Error).message}`));
+          markFailed();
           continue;
         }
 
@@ -102,16 +105,31 @@ export function registerUpdateCommand(program: Command) {
             } catch (backupErr) {
               console.error(chalk.red(`  ✗ Cannot create required backup for "${item.id}": ${(backupErr as Error).message}`));
               console.error(chalk.red(`    Update aborted to prevent loss of local source.`));
+              markFailed();
               continue;
             }
           }
 
-          const { writtenFiles } = await executeInstallTransaction(plan);
+          let writtenFiles: Record<string, string>;
+          try {
+            ({ writtenFiles } = await executeInstallTransaction(options.cwd, plan));
+          } catch (err) {
+            console.error(chalk.red(`  ✗ ${item.id}: ${(err as Error).message}`));
+            markFailed();
+            continue;
+          }
           for (const path of Object.keys(writtenFiles)) console.log(chalk.green(`  ✓ Updated ${path}`));
           recordLockEntry(lock, options.cwd, item, { ...unchanged, ...writtenFiles });
+          // Persist after every item so a later failure can't leave updated files with stale hashes.
+          await writeLock(options.cwd, lock);
         }
       }
-      await writeLock(options.cwd, lock);
+
+      // Updated NativeWind components may use newer theme classes (status colors, shape classes).
+      if (config.stylingTarget === "nativewind") {
+        const installedTheme = Object.keys(lock.items).find((id) => id in THEME_PRESETS) ?? "zinc";
+        await ensureNativeWindTheme(options.cwd, installedTheme);
+      }
 
       const missing = await getMissingDependencies(options.cwd, [...npmDeps.values()]);
       if (missing.length > 0) {

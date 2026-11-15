@@ -76,6 +76,19 @@ export const NativraConfigSchema = z.object({
 
 export type NativraConfig = z.infer<typeof NativraConfigSchema>;
 
+/**
+ * JSON Schema for nativra.json, published at https://nativra.vercel.app/schema.json (the file's
+ * "$schema") so editors validate and autocomplete it. "input" mode: keys with defaults are optional.
+ */
+export function nativraConfigJsonSchema(): Record<string, unknown> {
+  return {
+    ...(z.toJSONSchema(NativraConfigSchema, { io: "input", unrepresentable: "any" }) as Record<string, unknown>),
+    $id: "https://nativra.vercel.app/schema.json",
+    title: "nativra.json",
+    description: "Configuration for nativra-cli: where items are installed, the styling target and import aliases.",
+  };
+}
+
 export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
   const configPath = join(projectRoot, CONFIG_FILENAME);
   try {
@@ -195,6 +208,7 @@ export function createProjectConfig(
       ["blocks", dirs.componentsDir],
       ["hooks", dirs.hooksDir],
       ["utils", dirs.utilsDir],
+      ["themes", dirs.themesDir],
     ];
     for (const [key, dir] of entries) {
       const spec = aliasForDir(effectiveAlias, dir);

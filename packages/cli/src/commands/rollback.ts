@@ -7,20 +7,23 @@ import { loadConfig } from "../config.js";
 import {
   assertChildOfRoot,
   assertNotSymlink,
+  assertSafeWriteTarget,
   backupDirFor,
   BACKUP_ID_REGEX,
+  fileExists,
   findLatestBackup,
-  readLock,
   writeLock,
   type BackupManifest,
 } from "../install.js";
+import { readLockOrExit } from "./shared.js";
 
 export function registerRollbackCommand(program: Command) {
   program
     .command("rollback <id>")
     .description("Restore the most recent backup of an installed item (repeat to go further back)")
     .option("--cwd <dir>", "Project root directory", process.cwd())
-    .action(async (id: string, options: { cwd: string }) => {
+    .option("--force", "Restore even if files were edited after the operation being undone (those edits are lost)")
+    .action(async (id: string, options: { cwd: string; force?: boolean }) => {
       if (!BACKUP_ID_REGEX.test(id)) {
         console.error(chalk.red(`\n✗ Invalid component ID "${id}".\n`));
         process.exit(1);
@@ -45,20 +48,36 @@ export function registerRollbackCommand(program: Command) {
         process.exit(1);
       }
 
-      const lock = await readLock(options.cwd);
-      const lockEntry = lock.items[id];
+      const lock = await readLockOrExit(options.cwd);
+      // After `remove` the item has no lock entry; the manifest carries the one it had.
+      const restoringEntry = !lock.items[id] && manifest.lockEntry;
+      const lockEntry = lock.items[id] ?? (manifest.lockEntry ? { ...manifest.lockEntry, files: { ...manifest.lockEntry.files } } : undefined);
 
       try {
+        // Resolve every target and refuse to discard edits made after the operation being undone.
+        const targets: Array<{ entry: BackupManifest["files"][number]; targetPath: string }> = [];
+        const editedSince: string[] = [];
+        for (const entry of manifest.files) {
+          const targetPath = assertChildOfRoot(options.cwd, join(options.cwd, entry.projectRelativePath), "rollback target path");
+          await assertSafeWriteTarget(options.cwd, targetPath);
+          targets.push({ entry, targetPath });
+
+          const recorded = lock.items[id]?.files[entry.projectRelativePath];
+          if (recorded && (await fileExists(targetPath))) {
+            const current = sha256(await readFile(targetPath, "utf8"));
+            if (current !== recorded) editedSince.push(entry.projectRelativePath);
+          }
+        }
+        if (editedSince.length > 0 && !options.force) {
+          console.error(chalk.red(`\n✗ These files changed after the operation you're undoing, and rollback would discard that:`));
+          for (const f of editedSince) console.error(chalk.red(`    • ${f}`));
+          console.error(chalk.red(`  Commit or copy your edits, then re-run with --force.\n`));
+          process.exit(1);
+        }
+
         console.log(chalk.bold(`\n⏪ Rolling back "${id}" from backup ${manifest.backupId}...`));
 
-        for (const entry of manifest.files) {
-          const targetPath = assertChildOfRoot(
-            options.cwd,
-            join(options.cwd, entry.projectRelativePath),
-            "rollback target path"
-          );
-          await assertNotSymlink(targetPath);
-
+        for (const { entry, targetPath } of targets) {
           if (entry.stateBefore === "present") {
             if (!entry.backupFileName) {
               throw new Error(`Backup manifest entry for "${entry.projectRelativePath}" has no backup file`);
@@ -86,7 +105,11 @@ export function registerRollbackCommand(program: Command) {
       }
 
       // Restored content is now the tracked baseline, so `update` treats it as unmodified.
-      if (lockEntry) await writeLock(options.cwd, lock);
+      if (lockEntry) {
+        lock.items[id] = lockEntry;
+        await writeLock(options.cwd, lock);
+        if (restoringEntry) console.log(chalk.green(`  ✓ "${id}" is tracked in nativra.lock.json again`));
+      }
 
       // Consume the snapshot so the next rollback steps further back.
       if (backupDir === backupDirFor(options.cwd, id)) {

@@ -2,21 +2,22 @@ import type { Command } from "commander";
 import { join } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
-import { createClient } from "../client.js";
+import { createClient, toSource } from "../client.js";
 import { loadConfig, saveConfig } from "../config.js";
 import {
+  assertSafeWriteTarget,
   createBackup,
   destPathFor,
   resolveDestDir,
   fileExists,
   filesForTarget,
-  readLock,
   recordLockEntry,
   writeInstalledFile,
   writeLock,
 } from "../install.js";
 import { transformFileImports } from "../transform.js";
 import { applyThemeCss } from "../theme-css.js";
+import { readLockOrExit } from "./shared.js";
 
 async function requireConfig(cwd: string) {
   return loadConfig(cwd).catch((err) => {
@@ -54,7 +55,13 @@ export function registerThemeCommand(program: Command) {
         options: { cwd: string; registry?: string; as?: string; overwrite?: boolean; applyCss?: boolean }
       ) => {
         const config = await requireConfig(options.cwd);
-        const item = await createClient(config, options.registry).getItem(id);
+        let item;
+        try {
+          item = await createClient(config, options.registry).getItem(id);
+        } catch (err) {
+          console.error(chalk.red(`\n✗ Could not load theme "${id}": ${(err as Error).message}\n`));
+          process.exit(1);
+        }
         if (item.type !== "theme") {
           console.error(chalk.red(`\n✗ "${id}" is a ${item.type}, not a theme.\n`));
           process.exit(1);
@@ -69,7 +76,7 @@ export function registerThemeCommand(program: Command) {
           }
         }
 
-        const lock = await readLock(options.cwd);
+        const lock = await readLockOrExit(options.cwd);
         const writes: Record<string, string> = {};
         for (const file of filesForTarget(item, config)) {
           const dest = customName
@@ -96,6 +103,12 @@ export function registerThemeCommand(program: Command) {
               console.error(chalk.red(`\n✗ Could not back up ${dest}: ${(err as Error).message}. Nothing was written.\n`));
               process.exit(1);
             }
+          }
+          try {
+            await assertSafeWriteTarget(options.cwd, dest);
+          } catch (err) {
+            console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
+            process.exit(1);
           }
           writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
           console.log(chalk.green(`  ✓ Written: ${dest}`));
@@ -126,6 +139,17 @@ export function registerRegistryCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .action(async (name: string, url: string, options: { cwd: string }) => {
       const config = await requireConfig(options.cwd);
+      if (!/^[a-z0-9][a-z0-9-]*$/.test(name)) {
+        console.error(chalk.red(`\n✗ Invalid registry name "${name}". Use lowercase letters, numbers and "-".\n`));
+        process.exit(1);
+      }
+      try {
+        // Same rules every other command applies: HTTPS, http://localhost, or a local directory.
+        toSource(url, name);
+      } catch (err) {
+        console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
+        process.exit(1);
+      }
       if (config.registries.some((r) => r.name === name)) {
         console.error(chalk.red(`\n✗ Registry "${name}" already exists.\n`));
         process.exit(1);

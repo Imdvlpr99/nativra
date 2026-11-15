@@ -1,8 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
-import { THEME_PRESETS, toCssVariables } from "@nativra/theme-engine";
-import { fileExists } from "./install.js";
+import { THEME_PRESETS, toCssVariables, toStyleCss } from "@nativra/theme-engine";
+import { assertSafeWriteTarget, fileExists } from "./install.js";
 
 const THEME_BLOCK = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
 
@@ -16,6 +16,17 @@ export async function findGlobalCss(cwd: string): Promise<string | null> {
 
 export async function hasThemeCss(cssPath: string): Promise<boolean> {
   return THEME_BLOCK.test(await readFile(cssPath, "utf8"));
+}
+
+/**
+ * The installed theme block's id when the block predates the current token set (no status
+ * colors or shape classes), so the CLI can rewrite it; null when it's current or absent.
+ */
+export async function outdatedThemeCss(cssPath: string): Promise<string | null> {
+  const block = THEME_BLOCK.exec(await readFile(cssPath, "utf8"))?.[0];
+  if (!block) return null;
+  const current = block.includes("--color-success") && block.includes(".rounded-card");
+  return current ? null : (/NATIVRA THEME START: ([a-z0-9-]+)/.exec(block)?.[1] ?? null);
 }
 
 /**
@@ -39,11 +50,12 @@ export async function applyThemeCss(cwd: string, id: string): Promise<boolean> {
 
   try {
     const existingCss = await readFile(targetCss, "utf8");
-    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n/* NATIVRA THEME END: ${id} */`;
+    // Shape classes sit outside @layer so Tailwind emits them as written (never purged).
+    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n${toStyleCss(tokens)}\n/* NATIVRA THEME END: ${id} */`;
     const updatedCss = THEME_BLOCK.test(existingCss)
       ? existingCss.replace(THEME_BLOCK, block)
       : `${existingCss.trimEnd()}\n\n${block}\n`;
-    await writeFile(targetCss, updatedCss, "utf8");
+    await writeFile(await assertSafeWriteTarget(cwd, targetCss), updatedCss, "utf8");
     console.log(chalk.green(`  ✓ Wrote "${id}" theme variables into ${targetCss}`));
     return true;
   } catch (err) {
@@ -52,13 +64,44 @@ export async function applyThemeCss(cwd: string, id: string): Promise<boolean> {
   }
 }
 
-/** True when a tailwind config in the project maps colors to Nativra's CSS variables. */
-export async function tailwindMapsThemeColors(cwd: string): Promise<boolean | null> {
-  for (const name of ["tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", "tailwind.config.mjs"]) {
+export const TAILWIND_CONFIG_NAMES = ["tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", "tailwind.config.mjs"];
+
+/** Path of the project's Tailwind config, whichever extension it uses, or null. */
+export async function findTailwindConfig(cwd: string): Promise<string | null> {
+  for (const name of TAILWIND_CONFIG_NAMES) {
     const path = join(cwd, name);
-    if (await fileExists(path)) return (await readFile(path, "utf8")).includes("--color-");
+    if (await fileExists(path)) return path;
   }
   return null;
+}
+
+/** True when the project's tailwind config maps Nativra's colors, including the status colors. */
+export async function tailwindMapsThemeColors(cwd: string): Promise<boolean | null> {
+  const path = await findTailwindConfig(cwd);
+  return path ? (await readFile(path, "utf8")).includes("--color-success") : null;
+}
+
+/**
+ * NativeWind components use semantic classes (bg-primary, rounded-card, ...) backed by the theme
+ * block in global.css. Writes the block when it's missing, refreshes it when it predates the
+ * current tokens (keeping the installed theme), and says so when Tailwind doesn't map the colors.
+ */
+export async function ensureNativeWindTheme(cwd: string, themeId: string): Promise<void> {
+  const css = await findGlobalCss(cwd);
+  if (css) {
+    if (!(await hasThemeCss(css))) {
+      await applyThemeCss(cwd, themeId);
+    } else {
+      const outdated = await outdatedThemeCss(css);
+      if (outdated) await applyThemeCss(cwd, outdated);
+    }
+  }
+  if ((await tailwindMapsThemeColors(cwd)) === false) {
+    console.log(
+      chalk.yellow("\n  ⚠ tailwind.config doesn't map all of Nativra's theme colors yet. Put this in theme.extend:\n") +
+        chalk.gray(TAILWIND_COLORS_SNIPPET.replace(/^/gm, "    "))
+    );
+  }
 }
 
 /** The colors block to paste into tailwind.config.js (shown by add/doctor when it's missing). */
@@ -73,6 +116,9 @@ export const TAILWIND_COLORS_SNIPPET = `colors: {
   muted: { DEFAULT: "rgb(var(--color-muted) / <alpha-value>)", foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)" },
   accent: { DEFAULT: "rgb(var(--color-accent) / <alpha-value>)", foreground: "rgb(var(--color-accent-foreground) / <alpha-value>)" },
   destructive: { DEFAULT: "rgb(var(--color-destructive) / <alpha-value>)", foreground: "rgb(var(--color-destructive-foreground) / <alpha-value>)" },
+  success: { DEFAULT: "rgb(var(--color-success) / <alpha-value>)", foreground: "rgb(var(--color-success-foreground) / <alpha-value>)" },
+  warning: { DEFAULT: "rgb(var(--color-warning) / <alpha-value>)", foreground: "rgb(var(--color-warning-foreground) / <alpha-value>)" },
+  info: { DEFAULT: "rgb(var(--color-info) / <alpha-value>)", foreground: "rgb(var(--color-info-foreground) / <alpha-value>)" },
   card: { DEFAULT: "rgb(var(--color-card) / <alpha-value>)", foreground: "rgb(var(--color-card-foreground) / <alpha-value>)" },
   popover: { DEFAULT: "rgb(var(--color-popover) / <alpha-value>)", foreground: "rgb(var(--color-popover-foreground) / <alpha-value>)" },
 },`;

@@ -6,10 +6,12 @@ import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { createClient } from "../client.js";
 import { loadConfig } from "../config.js";
 import {
+  createBackup,
+  discardBackup,
+  PartialRollbackError,
   destPathFor,
   fileExists,
   filesForTarget,
-  readLock,
   writeLock,
   recordLockEntry,
   executeInstallTransaction,
@@ -23,13 +25,8 @@ import {
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
-import {
-  TAILWIND_COLORS_SNIPPET,
-  applyThemeCss,
-  findGlobalCss,
-  hasThemeCss,
-  tailwindMapsThemeColors,
-} from "../theme-css.js";
+import { ensureNativeWindTheme } from "../theme-css.js";
+import { markFailed, readLockOrExit } from "./shared.js";
 
 export function registerAddCommand(program: Command) {
   program
@@ -105,7 +102,7 @@ export function registerAddCommand(program: Command) {
           components = response.selected;
         }
 
-        const lock = await readLock(options.cwd);
+        const lock = await readLockOrExit(options.cwd);
         const accumulatedDeps: PackageDependency[] = [];
         const themeIds = new Set<string>();
 
@@ -119,6 +116,7 @@ export function registerAddCommand(program: Command) {
             spinner.succeed(`Resolved ${items.length} item(s)`);
           } catch (err) {
             spinner.fail(chalk.red(`Failed to fetch "${componentId}": ${(err as Error).message}`));
+            markFailed();
             continue;
           }
 
@@ -199,8 +197,44 @@ export function registerAddCommand(program: Command) {
             }
           }
 
+          // Overwriting replaces files that may hold local edits: snapshot them first so
+          // `nativra rollback <id>` can restore them.
+          const overwritesByItem = new Map<string, Array<{ destPath: string; exists: boolean }>>();
+          for (const p of plan.filter((p) => p.action === "overwrite")) {
+            const list = overwritesByItem.get(p.componentId) ?? [];
+            list.push({ destPath: p.destPath, exists: true });
+            overwritesByItem.set(p.componentId, list);
+          }
+          // Snapshots of an operation that never happened would make the next rollback a no-op.
+          const backupIds: string[] = [];
+          const discardBackups = async () => {
+            for (const backupId of backupIds) {
+              await discardBackup(options.cwd, backupId).catch((e: Error) =>
+                console.error(chalk.yellow(`  ⚠ Could not remove unused backup ${backupId}: ${e.message}`))
+              );
+            }
+          };
+          try {
+            for (const [itemId, files] of overwritesByItem) backupIds.push(await createBackup(options.cwd, itemId, files));
+          } catch (err) {
+            console.error(chalk.red(`  ✗ Could not back up files before overwriting: ${(err as Error).message}. Nothing was written.`));
+            await discardBackups();
+            markFailed();
+            continue;
+          }
+
           // Execute transaction safely with rollback protection
-          const { writtenFiles } = await executeInstallTransaction(plan);
+          let writtenFiles: Record<string, string>;
+          try {
+            ({ writtenFiles } = await executeInstallTransaction(options.cwd, plan));
+          } catch (err) {
+            console.error(chalk.red(`  ✗ ${(err as Error).message}`));
+            // Files were restored, so the snapshots describe nothing to undo. If restoring
+            // failed, keep them: they're the only copy of the user's previous content.
+            if (!(err instanceof PartialRollbackError)) await discardBackups();
+            markFailed();
+            continue;
+          }
           for (const [path] of Object.entries(writtenFiles)) {
             console.log(chalk.green(`  ✓ Written: ${path}`));
           }
@@ -220,10 +254,12 @@ export function registerAddCommand(program: Command) {
               accumulatedDeps.push(...item.npmDependencies);
             }
           }
+          // Record each component as soon as its files are on disk, so a later failure in this
+          // run can't leave written files untracked.
+          await writeLock(options.cwd, lock);
         }
 
         if (!options.dryRun) {
-          await writeLock(options.cwd, lock);
 
           if (config.stylingTarget === "nativewind" && themeIds.size > 0) {
             await ensureNativeWindTheme(options.cwd, [...themeIds][0]!);
@@ -271,25 +307,10 @@ export function registerAddCommand(program: Command) {
             }
           }
 
-          console.log(chalk.bold.green("\n✅ Done!\n"));
+          console.log(
+            process.exitCode ? chalk.bold.red("\n✗ Finished with errors (see above).\n") : chalk.bold.green("\n✅ Done!\n")
+          );
         }
       }
     );
-}
-
-/**
- * NativeWind components use semantic classes (bg-primary, text-muted-foreground, ...) backed
- * by CSS variables. Make sure the variables exist and tell the user if Tailwind doesn't map them.
- */
-async function ensureNativeWindTheme(cwd: string, themeId: string): Promise<void> {
-  const css = await findGlobalCss(cwd);
-  if (css && !(await hasThemeCss(css))) {
-    await applyThemeCss(cwd, themeId);
-  }
-  if ((await tailwindMapsThemeColors(cwd)) === false) {
-    console.log(
-      chalk.yellow("\n  ⚠ tailwind.config doesn't map Nativra's theme colors yet. Add this to theme.extend:\n") +
-        chalk.gray(TAILWIND_COLORS_SNIPPET.replace(/^/gm, "    "))
-    );
-  }
 }
