@@ -11,6 +11,8 @@ coverage/
 .expo/
 .expo-shared/
 .playwright-cli/
+# Left behind by an interrupted tsup build
+tsup.config.bundled_*
 
 nativra.lock.json.bak
 .nativra/
