@@ -113,4 +113,10 @@ describe("style tokens and status colors", () => {
     expect(css).toContain(`.rounded-button { border-radius: ${defaultTheme.style.radius.button}px; }`);
     expect(css).toContain(".rounded-t-surface { border-top-left-radius:");
   });
+
+  it("emits a dark scrim class that stays black in both color schemes", () => {
+    expect(toStyleCss(defaultTheme)).toContain(
+      `.bg-scrim { background-color: rgba(0, 0, 0, ${defaultTheme.style.scrimOpacity}); }`
+    );
+  });
 });

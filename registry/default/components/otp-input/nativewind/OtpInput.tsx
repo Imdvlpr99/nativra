@@ -53,7 +53,7 @@ export function OtpInput({
       />
 
       {/* Visible Cell Matrix */}
-      <Pressable
+      <Pressable accessible={false} importantForAccessibility="no"
         onPress={handleCellPress}
         className="flex-row items-center justify-center gap-2.5"
       >

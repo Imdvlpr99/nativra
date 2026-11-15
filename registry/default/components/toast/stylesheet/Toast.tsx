@@ -39,7 +39,7 @@ export function Toast({
         </View>
       </View>
       {onDismiss ? (
-        <Pressable onPress={onDismiss} accessibilityLabel="Dismiss toast" style={styles.closeBtn}>
+        <Pressable accessibilityRole="button" onPress={onDismiss} accessibilityLabel="Dismiss toast" style={styles.closeBtn}>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
       ) : null}

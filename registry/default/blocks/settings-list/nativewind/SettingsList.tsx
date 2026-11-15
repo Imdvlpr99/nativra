@@ -88,7 +88,7 @@ export function SettingsList({
       <Separator />
 
       {/* Row 4: Account Security navigation */}
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={onAccountPress}
         className="flex-row items-center justify-between py-3 px-1 active:opacity-70"
       >

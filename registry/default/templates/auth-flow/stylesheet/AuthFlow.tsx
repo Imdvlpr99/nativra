@@ -13,16 +13,31 @@ import { themeStyle, useThemeColors, type ThemeColors, elevation } from "@/hooks
 
 export type AuthStep = "login" | "signup" | "forgot" | "otp";
 
+export interface AuthValues {
+  email: string;
+  password: string;
+  name: string;
+  otp: string;
+}
+
 export interface AuthFlowProps {
   initialStep?: AuthStep;
   appName?: string;
-  onSuccess?: (details: { email: string; token: string }) => void;
+  /**
+   * Runs the step against your auth backend: sign in, create the account, send or verify the
+   * code. Throw (or reject) with an Error to show its message and stay on the step. Without it
+   * the form only demonstrates the flow and accepts any input, so always pass it in an app.
+   */
+  onSubmit?: (step: AuthStep, values: AuthValues) => Promise<void> | void;
+  /** Called after sign-in or code verification succeeds. */
+  onSuccess?: (details: { email: string }) => void;
   style?: StyleProp<ViewStyle>;
 }
 
 export function AuthFlow({
   initialStep = "login",
   appName = "Nativra Mobile",
+  onSubmit,
   onSuccess,
   style,
 }: AuthFlowProps) {
@@ -34,19 +49,44 @@ export function AuthFlow({
   const [name, setName] = React.useState("");
   const [otp, setOtp] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const mounted = React.useRef(true);
+  React.useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
+  React.useEffect(() => {
+    if (__DEV__ && !onSubmit) {
+      console.warn("AuthFlow: no onSubmit prop, so any credentials are accepted. Pass onSubmit to call your auth backend.");
+    }
+  }, [onSubmit]);
 
-  const handleSubmit = () => {
+  const canSubmit =
+    step === "otp"
+      ? otp.length === 6
+      : email.trim() !== "" && (step === "forgot" || password !== "") && (step !== "signup" || name.trim() !== "");
+
+  const goTo = (next: AuthStep) => {
+    setError(null);
+    setStep(next);
+  };
+
+  const handleSubmit = async () => {
+    if (loading || !canSubmit) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (step === "login") {
-        onSuccess?.({ email, token: "nv_token_123" });
-      } else if (step === "forgot" || step === "signup") {
-        setStep("otp");
-      } else if (step === "otp") {
-        onSuccess?.({ email, token: "nv_token_verified" });
-      }
-    }, 800);
+    setError(null);
+    try {
+      await onSubmit?.(step, { email: email.trim(), password, name: name.trim(), otp });
+      if (!mounted.current) return;
+      if (step === "login" || step === "otp") onSuccess?.({ email: email.trim() });
+      else setStep("otp");
+    } catch (err) {
+      if (mounted.current) setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
+    } finally {
+      if (mounted.current) setLoading(false);
+    }
   };
 
   return (
@@ -82,6 +122,9 @@ export function AuthFlow({
               <TextInput
                 value={name}
                 onChangeText={setName}
+                accessibilityLabel="Full name"
+                autoComplete="name"
+                textContentType="name"
                 placeholder="Alex Morgan"
                 style={styles.input}
               />
@@ -96,6 +139,10 @@ export function AuthFlow({
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
+                accessibilityLabel="Email address"
+                autoComplete="email"
+                textContentType="emailAddress"
                 placeholder="alex@example.com"
                 style={styles.input}
               />
@@ -107,7 +154,7 @@ export function AuthFlow({
               <View style={styles.passwordHeader}>
                 <Text style={styles.label}>Password</Text>
                 {step === "login" && (
-                  <Pressable onPress={() => setStep("forgot")}>
+                  <Pressable accessibilityRole="button" onPress={() => goTo("forgot")}>
                     <Text style={styles.forgotText}>Forgot?</Text>
                   </Pressable>
                 )}
@@ -116,6 +163,9 @@ export function AuthFlow({
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                accessibilityLabel="Password"
+                autoComplete={step === "signup" ? "new-password" : "current-password"}
+                textContentType={step === "signup" ? "newPassword" : "password"}
                 placeholder="••••••••"
                 style={styles.input}
               />
@@ -136,17 +186,28 @@ export function AuthFlow({
                 onChangeText={setOtp}
                 keyboardType="number-pad"
                 maxLength={6}
+                accessibilityLabel="Verification code"
+                autoComplete="one-time-code"
+                textContentType="oneTimeCode"
                 placeholder="Type 6 digits..."
                 style={[styles.input, styles.otpInputHidden]}
               />
             </View>
           )}
 
+          {error ? (
+            <Text accessibilityRole="alert" style={styles.errorText}>
+              {error}
+            </Text>
+          ) : null}
+
           {/* Submit Action */}
           <Pressable
-            disabled={loading}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: loading || !canSubmit, busy: loading }}
+            disabled={loading || !canSubmit}
             onPress={handleSubmit}
-            style={({ pressed }) => [styles.submitBtn, pressed && styles.btnPressed]}
+            style={({ pressed }) => [styles.submitBtn, !canSubmit && styles.submitDisabled, pressed && styles.btnPressed]}
           >
             <Text style={styles.submitBtnText}>
               {loading
@@ -167,7 +228,7 @@ export function AuthFlow({
           <Text style={styles.footerText}>
             {step === "login" ? "Don't have an account?" : "Already have an account?"}
           </Text>
-          <Pressable onPress={() => setStep(step === "login" ? "signup" : "login")}>
+          <Pressable accessibilityRole="button" onPress={() => goTo(step === "login" ? "signup" : "login")}>
             <Text style={styles.switchAuthText}>
               {step === "login" ? "Sign Up" : "Sign In"}
             </Text>
@@ -251,6 +312,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     elevation: 3,
   },
   btnPressed: { transform: [{ scale: 0.97 }], opacity: 0.9 },
+  submitDisabled: { opacity: 0.5 },
+  errorText: { color: palette.destructive, fontSize: 13, lineHeight: 18 },
   submitBtnText: { color: palette["primary-foreground"], fontWeight: "700", fontSize: 14 },
   footerRow: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 6 },
   footerText: { fontSize: 13, color: palette["muted-foreground"] },

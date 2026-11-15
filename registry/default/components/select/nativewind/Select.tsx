@@ -53,14 +53,14 @@ export function Select({
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View className="flex-1 justify-end bg-foreground/60">
-          <Pressable className="flex-1" onPress={() => setOpen(false)} />
+        <View className="flex-1 justify-end bg-scrim" accessibilityViewIsModal>
+          <Pressable accessible={false} importantForAccessibility="no" className="flex-1" onPress={() => setOpen(false)} />
           <View className="max-h-[60%] rounded-t-surface border-t border-border bg-card p-5">
             <View className="mb-4 flex-row items-center justify-between pb-2 border-b border-border">
               <Text className="text-base font-bold text-foreground">
                 {label ?? "Select an option"}
               </Text>
-              <Pressable onPress={() => setOpen(false)} className="p-1">
+              <Pressable accessibilityRole="button" onPress={() => setOpen(false)} className="p-1">
                 <Text className="text-sm font-semibold text-primary">Done</Text>
               </Pressable>
             </View>
@@ -71,7 +71,7 @@ export function Select({
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
                 return (
-                  <Pressable
+                  <Pressable accessibilityRole="button" accessibilityState={{ selected: isSelected }}
                     onPress={() => {
                       onValueChange(item.value);
                       setOpen(false);

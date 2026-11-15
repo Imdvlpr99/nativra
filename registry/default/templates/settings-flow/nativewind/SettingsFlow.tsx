@@ -114,7 +114,7 @@ export function SettingsFlow({
 
       {/* Danger Zone */}
       <View className="pt-2">
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={onLogout}
           className="w-full items-center justify-center rounded-card border border-destructive/30 bg-destructive/70 p-3.5 active:bg-destructive/15"
         >

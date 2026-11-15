@@ -94,7 +94,7 @@ export function DataTable<T extends Record<string, any>>({
               const rowKey = keyExtractor(item, rowIndex);
 
               return (
-                <Pressable
+                <Pressable accessibilityRole={onRowPress ? "button" : undefined}
                   key={rowKey}
                   disabled={!onRowPress}
                   onPress={() => onRowPress?.(item, rowIndex)}

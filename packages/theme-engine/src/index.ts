@@ -143,6 +143,8 @@ export interface ThemeStyle {
   };
   /** Scale applied while a pressable is held */
   pressedScale: number;
+  /** Opacity of the black backdrop behind dialogs and sheets */
+  scrimOpacity: number;
   fontWeight: {
     heading: "500" | "600" | "700" | "800";
     title: "500" | "600" | "700";
@@ -210,6 +212,7 @@ export const softStyle: ThemeStyle = {
     overlay: { offsetY: 16, radius: 40, opacity: 0.18, elevation: 12 },
   },
   pressedScale: 0.97,
+  scrimOpacity: 0.5,
   fontWeight: { heading: "700", title: "600", label: "600" },
   headingLetterSpacing: -0.4,
 };
@@ -1040,6 +1043,8 @@ export function toStyleCss(theme: NativraThemeTokens): string {
       rules.push(`.${name} { ${props.map((p) => `${p}: ${value}px;`).join(" ")} }`);
     }
   }
+  // The backdrop behind dialogs and sheets stays dark in both color schemes.
+  rules.push(`.bg-scrim { background-color: rgba(0, 0, 0, ${theme.style.scrimOpacity}); }`);
   return rules.join("\n");
 }
 

@@ -63,7 +63,7 @@ export function OtpInput({
       />
 
       {/* Visible Cell Matrix */}
-      <Pressable onPress={handleCellPress} style={styles.cellRow}>
+      <Pressable accessible={false} importantForAccessibility="no" onPress={handleCellPress} style={styles.cellRow}>
         {digits.map((digit, idx) => {
           const isActive = isFocused && idx === Math.min(value.length, length - 1);
           const isFilled = digit.length > 0;

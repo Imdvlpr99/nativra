@@ -101,6 +101,7 @@ export const themeStyle = {
     },
   },
   pressedScale: 0.97,
+  scrimOpacity: 0.5,
   fontWeight: {
     heading: "700",
     title: "600",

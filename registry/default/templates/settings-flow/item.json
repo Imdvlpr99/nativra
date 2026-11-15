@@ -4,7 +4,7 @@
   "description": "A comprehensive mobile settings screen template with account profile header, preference toggles, security options, and logout dialog.",
   "type": "template",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

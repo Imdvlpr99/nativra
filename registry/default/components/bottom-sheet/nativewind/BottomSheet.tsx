@@ -26,9 +26,9 @@ export function BottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-foreground/50">
+      <View className="flex-1 justify-end bg-scrim">
         {/* Backdrop Dismiss */}
-        <Pressable
+        <Pressable accessibilityRole="button"
           className="absolute inset-0"
           onPress={onClose}
           accessibilityLabel="Dismiss bottom sheet"

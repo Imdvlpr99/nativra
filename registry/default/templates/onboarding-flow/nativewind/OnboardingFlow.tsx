@@ -71,7 +71,7 @@ export function OnboardingFlow({
         </View>
 
         {!isLast && (
-          <Pressable onPress={onSkip} className="p-2">
+          <Pressable accessibilityRole="button" onPress={onSkip} className="p-2">
             <Text className="text-xs font-semibold text-muted-foreground hover:text-muted-foreground">Skip</Text>
           </Pressable>
         )}
@@ -97,7 +97,7 @@ export function OnboardingFlow({
       <View className="space-y-6">
         <View className="flex-row items-center justify-center gap-2">
           {slides.map((_, idx) => (
-            <Pressable
+            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
               key={idx}
               onPress={() => setCurrentIndex(idx)}
               className={cn(
@@ -108,7 +108,7 @@ export function OnboardingFlow({
           ))}
         </View>
 
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={handleNext}
           className="w-full rounded-card bg-primary py-4 items-center justify-center shadow-lg shadow-primary/25 active:scale-95 transition-all"
         >

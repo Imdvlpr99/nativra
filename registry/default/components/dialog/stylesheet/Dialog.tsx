@@ -1,7 +1,7 @@
 /** Nativra — Dialog (StyleSheet). Install: npx nativra-cli add dialog */
 import React from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
+import { useThemeColors, themeStyle, elevation, scrim } from "@/hooks/use-theme-colors";
 
 export interface DialogProps {
   open: boolean;
@@ -47,8 +47,8 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View style={styles.backdrop}>
-        <Pressable style={styles.dismissOverlay} onPress={handleCancel} />
+      <View style={styles.backdrop} accessibilityViewIsModal>
+        <Pressable accessible={false} importantForAccessibility="no" style={styles.dismissOverlay} onPress={handleCancel} />
         <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }, elevation("overlay")]}>
           <Text style={[styles.title, { color: c.foreground }]}>{title}</Text>
           {description ? (
@@ -60,7 +60,7 @@ export function Dialog({
           {children ? <View style={styles.content}>{children}</View> : null}
 
           <View style={styles.actions}>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleCancel}
               style={[styles.cancelBtn, { borderColor: c.input }]}
             >
@@ -68,7 +68,7 @@ export function Dialog({
                 {cancelText}
               </Text>
             </Pressable>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleConfirm}
               style={[
                 styles.confirmBtn,
@@ -92,7 +92,7 @@ export function Dialog({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", alignItems: "center", justifyContent: "center", padding: 24 },
+  backdrop: { flex: 1, backgroundColor: scrim(), alignItems: "center", justifyContent: "center", padding: 24 },
   dismissOverlay: { ...StyleSheet.absoluteFillObject },
   card: { width: "100%", maxWidth: 360, borderRadius: themeStyle.radius.surface, borderWidth: themeStyle.borderWidth, padding: 24, zIndex: 10 },
   title: { fontSize: 18, fontWeight: "700" },

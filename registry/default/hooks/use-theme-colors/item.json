@@ -3,7 +3,7 @@
   "name": "useThemeColors",
   "description": "Returns the installed theme's semantic colors for the current light/dark scheme. Used by every StyleSheet component.",
   "type": "hook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [{ "path": "use-theme-colors.ts" }],

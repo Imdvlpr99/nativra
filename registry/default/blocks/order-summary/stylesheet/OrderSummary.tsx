@@ -110,7 +110,7 @@ export function OrderSummary({
         <Text style={styles.totalValue}>{total}</Text>
       </View>
 
-      <Pressable style={styles.checkoutBtn} onPress={onCheckout}>
+      <Pressable accessibilityRole="button" style={styles.checkoutBtn} onPress={onCheckout}>
         <Text style={styles.btnText}>{buttonLabel}</Text>
       </Pressable>
     </View>

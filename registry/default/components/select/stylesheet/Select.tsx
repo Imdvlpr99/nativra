@@ -1,7 +1,7 @@
 /** Nativra — Select (StyleSheet). Install: npx nativra-cli add select */
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, scrim, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface SelectOption {
   label: string;
@@ -56,14 +56,14 @@ export function Select({
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View style={styles.backdrop}>
-          <Pressable style={styles.flex1} onPress={() => setOpen(false)} />
+        <View style={styles.backdrop} accessibilityViewIsModal>
+          <Pressable accessible={false} importantForAccessibility="no" style={styles.flex1} onPress={() => setOpen(false)} />
           <View style={[styles.sheet, { backgroundColor: c.background }]}>
             <View style={styles.sheetHeader}>
               <Text style={[styles.sheetTitle, { color: fg }]}>
                 {label ?? "Select an option"}
               </Text>
-              <Pressable onPress={() => setOpen(false)}>
+              <Pressable accessibilityRole="button" onPress={() => setOpen(false)}>
                 <Text style={styles.doneBtn}>Done</Text>
               </Pressable>
             </View>
@@ -74,7 +74,7 @@ export function Select({
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
                 return (
-                  <Pressable
+                  <Pressable accessibilityRole="button" accessibilityState={{ selected: isSelected }}
                     onPress={() => {
                       onValueChange(item.value);
                       setOpen(false);
@@ -111,7 +111,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   triggerText: { fontSize: 16 },
   arrow: { fontSize: 10, color: c["muted-foreground"] },
   disabled: { opacity: 0.5 },
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" },
+  backdrop: { flex: 1, backgroundColor: scrim(), justifyContent: "flex-end" },
   flex1: { flex: 1 },
   sheet: { maxHeight: "60%", borderTopLeftRadius: themeStyle.radius.surface, borderTopRightRadius: themeStyle.radius.surface, padding: 20 },
   sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 8 },

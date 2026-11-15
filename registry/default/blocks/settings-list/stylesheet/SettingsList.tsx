@@ -87,7 +87,7 @@ export function SettingsList({
       <Separator />
 
       {/* Row 4: Account Security */}
-      <Pressable onPress={onAccountPress} style={styles.navRow}>
+      <Pressable accessibilityRole="button" onPress={onAccountPress} style={styles.navRow}>
         <View>
           <Text variant="p" style={styles.rowTitle}>Account & Security</Text>
           <Text variant="muted" style={styles.rowDesc}>Password, 2FA, session tokens</Text>

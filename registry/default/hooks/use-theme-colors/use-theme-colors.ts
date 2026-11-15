@@ -47,6 +47,8 @@ export interface ThemeStyle {
   readonly borderWidth: number;
   readonly shadow: { readonly card: ShadowToken; readonly raised: ShadowToken; readonly overlay: ShadowToken };
   readonly pressedScale: number;
+  /** Absent from theme files generated before it existed. */
+  readonly scrimOpacity?: number;
   readonly fontWeight: { readonly heading: "500" | "600" | "700" | "800"; readonly title: "500" | "600" | "700"; readonly label: "500" | "600" };
   readonly headingLetterSpacing: number;
 }
@@ -61,6 +63,7 @@ const FALLBACK_STYLE: ThemeStyle = {
     overlay: { offsetY: 16, radius: 40, opacity: 0.18, elevation: 12 },
   },
   pressedScale: 0.97,
+  scrimOpacity: 0.5,
   fontWeight: { heading: "700", title: "600", label: "600" },
   headingLetterSpacing: -0.4,
 };
@@ -85,6 +88,11 @@ export function elevation(level: ShadowLevel): ViewStyle {
     shadowRadius: s.radius / 2,
     elevation: s.elevation,
   };
+}
+
+/** The backdrop behind dialogs and sheets: black in both schemes, at the theme's opacity. */
+export function scrim(): string {
+  return `rgba(0, 0, 0, ${themeStyle.scrimOpacity ?? FALLBACK_STYLE.scrimOpacity ?? 0.5})`;
 }
 
 /** Press feedback for Pressable styles: `style={({ pressed }) => [base, pressedStyle(pressed)]}`. */

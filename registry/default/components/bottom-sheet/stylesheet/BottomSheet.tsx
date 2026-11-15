@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors, elevation, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation, scrim, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -38,7 +38,7 @@ export function BottomSheet({
     >
       <View style={styles.backdrop}>
         {/* Backdrop Dismiss */}
-        <Pressable
+        <Pressable accessibilityRole="button"
           style={StyleSheet.absoluteFill}
           onPress={onClose}
           accessibilityLabel="Dismiss bottom sheet"
@@ -64,7 +64,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: scrim(),
   },
   sheet: {
     width: "100%",

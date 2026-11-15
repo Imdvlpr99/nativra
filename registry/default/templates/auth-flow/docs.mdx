@@ -4,16 +4,39 @@ A full multi-step mobile authentication flow supporting Login, Registration, Pas
 
 ## Usage
 
+Pass `onSubmit` to run each step against your auth backend. Throw an `Error` to show its message and keep the user on the step; resolve to continue. Without `onSubmit` the template only demonstrates the flow and accepts any input, and it warns about that in development.
+
 ```tsx
-import { AuthFlow } from "@/components/templates/auth-flow";
+import { AuthFlow } from "@/components/ui/AuthFlow";
+import { auth } from "@/lib/auth";
 
 export default function AuthScreen() {
   return (
     <AuthFlow
-      onSuccess={(user) => console.log("Authenticated", user)}
       appName="Nativra App"
+      onSubmit={async (step, { email, password, name, otp }) => {
+        if (step === "login") await auth.signIn(email, password);
+        if (step === "signup") await auth.signUp({ email, password, name });
+        if (step === "forgot") await auth.sendResetCode(email);
+        if (step === "otp") await auth.verifyCode(email, otp);
+      }}
+      onSuccess={({ email }) => console.log("Signed in", email)}
     />
   );
 }
 ```
 
+## Steps
+
+| Step | Submit runs | Then |
+|---|---|---|
+| `login` | `onSubmit("login", values)` | `onSuccess` |
+| `signup` | `onSubmit("signup", values)` | moves to `otp` |
+| `forgot` | `onSubmit("forgot", values)` | moves to `otp` |
+| `otp` | `onSubmit("otp", values)` | `onSuccess` |
+
+The submit button stays disabled until the step's fields are filled. Inputs set `autoComplete` and `textContentType`, so password managers and one-time-code autofill work on iOS and Android.
+
+## Upgrading from 0.1
+
+`onSuccess` no longer receives a `token`. The previous template made one up without checking anything. Return your session from your own auth client inside `onSubmit` instead.

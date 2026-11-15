@@ -45,8 +45,8 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View className="flex-1 items-center justify-center bg-foreground/60 px-6">
-        <Pressable className="absolute inset-0" onPress={handleCancel} />
+      <View className="flex-1 items-center justify-center bg-scrim px-6" accessibilityViewIsModal>
+        <Pressable accessible={false} importantForAccessibility="no" className="absolute inset-0" onPress={handleCancel} />
         <View className="w-full max-w-sm rounded-surface border border-border bg-card p-6 z-10" style={elevation("overlay")}>
           <Text className="text-lg font-bold text-foreground">{title}</Text>
           {description ? (
@@ -58,7 +58,7 @@ export function Dialog({
           {children ? <View className="mt-4">{children}</View> : null}
 
           <View className="mt-6 flex-row justify-end gap-3">
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleCancel}
               className="h-10 px-4 rounded-control border border-input items-center justify-center active:opacity-75"
             >
@@ -66,7 +66,7 @@ export function Dialog({
                 {cancelText}
               </Text>
             </Pressable>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleConfirm}
               className={`h-10 px-4 rounded-control items-center justify-center active:opacity-75 ${
                 destructive ? "bg-destructive" : "bg-foreground"

@@ -40,7 +40,7 @@ export function Toast({
         </View>
       </View>
       {onDismiss ? (
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={onDismiss}
           accessibilityLabel="Dismiss toast"
           className="h-[26px] w-[26px] items-center justify-center rounded-full bg-background/10 active:opacity-70"

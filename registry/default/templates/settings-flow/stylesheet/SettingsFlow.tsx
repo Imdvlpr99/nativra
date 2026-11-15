@@ -104,7 +104,7 @@ export function SettingsFlow({
       </View>
 
       {/* Danger Zone Sign Out */}
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={onLogout}
         style={({ pressed }) => [styles.logoutBtn, pressed && styles.btnPressed]}
       >

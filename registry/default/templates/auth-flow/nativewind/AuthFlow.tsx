@@ -4,16 +4,31 @@ import { cn } from "@/lib/utils";
 
 export type AuthStep = "login" | "signup" | "forgot" | "otp";
 
+export interface AuthValues {
+  email: string;
+  password: string;
+  name: string;
+  otp: string;
+}
+
 export interface AuthFlowProps {
   initialStep?: AuthStep;
   appName?: string;
-  onSuccess?: (details: { email: string; token: string }) => void;
+  /**
+   * Runs the step against your auth backend: sign in, create the account, send or verify the
+   * code. Throw (or reject) with an Error to show its message and stay on the step. Without it
+   * the form only demonstrates the flow and accepts any input, so always pass it in an app.
+   */
+  onSubmit?: (step: AuthStep, values: AuthValues) => Promise<void> | void;
+  /** Called after sign-in or code verification succeeds. */
+  onSuccess?: (details: { email: string }) => void;
   className?: string;
 }
 
 export function AuthFlow({
   initialStep = "login",
   appName = "Nativra Mobile",
+  onSubmit,
   onSuccess,
   className,
 }: AuthFlowProps) {
@@ -23,19 +38,44 @@ export function AuthFlow({
   const [name, setName] = React.useState("");
   const [otp, setOtp] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const mounted = React.useRef(true);
+  React.useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
+  React.useEffect(() => {
+    if (__DEV__ && !onSubmit) {
+      console.warn("AuthFlow: no onSubmit prop, so any credentials are accepted. Pass onSubmit to call your auth backend.");
+    }
+  }, [onSubmit]);
 
-  const handleSubmit = () => {
+  const canSubmit =
+    step === "otp"
+      ? otp.length === 6
+      : email.trim() !== "" && (step === "forgot" || password !== "") && (step !== "signup" || name.trim() !== "");
+
+  const goTo = (next: AuthStep) => {
+    setError(null);
+    setStep(next);
+  };
+
+  const handleSubmit = async () => {
+    if (loading || !canSubmit) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (step === "login") {
-        onSuccess?.({ email, token: "nv_token_123" });
-      } else if (step === "forgot" || step === "signup") {
-        setStep("otp");
-      } else if (step === "otp") {
-        onSuccess?.({ email, token: "nv_token_verified" });
-      }
-    }, 800);
+    setError(null);
+    try {
+      await onSubmit?.(step, { email: email.trim(), password, name: name.trim(), otp });
+      if (!mounted.current) return;
+      if (step === "login" || step === "otp") onSuccess?.({ email: email.trim() });
+      else setStep("otp");
+    } catch (err) {
+      if (mounted.current) setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
+    } finally {
+      if (mounted.current) setLoading(false);
+    }
   };
 
   return (
@@ -49,7 +89,7 @@ export function AuthFlow({
           <View className="h-12 w-12 rounded-card bg-primary items-center justify-center shadow-lg shadow-primary/20">
             <Text className="text-xl font-black text-primary-foreground">NV</Text>
           </View>
-          <Text className="text-2xl font-black text-primary-foreground">
+          <Text className="text-2xl font-black text-foreground text-center">
             {step === "login" && `Welcome to ${appName}`}
             {step === "signup" && "Create an Account"}
             {step === "forgot" && "Reset Password"}
@@ -71,6 +111,9 @@ export function AuthFlow({
               <TextInput
                 value={name}
                 onChangeText={setName}
+                accessibilityLabel="Full name"
+                autoComplete="name"
+                textContentType="name"
                 placeholder="Alex Morgan"
                 className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
               />
@@ -84,6 +127,10 @@ export function AuthFlow({
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
+                autoCorrect={false}
+                accessibilityLabel="Email address"
+                autoComplete="email"
+                textContentType="emailAddress"
                 autoCapitalize="none"
                 placeholder="alex@example.com"
                 className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
@@ -96,7 +143,7 @@ export function AuthFlow({
               <View className="flex-row items-center justify-between">
                 <Text className="text-xs font-semibold text-foreground">Password</Text>
                 {step === "login" && (
-                  <Pressable onPress={() => setStep("forgot")}>
+                  <Pressable accessibilityRole="button" onPress={() => goTo("forgot")}>
                     <Text className="text-[11px] font-medium text-primary">Forgot?</Text>
                   </Pressable>
                 )}
@@ -105,6 +152,9 @@ export function AuthFlow({
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                accessibilityLabel="Password"
+                autoComplete={step === "signup" ? "new-password" : "current-password"}
+                textContentType={step === "signup" ? "newPassword" : "password"}
                 placeholder="••••••••"
                 className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
               />
@@ -130,17 +180,31 @@ export function AuthFlow({
                 onChangeText={setOtp}
                 keyboardType="number-pad"
                 maxLength={6}
+                accessibilityLabel="Verification code"
+                autoComplete="one-time-code"
+                textContentType="oneTimeCode"
                 placeholder="Type 6 digits..."
                 className="w-full rounded-control border border-border bg-background px-3 py-2 text-center text-xs text-foreground"
               />
             </View>
           )}
 
+          {error ? (
+            <Text accessibilityRole="alert" className="text-[13px] leading-[18px] text-destructive">
+              {error}
+            </Text>
+          ) : null}
+
           {/* Submit Action */}
           <Pressable
-            disabled={loading}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: loading || !canSubmit, busy: loading }}
+            disabled={loading || !canSubmit}
             onPress={handleSubmit}
-            className="w-full items-center justify-center rounded-control bg-primary py-3 shadow-md shadow-primary/20 active:scale-95 transition-all"
+            className={cn(
+              "w-full items-center justify-center rounded-control bg-primary py-3 shadow-md shadow-primary/20 active:scale-95 transition-all",
+              !canSubmit && "opacity-50"
+            )}
           >
             <Text className="text-sm font-bold text-primary-foreground">
               {loading
@@ -162,7 +226,8 @@ export function AuthFlow({
             {step === "login" ? "Don't have an account?" : "Already have an account?"}
           </Text>
           <Pressable
-            onPress={() => setStep(step === "login" ? "signup" : "login")}
+            accessibilityRole="button"
+            onPress={() => goTo(step === "login" ? "signup" : "login")}
           >
             <Text className="text-xs font-bold text-primary">
               {step === "login" ? "Sign Up" : "Sign In"}

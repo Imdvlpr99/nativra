@@ -78,7 +78,7 @@ export function OnboardingFlow({
         </View>
 
         {!isLast && (
-          <Pressable onPress={onSkip} style={styles.skipBtn}>
+          <Pressable accessibilityRole="button" onPress={onSkip} style={styles.skipBtn}>
             <Text style={styles.skipText}>Skip</Text>
           </Pressable>
         )}
@@ -100,7 +100,7 @@ export function OnboardingFlow({
       <View style={styles.footer}>
         <View style={styles.dotsRow}>
           {slides.map((_, idx) => (
-            <Pressable
+            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
               key={idx}
               onPress={() => setCurrentIndex(idx)}
               style={[
@@ -111,7 +111,7 @@ export function OnboardingFlow({
           ))}
         </View>
 
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={handleNext}
           style={({ pressed }) => [styles.actionBtn, pressed && styles.btnPressed]}
         >
