@@ -2,11 +2,13 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
-import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
-import { createClient } from "../client.js";
+import { compareVersions, parseVersion, type RegistryItem } from "@nativra/registry-schema";
+import { createClient, parseItemRef } from "../client.js";
 import { loadConfig } from "../config.js";
+import { detectProjectEnvironment } from "../detect.js";
 import {
   createBackup,
+  upstreamHashes,
   discardBackup,
   PartialRollbackError,
   destPathFor,
@@ -25,8 +27,31 @@ import {
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
-import { ensureNativeWindTheme } from "../theme-css.js";
-import { markFailed, readLockOrExit } from "./shared.js";
+import { ensureNativeWindTheme, installedThemeId } from "../theme-css.js";
+import { listAllItems, markFailed, printable, readLockOrExit, type ListedItem } from "./shared.js";
+
+/**
+ * Warnings to show before installing `item`: deprecation, and platform minimums the project
+ * doesn't meet (Expo SDK, React Native). Installation still proceeds.
+ */
+export async function installWarnings(cwd: string, item: RegistryItem): Promise<string[]> {
+  const warnings: string[] = [];
+  if (item.status === "deprecated") {
+    warnings.push(`${item.id} is deprecated${item.deprecationMessage ? `: ${printable(item.deprecationMessage)}` : "."}`);
+  }
+  const { minExpoSdk, minReactNative } = item.platforms;
+  if (!minExpoSdk && !minReactNative) return warnings;
+  const env = await detectProjectEnvironment(cwd);
+  if (minExpoSdk && env.expoSdkVersion !== undefined && env.expoSdkVersion < minExpoSdk) {
+    warnings.push(`${item.id} needs Expo SDK ${minExpoSdk}+; this project uses SDK ${env.expoSdkVersion}.`);
+  }
+  const installed = env.reactNativeVersion ? parseVersion(env.reactNativeVersion) : null;
+  const minimum = minReactNative ? parseVersion(minReactNative) : null;
+  if (installed && minimum && compareVersions(installed, minimum) < 0) {
+    warnings.push(`${item.id} needs React Native ${printable(minReactNative)}+; this project uses ${env.reactNativeVersion}.`);
+  }
+  return warnings;
+}
 
 export function registerAddCommand(program: Command) {
   program
@@ -61,10 +86,14 @@ export function registerAddCommand(program: Command) {
           console.error(chalk.red(`\n✗ Invalid --on-conflict value "${options.onConflict}". Use skip, overwrite or error.\n`));
           process.exit(1);
         }
+        if (options.overwrite && options.onConflict && options.onConflict !== "overwrite") {
+          console.error(chalk.red(`\n✗ --overwrite contradicts --on-conflict ${options.onConflict}. Pass only one of them.\n`));
+          process.exit(1);
+        }
         const conflictMode: "skip" | "overwrite" | "error" | "prompt" = options.overwrite
           ? "overwrite"
           : options.onConflict ?? (options.yes || !process.stdin.isTTY ? "skip" : "prompt");
-        const client = createClient(config, options.registry);
+        const client = createClient(config, options.registry, options.cwd);
 
         if (!components || components.length === 0) {
           if (!process.stdin.isTTY) {
@@ -73,12 +102,12 @@ export function registerAddCommand(program: Command) {
           }
 
           const spinner = ora("Fetching registry items...").start();
-          let allItems: RegistryManifest["items"];
+          let allItems: ListedItem[];
           try {
-            allItems = await client.listItems();
+            allItems = await listAllItems(client);
             spinner.succeed(`Found ${allItems.length} available items`);
           } catch (err) {
-            spinner.fail(chalk.red(`Failed to fetch registry items: ${(err as Error).message}`));
+            spinner.fail(chalk.red(`Failed to fetch registry items: ${printable((err as Error).message)}`));
             process.exit(1);
           }
 
@@ -87,9 +116,9 @@ export function registerAddCommand(program: Command) {
             name: "selected",
             message: "Select components, blocks, or templates to install:",
             choices: allItems.map((item) => ({
-              title: `${item.name} (${chalk.dim(item.type)})`,
-              value: item.id,
-              description: item.description,
+              title: `${printable(item.name)} (${chalk.dim(item.ref === item.id ? item.type : `${item.type}, ${item.registry}`)})`,
+              value: item.ref,
+              description: printable(item.description),
             })),
             hint: "- Space to select. Return to submit",
           });
@@ -105,19 +134,33 @@ export function registerAddCommand(program: Command) {
         const lock = await readLockOrExit(options.cwd);
         const accumulatedDeps: PackageDependency[] = [];
         const themeIds = new Set<string>();
+        /** Themes that arrived only as dependencies and were skipped because a theme is installed. */
+        const keptThemeIds = new Set<string>();
 
         for (const componentId of components) {
           console.log(chalk.bold(`\n📦 Resolving ${chalk.cyan(componentId)}...`));
 
           let items: RegistryItem[];
+          let requestedId: string;
+          const registryOf = new Map<string, string>();
           const spinner = ora("Fetching from registry...").start();
           try {
-            items = await client.resolveWithDependencies(componentId);
+            const ref = parseItemRef(componentId);
+            requestedId = ref.id;
+            const resolved = await client.resolveWithSources(ref.id, ref.registry);
+            items = resolved.map((r) => r.item);
+            for (const r of resolved) registryOf.set(r.item.id, r.registry);
             spinner.succeed(`Resolved ${items.length} item(s)`);
           } catch (err) {
-            spinner.fail(chalk.red(`Failed to fetch "${componentId}": ${(err as Error).message}`));
+            spinner.fail(chalk.red(`Failed to fetch "${printable(componentId)}": ${printable((err as Error).message)}`));
             markFailed();
             continue;
+          }
+
+          for (const item of items) {
+            for (const warning of await installWarnings(options.cwd, item)) {
+              console.log(chalk.yellow(`  ⚠ ${warning}`));
+            }
           }
 
           console.log(chalk.bold("\nInstallation plan:"));
@@ -166,7 +209,12 @@ export function registerAddCommand(program: Command) {
               let action: "create" | "overwrite" | "skip" = "create";
 
               if (await fileExists(destPath)) {
-                if (conflictMode === "error") {
+                // Every theme installs the same theme.ts and components depend on a default one, so
+                // a theme that only arrives as a dependency must never replace the installed theme.
+                if (item.type === "theme" && item.id !== requestedId) {
+                  action = "skip";
+                  console.log(chalk.gray(`  → Kept installed theme: ${destPath}`));
+                } else if (conflictMode === "error") {
                   console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
                   process.exit(1);
                 } else if (conflictMode === "overwrite") {
@@ -215,7 +263,9 @@ export function registerAddCommand(program: Command) {
             }
           };
           try {
-            for (const [itemId, files] of overwritesByItem) backupIds.push(await createBackup(options.cwd, itemId, files));
+            for (const [itemId, files] of overwritesByItem) {
+              backupIds.push(await createBackup(options.cwd, itemId, files, lock.items[itemId]));
+            }
           } catch (err) {
             console.error(chalk.red(`  ✗ Could not back up files before overwriting: ${(err as Error).message}. Nothing was written.`));
             await discardBackups();
@@ -247,8 +297,11 @@ export function registerAddCommand(program: Command) {
               const hash = writtenFiles[destPath];
               if (hash) itemWrites[destPath] = hash;
             }
-            recordLockEntry(lock, options.cwd, item, itemWrites);
-            if (item.type === "theme") themeIds.add(item.id);
+            recordLockEntry(lock, options.cwd, item, itemWrites, {
+              registry: registryOf.get(item.id),
+              upstream: upstreamHashes(options.cwd, item, config),
+            });
+            if (item.type === "theme") (Object.keys(itemWrites).length > 0 ? themeIds : keptThemeIds).add(item.id);
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
               accumulatedDeps.push(...item.npmDependencies);
@@ -261,8 +314,10 @@ export function registerAddCommand(program: Command) {
 
         if (!options.dryRun) {
 
-          if (config.stylingTarget === "nativewind" && themeIds.size > 0) {
-            await ensureNativeWindTheme(options.cwd, [...themeIds][0]!);
+          // CSS follows the theme actually in theme.ts: one just written, else the installed one.
+          const cssTheme = [...themeIds][0] ?? (keptThemeIds.size > 0 ? installedThemeId(lock) ?? [...keptThemeIds][0] : undefined);
+          if (config.stylingTarget === "nativewind" && cssTheme) {
+            await ensureNativeWindTheme(options.cwd, cssTheme);
           }
 
           // Handle missing npm dependencies

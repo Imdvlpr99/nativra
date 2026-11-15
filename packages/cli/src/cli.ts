@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import chalk from "chalk";
 import { program } from "commander";
 import { registerInitCommand } from "./commands/init.js";
 import { registerAddCommand } from "./commands/add.js";
@@ -41,4 +42,9 @@ registerThemeCommand(program);
 registerRegistryCommand(program);
 registerAuditCommand(program);
 
-program.parse(process.argv);
+// parseAsync so a failure inside an async command is reported as one line, not an
+// unhandled-rejection stack trace.
+program.parseAsync(process.argv).catch((err: unknown) => {
+  console.error(chalk.red(`\n✗ ${err instanceof Error ? err.message : String(err)}\n`));
+  process.exit(1);
+});

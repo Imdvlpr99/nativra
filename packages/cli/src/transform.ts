@@ -84,12 +84,15 @@ export function transformFileImports(
   if (!content) return content;
   const targets = importTargets(config);
 
+  // Replacer functions, not strings: a configured alias containing "$&" or "$1" must be inserted
+  // literally rather than expanded as a replacement pattern.
+  const to = (target: string) => (_match: string, open: string) => `${open}${target}`;
   let transformed = content
-    .replace(/(from\s+["'])@\/lib\/utils(?=["'])/g, `$1${targets.utils}`)
-    .replace(/(from\s+["'])@\/lib\/themes(?=\/|["'])/g, `$1${targets.themes}`)
-    .replace(/(from\s+["'])@\/components\/ui(?=\/|["'])/g, `$1${targets.components}`)
-    .replace(/(from\s+["'])@\/hooks(?=\/|["'])/g, `$1${targets.hooks}`)
-    .replace(/(from\s+["'])@\/blocks(?=\/|["'])/g, `$1${targets.blocks}`);
+    .replace(/(from\s+["'])@\/lib\/utils(?=["'])/g, to(targets.utils))
+    .replace(/(from\s+["'])@\/lib\/themes(?=\/|["'])/g, to(targets.themes))
+    .replace(/(from\s+["'])@\/components\/ui(?=\/|["'])/g, to(targets.components))
+    .replace(/(from\s+["'])@\/hooks(?=\/|["'])/g, to(targets.hooks))
+    .replace(/(from\s+["'])@\/blocks(?=\/|["'])/g, to(targets.blocks));
 
   if (Object.keys(relativeImports).length > 0) {
     transformed = transformed.replace(

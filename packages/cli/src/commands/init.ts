@@ -2,8 +2,16 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
-import { createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
+import { join } from "node:path";
+import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
+import { fileExists } from "../install.js";
+
+/** prompts() resolves with partial answers on Ctrl+C; this makes cancelling stop init instead. */
+const onCancel = (): never => {
+  console.log(chalk.yellow("\n  Init cancelled. Nothing was written.\n"));
+  process.exit(1);
+};
 
 export function registerInitCommand(program: Command) {
   program
@@ -11,8 +19,29 @@ export function registerInitCommand(program: Command) {
     .description("Initialize Nativra in your React Native / Expo project with smart environment detection")
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--yes", "Accept all detected defaults without prompting")
-    .action(async (options: { cwd: string; yes?: boolean }) => {
+    .option("--force", "Replace an existing nativra.json without asking")
+    .action(async (options: { cwd: string; yes?: boolean; force?: boolean }) => {
       console.log(chalk.bold("\n🚀 Initializing Nativra...\n"));
+
+      if (!options.force && (await fileExists(join(options.cwd, CONFIG_FILENAME)))) {
+        if (options.yes || !process.stdin.isTTY) {
+          console.error(chalk.red(`✗ ${CONFIG_FILENAME} already exists. Re-run with --force to replace it.\n`));
+          process.exit(1);
+        }
+        const { replace } = await prompts(
+          {
+            type: "confirm",
+            name: "replace",
+            message: `${CONFIG_FILENAME} already exists. Replace it? Custom registries and aliases in it will be lost.`,
+            initial: false,
+          },
+          { onCancel }
+        );
+        if (!replace) {
+          console.log(chalk.yellow("\n  Kept the existing configuration.\n"));
+          return;
+        }
+      }
 
       // 1. Inspect environment and detect project configurations
       const env = await detectProjectEnvironment(options.cwd);
@@ -67,7 +96,7 @@ export function registerInitCommand(program: Command) {
             message: "Where should utilities be installed?",
             initial: env.suggestedUtilsDir,
           },
-        ]);
+        ], { onCancel });
 
         stylingTarget = answers.stylingTarget ?? env.stylingTarget;
         componentsDir = answers.componentsDir ?? env.suggestedComponentsDir;

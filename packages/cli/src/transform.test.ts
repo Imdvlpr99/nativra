@@ -56,6 +56,13 @@ import { useHaptics } from "@/hooks/useHaptics";
     expect(result).toContain('from "@/shared/hooks/useHaptics"');
   });
 
+  it("inserts aliases literally, even when they contain $ replacement patterns", () => {
+    const config = NativraConfigSchema.parse({ aliases: { utils: "$lib/$&utils", hooks: "$1/hooks" } });
+    const result = transformFileImports('import { cn } from "@/lib/utils";\nimport { x } from "@/hooks/x";\n', config);
+    expect(result).toContain('from "$lib/$&utils"');
+    expect(result).toContain('from "$1/hooks/x"');
+  });
+
   it("rewrites theme imports and cross-directory sibling imports", () => {
     const config = NativraConfigSchema.parse({ componentsDir: "components/ui", blocksDir: "components/blocks", themesDir: "theme" });
     const input = `import { Card } from "./Card";

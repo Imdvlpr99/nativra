@@ -3,10 +3,13 @@ import { readFile } from "node:fs/promises";
 import chalk from "chalk";
 import type { RegistryItem } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
-import { createClient } from "../client.js";
+import { createClient, formatItemRef, parseItemRef } from "../client.js";
 import { loadConfig } from "../config.js";
 import {
   createBackup,
+  upstreamHashes,
+  discardBackup,
+  PartialRollbackError,
   destPathFor,
   executeInstallTransaction,
   filesForTarget,
@@ -22,9 +25,8 @@ import {
   getMissingDependencies,
   type PackageDependency,
 } from "../installer.js";
-import { markFailed, readLockOrExit } from "./shared.js";
-import { THEME_PRESETS } from "@nativra/theme-engine";
-import { ensureNativeWindTheme } from "../theme-css.js";
+import { markFailed, printable, readLockOrExit } from "./shared.js";
+import { ensureNativeWindTheme, installedThemeId } from "../theme-css.js";
 
 export function registerUpdateCommand(program: Command) {
   program
@@ -33,14 +35,16 @@ export function registerUpdateCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry location")
     .option("--force", "Overwrite locally modified files")
-    .action(async (ids: string[], options: { cwd: string; registry?: string; force?: boolean }) => {
+    .option("--dry-run", "Show what would change without writing anything")
+    .action(async (ids: string[], options: { cwd: string; registry?: string; force?: boolean; dryRun?: boolean }) => {
       const config = await loadConfig(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
       });
-      const client = createClient(config, options.registry);
+      const client = createClient(config, options.registry, options.cwd);
       const lock = await readLockOrExit(options.cwd);
-      const targets = ids.length > 0 ? ids : Object.keys(lock.items);
+      // Installed items are looked up in the registry they came from.
+      const targets = ids.length > 0 ? ids : Object.entries(lock.items).map(([id, e]) => formatItemRef(id, e.registry));
 
       if (targets.length === 0) {
         console.log(chalk.yellow("\nNothing installed yet (no nativra.lock.json entries).\n"));
@@ -49,13 +53,21 @@ export function registerUpdateCommand(program: Command) {
 
       const npmDeps = new Map<string, PackageDependency>();
       const handled = new Set<string>();
+      let pending = 0;
 
-      for (const id of targets) {
+      for (const target of targets) {
         let items: RegistryItem[];
+        let id: string;
+        const registryOf = new Map<string, string>();
         try {
-          items = await client.resolveWithDependencies(id);
+          const ref = parseItemRef(target);
+          id = ref.id;
+          const registry = ids.length > 0 && !target.includes("/") ? (lock.items[id]?.registry ?? "default") : ref.registry;
+          const resolved = await client.resolveWithSources(id, registry);
+          items = resolved.map((r) => r.item);
+          for (const r of resolved) registryOf.set(r.item.id, r.registry);
         } catch (e) {
-          console.error(chalk.red(`  ✗ ${id}: ${(e as Error).message}`));
+          console.error(chalk.red(`  ✗ ${printable(target)}: ${printable((e as Error).message)}`));
           markFailed();
           continue;
         }
@@ -69,6 +81,12 @@ export function registerUpdateCommand(program: Command) {
 
           const entry = lock.items[item.id];
           const isNewDependency = !entry && item.id !== id;
+          // A component's theme dependency is satisfied by whichever theme is installed.
+          const activeTheme = installedThemeId(lock);
+          if (isNewDependency && item.type === "theme" && activeTheme) {
+            console.log(chalk.gray(`  = ${item.id}: using the installed theme "${activeTheme}"`));
+            continue;
+          }
           if (isNewDependency) console.log(chalk.cyan(`  + ${item.id} (new dependency of ${id})`));
 
           const plan: PlannedInstallFile[] = [];
@@ -77,9 +95,19 @@ export function registerUpdateCommand(program: Command) {
 
           for (const file of filesForTarget(item, config)) {
             const dest = destPathFor(options.cwd, item, file, config);
-            const recordedHash = entry?.files[toLockKey(options.cwd, dest)] ?? entry?.files[dest];
+            const key = toLockKey(options.cwd, dest);
+            const recordedHash = entry?.files[key] ?? entry?.files[dest];
             const next = renderFile(options.cwd, item, file, items, config);
             const local = await readFile(dest, "utf8").catch(() => null);
+
+            // Same version, different source: either the registry forgot a version bump or the
+            // content was tampered with. Either way, review before trusting it.
+            const recordedUpstream = entry?.upstream?.[key];
+            if (entry?.version === item.version && recordedUpstream && file.hash && recordedUpstream !== file.hash.toLowerCase()) {
+              console.log(
+                chalk.yellow(`  ⚠ ${dest}: the registry changed this file without bumping ${item.id} past ${item.version}. Review it with 'nativra diff ${item.id}'.`)
+              );
+            }
 
             if (local === next) {
               console.log(chalk.gray(`  = ${dest} (up to date)`));
@@ -99,9 +127,17 @@ export function registerUpdateCommand(program: Command) {
             plan.push({ componentId: item.id, destPath: dest, content: next, action: local === null ? "create" : "overwrite" });
           }
 
+          if (options.dryRun) {
+            for (const p of plan) console.log(chalk.cyan(`  ~ would ${p.action === "create" ? "create" : "update"} ${p.destPath}`));
+            pending += plan.length;
+            continue;
+          }
+
+          let backupId: string | undefined;
           if (toBackup.length > 0) {
             try {
-              await createBackup(options.cwd, item.id, toBackup);
+              // The lock entry lets rollback restore the recorded version along with the files.
+              backupId = await createBackup(options.cwd, item.id, toBackup, entry);
             } catch (backupErr) {
               console.error(chalk.red(`  ✗ Cannot create required backup for "${item.id}": ${(backupErr as Error).message}`));
               console.error(chalk.red(`    Update aborted to prevent loss of local source.`));
@@ -115,20 +151,41 @@ export function registerUpdateCommand(program: Command) {
             ({ writtenFiles } = await executeInstallTransaction(options.cwd, plan));
           } catch (err) {
             console.error(chalk.red(`  ✗ ${item.id}: ${(err as Error).message}`));
+            // Files were restored, so the snapshot would make the next rollback a no-op. After a
+            // partial restore it holds the only copy of the previous content, so it stays.
+            if (backupId && !(err instanceof PartialRollbackError)) {
+              const unused = backupId;
+              await discardBackup(options.cwd, unused).catch((e: Error) =>
+                console.error(chalk.yellow(`  ⚠ Could not remove unused backup ${unused}: ${e.message}`))
+              );
+            }
             markFailed();
             continue;
           }
           for (const path of Object.keys(writtenFiles)) console.log(chalk.green(`  ✓ Updated ${path}`));
-          recordLockEntry(lock, options.cwd, item, { ...unchanged, ...writtenFiles });
+          recordLockEntry(lock, options.cwd, item, { ...unchanged, ...writtenFiles }, {
+            registry: registryOf.get(item.id),
+            upstream: upstreamHashes(options.cwd, item, config),
+          });
           // Persist after every item so a later failure can't leave updated files with stale hashes.
           await writeLock(options.cwd, lock);
         }
       }
 
-      // Updated NativeWind components may use newer theme classes (status colors, shape classes).
+      if (options.dryRun) {
+        console.log(
+          pending > 0
+            ? chalk.bold(`\n[Dry Run] ${pending} file(s) would change. Nothing was written.\n`)
+            : chalk.bold.green("\n✓ Everything is up to date.\n")
+        );
+        return;
+      }
+
+      // Updated NativeWind components may use newer theme classes (status colors, shape classes),
+      // so refresh the installed theme's block. Without an installed theme, global.css is left alone.
       if (config.stylingTarget === "nativewind") {
-        const installedTheme = Object.keys(lock.items).find((id) => id in THEME_PRESETS) ?? "zinc";
-        await ensureNativeWindTheme(options.cwd, installedTheme);
+        const installedTheme = installedThemeId(lock);
+        if (installedTheme) await ensureNativeWindTheme(options.cwd, installedTheme);
       }
 
       const missing = await getMissingDependencies(options.cwd, [...npmDeps.values()]);

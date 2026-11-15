@@ -92,6 +92,69 @@ const TOUCHABLE_TAG = /<(TouchableOpacity|TouchableHighlight)\b/;
 const TOUCHABLE_ONLY_PROPS = /\b(activeOpacity|underlayColor|onShowUnderlay|onHideUnderlay|touchSoundDisabled)\s*=/;
 const RN_NAMED_IMPORT = /import\s*\{([^}]*)\}\s*from\s*["']react-native["']\s*;?/;
 
+/** TouchableOpacity's default activeOpacity, kept so migrated buttons still dim when pressed. */
+const PRESS_OPACITY = 0.2;
+
+/**
+ * Walks JSX source from `start`, skipping string literals and tracking `{}` depth, and returns
+ * the first index where `stop(i, depth)` holds (depth already counts a `{` at i), or -1.
+ */
+function scanJsx(text: string, start: number, stop: (i: number, depth: number) => boolean): number {
+  let depth = 0;
+  let quote: string | null = null;
+  for (let i = start; i < text.length; i++) {
+    const c = text[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'" || (c === "`" && depth > 0)) {
+      quote = c;
+      continue;
+    }
+    if (c === "{") depth++;
+    else if (c === "}") depth--;
+    if (stop(i, depth)) return i;
+  }
+  return -1;
+}
+
+/** Adds TouchableOpacity's press dimming to one opening tag as a Pressable style function. */
+function addPressOpacity(tag: string): string | null {
+  const styleAt = scanJsx(tag, 0, (i, d) => d === 0 && tag.startsWith("style={", i) && /\s/.test(tag[i - 1] ?? ""));
+  if (styleAt >= 0) {
+    const open = styleAt + "style=".length;
+    const close = scanJsx(tag, open, (i, d) => tag[i] === "}" && d === 0);
+    if (close < 0) return null;
+    const expr = tag.slice(open + 1, close).trim();
+    return `${tag.slice(0, styleAt)}style={({ pressed }) => [${expr}, pressed && { opacity: ${PRESS_OPACITY} }]}${tag.slice(close + 1)}`;
+  }
+  const selfClosing = tag.endsWith("/>");
+  const attrs = tag.slice(0, selfClosing ? -2 : -1).replace(/\s+$/, "");
+  return `${attrs} style={({ pressed }) => ({ opacity: pressed ? ${PRESS_OPACITY} : 1 })}${selfClosing ? " />" : ">"}`;
+}
+
+/**
+ * Gives every <TouchableOpacity> opening tag a style that dims it while pressed, since Pressable
+ * has no feedback of its own. Returns null for tags it can't rewrite safely: a spread could carry
+ * a style that the added one would override.
+ */
+function keepPressOpacity(src: string): string | null {
+  const starts = [...src.matchAll(/<TouchableOpacity\b/g)].map((m) => m.index ?? 0);
+  let out = src;
+  for (const start of starts.reverse()) {
+    const end = scanJsx(out, start, (i, d) => out[i] === ">" && d === 0);
+    if (end < 0) return null;
+    const tag = out.slice(start, end + 1);
+    if (/\{\s*\.\.\./.test(tag)) return null;
+    const rewritten = addPressOpacity(tag);
+    if (rewritten === null) return null;
+    out = out.slice(0, start) + rewritten + out.slice(end + 1);
+  }
+  return out;
+}
+
 export interface TouchableMigration {
   /** Rewritten file content, or null if the file must be migrated by hand. */
   content: string | null;
@@ -119,11 +182,18 @@ export function migrateTouchables(content: string): TouchableMigration {
   if (TOUCHABLE_ONLY_PROPS.test(content)) {
     return { content: null, reason: "uses Touchable-only props (activeOpacity, underlayColor, ...)" };
   }
+  if (usedTouchables.includes("TouchableHighlight")) {
+    return { content: null, reason: "TouchableHighlight's underlay feedback has no Pressable equivalent" };
+  }
 
   // Rewrite the JSX first, then drop an import only if nothing else still references it
   // (e.g. TouchableOpacityProps, Animated.createAnimatedComponent(TouchableOpacity)).
   const placeholder = "\u0000NATIVRA_RN_IMPORT\u0000";
-  let body = content.replace(importMatch[0], placeholder);
+  const withFeedback = keepPressOpacity(content.replace(importMatch[0], placeholder));
+  if (withFeedback === null) {
+    return { content: null, reason: "a <TouchableOpacity> spreads props or could not be parsed" };
+  }
+  let body = withFeedback;
   for (const t of usedTouchables) {
     body = body.replace(new RegExp(`<${t}\\b`, "g"), "<Pressable").replace(new RegExp(`</${t}>`, "g"), "</Pressable>");
   }
@@ -213,11 +283,12 @@ export async function runProjectAudit(cwd: string): Promise<AuditReport> {
     let match: RegExpExecArray | null;
     while ((match = tagRegex.exec(content)) !== null) {
       interactiveElements++;
-      const snippet = content.slice(match.index, match.index + 500);
-      if (
-        isNativraManaged ||
-        /accessibilityRole|accessibilityLabel|accessible|\.\.\.props|\.\.\.rest/.test(snippet)
-      ) {
+      // Only this element's own opening tag counts, and installed Nativra files are checked like
+      // any other code. A spread ({...props}) passes the props through from the caller.
+      const start = match.index;
+      const end = scanJsx(content, start, (i, d) => content[i] === ">" && d === 0);
+      const openingTag = content.slice(start, end < 0 ? start + 500 : end + 1);
+      if (/accessibilityRole|accessibilityLabel|\baccessible\b|\brole=|aria-label|\{\s*\.\.\./.test(openingTag)) {
         accessibleInteractiveElements++;
       } else if (findings.length < 25) {
         const { line, column } = getLineAndCol(content, match.index);
@@ -325,7 +396,7 @@ export function registerAuditCommand(program: Command) {
     )
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--json", "Output structured JSON report for CI pipelines")
-    .option("--fix", "Migrate legacy <TouchableOpacity>/<TouchableHighlight> to <Pressable> (files are backed up first)")
+    .option("--fix", "Migrate legacy <TouchableOpacity> to <Pressable>, keeping its press dimming (files are backed up first)")
     .option("--dry-run", "With --fix: list the files that would change without writing them")
     .option("--yes", "With --fix: skip the confirmation prompt")
     .option("--min-score <n>", "Exit with code 1 when the score is below n (0-100), for CI")
@@ -355,7 +426,7 @@ export function registerAuditCommand(program: Command) {
           ({ proceed } = await prompts({
             type: "confirm",
             name: "proceed",
-            message: `Rewrite ${plan.changed.length} file(s)? Pressable has no default press feedback, so review the result.`,
+            message: `Rewrite ${plan.changed.length} file(s)? Press dimming is kept as a style function; review the result.`,
             initial: false,
           }));
         }

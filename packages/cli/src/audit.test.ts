@@ -102,14 +102,15 @@ describe("migrateTouchables", () => {
     );
     expect(out.content).toContain('import { View, Pressable } from "react-native";');
     expect(out.content).not.toContain(",,");
+    expect(out.content).toContain("<Pressable style={({ pressed }) => ({ opacity: pressed ? 0.2 : 1 })} />");
   });
 
   it("handles multi-line imports that already include Pressable", () => {
     const out = migrateTouchables(
-      'import {\n  Pressable,\n  TouchableHighlight,\n} from "react-native";\nconst A = () => <TouchableHighlight></TouchableHighlight>;\n'
+      'import {\n  Pressable,\n  TouchableOpacity,\n} from "react-native";\nconst A = () => <TouchableOpacity></TouchableOpacity>;\n'
     );
     expect(out.content).toContain('import { Pressable } from "react-native";');
-    expect(out.content).toContain("<Pressable></Pressable>");
+    expect(out.content).toContain("<Pressable style={({ pressed }) => ({ opacity: pressed ? 0.2 : 1 })}></Pressable>");
   });
 
   it("refuses files using Touchable-only props", () => {
@@ -132,7 +133,42 @@ describe("migrateTouchables", () => {
     );
     expect(out.content).toContain("Animated.createAnimatedComponent(TouchableOpacity)");
     expect(out.content).toMatch(/import \{[^}]*\bTouchableOpacity\b[^}]*\bPressable\b[^}]*\} from "react-native";/);
-    expect(out.content).toContain("<Pressable />");
+    expect(out.content).toContain("<Pressable style={({ pressed }) => ({ opacity: pressed ? 0.2 : 1 })} />");
+  });
+
+  it("keeps an existing style and adds the press dimming to it", () => {
+    const out = migrateTouchables(
+      [
+        'import { Text, TouchableOpacity } from "react-native";',
+        "const A = () => (",
+        "  <TouchableOpacity",
+        "    onPress={() => go('a > b')}",
+        "    style={[styles.btn, { padding: 4 }]}",
+        "  >",
+        '    <Text>{x > 1 ? "a" : "b"}</Text>',
+        "  </TouchableOpacity>",
+        ");",
+        "",
+      ].join("\n")
+    );
+    expect(out.content).toContain("style={({ pressed }) => [[styles.btn, { padding: 4 }], pressed && { opacity: 0.2 }]}");
+    expect(out.content).toContain("onPress={() => go('a > b')}");
+    expect(out.content).toContain("</Pressable>");
+  });
+
+  it("refuses TouchableHighlight, whose underlay has no Pressable equivalent", () => {
+    const out = migrateTouchables(
+      'import { TouchableHighlight } from "react-native";\nconst A = () => <TouchableHighlight />;\n'
+    );
+    expect(out.content).toBeNull();
+    expect(out.reason).toMatch(/underlay/);
+  });
+
+  it("refuses a TouchableOpacity that spreads props (a spread style would be overridden)", () => {
+    const out = migrateTouchables(
+      'import { TouchableOpacity } from "react-native";\nconst A = (p: object) => <TouchableOpacity {...p} />;\n'
+    );
+    expect(out.content).toBeNull();
   });
 
   it("refuses touchables imported from react-native-gesture-handler", () => {

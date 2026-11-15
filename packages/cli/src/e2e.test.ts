@@ -17,7 +17,7 @@ beforeAll(() => {
     throw new Error("Run `pnpm build` and `node scripts/build-registry.mjs` before the CLI tests.");
   }
   cwd = mkdtempSync(join(tmpdir(), "nativra-e2e-"));
-  writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { nativewind: "4" } }));
+  writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
   writeFileSync(join(cwd, "app.json"), "{}");
 });
 
@@ -227,7 +227,7 @@ describe("nativra CLI (local registry)", () => {
     expect(run("doctor")).toContain("All checks passed");
 
     const fixDir = mkdtempSync(join(tmpdir(), "nativra-fix-test-"));
-    writeFileSync(join(fixDir, "package.json"), JSON.stringify({ name: "fix-test", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(fixDir, "package.json"), JSON.stringify({ name: "fix-test", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
     writeFileSync(join(fixDir, "app.json"), "{}");
     const fixRun = (...args: string[]) => execFileSync("node", [CLI, ...args, "--cwd", fixDir], { encoding: "utf8" });
 
@@ -294,7 +294,7 @@ describe("nativra CLI (src/ project with tsconfig alias)", () => {
   beforeAll(() => {
     dir = mkdtempSync(join(tmpdir(), "nativra-src-"));
     mkdirSync(join(dir, "src"));
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "s", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "s", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
     writeFileSync(join(dir, "tsconfig.json"), JSON.stringify({ compilerOptions: { paths: { "@/*": ["./src/*"] } } }));
     execFileSync("node", [CLI, "init", "--yes", "--cwd", dir], { encoding: "utf8" });
   });
@@ -346,7 +346,7 @@ describe("nativra CLI (theme-aware components)", () => {
 
   it("NativeWind: add writes theme variables into global.css and flags an unmapped Tailwind config", () => {
     const nw = mkdtempSync(join(tmpdir(), "nativra-theme-nw-"));
-    writeFileSync(join(nw, "package.json"), JSON.stringify({ name: "t", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(nw, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
     writeFileSync(join(nw, "global.css"), "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n");
     writeFileSync(join(nw, "tailwind.config.js"), "module.exports = { content: [], theme: { extend: {} } };\n");
     execFileSync("node", [CLI, "init", "--yes", "--cwd", nw], { encoding: "utf8" });

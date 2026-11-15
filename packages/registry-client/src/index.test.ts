@@ -1,4 +1,6 @@
-import { resolve } from "node:path";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MAX_RESPONSE_BYTES, RegistryClient, createLocalRegistryClient } from "./index.js";
 
@@ -29,6 +31,17 @@ describe("RegistryClient (local)", () => {
   it("verifies file integrity hashes on item load", async () => {
     const item = await client.getItem("button");
     expect(item.files[0]?.hash).toBeDefined();
+  });
+
+  it("rejects an item whose id differs from the one requested", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "nativra-client-"));
+    try {
+      mkdirSync(join(dir, "items"));
+      copyFileSync(join(REGISTRY, "items", "button.json"), join(dir, "items", "badge.json"));
+      await expect(createLocalRegistryClient(dir).getItem("badge")).rejects.toThrow(/returned item "button"/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("rejects path traversal and malformed item IDs", async () => {

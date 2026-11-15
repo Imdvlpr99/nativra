@@ -6,6 +6,7 @@ import prompts from "prompts";
 import { sha256 } from "@nativra/utils";
 import { loadConfig } from "../config.js";
 import { assertSafeWriteTarget, createBackup, fileExists, findDependents, resolveLockFilePath, writeLock } from "../install.js";
+import { themeSlotDependents } from "../theme-css.js";
 import { markFailed, readLockOrExit } from "./shared.js";
 
 async function pruneEmptyDir(dir: string, stopAt: string): Promise<void> {
@@ -65,7 +66,9 @@ export function registerRemoveCommand(program: Command) {
             continue;
           }
 
-          const dependents = findDependents(lock, componentId).filter((d) => !components.includes(d));
+          const dependents = [
+            ...new Set([...findDependents(lock, componentId), ...themeSlotDependents(lock, componentId)]),
+          ].filter((d) => !components.includes(d));
           if (dependents.length > 0 && !options.force) {
             console.log(
               chalk.yellow(`  ⚠ Still required by installed item(s): ${dependents.join(", ")}`)

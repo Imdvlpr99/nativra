@@ -3,15 +3,16 @@ import { readFile } from "node:fs/promises";
 import chalk from "chalk";
 import { createPatch } from "diff";
 import ora from "ora";
-import { createClient } from "../client.js";
+import { createClient, parseItemRef } from "../client.js";
 import { loadConfig } from "../config.js";
 import type { RegistryItem } from "@nativra/registry-schema";
-import { destPathFor, filesForTarget, renderFile } from "../install.js";
+import { destPathFor, filesForTarget, readLock, renderFile } from "../install.js";
+import { printable } from "./shared.js";
 
 export function registerDiffCommand(program: Command) {
   program
-    .command("diff <id>")
-    .description("Compare installed files with the current registry version")
+    .command("diff <item>")
+    .description('Compare installed files with the current registry version ("button", or "<registry>/<id>")')
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry URL")
     .action(async (id: string, options: { cwd: string; registry?: string }) => {
@@ -20,17 +21,20 @@ export function registerDiffCommand(program: Command) {
         process.exit(1);
       });
 
-      const client = createClient(config, options.registry);
+      const client = createClient(config, options.registry, options.cwd);
+      const ref = parseItemRef(id);
+      // An installed item is compared against the registry it was installed from.
+      const registry = id.includes("/") ? ref.registry : ((await readLock(options.cwd).catch(() => null))?.items[ref.id]?.registry ?? "default");
 
-      const spinner = ora(`Fetching registry version of "${id}"...`).start();
+      const spinner = ora(`Fetching registry version of "${printable(id)}"...`).start();
       let item: RegistryItem;
       let related: RegistryItem[];
       try {
-        related = await client.resolveWithDependencies(id);
+        related = await client.resolveWithDependencies(ref.id, registry);
         item = related[related.length - 1]!;
         spinner.stop();
       } catch (err) {
-        spinner.fail(chalk.red(`Failed: ${(err as Error).message}`));
+        spinner.fail(chalk.red(`Failed: ${printable((err as Error).message)}`));
         process.exit(1);
       }
 
@@ -61,7 +65,8 @@ export function registerDiffCommand(program: Command) {
         hasDiff = true;
         const patch = createPatch(localPath, localContent, registryContent, "installed", "registry");
         const lines = patch.split("\n");
-        for (const line of lines) {
+        for (const raw of lines) {
+          const line = printable(raw);
           if (line.startsWith("+")) console.log(chalk.green(line));
           else if (line.startsWith("-")) console.log(chalk.red(line));
           else console.log(chalk.gray(line));

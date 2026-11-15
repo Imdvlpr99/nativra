@@ -2,8 +2,8 @@ import type { Command } from "commander";
 import { join } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
-import { createClient, toSource } from "../client.js";
-import { loadConfig, saveConfig } from "../config.js";
+import { createClient, parseItemRef, toSource } from "../client.js";
+import { loadConfig, loadConfigOrDefault, saveConfig } from "../config.js";
 import {
   assertSafeWriteTarget,
   createBackup,
@@ -17,7 +17,7 @@ import {
 } from "../install.js";
 import { transformFileImports } from "../transform.js";
 import { applyThemeCss } from "../theme-css.js";
-import { readLockOrExit } from "./shared.js";
+import { listAllItems, printable, readLockOrExit } from "./shared.js";
 
 async function requireConfig(cwd: string) {
   return loadConfig(cwd).catch((err) => {
@@ -35,10 +35,10 @@ export function registerThemeCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry location")
     .action(async (options: { cwd: string; registry?: string }) => {
-      const config = await requireConfig(options.cwd);
-      const items = (await createClient(config, options.registry).listItems()).filter((i) => i.type === "theme");
+      const config = await loadConfigOrDefault(options.cwd);
+      const items = (await listAllItems(createClient(config, options.registry, options.cwd))).filter((i) => i.type === "theme");
       if (items.length === 0) console.log(chalk.yellow("\nNo themes found.\n"));
-      for (const i of items) console.log(`  ${chalk.cyan(i.id.padEnd(24))} ${i.description}`);
+      for (const i of items) console.log(`  ${chalk.cyan(printable(i.ref).padEnd(24))} ${printable(i.description)}`);
     });
 
   theme
@@ -48,18 +48,19 @@ export function registerThemeCommand(program: Command) {
     .option("--registry <url>", "Override registry location")
     .option("--as <name>", "Install theme under a custom file name (e.g. --as midnight installs <themesDir>/midnight.ts)")
     .option("--overwrite", "Overwrite an existing theme file (a backup is created first)")
-    .option("--apply-css", "Automatically wire and inject theme CSS variables into global.css")
+    .option("--apply-css", "Write the theme's CSS variables into global.css (always done for NativeWind projects)")
     .action(
       async (
-        id: string,
+        ref: string,
         options: { cwd: string; registry?: string; as?: string; overwrite?: boolean; applyCss?: boolean }
       ) => {
         const config = await requireConfig(options.cwd);
+        const { registry, id } = parseItemRef(ref);
         let item;
         try {
-          item = await createClient(config, options.registry).getItem(id);
+          item = await createClient(config, options.registry, options.cwd).getItem(id, registry);
         } catch (err) {
-          console.error(chalk.red(`\n✗ Could not load theme "${id}": ${(err as Error).message}\n`));
+          console.error(chalk.red(`\n✗ Could not load theme "${printable(ref)}": ${printable((err as Error).message)}\n`));
           process.exit(1);
         }
         if (item.type !== "theme") {
@@ -98,7 +99,7 @@ export function registerThemeCommand(program: Command) {
               continue;
             }
             try {
-              await createBackup(options.cwd, id, [{ destPath: dest, exists: true }]);
+              await createBackup(options.cwd, id, [{ destPath: dest, exists: true }], lock.items[id]);
             } catch (err) {
               console.error(chalk.red(`\n✗ Could not back up ${dest}: ${(err as Error).message}. Nothing was written.\n`));
               process.exit(1);
@@ -113,10 +114,28 @@ export function registerThemeCommand(program: Command) {
           writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
           console.log(chalk.green(`  ✓ Written: ${dest}`));
         }
-        recordLockEntry(lock, options.cwd, item, writes);
+        const upstream: Record<string, string> = {};
+        for (const file of filesForTarget(item, config)) {
+          const dest = customName
+            ? join(resolveDestDir(options.cwd, item, config), `${customName}.ts`)
+            : destPathFor(options.cwd, item, file, config);
+          if (file.hash) upstream[dest] = file.hash;
+        }
+        recordLockEntry(lock, options.cwd, item, writes, { registry, upstream });
         await writeLock(options.cwd, lock);
 
-        if (options.applyCss) await applyThemeCss(options.cwd, id);
+        // global.css must describe the theme in theme.ts. A theme saved under --as, or one that
+        // wasn't written, isn't the active one, so its CSS would put the two out of sync.
+        const activated = !customName && Object.keys(writes).length > 0;
+        if (activated && (options.applyCss || config.stylingTarget === "nativewind")) {
+          await applyThemeCss(options.cwd, id);
+        } else if (options.applyCss) {
+          console.log(
+            chalk.yellow(
+              `  ⚠ global.css was not changed: ${customName ? `--as saves "${id}" without making it the active theme` : "theme.ts was not replaced"}.`
+            )
+          );
+        }
       }
     );
 }
@@ -145,7 +164,7 @@ export function registerRegistryCommand(program: Command) {
       }
       try {
         // Same rules every other command applies: HTTPS, http://localhost, or a local directory.
-        toSource(url, name);
+        toSource(url, name, options.cwd);
       } catch (err) {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);

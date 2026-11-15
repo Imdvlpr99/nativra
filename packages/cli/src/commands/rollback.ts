@@ -52,6 +52,12 @@ export function registerRollbackCommand(program: Command) {
       // After `remove` the item has no lock entry; the manifest carries the one it had.
       const restoringEntry = !lock.items[id] && manifest.lockEntry;
       const lockEntry = lock.items[id] ?? (manifest.lockEntry ? { ...manifest.lockEntry, files: { ...manifest.lockEntry.files } } : undefined);
+      // Undoing an update restores the old files, so the lock must name the old version too.
+      if (lockEntry && lock.items[id] && typeof manifest.lockEntry?.version === "string") {
+        lockEntry.version = manifest.lockEntry.version;
+        if (manifest.lockEntry.dependencies) lockEntry.dependencies = [...manifest.lockEntry.dependencies];
+        else delete lockEntry.dependencies;
+      }
 
       try {
         // Resolve every target and refuse to discard edits made after the operation being undone.

@@ -2,9 +2,40 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
 import { THEME_PRESETS, toCssVariables, toStyleCss } from "@nativra/theme-engine";
-import { assertSafeWriteTarget, fileExists } from "./install.js";
+import { TAILWIND_CONFIG_NAMES } from "./detect.js";
+import { assertSafeWriteTarget, fileExists, type LockFile } from "./install.js";
 
 const THEME_BLOCK = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
+
+/** True for theme items: by recorded type, or by built-in id for lockfiles written before 0.3. */
+export function isThemeId(lock: LockFile, id: string): boolean {
+  return lock.items[id]?.type === "theme" || Object.prototype.hasOwnProperty.call(THEME_PRESETS, id);
+}
+
+/** Whether a lock entry tracks the active theme file (`<themesDir>/theme.ts`). */
+function ownsThemeSlot(lock: LockFile, id: string): boolean {
+  return Object.keys(lock.items[id]?.files ?? {}).some((key) => key === "theme.ts" || key.endsWith("/theme.ts"));
+}
+
+/**
+ * Id of the theme in theme.ts, if the lockfile tracks one. Components import whichever theme is
+ * there, so this is the theme that satisfies every component's theme dependency.
+ */
+export function installedThemeId(lock: LockFile): string | undefined {
+  const themes = Object.keys(lock.items).filter((id) => isThemeId(lock, id));
+  return themes.find((id) => ownsThemeSlot(lock, id)) ?? themes[0];
+}
+
+/**
+ * Installed items that need the theme in theme.ts. A component depends on *a* theme (recorded as
+ * the default one, e.g. "zinc"), so removing whichever theme owns theme.ts breaks all of them.
+ */
+export function themeSlotDependents(lock: LockFile, id: string): string[] {
+  if (!isThemeId(lock, id) || !ownsThemeSlot(lock, id)) return [];
+  return Object.entries(lock.items)
+    .filter(([otherId, entry]) => otherId !== id && (entry.dependencies ?? []).some((dep) => isThemeId(lock, dep)))
+    .map(([otherId]) => otherId);
+}
 
 /** First existing global stylesheet in the conventional NativeWind locations. */
 export async function findGlobalCss(cwd: string): Promise<string | null> {
@@ -20,12 +51,12 @@ export async function hasThemeCss(cssPath: string): Promise<boolean> {
 
 /**
  * The installed theme block's id when the block predates the current token set (no status
- * colors or shape classes), so the CLI can rewrite it; null when it's current or absent.
+ * colors, shape classes or scrim), so the CLI can rewrite it; null when it's current or absent.
  */
 export async function outdatedThemeCss(cssPath: string): Promise<string | null> {
   const block = THEME_BLOCK.exec(await readFile(cssPath, "utf8"))?.[0];
   if (!block) return null;
-  const current = block.includes("--color-success") && block.includes(".rounded-card");
+  const current = block.includes("--color-success") && block.includes(".rounded-card") && block.includes(".bg-scrim");
   return current ? null : (/NATIVRA THEME START: ([a-z0-9-]+)/.exec(block)?.[1] ?? null);
 }
 
@@ -64,7 +95,7 @@ export async function applyThemeCss(cwd: string, id: string): Promise<boolean> {
   }
 }
 
-export const TAILWIND_CONFIG_NAMES = ["tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", "tailwind.config.mjs"];
+export { TAILWIND_CONFIG_NAMES };
 
 /** Path of the project's Tailwind config, whichever extension it uses, or null. */
 export async function findTailwindConfig(cwd: string): Promise<string | null> {

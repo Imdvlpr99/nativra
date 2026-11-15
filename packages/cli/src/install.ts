@@ -108,6 +108,15 @@ export function crossDirectoryImports(
   return map;
 }
 
+/** Absolute destination -> registry hash of the source, for recordLockEntry's `upstream`. */
+export function upstreamHashes(cwd: string, item: RegistryItem, config: NativraConfig): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const file of filesForTarget(item, config)) {
+    if (file.hash) map[destPathFor(cwd, item, file, config)] = file.hash;
+  }
+  return map;
+}
+
 /** The exact content Nativra writes for `file`: registry source with imports rewritten. */
 export function renderFile(
   cwd: string,
@@ -156,6 +165,22 @@ export interface LockEntry {
   files: Record<string, string>;
   /** Registry item ids this item depends on (recorded since 0.3; absent in older lockfiles) */
   dependencies?: string[];
+  /** Item type (recorded since 0.3; absent in older lockfiles) */
+  type?: RegistryItem["type"];
+  /** Registry the item came from, when it isn't "default" */
+  registry?: string;
+  /**
+   * project-relative path -> the registry's SHA-256 of the source file, so `update` can tell
+   * when a registry changes a file without bumping the item's version.
+   */
+  upstream?: Record<string, string>;
+}
+
+export interface LockRecordMeta {
+  /** Registry the item came from (default: "default") */
+  registry?: string | undefined;
+  /** absolute destination path -> registry SHA-256 of the source written there */
+  upstream?: Record<string, string> | undefined;
 }
 
 export interface LockFile {
@@ -177,15 +202,31 @@ export function recordLockEntry(
   lock: LockFile,
   cwd: string,
   item: RegistryItem,
-  writtenFiles: Record<string, string>
+  writtenFiles: Record<string, string>,
+  meta: LockRecordMeta = {}
 ): void {
   const entry: LockEntry = lock.items[item.id] ?? { version: item.version, files: {} };
   for (const [absPath, hash] of Object.entries(writtenFiles)) {
+    const key = toLockKey(cwd, absPath);
+    // A file belongs to whichever item wrote it last (e.g. one theme replacing another's theme.ts);
+    // otherwise `remove` of the old owner would delete the new owner's file.
+    for (const [otherId, other] of Object.entries(lock.items)) {
+      if (otherId === item.id || !(key in other.files || absPath in other.files)) continue;
+      delete other.files[key];
+      delete other.files[absPath];
+      if (other.upstream) delete other.upstream[key];
+      if (Object.keys(other.files).length === 0) delete lock.items[otherId];
+    }
     delete entry.files[absPath];
-    entry.files[toLockKey(cwd, absPath)] = hash;
+    entry.files[key] = hash;
+    const upstream = meta.upstream?.[absPath];
+    if (upstream) (entry.upstream ??= {})[key] = upstream.toLowerCase();
   }
   if (Object.keys(entry.files).length === 0) return;
   entry.version = item.version;
+  entry.type = item.type;
+  if (meta.registry && meta.registry !== "default") entry.registry = meta.registry;
+  else delete entry.registry;
   const deps = (item.registryDependencies ?? []).map((d) => d.id);
   if (deps.length > 0) entry.dependencies = deps;
   else delete entry.dependencies;

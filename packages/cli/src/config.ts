@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
 import { aliasForDir, type ImportAlias } from "./detect.js";
@@ -89,10 +89,24 @@ export function nativraConfigJsonSchema(): Record<string, unknown> {
   };
 }
 
+/** One-line summary of schema problems: "componentsDir: Directory must be ...; hooksDir: ...". */
+export function formatConfigIssues(error: z.ZodError): string {
+  return error.issues.map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`).join("; ");
+}
+
 export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
   const configPath = join(projectRoot, CONFIG_FILENAME);
   try {
-    const raw = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
+    const text = await readFile(configPath, "utf8");
+    let raw: Record<string, unknown>;
+    try {
+      raw = JSON.parse(text) as Record<string, unknown>;
+    } catch (err) {
+      throw new Error(`${CONFIG_FILENAME} is not valid JSON: ${(err as Error).message}`);
+    }
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      throw new Error(`${CONFIG_FILENAME} must contain a JSON object`);
+    }
 
     // 1. Normalize V4 nested schema (Blueprint §6.2)
     if (raw["config"] && typeof raw["config"] === "object") {
@@ -164,11 +178,7 @@ export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
 
     const parsed = NativraConfigSchema.safeParse(raw);
     if (!parsed.success) {
-      throw new Error(
-        `Invalid ${CONFIG_FILENAME}: ${parsed.error.issues
-          .map((i) => `${i.path.join(".")}: ${i.message}`)
-          .join("; ")}`
-      );
+      throw new Error(`Invalid ${CONFIG_FILENAME}: ${formatConfigIssues(parsed.error)}`);
     }
     return parsed.data;
   } catch (err: unknown) {
@@ -179,6 +189,19 @@ export async function loadConfig(projectRoot: string): Promise<NativraConfig> {
     }
     throw err;
   }
+}
+
+/**
+ * For commands that only read the registry (list, search, info): the project's config, or the
+ * defaults when there is no nativra.json yet. An invalid nativra.json is still an error.
+ */
+export async function loadConfigOrDefault(projectRoot: string): Promise<NativraConfig> {
+  try {
+    await access(join(projectRoot, CONFIG_FILENAME));
+  } catch {
+    return NativraConfigSchema.parse({});
+  }
+  return loadConfig(projectRoot);
 }
 
 export interface ProjectDirs {
@@ -220,7 +243,7 @@ export function createProjectConfig(
     }
   }
 
-  const config = NativraConfigSchema.parse({
+  const parsed = NativraConfigSchema.safeParse({
     $schema: "https://nativra.vercel.app/schema.json",
     version: 4,
     registries: [{ name: "default", url: "https://nativra.vercel.app" }],
@@ -228,7 +251,8 @@ export function createProjectConfig(
     aliasPrefix: effectiveAlias.prefix,
     ...(Object.keys(aliases).length > 0 ? { aliases } : {}),
   });
-  return { config, warnings };
+  if (!parsed.success) throw new Error(`Invalid configuration: ${formatConfigIssues(parsed.error)}`);
+  return { config: parsed.data, warnings };
 }
 
 /** Ensures `.nativra/` (backups) is git-ignored. Returns true if .gitignore was changed. */

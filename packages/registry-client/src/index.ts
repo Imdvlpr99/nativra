@@ -128,6 +128,10 @@ export class RegistryClient {
     const source = this.findSource(registryName);
     const raw = await this.fetchJson<unknown>(source, `items/${id}.json`);
     const item = RegistryItemSchema.parse(raw);
+    // The id decides lockfile keys and backup directories, so it must be the one that was asked for.
+    if (item.id !== id) {
+      throw new Error(`Registry returned item "${item.id}" when "${id}" was requested`);
+    }
 
     // Verify integrity hashes and safe relative file paths (Plan Section 2.5 & 2.6)
     for (const file of item.files) {
@@ -164,7 +168,15 @@ export class RegistryClient {
    * Detects and reports cyclic dependencies with clear stack diagnostics.
    */
   async resolveWithDependencies(id: string, registryName = "default"): Promise<RegistryItem[]> {
-    const resolved: RegistryItem[] = [];
+    return (await this.resolveWithSources(id, registryName)).map((r) => r.item);
+  }
+
+  /** Like resolveWithDependencies, but also names the registry each item came from. */
+  async resolveWithSources(
+    id: string,
+    registryName = "default"
+  ): Promise<Array<{ item: RegistryItem; registry: string }>> {
+    const resolved: Array<{ item: RegistryItem; registry: string }> = [];
     const resolvedKeys = new Set<string>();
     const visitingStack: string[] = [];
 
@@ -187,7 +199,7 @@ export class RegistryClient {
 
       visitingStack.pop();
       resolvedKeys.add(key);
-      resolved.push(item);
+      resolved.push({ item, registry });
     };
 
     await resolve(id, registryName);
@@ -197,6 +209,11 @@ export class RegistryClient {
   // -------------------------------------------------------------------------
   // Cache management
   // -------------------------------------------------------------------------
+
+  /** Names of the configured registry sources, in configuration order. */
+  registryNames(): string[] {
+    return this.sources.map((s) => s.name ?? "default");
+  }
 
   clearCache(): void {
     this.manifestCache.clear();

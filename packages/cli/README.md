@@ -13,7 +13,7 @@ The official command-line interface for [Nativra](https://nativra.vercel.app) �
 - **Source Ownership** — Installs full TypeScript source code directly into your repository with zero runtime library lock-in.
 - **Dual Styling Parity** — Generates idiomatic [NativeWind v4](https://nativewind.dev) or pure React Native [StyleSheet](https://reactnative.dev/docs/stylesheet) code.
 - **Transactional Installation** — All file operations are staged and committed as atomic transactions. If any step fails, changes are safely rolled back to preserve your project state.
-- **Integrity Verified** — File contents are verified against upstream SHA-256 hashes prior to installation.
+- **Integrity Checked** — Each file is checked against the SHA-256 hash the registry publishes with it before installation. This catches corrupted or truncated downloads; it does not prove who published the registry, so only add registries you trust.
 - **Manifest-Driven Backups & Rollback** — Pre-update snapshots preserve full project-relative paths (components, hooks, utilities), allowing instant rollback.
 - **Cycle & Traversal Protection** — Traversal segments (`../`) and cyclic dependency graphs are detected and safely rejected.
 
@@ -39,7 +39,27 @@ npx nativra-cli update button
 
 # Roll back an update if needed
 npx nativra-cli rollback button
+
+# Preview what an update would change
+npx nativra-cli update --dry-run
 ```
+
+## Other Registries
+
+Add a registry once, then install its items as `<registry>/<id>`. `list` and `search` cover every configured registry, and `update` and `diff` use the registry each item was installed from.
+
+```bash
+npx nativra-cli registry add acme https://ui.acme.dev
+npx nativra-cli add acme/data-grid
+```
+
+A local directory works too. A relative path is resolved against the project root.
+
+## CI
+
+- `nativra doctor` exits with code 1 when a check fails.
+- `nativra audit --min-score <n>` fails below the score.
+- `list`, `search` and `info` accept `--json`, and work before `init`.
 
 ## Conflict Policy & Non-Interactive CI
 
