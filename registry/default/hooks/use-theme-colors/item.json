@@ -1,14 +1,17 @@
 {
   "id": "use-theme-colors",
   "name": "useThemeColors",
-  "description": "Returns the installed theme's semantic colors for the current light/dark scheme. Used by every StyleSheet component.",
+  "description": "Returns the installed theme's semantic colors for the current light/dark scheme, and the installed style's tokens and helpers. Used by every component.",
   "type": "hook",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [{ "path": "use-theme-colors.ts" }],
-  "registryDependencies": [{ "id": "zinc", "registry": "default" }],
+  "registryDependencies": [
+    { "id": "zinc", "registry": "default" },
+    { "id": "soft", "registry": "default" }
+  ],
   "npmDependencies": [],
-  "tags": ["hook", "theme", "tokens", "darkmode", "colors"],
+  "tags": ["hook", "theme", "style", "tokens", "darkmode", "colors"],
   "docsPath": "docs.mdx"
 }

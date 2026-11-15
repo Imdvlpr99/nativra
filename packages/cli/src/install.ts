@@ -68,6 +68,7 @@ export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraC
       break;
     }
     case "theme":
+    case "style":
       rawDir = join(cwd, config.themesDir);
       break;
     case "block":

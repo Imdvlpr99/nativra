@@ -7,6 +7,8 @@ import {
   toTailwindPreset,
   hexToRgbChannels,
   getThemePreset,
+  getStylePreset,
+  STYLE_PRESETS,
   THEME_PRESETS,
   emeraldTheme,
   getTypographyScale,
@@ -112,6 +114,34 @@ describe("style tokens and status colors", () => {
     const css = toStyleCss(defaultTheme);
     expect(css).toContain(`.rounded-button { border-radius: ${defaultTheme.style.radius.button}px; }`);
     expect(css).toContain(".rounded-t-surface { border-top-left-radius:");
+  });
+
+  it("ships five distinct style presets", () => {
+    expect(Object.keys(STYLE_PRESETS)).toEqual(["soft", "crisp", "tailwind", "material", "ios"]);
+    const fingerprints = Object.values(STYLE_PRESETS).map((s) =>
+      JSON.stringify([s.radius.button, s.surface, s.field, s.press, s.typeScale, s.control.height])
+    );
+    expect(new Set(fingerprints).size).toBe(5);
+    for (const s of Object.values(STYLE_PRESETS)) expect(getStylePreset(s.id)).toBe(s);
+    expect(getStylePreset("unknown").id).toBe("soft");
+  });
+
+  it("generates the installed style's type, control, surface and field classes", () => {
+    const crisp = toStyleCss(defaultTheme, STYLE_PRESETS.crisp);
+    expect(crisp).toContain("/* style: crisp */");
+    expect(crisp).toContain(`.type-base { font-size: ${Math.round(16 * STYLE_PRESETS.crisp!.typeScale)}px;`);
+    expect(crisp).toContain(`.h-control { height: ${STYLE_PRESETS.crisp!.control.height}px; }`);
+    expect(crisp).toContain(".surface { background-color: rgb(var(--color-card)); border-width: 1px; border-color: rgb(var(--color-border)); }");
+
+    // Density twins of Tailwind's spacing: crisp (0.9) is tighter than Tailwind's p-4 (1rem).
+    expect(crisp).toContain(".sp-p-4 { padding: 0.9rem; }");
+    expect(crisp).toContain(".sp-gap-2\\.5 { gap: 0.5625rem; }");
+    expect(toStyleCss(defaultTheme, STYLE_PRESETS.soft)).toContain(".sp-px-4 { padding-left: 1rem; padding-right: 1rem; }");
+
+    const material = toStyleCss(defaultTheme, STYLE_PRESETS.material);
+    expect(material).toContain(".surface { background-color: rgb(var(--color-primary) / 0.07); border-width: 0px; }");
+    expect(material).toContain(".field { background-color: rgb(var(--color-foreground) / 0.06); border-width: 0px; }");
+    expect(material).toContain(".weight-heading { font-weight: 400;");
   });
 
   it("emits a dark scrim class that stays black in both color schemes", () => {

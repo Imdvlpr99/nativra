@@ -44,6 +44,24 @@ npx nativra-cli rollback button
 npx nativra-cli update --dry-run
 ```
 
+## Styles
+
+Every component's character (shape, type scale, density, surfaces, inputs and press feedback) comes from one style file, independent of the color theme. Pick one at `init`, or switch any time:
+
+```bash
+npx nativra-cli init --style crisp
+npx nativra-cli style add ios
+npx nativra-cli style list
+```
+
+| Style | Character |
+|---|---|
+| `soft` (default) | Pill buttons, generous rounding, soft shadows |
+| `crisp` | shadcn/ui-like: small radii, hairline borders, compact |
+| `tailwind` | Tailwind UI-like: rings, layered shadows, roomy |
+| `material` | Material 3-like: tonal surfaces, filled fields |
+| `ios` | iOS-like: grey grouped surfaces, larger type, dimming press |
+
 ## Other Registries
 
 Add a registry once, then install its items as `<registry>/<id>`. `list` and `search` cover every configured registry, and `update` and `diff` use the registry each item was installed from.

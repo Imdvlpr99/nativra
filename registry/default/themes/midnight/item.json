@@ -3,7 +3,7 @@
   "name": "Midnight",
   "description": "A deep navy-and-blue midnight theme token set.",
   "type": "theme",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true },
   "files": [{ "path": "theme.ts" }],

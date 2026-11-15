@@ -1,0 +1,25 @@
+{
+  "id": "material",
+  "name": "Material style",
+  "description": "Large radii, tonal surfaces, filled fields and lighter headings, in the spirit of Material 3.",
+  "type": "style",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "style.ts"
+    }
+  ],
+  "tags": [
+    "style",
+    "material",
+    "tokens"
+  ]
+}

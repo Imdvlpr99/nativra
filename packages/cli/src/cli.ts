@@ -11,7 +11,7 @@ import { registerDoctorCommand } from "./commands/doctor.js";
 import { registerUpdateCommand } from "./commands/update.js";
 import { registerRollbackCommand } from "./commands/rollback.js";
 import { registerSearchCommand } from "./commands/search.js";
-import { registerThemeCommand, registerRegistryCommand } from "./commands/theme-registry.js";
+import { registerThemeCommand, registerStyleCommand, registerRegistryCommand } from "./commands/theme-registry.js";
 import { registerAuditCommand } from "./commands/audit.js";
 
 /** Injected from package.json by tsup at build time. */
@@ -39,6 +39,7 @@ registerUpdateCommand(program);
 registerRollbackCommand(program);
 registerSearchCommand(program);
 registerThemeCommand(program);
+registerStyleCommand(program);
 registerRegistryCommand(program);
 registerAuditCommand(program);
 

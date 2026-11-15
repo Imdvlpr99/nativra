@@ -82,7 +82,7 @@ export interface BuildResult {
 export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
   const registryName = config.registryName ?? "default";
   const registrySourceDir = join(config.sourceDir, registryName);
-  const itemTypes = ["components", "hooks", "utilities", "blocks", "templates", "themes"] as const;
+  const itemTypes = ["components", "hooks", "utilities", "blocks", "templates", "themes", "styles"] as const;
 
   const items: RegistryItem[] = [];
   const errors: string[] = [];

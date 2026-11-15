@@ -1,0 +1,25 @@
+{
+  "id": "tailwind",
+  "name": "Tailwind style",
+  "description": "Medium radii, faint rings with layered shadows and roomy spacing, in the spirit of Tailwind UI.",
+  "type": "style",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "style.ts"
+    }
+  ],
+  "tags": [
+    "style",
+    "tailwind",
+    "tokens"
+  ]
+}

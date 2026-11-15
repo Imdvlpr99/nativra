@@ -6,6 +6,15 @@ import { join } from "node:path";
 import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
 import { fileExists } from "../install.js";
+import { STYLE_PRESETS } from "@nativra/theme-engine";
+
+const STYLE_HINTS: Record<string, string> = {
+  soft: "Pill buttons, generous rounding, soft shadows",
+  crisp: "shadcn/ui-like: small radii, hairline borders, compact",
+  tailwind: "Tailwind UI-like: rings, layered shadows, roomy",
+  material: "Material 3-like: tonal surfaces, filled fields",
+  ios: "iOS-like: grey grouped surfaces, larger type",
+};
 
 /** prompts() resolves with partial answers on Ctrl+C; this makes cancelling stop init instead. */
 const onCancel = (): never => {
@@ -20,8 +29,14 @@ export function registerInitCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--yes", "Accept all detected defaults without prompting")
     .option("--force", "Replace an existing nativra.json without asking")
-    .action(async (options: { cwd: string; yes?: boolean; force?: boolean }) => {
+    .option("--style <id>", `UI style: ${Object.keys(STYLE_PRESETS).join(", ")} (default: soft)`)
+    .action(async (options: { cwd: string; yes?: boolean; force?: boolean; style?: string }) => {
       console.log(chalk.bold("\n🚀 Initializing Nativra...\n"));
+
+      if (options.style !== undefined && !Object.prototype.hasOwnProperty.call(STYLE_PRESETS, options.style)) {
+        console.error(chalk.red(`✗ Unknown style "${options.style}". Use one of: ${Object.keys(STYLE_PRESETS).join(", ")}.\n`));
+        process.exit(1);
+      }
 
       if (!options.force && (await fileExists(join(options.cwd, CONFIG_FILENAME)))) {
         if (options.yes || !process.stdin.isTTY) {
@@ -65,6 +80,7 @@ export function registerInitCommand(program: Command) {
       let componentsDir = env.suggestedComponentsDir;
       let hooksDir = env.suggestedHooksDir;
       let utilsDir = env.suggestedUtilsDir;
+      let style = options.style ?? "soft";
 
       if (!options.yes) {
         const answers = await prompts([
@@ -77,6 +93,13 @@ export function registerInitCommand(program: Command) {
               { title: "React Native StyleSheet", value: "stylesheet" },
             ],
             initial: env.stylingTarget === "stylesheet" ? 1 : 0,
+          },
+          {
+            type: options.style ? null : "select",
+            name: "style",
+            message: "Which style should components have? (switch later with `nativra style add <id>`)",
+            choices: Object.values(STYLE_PRESETS).map((s) => ({ title: s.name, value: s.id, description: STYLE_HINTS[s.id] })),
+            initial: 0,
           },
           {
             type: "text",
@@ -102,10 +125,11 @@ export function registerInitCommand(program: Command) {
         componentsDir = answers.componentsDir ?? env.suggestedComponentsDir;
         hooksDir = answers.hooksDir ?? env.suggestedHooksDir;
         utilsDir = answers.utilsDir ?? env.suggestedUtilsDir;
+        style = answers.style ?? style;
       }
 
       const { config, warnings } = createProjectConfig(
-        { stylingTarget, componentsDir, hooksDir, utilsDir, themesDir: env.suggestedThemesDir },
+        { stylingTarget, componentsDir, hooksDir, utilsDir, themesDir: env.suggestedThemesDir, style },
         env.importAlias
       );
       for (const w of warnings) console.log(chalk.yellow(`  ⚠ ${w}`));

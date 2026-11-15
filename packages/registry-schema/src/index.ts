@@ -17,6 +17,7 @@ export const RegistryItemTypeSchema = z.enum([
   "block",
   "template",
   "theme",
+  "style",
 ]);
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>;
 

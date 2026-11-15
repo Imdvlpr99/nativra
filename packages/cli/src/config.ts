@@ -54,6 +54,14 @@ export const NativraConfigSchema = z.object({
   themesDir: SafeRelativeDirSchema.default("lib/themes"),
   /** Default styling target */
   stylingTarget: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
+  /**
+   * Style preset installed with the first component ("soft", "crisp", "tailwind", "material",
+   * "ios"). Switch later with `nativra style add <id>`.
+   */
+  style: z
+    .string()
+    .regex(/^[a-z][a-z0-9-]*$/, { message: "Style must be a registry item id, e.g. \"ios\"" })
+    .optional(),
   /** TypeScript path alias prefix, e.g. "@/" */
   aliasPrefix: z.string().optional(),
   /** Modern nested V4 configuration object (Blueprint §6.2) */
@@ -210,6 +218,8 @@ export interface ProjectDirs {
   hooksDir: string;
   utilsDir: string;
   themesDir: string;
+  /** Style preset id; omitted means the default ("soft") */
+  style?: string;
 }
 
 /**

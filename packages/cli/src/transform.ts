@@ -61,6 +61,7 @@ export function importBaseForType(type: RegistryItemType, targets: ImportTargets
     case "utility":
       return targets.utils;
     case "theme":
+    case "style":
       return targets.themes;
     case "block":
       return targets.blocks;

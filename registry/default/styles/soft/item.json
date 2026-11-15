@@ -1,0 +1,25 @@
+{
+  "id": "soft",
+  "name": "Soft style",
+  "description": "Pill buttons, generous rounding and soft layered shadows. The default.",
+  "type": "style",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "style.ts"
+    }
+  ],
+  "tags": [
+    "style",
+    "soft",
+    "tokens"
+  ]
+}

@@ -26,7 +26,7 @@ import {
   type PackageDependency,
 } from "../installer.js";
 import { markFailed, printable, readLockOrExit } from "./shared.js";
-import { ensureNativeWindTheme, installedThemeId } from "../theme-css.js";
+import { ensureNativeWindTheme, installedStyleId, installedThemeId } from "../theme-css.js";
 
 export function registerUpdateCommand(program: Command) {
   program
@@ -72,19 +72,30 @@ export function registerUpdateCommand(program: Command) {
           continue;
         }
 
-        for (const item of items) {
+        for (let item of items) {
           if (handled.has(item.id)) continue;
           handled.add(item.id);
+          // The default style dependency becomes the project's configured style.
+          if (item.type === "style" && !lock.items[item.id] && item.id !== id && config.style && config.style !== item.id) {
+            try {
+              item = await client.getItem(config.style, registryOf.get(item.id) ?? "default");
+              handled.add(item.id);
+            } catch (err) {
+              console.error(chalk.red(`  ✗ style "${printable(config.style)}": ${printable((err as Error).message)}`));
+              markFailed();
+              continue;
+            }
+          }
           for (const dep of item.npmDependencies ?? []) {
             if (!npmDeps.has(dep.package)) npmDeps.set(dep.package, dep);
           }
 
           const entry = lock.items[item.id];
           const isNewDependency = !entry && item.id !== id;
-          // A component's theme dependency is satisfied by whichever theme is installed.
-          const activeTheme = installedThemeId(lock);
-          if (isNewDependency && item.type === "theme" && activeTheme) {
-            console.log(chalk.gray(`  = ${item.id}: using the installed theme "${activeTheme}"`));
+          // A component's theme or style dependency is satisfied by whichever one is installed.
+          const active = item.type === "theme" ? installedThemeId(lock) : item.type === "style" ? installedStyleId(lock) : undefined;
+          if (isNewDependency && active) {
+            console.log(chalk.gray(`  = ${item.id}: using the installed ${item.type} "${active}"`));
             continue;
           }
           if (isNewDependency) console.log(chalk.cyan(`  + ${item.id} (new dependency of ${id})`));
@@ -185,7 +196,7 @@ export function registerUpdateCommand(program: Command) {
       // so refresh the installed theme's block. Without an installed theme, global.css is left alone.
       if (config.stylingTarget === "nativewind") {
         const installedTheme = installedThemeId(lock);
-        if (installedTheme) await ensureNativeWindTheme(options.cwd, installedTheme);
+        if (installedTheme) await ensureNativeWindTheme(options.cwd, installedTheme, installedStyleId(lock));
       }
 
       const missing = await getMissingDependencies(options.cwd, [...npmDeps.values()]);

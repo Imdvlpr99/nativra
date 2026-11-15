@@ -62,50 +62,7 @@ export type SlateTheme = typeof slate;
 
 /**
  * The active palette pair. Components read this through the use-theme-colors hook, so
- * installing a different theme over this file restyles every component.
+ * installing a different theme over this file restyles every component. Shape, type and
+ * density live separately in style.ts (npx nativra-cli style add <id>).
  */
 export const themeColors = { light: slate, dark: slateDark } as const;
-
-/**
- * Shape, depth and type character. Components read radii by role (button, control, card,
- * surface, chip, small), shadows by level and heading weights from here, in both styling targets.
- */
-export const themeStyle = {
-  radius: {
-    button: 9999,
-    control: 14,
-    card: 20,
-    surface: 28,
-    chip: 9999,
-    small: 8,
-  },
-  borderWidth: 1,
-  shadow: {
-    card: {
-      offsetY: 4,
-      radius: 16,
-      opacity: 0.06,
-      elevation: 2,
-    },
-    raised: {
-      offsetY: 8,
-      radius: 24,
-      opacity: 0.1,
-      elevation: 6,
-    },
-    overlay: {
-      offsetY: 16,
-      radius: 40,
-      opacity: 0.18,
-      elevation: 12,
-    },
-  },
-  pressedScale: 0.97,
-  scrimOpacity: 0.5,
-  fontWeight: {
-    heading: "700",
-    title: "600",
-    label: "600",
-  },
-  headingLetterSpacing: -0.4,
-} as const;

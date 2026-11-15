@@ -27,7 +27,7 @@ import {
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
-import { ensureNativeWindTheme, installedThemeId } from "../theme-css.js";
+import { ensureNativeWindTheme, installedStyleId, installedThemeId } from "../theme-css.js";
 import { listAllItems, markFailed, printable, readLockOrExit, type ListedItem } from "./shared.js";
 
 /**
@@ -136,6 +136,8 @@ export function registerAddCommand(program: Command) {
         const themeIds = new Set<string>();
         /** Themes that arrived only as dependencies and were skipped because a theme is installed. */
         const keptThemeIds = new Set<string>();
+        /** A style was written to style.ts, so the CSS block's style classes must follow it. */
+        let styleWritten = false;
 
         for (const componentId of components) {
           console.log(chalk.bold(`\n📦 Resolving ${chalk.cyan(componentId)}...`));
@@ -148,6 +150,13 @@ export function registerAddCommand(program: Command) {
             const ref = parseItemRef(componentId);
             requestedId = ref.id;
             const resolved = await client.resolveWithSources(ref.id, ref.registry);
+            // Components depend on the default style; a project that chose another one at init
+            // gets that style instead.
+            for (const r of resolved) {
+              if (r.item.type === "style" && r.item.id !== ref.id && config.style && config.style !== r.item.id) {
+                r.item = await client.getItem(config.style, r.registry);
+              }
+            }
             items = resolved.map((r) => r.item);
             for (const r of resolved) registryOf.set(r.item.id, r.registry);
             spinner.succeed(`Resolved ${items.length} item(s)`);
@@ -209,11 +218,12 @@ export function registerAddCommand(program: Command) {
               let action: "create" | "overwrite" | "skip" = "create";
 
               if (await fileExists(destPath)) {
-                // Every theme installs the same theme.ts and components depend on a default one, so
-                // a theme that only arrives as a dependency must never replace the installed theme.
-                if (item.type === "theme" && item.id !== requestedId) {
+                // Every theme installs the same theme.ts (every style the same style.ts) and
+                // components depend on a default one, so one that only arrives as a dependency must
+                // never replace the installed theme or style.
+                if ((item.type === "theme" || item.type === "style") && item.id !== requestedId) {
                   action = "skip";
-                  console.log(chalk.gray(`  → Kept installed theme: ${destPath}`));
+                  console.log(chalk.gray(`  → Kept installed ${item.type}: ${destPath}`));
                 } else if (conflictMode === "error") {
                   console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
                   process.exit(1);
@@ -302,6 +312,7 @@ export function registerAddCommand(program: Command) {
               upstream: upstreamHashes(options.cwd, item, config),
             });
             if (item.type === "theme") (Object.keys(itemWrites).length > 0 ? themeIds : keptThemeIds).add(item.id);
+            if (item.type === "style" && Object.keys(itemWrites).length > 0) styleWritten = true;
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
               accumulatedDeps.push(...item.npmDependencies);
@@ -315,9 +326,11 @@ export function registerAddCommand(program: Command) {
         if (!options.dryRun) {
 
           // CSS follows the theme actually in theme.ts: one just written, else the installed one.
-          const cssTheme = [...themeIds][0] ?? (keptThemeIds.size > 0 ? installedThemeId(lock) ?? [...keptThemeIds][0] : undefined);
+          const cssTheme =
+            [...themeIds][0] ??
+            (keptThemeIds.size > 0 || styleWritten ? installedThemeId(lock) ?? [...keptThemeIds][0] : undefined);
           if (config.stylingTarget === "nativewind" && cssTheme) {
-            await ensureNativeWindTheme(options.cwd, cssTheme);
+            await ensureNativeWindTheme(options.cwd, cssTheme, installedStyleId(lock));
           }
 
           // Handle missing npm dependencies

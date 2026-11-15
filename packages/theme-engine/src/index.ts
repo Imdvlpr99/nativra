@@ -141,17 +141,45 @@ export interface ThemeStyle {
     /** Dialogs and sheets */
     overlay: ShadowToken;
   };
-  /** Scale applied while a pressable is held */
+  /** Scale applied while a pressable is held (press: "scale") */
   pressedScale: number;
   /** Opacity of the black backdrop behind dialogs and sheets */
   scrimOpacity: number;
   fontWeight: {
-    heading: "500" | "600" | "700" | "800";
+    heading: "400" | "500" | "600" | "700" | "800";
     title: "500" | "600" | "700";
     label: "500" | "600";
   };
   /** Letter spacing for headings, in dp */
   headingLetterSpacing: number;
+  /** Style preset id ("soft", "crisp", ...) */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Multiplies every font size: 1 = the base design (body 16) */
+  typeScale: number;
+  /** Multiplies padding and gaps: < 1 compact, > 1 roomy */
+  density: number;
+  /**
+   * How cards and grouped lists stand off the page:
+   * - shadow: card color, border and a soft shadow
+   * - ring:   card color, a faint ring instead of a border, and a soft shadow
+   * - border: card color and a border, no shadow
+   * - tonal:  a primary-tinted fill, no border or shadow
+   * - fill:   a neutral grey fill, no border or shadow (grouped lists)
+   */
+  surface: "shadow" | "ring" | "border" | "tonal" | "fill";
+  /** Text inputs: outlined on the page color, or filled with a neutral tint */
+  field: "outline" | "filled";
+  /** Press feedback: shrink slightly, or dim */
+  press: "scale" | "opacity";
+  /** Opacity while pressed (press: "opacity") */
+  pressedOpacity: number;
+  /** Buttons and inputs at their default size */
+  control: {
+    height: number;
+    paddingX: number;
+  };
 }
 
 export interface NativraThemeTokens {
@@ -204,6 +232,8 @@ export const defaultRadius: RadiusScale = {
  * The default character for every preset.
  */
 export const softStyle: ThemeStyle = {
+  id: "soft",
+  name: "Soft",
   radius: { button: 9999, control: 14, card: 20, surface: 28, chip: 9999, small: 8 },
   borderWidth: 1,
   shadow: {
@@ -215,7 +245,124 @@ export const softStyle: ThemeStyle = {
   scrimOpacity: 0.5,
   fontWeight: { heading: "700", title: "600", label: "600" },
   headingLetterSpacing: -0.4,
+  typeScale: 1,
+  density: 1,
+  surface: "shadow",
+  field: "outline",
+  press: "scale",
+  pressedOpacity: 0.7,
+  control: { height: 46, paddingX: 20 },
 };
+
+/** "Crisp" (shadcn/ui): small radii, hairline borders instead of shadows, compact and neutral. */
+export const crispStyle: ThemeStyle = {
+  id: "crisp",
+  name: "Crisp",
+  radius: { button: 8, control: 8, card: 12, surface: 14, chip: 6, small: 4 },
+  borderWidth: 1,
+  shadow: {
+    card: { offsetY: 1, radius: 2, opacity: 0.05, elevation: 1 },
+    raised: { offsetY: 4, radius: 12, opacity: 0.08, elevation: 4 },
+    overlay: { offsetY: 10, radius: 30, opacity: 0.16, elevation: 10 },
+  },
+  pressedScale: 1,
+  scrimOpacity: 0.6,
+  fontWeight: { heading: "600", title: "600", label: "500" },
+  headingLetterSpacing: -0.5,
+  typeScale: 0.94,
+  density: 0.9,
+  surface: "border",
+  field: "outline",
+  press: "opacity",
+  pressedOpacity: 0.8,
+  control: { height: 40, paddingX: 16 },
+};
+
+/** "Tailwind" (Tailwind UI): medium radii, faint rings with layered shadows, roomy spacing. */
+export const tailwindStyle: ThemeStyle = {
+  id: "tailwind",
+  name: "Tailwind",
+  radius: { button: 10, control: 10, card: 16, surface: 20, chip: 9999, small: 6 },
+  borderWidth: 1,
+  shadow: {
+    card: { offsetY: 2, radius: 8, opacity: 0.08, elevation: 2 },
+    raised: { offsetY: 10, radius: 24, opacity: 0.12, elevation: 8 },
+    overlay: { offsetY: 20, radius: 50, opacity: 0.22, elevation: 16 },
+  },
+  pressedScale: 0.98,
+  scrimOpacity: 0.55,
+  fontWeight: { heading: "700", title: "600", label: "600" },
+  headingLetterSpacing: -0.6,
+  typeScale: 1,
+  density: 1.1,
+  surface: "ring",
+  field: "outline",
+  press: "opacity",
+  pressedOpacity: 0.85,
+  control: { height: 44, paddingX: 18 },
+};
+
+/** "Material" (Material 3): large radii, tonal surfaces instead of borders, filled fields. */
+export const materialStyle: ThemeStyle = {
+  id: "material",
+  name: "Material",
+  radius: { button: 9999, control: 12, card: 16, surface: 28, chip: 8, small: 4 },
+  borderWidth: 1,
+  shadow: {
+    card: { offsetY: 1, radius: 3, opacity: 0.12, elevation: 1 },
+    raised: { offsetY: 2, radius: 6, opacity: 0.15, elevation: 3 },
+    overlay: { offsetY: 4, radius: 12, opacity: 0.18, elevation: 6 },
+  },
+  pressedScale: 1,
+  scrimOpacity: 0.32,
+  fontWeight: { heading: "400", title: "500", label: "500" },
+  headingLetterSpacing: 0,
+  typeScale: 1,
+  density: 1,
+  surface: "tonal",
+  field: "filled",
+  press: "opacity",
+  pressedOpacity: 0.88,
+  control: { height: 48, paddingX: 24 },
+};
+
+/** "iOS" (Apple): grey grouped surfaces, hairlines, large bold titles, dimming press feedback. */
+export const iosStyle: ThemeStyle = {
+  id: "ios",
+  name: "iOS",
+  radius: { button: 12, control: 10, card: 12, surface: 14, chip: 9999, small: 6 },
+  borderWidth: 0.5,
+  shadow: {
+    card: { offsetY: 1, radius: 2, opacity: 0.04, elevation: 1 },
+    raised: { offsetY: 6, radius: 20, opacity: 0.12, elevation: 6 },
+    overlay: { offsetY: 12, radius: 36, opacity: 0.2, elevation: 12 },
+  },
+  pressedScale: 1,
+  scrimOpacity: 0.4,
+  fontWeight: { heading: "700", title: "600", label: "600" },
+  headingLetterSpacing: 0.35,
+  typeScale: 1.06,
+  density: 1,
+  surface: "fill",
+  field: "filled",
+  press: "opacity",
+  pressedOpacity: 0.55,
+  control: { height: 50, paddingX: 20 },
+};
+
+/** Every style preset by id. A style is independent of the color theme. */
+export const STYLE_PRESETS: Record<string, ThemeStyle> = {
+  soft: softStyle,
+  crisp: crispStyle,
+  tailwind: tailwindStyle,
+  material: materialStyle,
+  ios: iosStyle,
+};
+
+/** Style preset by id, falling back to "soft". */
+export function getStylePreset(id: string | undefined): ThemeStyle {
+  return (id && STYLE_PRESETS[id]) || softStyle;
+}
 
 /** Status colors shared by every preset (light). Each is >= 4.5:1 against its foreground. */
 export const STATUS_LIGHT = {
@@ -1030,22 +1177,104 @@ export function toCssVariables(theme: NativraThemeTokens): string {
  * `rounded-t-surface`, ...), generated from the theme's style tokens. The CLI writes them into
  * global.css next to the color variables, so installing a theme changes the UI's shape too.
  */
-export function toStyleCss(theme: NativraThemeTokens): string {
+export function toStyleCss(theme: NativraThemeTokens, style: ThemeStyle = theme.style): string {
   const sides: Record<string, string[]> = {
     "": ["border-radius"],
     t: ["border-top-left-radius", "border-top-right-radius"],
     b: ["border-bottom-left-radius", "border-bottom-right-radius"],
   };
-  const rules: string[] = [];
-  for (const [role, value] of Object.entries(theme.style.radius)) {
+  const rules: string[] = [`/* style: ${style.id} */`];
+  for (const [role, value] of Object.entries(style.radius)) {
     for (const [side, props] of Object.entries(sides)) {
       const name = side ? `rounded-${side}-${role}` : `rounded-${role}`;
       rules.push(`.${name} { ${props.map((p) => `${p}: ${value}px;`).join(" ")} }`);
     }
   }
   // The backdrop behind dialogs and sheets stays dark in both color schemes.
-  rules.push(`.bg-scrim { background-color: rgba(0, 0, 0, ${theme.style.scrimOpacity}); }`);
+  rules.push(`.bg-scrim { background-color: rgba(0, 0, 0, ${style.scrimOpacity}); }`);
+
+  // Type scale: type-* replaces Tailwind's text-* sizes so the style can resize all text.
+  for (const [step, [size, lineHeight]] of Object.entries(TYPE_STEPS)) {
+    rules.push(`.type-${step} { font-size: ${typeSize(style, size)}px; line-height: ${typeSize(style, lineHeight)}px; }`);
+  }
+  rules.push(
+    `.weight-heading { font-weight: ${style.fontWeight.heading}; letter-spacing: ${style.headingLetterSpacing}px; }`,
+    `.weight-title { font-weight: ${style.fontWeight.title}; }`,
+    `.weight-label { font-weight: ${style.fontWeight.label}; }`
+  );
+
+  // Density: sp-<utility>-<step> mirrors Tailwind's spacing (step × 0.25rem) scaled by the
+  // style's density, so components can follow it without changing Tailwind's own p-4 for the app.
+  for (const [utility, props] of Object.entries(SPACING_UTILITIES)) {
+    for (const step of SPACING_STEPS) {
+      const value = `${+(step * 0.25 * style.density).toFixed(4)}rem`;
+      const name = `sp-${utility}-${String(step).replace(".", "\\.")}`;
+      rules.push(`.${name} { ${props.map((p) => `${p}: ${value};`).join(" ")} }`);
+    }
+  }
+
+  // Controls and surfaces.
+  rules.push(
+    `.h-control { height: ${style.control.height}px; }`,
+    `.min-h-control { min-height: ${style.control.height}px; }`,
+    `.px-control { padding-left: ${style.control.paddingX}px; padding-right: ${style.control.paddingX}px; }`,
+    `.surface { ${surfaceCss(style)} }`,
+    `.field { ${
+      style.field === "filled"
+        ? "background-color: rgb(var(--color-foreground) / 0.06); border-width: 0px;"
+        : `background-color: rgb(var(--color-background)); border-width: ${style.borderWidth}px; border-color: rgb(var(--color-input));`
+    } }`
+  );
   return rules.join("\n");
+}
+
+/** Spacing utilities that get a density-aware sp-* twin, and the CSS properties they set. */
+export const SPACING_UTILITIES: Record<string, string[]> = {
+  p: ["padding"],
+  px: ["padding-left", "padding-right"],
+  py: ["padding-top", "padding-bottom"],
+  pt: ["padding-top"],
+  pb: ["padding-bottom"],
+  pl: ["padding-left"],
+  pr: ["padding-right"],
+  gap: ["gap"],
+  "gap-x": ["column-gap"],
+  "gap-y": ["row-gap"],
+};
+
+/** Tailwind spacing steps with a density-aware twin. */
+export const SPACING_STEPS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 10, 12];
+
+/** Tailwind's text-* steps in the base design: [font size, line height] in px. */
+export const TYPE_STEPS: Record<string, [number, number]> = {
+  "2xs": [11, 14],
+  xs: [12, 16],
+  sm: [14, 20],
+  base: [16, 24],
+  lg: [18, 28],
+  xl: [20, 28],
+  "2xl": [24, 32],
+  "3xl": [30, 36],
+  "4xl": [36, 40],
+};
+
+/** A base-design font size in this style. */
+export function typeSize(style: ThemeStyle, px: number): number {
+  return Math.round(px * style.typeScale);
+}
+
+function surfaceCss(style: ThemeStyle): string {
+  const width = `${style.borderWidth}px`;
+  switch (style.surface) {
+    case "ring":
+      return `background-color: rgb(var(--color-card)); border-width: ${width}; border-color: rgb(var(--color-foreground) / 0.08);`;
+    case "tonal":
+      return "background-color: rgb(var(--color-primary) / 0.07); border-width: 0px;";
+    case "fill":
+      return "background-color: rgb(var(--color-foreground) / 0.05); border-width: 0px;";
+    default:
+      return `background-color: rgb(var(--color-card)); border-width: ${width}; border-color: rgb(var(--color-border));`;
+  }
 }
 
 export function toTailwindPreset(theme: NativraThemeTokens): Record<string, unknown> {

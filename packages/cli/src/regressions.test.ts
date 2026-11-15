@@ -429,3 +429,83 @@ describe("2026-11 third review", () => {
     expect(report.findings.map((f) => f.file)).toContain("components/ui/Tap.tsx");
   });
 });
+
+describe("styles", () => {
+  const styleFile = (cwd: string) => readFileSync(join(cwd, "lib/themes/style.ts"), "utf8");
+
+  it("installs the default style with the first component", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(styleFile(cwd)).toContain('id: "soft"');
+    expect(Object.keys(lockOf(cwd).items)).toContain("soft");
+  });
+
+  it("installs the style chosen at init instead of the default", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "nativra-reg-"));
+    dirs.push(cwd);
+    writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0" } }));
+    expect(cli(cwd, "init", "--yes", "--style", "ios").status).toBe(0);
+    expect(JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")).style).toBe("ios");
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(styleFile(cwd)).toContain('id: "ios"');
+    expect(Object.keys(lockOf(cwd).items)).not.toContain("soft");
+  });
+
+  it("init rejects an unknown style", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "nativra-reg-"));
+    dirs.push(cwd);
+    writeFileSync(join(cwd, "package.json"), "{}");
+    const r = cli(cwd, "init", "--yes", "--style", "neon");
+    expect(r.status).toBe(1);
+    expect(r.out).toContain("Unknown style");
+  });
+
+  it("style add switches style.ts, remembers it, and rewrites the NativeWind classes", () => {
+    const cwd = project();
+    writeFileSync(join(cwd, "global.css"), "@tailwind base;\n");
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(readFileSync(join(cwd, "global.css"), "utf8")).toContain("/* style: soft */");
+
+    const r = reg(cwd, "style", "add", "crisp");
+    expect(r.status).toBe(0);
+    expect(styleFile(cwd)).toContain('id: "crisp"');
+    expect(JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")).style).toBe("crisp");
+    const css = readFileSync(join(cwd, "global.css"), "utf8");
+    expect(css).toContain("/* style: crisp */");
+    expect(css).toContain(".type-base {");
+    expect(css).toContain(".surface {");
+    expect(Object.keys(lockOf(cwd).items)).toContain("crisp");
+    expect(Object.keys(lockOf(cwd).items)).not.toContain("soft");
+
+    // Components added later keep the chosen style.
+    expect(reg(cwd, "add", "card", "--yes", "--overwrite", "--no-install").out).toContain("Kept installed style");
+    expect(styleFile(cwd)).toContain('id: "crisp"');
+  });
+
+  it("style add rejects items that aren't styles", () => {
+    const cwd = project();
+    const r = reg(cwd, "style", "add", "button");
+    expect(r.status).toBe(1);
+    expect(r.out).toContain("not a style");
+  });
+
+  it("remove refuses to delete the active style while components need it", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const r = cli(cwd, "remove", "soft", "--yes");
+    expect(r.status).toBe(1);
+    expect(existsSync(join(cwd, "lib/themes/style.ts"))).toBe(true);
+  });
+
+  it("update adds style.ts to projects installed before styles existed", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    rmSync(join(cwd, "lib/themes/style.ts"));
+    const lock = lockOf(cwd);
+    delete lock.items["soft"];
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    expect(reg(cwd, "update").status).toBe(0);
+    expect(styleFile(cwd)).toContain('id: "soft"');
+  });
+});

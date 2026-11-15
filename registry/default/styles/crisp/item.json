@@ -1,0 +1,25 @@
+{
+  "id": "crisp",
+  "name": "Crisp style",
+  "description": "Small radii, hairline borders instead of shadows, compact and neutral, in the spirit of shadcn/ui.",
+  "type": "style",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "style.ts"
+    }
+  ],
+  "tags": [
+    "style",
+    "crisp",
+    "tokens"
+  ]
+}

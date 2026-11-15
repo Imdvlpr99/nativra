@@ -1,39 +1,63 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
-import { THEME_PRESETS, toCssVariables, toStyleCss } from "@nativra/theme-engine";
+import { STYLE_PRESETS, THEME_PRESETS, getStylePreset, toCssVariables, toStyleCss } from "@nativra/theme-engine";
 import { TAILWIND_CONFIG_NAMES } from "./detect.js";
 import { assertSafeWriteTarget, fileExists, type LockFile } from "./install.js";
 
 const THEME_BLOCK = /\/\* NATIVRA THEME START: [\s\S]*?\/\* NATIVRA THEME END: .*?\*\//;
 
-/** True for theme items: by recorded type, or by built-in id for lockfiles written before 0.3. */
-export function isThemeId(lock: LockFile, id: string): boolean {
-  return lock.items[id]?.type === "theme" || Object.prototype.hasOwnProperty.call(THEME_PRESETS, id);
-}
-
-/** Whether a lock entry tracks the active theme file (`<themesDir>/theme.ts`). */
-function ownsThemeSlot(lock: LockFile, id: string): boolean {
-  return Object.keys(lock.items[id]?.files ?? {}).some((key) => key === "theme.ts" || key.endsWith("/theme.ts"));
-}
-
 /**
- * Id of the theme in theme.ts, if the lockfile tracks one. Components import whichever theme is
- * there, so this is the theme that satisfies every component's theme dependency.
+ * A slot is a file that exactly one item of a kind fills: the colors in theme.ts and the style in
+ * style.ts. Components depend on a default ("zinc", "soft"), but any installed item of the same
+ * kind satisfies that dependency.
  */
+export type SlotKind = "theme" | "style";
+
+const SLOT_FILES: Record<SlotKind, string> = { theme: "theme.ts", style: "style.ts" };
+const BUILT_IN: Record<SlotKind, Record<string, unknown>> = { theme: THEME_PRESETS, style: STYLE_PRESETS };
+
+/** True for items of the kind: by recorded type, or by built-in id for lockfiles written before 0.3. */
+export function isSlotItem(lock: LockFile, id: string, kind: SlotKind): boolean {
+  const recorded = lock.items[id]?.type;
+  return recorded ? recorded === kind : Object.prototype.hasOwnProperty.call(BUILT_IN[kind], id);
+}
+
+/** True for theme items. */
+export function isThemeId(lock: LockFile, id: string): boolean {
+  return isSlotItem(lock, id, "theme");
+}
+
+/** Whether a lock entry tracks the slot's file (`<themesDir>/theme.ts` or `style.ts`). */
+function ownsSlot(lock: LockFile, id: string, kind: SlotKind): boolean {
+  const file = SLOT_FILES[kind];
+  return Object.keys(lock.items[id]?.files ?? {}).some((key) => key === file || key.endsWith(`/${file}`));
+}
+
+function installedSlotId(lock: LockFile, kind: SlotKind): string | undefined {
+  const ids = Object.keys(lock.items).filter((id) => isSlotItem(lock, id, kind));
+  return ids.find((id) => ownsSlot(lock, id, kind)) ?? ids[0];
+}
+
+/** Id of the theme in theme.ts, if the lockfile tracks one. */
 export function installedThemeId(lock: LockFile): string | undefined {
-  const themes = Object.keys(lock.items).filter((id) => isThemeId(lock, id));
-  return themes.find((id) => ownsThemeSlot(lock, id)) ?? themes[0];
+  return installedSlotId(lock, "theme");
+}
+
+/** Id of the style in style.ts, if the lockfile tracks one. */
+export function installedStyleId(lock: LockFile): string | undefined {
+  return installedSlotId(lock, "style");
 }
 
 /**
- * Installed items that need the theme in theme.ts. A component depends on *a* theme (recorded as
- * the default one, e.g. "zinc"), so removing whichever theme owns theme.ts breaks all of them.
+ * Installed items that need the theme or style that `id` provides. Removing whichever item fills
+ * theme.ts or style.ts breaks every component that imports it.
  */
 export function themeSlotDependents(lock: LockFile, id: string): string[] {
-  if (!isThemeId(lock, id) || !ownsThemeSlot(lock, id)) return [];
+  const kind = (["theme", "style"] as const).find((k) => isSlotItem(lock, id, k) && ownsSlot(lock, id, k));
+  if (!kind) return [];
   return Object.entries(lock.items)
-    .filter(([otherId, entry]) => otherId !== id && (entry.dependencies ?? []).some((dep) => isThemeId(lock, dep)))
+    .filter(([otherId, entry]) => otherId !== id && (entry.dependencies ?? []).some((dep) => isSlotItem(lock, dep, kind)))
     .map(([otherId]) => otherId);
 }
 
@@ -50,21 +74,28 @@ export async function hasThemeCss(cssPath: string): Promise<boolean> {
 }
 
 /**
- * The installed theme block's id when the block predates the current token set (no status
- * colors, shape classes or scrim), so the CLI can rewrite it; null when it's current or absent.
+ * The installed theme block's id when it needs rewriting, so the CLI can refresh it while keeping
+ * the theme: the block predates the current classes (status colors, shape, scrim, type scale),
+ * or it was written for a different style than `styleId`. Null when it's current or absent.
  */
-export async function outdatedThemeCss(cssPath: string): Promise<string | null> {
+export async function outdatedThemeCss(cssPath: string, styleId?: string): Promise<string | null> {
   const block = THEME_BLOCK.exec(await readFile(cssPath, "utf8"))?.[0];
   if (!block) return null;
-  const current = block.includes("--color-success") && block.includes(".rounded-card") && block.includes(".bg-scrim");
+  const current =
+    block.includes("--color-success") &&
+    block.includes(".rounded-card") &&
+    block.includes(".bg-scrim") &&
+    block.includes(".type-base") &&
+    block.includes(".sp-p-4") &&
+    (!styleId || block.includes(`/* style: ${styleId} */`));
   return current ? null : (/NATIVRA THEME START: ([a-z0-9-]+)/.exec(block)?.[1] ?? null);
 }
 
 /**
- * Writes (or replaces) the theme's CSS variables in global.css between marker comments.
- * Returns false when nothing was written.
+ * Writes (or replaces) the theme's CSS variables and the style's classes in global.css between
+ * marker comments. Returns false when nothing was written.
  */
-export async function applyThemeCss(cwd: string, id: string): Promise<boolean> {
+export async function applyThemeCss(cwd: string, id: string, styleId?: string): Promise<boolean> {
   const tokens = THEME_PRESETS[id];
   if (!tokens) {
     console.warn(
@@ -81,13 +112,14 @@ export async function applyThemeCss(cwd: string, id: string): Promise<boolean> {
 
   try {
     const existingCss = await readFile(targetCss, "utf8");
-    // Shape classes sit outside @layer so Tailwind emits them as written (never purged).
-    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n${toStyleCss(tokens)}\n/* NATIVRA THEME END: ${id} */`;
+    const style = getStylePreset(styleId);
+    // Style classes sit outside @layer so Tailwind emits them as written (never purged).
+    const block = `/* NATIVRA THEME START: ${id} */\n@layer base {\n${toCssVariables(tokens)}\n}\n${toStyleCss(tokens, style)}\n/* NATIVRA THEME END: ${id} */`;
     const updatedCss = THEME_BLOCK.test(existingCss)
-      ? existingCss.replace(THEME_BLOCK, block)
+      ? existingCss.replace(THEME_BLOCK, () => block)
       : `${existingCss.trimEnd()}\n\n${block}\n`;
     await writeFile(await assertSafeWriteTarget(cwd, targetCss), updatedCss, "utf8");
-    console.log(chalk.green(`  ✓ Wrote "${id}" theme variables into ${targetCss}`));
+    console.log(chalk.green(`  ✓ Wrote the "${id}" theme with the "${style.id}" style into ${targetCss}`));
     return true;
   } catch (err) {
     console.warn(chalk.yellow(`  ⚠ Could not wire CSS variables: ${(err as Error).message}`));
@@ -117,14 +149,14 @@ export async function tailwindMapsThemeColors(cwd: string): Promise<boolean | nu
  * block in global.css. Writes the block when it's missing, refreshes it when it predates the
  * current tokens (keeping the installed theme), and says so when Tailwind doesn't map the colors.
  */
-export async function ensureNativeWindTheme(cwd: string, themeId: string): Promise<void> {
+export async function ensureNativeWindTheme(cwd: string, themeId: string, styleId?: string): Promise<void> {
   const css = await findGlobalCss(cwd);
   if (css) {
     if (!(await hasThemeCss(css))) {
-      await applyThemeCss(cwd, themeId);
+      await applyThemeCss(cwd, themeId, styleId);
     } else {
-      const outdated = await outdatedThemeCss(css);
-      if (outdated) await applyThemeCss(cwd, outdated);
+      const outdated = await outdatedThemeCss(css, styleId);
+      if (outdated) await applyThemeCss(cwd, outdated, styleId);
     }
   }
   if ((await tailwindMapsThemeColors(cwd)) === false) {
