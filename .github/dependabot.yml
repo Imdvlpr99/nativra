@@ -14,6 +14,13 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
+    # Expo 52 (the preview app and examples) builds only with Babel 7, and Metro 0.81 needs
+    # image-size 1.x. Lift these when moving to an Expo SDK that supports the newer majors.
+    ignore:
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "image-size"
+        update-types: ["version-update:semver-major"]
     groups:
       production-dependencies:
         dependency-type: "production"
