@@ -4,7 +4,7 @@
   "description": "Complete mobile e-commerce checkout invoice summary with line items, voucher discount, and checkout button.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

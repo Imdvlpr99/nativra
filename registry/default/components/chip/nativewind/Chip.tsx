@@ -26,8 +26,8 @@ export function Chip({
   style,
   ...rest
 }: ChipProps) {
-  const sizeClasses = size === "sm" ? "h-7 px-2.5" : "h-8 px-3.5";
-  const textSizeClasses = size === "sm" ? "text-xs" : "text-sm";
+  const sizeClasses = size === "sm" ? "h-7 sp-px-2.5" : "h-8 sp-px-3.5";
+  const textSizeClasses = size === "sm" ? "type-xs" : "type-sm";
 
   const surfaceClasses = selected
     ? "bg-primary border-primary"
@@ -38,7 +38,7 @@ export function Chip({
     : "bg-muted border-border";
 
   const textClasses = selected
-    ? "text-primary-foreground font-semibold"
+    ? "text-primary-foreground weight-label"
     : variant === "primary"
     ? "text-primary font-medium"
     : "text-foreground font-medium";
@@ -66,7 +66,7 @@ export function Chip({
           className="ml-1.5 h-4 w-4 items-center justify-center rounded-chip bg-foreground/10"
         >
           <View className="items-center justify-center">
-            <Text className={`text-[10px] leading-none ${selected ? "text-primary-foreground" : "text-muted-foreground"}`}>
+            <Text className={`type-2xs leading-none ${selected ? "text-primary-foreground" : "text-muted-foreground"}`}>
               ✕
             </Text>
           </View>

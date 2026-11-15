@@ -34,18 +34,18 @@ export function AnalyticsDashboard() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
-      <ScrollView className="flex-1 px-4 py-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 sp-px-4 sp-py-6" showsVerticalScrollIndicator={false}>
         {/* Header Bar */}
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-2xl font-black tracking-tight text-foreground">Analytics</Text>
-            <Text className="text-xs text-muted-foreground mt-1">Executive Performance Overview</Text>
+            <Text className="type-2xl weight-heading tracking-tight text-foreground">Analytics</Text>
+            <Text className="type-xs text-muted-foreground mt-1">Executive Performance Overview</Text>
           </View>
           <Badge variant="secondary" label="Live Metrics" />
         </View>
 
         {/* Time Window Filter Pills */}
-        <View className="flex-row items-center p-1 rounded-card bg-card border border-border mb-6">
+        <View className="surface flex-row items-center sp-p-1 rounded-card mb-6">
           {[
             { id: "24h", label: "24h" },
             { id: "7d", label: "7 Days" },
@@ -57,12 +57,12 @@ export function AnalyticsDashboard() {
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                className={`flex-1 py-2 items-center rounded-control ${
+                className={`flex-1 sp-py-2 items-center rounded-control ${
                   active ? "bg-muted shadow" : ""
                 }`}
               >
                 <Text
-                  className={`text-xs font-semibold ${
+                  className={`type-xs weight-label ${
                     active ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
@@ -74,43 +74,43 @@ export function AnalyticsDashboard() {
         </View>
 
         {/* Top 2x2 KPI Metric Cards */}
-        <View className="gap-3.5 mb-6">
-          <View className="flex-row gap-3.5">
-            <Card elevated padding="md" className="flex-1 rounded-card bg-card/80 border border-border">
-              <Text className="text-xs font-medium text-muted-foreground">Total Revenue</Text>
-              <Text className="text-2xl font-black text-foreground mt-2">$148,200</Text>
+        <View className="sp-gap-3.5 mb-6">
+          <View className="flex-row sp-gap-3.5">
+            <Card elevated padding="md" className="flex-1">
+              <Text className="type-xs font-medium text-muted-foreground">Total Revenue</Text>
+              <Text className="type-2xl weight-heading text-foreground mt-2">$148,200</Text>
               <View className="mt-3 flex-row items-center justify-between">
                 <Badge variant="primary" size="sm" label="+14.2%" />
-                <Text className="text-xs text-muted-foreground">vs prior</Text>
+                <Text className="type-xs text-muted-foreground">vs prior</Text>
               </View>
             </Card>
 
-            <Card elevated padding="md" className="flex-1 rounded-card bg-card/80 border border-border">
-              <Text className="text-xs font-medium text-muted-foreground">Active Users</Text>
-              <Text className="text-2xl font-black text-foreground mt-2">32,840</Text>
+            <Card elevated padding="md" className="flex-1">
+              <Text className="type-xs font-medium text-muted-foreground">Active Users</Text>
+              <Text className="type-2xl weight-heading text-foreground mt-2">32,840</Text>
               <View className="mt-3 flex-row items-center justify-between">
                 <Badge variant="primary" size="sm" label="+8.6%" />
-                <Text className="text-xs text-muted-foreground">vs prior</Text>
+                <Text className="type-xs text-muted-foreground">vs prior</Text>
               </View>
             </Card>
           </View>
 
-          <View className="flex-row gap-3.5">
-            <Card elevated padding="md" className="flex-1 rounded-card bg-card/80 border border-border">
-              <Text className="text-xs font-medium text-muted-foreground">Conversion Rate</Text>
-              <Text className="text-2xl font-black text-foreground mt-2">4.85%</Text>
+          <View className="flex-row sp-gap-3.5">
+            <Card elevated padding="md" className="flex-1">
+              <Text className="type-xs font-medium text-muted-foreground">Conversion Rate</Text>
+              <Text className="type-2xl weight-heading text-foreground mt-2">4.85%</Text>
               <View className="mt-3 flex-row items-center justify-between">
                 <Badge variant="primary" size="sm" label="+1.2%" />
-                <Text className="text-xs text-muted-foreground">target 4.0%</Text>
+                <Text className="type-xs text-muted-foreground">target 4.0%</Text>
               </View>
             </Card>
 
-            <Card elevated padding="md" className="flex-1 rounded-card bg-card/80 border border-border">
-              <Text className="text-xs font-medium text-muted-foreground">Churn Rate</Text>
-              <Text className="text-2xl font-black text-foreground mt-2">0.92%</Text>
+            <Card elevated padding="md" className="flex-1">
+              <Text className="type-xs font-medium text-muted-foreground">Churn Rate</Text>
+              <Text className="type-2xl weight-heading text-foreground mt-2">0.92%</Text>
               <View className="mt-3 flex-row items-center justify-between">
                 <Badge variant="secondary" size="sm" label="-0.4%" />
-                <Text className="text-xs text-muted-foreground">healthy</Text>
+                <Text className="type-xs text-muted-foreground">healthy</Text>
               </View>
             </Card>
           </View>
@@ -119,16 +119,16 @@ export function AnalyticsDashboard() {
         {/* Traffic Channels Breakdown */}
         <Card elevated padding="lg" className="rounded-card bg-card/90 border border-border mb-6">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-base font-bold text-foreground">Acquisition Channels</Text>
-            <Text className="text-xs text-muted-foreground">56,650 Total</Text>
+            <Text className="type-base weight-title text-foreground">Acquisition Channels</Text>
+            <Text className="type-xs text-muted-foreground">56,650 Total</Text>
           </View>
 
-          <View className="gap-3.5">
+          <View className="sp-gap-3.5">
             {channels.map((c) => (
-              <View key={c.name} className="gap-1.5">
+              <View key={c.name} className="sp-gap-1.5">
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-xs font-medium text-muted-foreground">{c.name}</Text>
-                  <Text className="text-xs font-semibold text-muted-foreground">
+                  <Text className="type-xs font-medium text-muted-foreground">{c.name}</Text>
+                  <Text className="type-xs weight-label text-muted-foreground">
                     {c.visitors} ({c.share}%)
                   </Text>
                 </View>
@@ -142,17 +142,17 @@ export function AnalyticsDashboard() {
 
         {/* Recent Audit / Payout Logs */}
         <Card elevated padding="lg" className="rounded-card bg-card/90 border border-border mb-8">
-          <Text className="text-base font-bold text-foreground mb-4">Financial Activity</Text>
-          <View className="gap-3">
+          <Text className="type-base weight-title text-foreground mb-4">Financial Activity</Text>
+          <View className="sp-gap-3">
             {recentLogs.map((log, idx) => (
               <React.Fragment key={log.id}>
-                <View className="flex-row items-center justify-between py-1">
+                <View className="flex-row items-center justify-between sp-py-1">
                   <View>
-                    <Text className="font-semibold text-sm text-foreground">{log.action}</Text>
-                    <Text className="text-xs text-muted-foreground mt-0.5">{log.time}</Text>
+                    <Text className="weight-label type-sm text-foreground">{log.action}</Text>
+                    <Text className="type-xs text-muted-foreground mt-0.5">{log.time}</Text>
                   </View>
                   <Text
-                    className={`font-bold text-sm ${
+                    className={`weight-title type-sm ${
                       log.isPos ? "text-success" : "text-foreground"
                     }`}
                   >

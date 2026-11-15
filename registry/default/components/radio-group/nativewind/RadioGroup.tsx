@@ -23,7 +23,7 @@ export function RadioGroup({
   disabled = false,
 }: RadioGroupProps) {
   return (
-    <View accessibilityRole="radiogroup" className="w-full gap-3">
+    <View accessibilityRole="radiogroup" className="w-full sp-gap-3">
       {options.map((opt) => {
         const isSelected = opt.value === value;
         const isDisabled = disabled || opt.disabled;
@@ -35,10 +35,10 @@ export function RadioGroup({
             accessibilityState={{ selected: isSelected, disabled: isDisabled }}
             onPress={() => !isDisabled && onValueChange(opt.value)}
             disabled={isDisabled}
-            className={`flex-row items-start gap-3 rounded-control border p-3.5 transition-colors ${
+            className={`flex-row items-start sp-gap-3 rounded-control border sp-p-3.5 transition-colors ${
               isSelected
                 ? "border-primary bg-primary/10"
-                : "border-border bg-card"
+                : "surface"
             } ${isDisabled ? "opacity-50" : "active:opacity-85"}`}
           >
             {/* Radio Circle */}
@@ -54,11 +54,11 @@ export function RadioGroup({
 
             {/* Labels */}
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 {opt.label}
               </Text>
               {opt.description ? (
-                <Text className="mt-0.5 text-xs text-muted-foreground leading-normal">
+                <Text className="mt-0.5 type-xs text-muted-foreground leading-normal">
                   {opt.description}
                 </Text>
               ) : null}

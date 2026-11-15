@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface StatProgressCardProps {
   goalTitle?: string;
@@ -64,14 +64,11 @@ export function StatProgressCard({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     width: "100%",
     maxWidth: 360,
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 24,
-    ...elevation("card"),
+    padding: sp(24),
   },
   header: {
     flexDirection: "row",
@@ -79,21 +76,21 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     color: palette["muted-foreground"],
   },
   streakBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(3),
     borderRadius: 9999,
     backgroundColor: alpha(palette.primary, 0.15),
   },
   streakText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.primary,
   },
   numbersRow: {
@@ -105,20 +102,20 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   leftNumbers: {
     flexDirection: "row",
     alignItems: "baseline",
-    gap: 6,
+    gap: sp(6),
   },
   current: {
-    fontSize: 30,
-    fontWeight: "900",
+    fontSize: ts(30),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
   },
   target: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   percent: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.primary,
   },
   track: {
@@ -136,7 +133,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   footer: {
     marginTop: 14,
-    paddingTop: 10,
+    paddingTop: sp(10),
     borderTopWidth: 1,
     borderTopColor: palette.border,
     flexDirection: "row",
@@ -144,12 +141,12 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   footerText: {
-    fontSize: 11,
+    fontSize: ts(11),
     color: palette["muted-foreground"],
   },
   statusText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.success,
   },
 });

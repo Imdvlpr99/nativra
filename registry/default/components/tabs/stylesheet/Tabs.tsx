@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface TabItem {
   value: string;
@@ -100,10 +100,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: "center",
   },
   pillContainer: {
-    padding: 4,
+    padding: sp(4),
     borderRadius: themeStyle.radius.control,
     backgroundColor: c.muted,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: c.border,
   },
   underlineContainer: {
@@ -115,10 +115,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: sp(8),
+    paddingHorizontal: sp(12),
     borderRadius: themeStyle.radius.small,
-    gap: 6,
+    gap: sp(6),
   },
   tabPillSelected: {
     backgroundColor: c.background,
@@ -130,17 +130,17 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginBottom: -1,
   },
   tabLabel: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     color: c["muted-foreground"],
   },
   tabLabelSelected: {
     color: c.foreground,
-    fontWeight: "700",
+    fontWeight: themeStyle.fontWeight.title,
   },
   badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
     borderRadius: 9999,
   },
   badgeDefault: {
@@ -150,8 +150,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: alpha(c.primary, 0.12),
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
   },
   badgeTextDefault: {
     color: c["muted-foreground"],

@@ -50,22 +50,22 @@ export function PricingCard({
         {popular && <Badge variant="primary" size="sm" label="Most Popular" />}
       </View>
 
-      <Text variant="muted" className="mt-1 text-xs">{description}</Text>
+      <Text variant="muted" className="mt-1 type-xs">{description}</Text>
 
-      <View className="mt-5 flex-row items-baseline gap-1">
-        <Text variant="h1" className="text-3xl font-extrabold">{price}</Text>
-        <Text variant="muted" className="text-xs">{period}</Text>
+      <View className="mt-5 flex-row items-baseline sp-gap-1">
+        <Text variant="h1" className="type-3xl weight-heading">{price}</Text>
+        <Text variant="muted" className="type-xs">{period}</Text>
       </View>
 
       <View className="my-5">
         <Separator />
       </View>
 
-      <View className="gap-3">
+      <View className="sp-gap-3">
         {features.map((feature, idx) => (
-          <View key={idx} className="flex-row items-center gap-2.5">
-            <Text className="text-xs font-bold text-success">✓</Text>
-            <Text variant="p" className="text-xs text-foreground">{feature}</Text>
+          <View key={idx} className="flex-row items-center sp-gap-2.5">
+            <Text className="type-xs weight-title text-success">✓</Text>
+            <Text variant="p" className="type-xs text-foreground">{feature}</Text>
           </View>
         ))}
       </View>

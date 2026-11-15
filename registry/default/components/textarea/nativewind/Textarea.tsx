@@ -21,9 +21,9 @@ export function Textarea({
 }: TextareaProps) {
   const palette = useThemeColors();
   return (
-    <View className="w-full gap-1.5">
+    <View className="w-full sp-gap-1.5">
       {label ? (
-        <Text className="text-sm font-medium text-foreground">{label}</Text>
+        <Text className="type-sm font-medium text-foreground">{label}</Text>
       ) : null}
       <TextInput
         multiline
@@ -33,12 +33,12 @@ export function Textarea({
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
         placeholderTextColor={palette["muted-foreground"]}
-        className={`min-h-[96px] rounded-control border p-3 text-base text-foreground ${
+        className={`field min-h-[96px] rounded-control sp-p-3 type-base text-foreground ${
           error ? "border-destructive" : "border-input"
         } ${disabled ? "opacity-50" : ""}`}
         {...rest}
       />
-      {error && errorMessage ? <Text className="text-xs text-destructive">{errorMessage}</Text> : null}
+      {error && errorMessage ? <Text className="type-xs text-destructive">{errorMessage}</Text> : null}
     </View>
   );
 }

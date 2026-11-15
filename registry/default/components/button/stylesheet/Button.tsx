@@ -17,7 +17,7 @@ import {
   type ViewStyle,
   type TextStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors, themeStyle, elevation, pressedStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, elevation, pressedStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,18 +54,18 @@ const styles = StyleSheet.create({
     borderRadius: themeStyle.radius.button,
   },
   disabled: { opacity: 0.5 },
-  // Size presets
-  xs:  { paddingHorizontal: 12, paddingVertical: 6,  gap: 4 },
-  sm:  { paddingHorizontal: 16, paddingVertical: 8,  gap: 6 },
-  md:  { paddingHorizontal: 20, paddingVertical: 12, gap: 8 },
-  lg:  { paddingHorizontal: 24, paddingVertical: 14, gap: 8 },
-  xl:  { paddingHorizontal: 28, paddingVertical: 16, gap: 10 },
+  // Size presets: md is the style's control height, the others step around it
+  xs:  { minHeight: themeStyle.control.height - 16, paddingHorizontal: sp(12), gap: sp(4) },
+  sm:  { minHeight: themeStyle.control.height - 8, paddingHorizontal: sp(16), gap: sp(6) },
+  md:  { minHeight: themeStyle.control.height, paddingHorizontal: themeStyle.control.paddingX, gap: sp(8) },
+  lg:  { minHeight: themeStyle.control.height + 6, paddingHorizontal: sp(24), gap: sp(8) },
+  xl:  { minHeight: themeStyle.control.height + 12, paddingHorizontal: sp(28), gap: sp(10) },
   // Text sizes (weight comes from the theme's label weight)
-  textXs:  { fontSize: 12, fontWeight: themeStyle.fontWeight.label },
-  textSm:  { fontSize: 14, fontWeight: themeStyle.fontWeight.label },
-  textMd:  { fontSize: 15, fontWeight: themeStyle.fontWeight.label },
-  textLg:  { fontSize: 16, fontWeight: themeStyle.fontWeight.label },
-  textXl:  { fontSize: 17, fontWeight: themeStyle.fontWeight.title },
+  textXs:  { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label },
+  textSm:  { fontSize: ts(14), fontWeight: themeStyle.fontWeight.label },
+  textMd:  { fontSize: ts(15), fontWeight: themeStyle.fontWeight.label },
+  textLg:  { fontSize: ts(16), fontWeight: themeStyle.fontWeight.label },
+  textXl:  { fontSize: ts(17), fontWeight: themeStyle.fontWeight.title },
 });
 
 function getVariantStyle(variant: ButtonVariant, c: ThemeColors): ViewStyle {
@@ -74,7 +74,7 @@ function getVariantStyle(variant: ButtonVariant, c: ThemeColors): ViewStyle {
     primary:     { backgroundColor: c.primary },
     secondary:   { backgroundColor: c.muted },
     destructive: { backgroundColor: c.destructive },
-    outline:     { borderWidth: 1, borderColor: c.input, backgroundColor: "transparent" },
+    outline:     { borderWidth: themeStyle.borderWidth, borderColor: c.input, backgroundColor: "transparent" },
     ghost:       { backgroundColor: "transparent" },
     link:        { backgroundColor: "transparent" },
   };

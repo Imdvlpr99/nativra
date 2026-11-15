@@ -40,13 +40,13 @@ export function NotificationItem({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className={`w-full max-w-sm p-4 rounded-card border transition-all active:scale-[0.98] ${
+      className={`w-full max-w-sm sp-p-4 rounded-card border transition-all active:scale-[0.98] ${
         unread
           ? "bg-primary/50 border-primary/30"
-          : "bg-card border-border"
+          : "surface"
       } ${className}`.trim()}
     >
-      <View className="flex-row items-start gap-3">
+      <View className="flex-row items-start sp-gap-3">
         <View className="relative">
           <Avatar fallback={avatarFallback} size="md" />
           {unread && (
@@ -57,13 +57,13 @@ export function NotificationItem({
         <View className="flex-1 space-y-1">
           <View className="flex-row items-center justify-between">
             <Badge variant={unread ? "primary" : "secondary"} size="sm" label={category} />
-            <Text variant="muted" className="text-[11px] font-mono">{timeAgo}</Text>
+            <Text variant="muted" className="type-2xs font-mono">{timeAgo}</Text>
           </View>
 
-          <Text className="text-xs leading-relaxed text-foreground">
-            <Text className="font-bold text-foreground">{senderName} </Text>
+          <Text className="type-xs leading-relaxed text-foreground">
+            <Text className="weight-title text-foreground">{senderName} </Text>
             {actionText}{" "}
-            <Text className="font-semibold text-primary">{targetResource}</Text>
+            <Text className="weight-label text-primary">{targetResource}</Text>
           </Text>
         </View>
       </View>

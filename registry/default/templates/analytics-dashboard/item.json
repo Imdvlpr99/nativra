@@ -4,7 +4,7 @@
   "description": "Executive SaaS mobile dashboard template with KPI metrics, time-range filter pills, channel breakdown bars, and recent audit activity feed.",
   "type": "template",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

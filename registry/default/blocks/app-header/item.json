@@ -4,7 +4,7 @@
   "description": "Versatile enterprise application navigation header with branding, back navigation, search, action buttons, notifications badge, and user avatar.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

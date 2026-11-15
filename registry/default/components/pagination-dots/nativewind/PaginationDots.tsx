@@ -24,7 +24,7 @@ export function PaginationDots({
       accessibilityRole="adjustable"
       accessibilityLabel={`Page ${currentIndex + 1} of ${safeTotal}`}
       style={style}
-      className={`flex-row items-center justify-center gap-1.5 ${className}`}
+      className={`flex-row items-center justify-center sp-gap-1.5 ${className}`}
       {...rest}
     >
       {Array.from({ length: safeTotal }).map((_, idx) => {

@@ -4,7 +4,7 @@
   "description": "Vertical audit log and activity timeline item with status node, connector line, and timestamp metadata.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

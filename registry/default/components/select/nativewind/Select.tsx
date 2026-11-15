@@ -28,9 +28,9 @@ export function Select({
   const selectedOption = options.find((o) => o.value === value);
 
   return (
-    <View className="w-full gap-1.5">
+    <View className="w-full sp-gap-1.5">
       {label ? (
-        <Text className="text-sm font-medium text-foreground">{label}</Text>
+        <Text className="type-sm font-medium text-foreground">{label}</Text>
       ) : null}
 
       <Pressable
@@ -38,30 +38,30 @@ export function Select({
         accessibilityState={{ disabled, expanded: open }}
         onPress={() => !disabled && setOpen(true)}
         disabled={disabled}
-        className={`h-11 flex-row items-center justify-between rounded-control border border-input bg-card px-4 ${
+        className={`field min-h-control flex-row items-center justify-between rounded-control sp-px-4 ${
           disabled ? "opacity-50" : "active:opacity-85"
         }`}
       >
         <Text
-          className={`text-base ${
+          className={`type-base ${
             selectedOption ? "text-foreground" : "text-muted-foreground"
           }`}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Text className="text-xs text-muted-foreground">▼</Text>
+        <Text className="type-xs text-muted-foreground">▼</Text>
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <View className="flex-1 justify-end bg-scrim" accessibilityViewIsModal>
           <Pressable accessible={false} importantForAccessibility="no" className="flex-1" onPress={() => setOpen(false)} />
-          <View className="max-h-[60%] rounded-t-surface border-t border-border bg-card p-5">
-            <View className="mb-4 flex-row items-center justify-between pb-2 border-b border-border">
-              <Text className="text-base font-bold text-foreground">
+          <View className="max-h-[60%] rounded-t-surface border-t border-border bg-card sp-p-5">
+            <View className="mb-4 flex-row items-center justify-between sp-pb-2 border-b border-border">
+              <Text className="type-base weight-title text-foreground">
                 {label ?? "Select an option"}
               </Text>
-              <Pressable accessibilityRole="button" onPress={() => setOpen(false)} className="p-1">
-                <Text className="text-sm font-semibold text-primary">Done</Text>
+              <Pressable accessibilityRole="button" onPress={() => setOpen(false)} className="sp-p-1">
+                <Text className="type-sm weight-label text-primary">Done</Text>
               </Pressable>
             </View>
 
@@ -76,21 +76,21 @@ export function Select({
                       onValueChange(item.value);
                       setOpen(false);
                     }}
-                    className={`flex-row items-center justify-between py-3.5 px-3 rounded-control ${
+                    className={`flex-row items-center justify-between sp-py-3.5 sp-px-3 rounded-control ${
                       isSelected ? "bg-primary/10" : "active:bg-muted"
                     }`}
                   >
                     <Text
-                      className={`text-base ${
+                      className={`type-base ${
                         isSelected
-                          ? "font-bold text-primary"
+                          ? "weight-title text-primary"
                           : "text-foreground"
                       }`}
                     >
                       {item.label}
                     </Text>
                     {isSelected ? (
-                      <Text className="text-sm font-bold text-primary">✓</Text>
+                      <Text className="type-sm weight-title text-primary">✓</Text>
                     ) : null}
                   </Pressable>
                 );

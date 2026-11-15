@@ -4,7 +4,7 @@
   "description": "In-app support and customer messaging template with conversation threads, speech bubbles, and keyboard-avoiding input bar.",
   "type": "template",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

@@ -1,7 +1,7 @@
 /** Nativra — Select (StyleSheet). Install: npx nativra-cli add select */
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, scrim, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, field, scrim, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface SelectOption {
   label: string;
@@ -42,10 +42,7 @@ export function Select({
         disabled={disabled}
         style={[
           styles.trigger,
-          {
-            backgroundColor: c.background,
-            borderColor: c.input,
-          },
+          field(c, open),
           disabled && styles.disabled,
         ]}
       >
@@ -105,20 +102,20 @@ export function Select({
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500" },
-  trigger: { height: 44, borderRadius: themeStyle.radius.control, borderWidth: 1, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  triggerText: { fontSize: 16 },
-  arrow: { fontSize: 10, color: c["muted-foreground"] },
+  wrap: { width: "100%", gap: sp(6) },
+  label: { fontSize: ts(14), fontWeight: "500" },
+  trigger: { minHeight: themeStyle.control.height, borderRadius: themeStyle.radius.control, paddingHorizontal: sp(14), flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  triggerText: { fontSize: ts(16) },
+  arrow: { fontSize: ts(10), color: c["muted-foreground"] },
   disabled: { opacity: 0.5 },
   backdrop: { flex: 1, backgroundColor: scrim(), justifyContent: "flex-end" },
   flex1: { flex: 1 },
-  sheet: { maxHeight: "60%", borderTopLeftRadius: themeStyle.radius.surface, borderTopRightRadius: themeStyle.radius.surface, padding: 20 },
-  sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 8 },
-  sheetTitle: { fontSize: 16, fontWeight: "700" },
-  doneBtn: { fontSize: 15, fontWeight: "600", color: c.primary },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 14, paddingHorizontal: 12, borderRadius: themeStyle.radius.control },
-  rowText: { fontSize: 16 },
-  check: { fontSize: 14, fontWeight: "700", color: c.primary },
+  sheet: { maxHeight: "60%", borderTopLeftRadius: themeStyle.radius.surface, borderTopRightRadius: themeStyle.radius.surface, padding: sp(20) },
+  sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: sp(14), borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 8 },
+  sheetTitle: { fontSize: ts(16), fontWeight: themeStyle.fontWeight.title },
+  doneBtn: { fontSize: ts(15), fontWeight: themeStyle.fontWeight.label, color: c.primary },
+  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: sp(14), paddingHorizontal: sp(12), borderRadius: themeStyle.radius.control },
+  rowText: { fontSize: ts(16) },
+  check: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.primary },
 });
 

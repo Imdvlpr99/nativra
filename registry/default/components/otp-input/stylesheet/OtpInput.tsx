@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface OtpInputProps {
   length?: number;
@@ -106,7 +106,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: sp(10),
   },
   cell: {
     width: 48,
@@ -134,8 +134,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     opacity: 0.5,
   },
   digitText: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: ts(22),
+    fontWeight: themeStyle.fontWeight.title,
     fontFamily: "monospace",
     color: c.foreground,
   },

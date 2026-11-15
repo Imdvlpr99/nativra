@@ -15,7 +15,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle } from "@/hooks/use-theme-colors";
+import { themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface UserProfileStats {
   followers?: string;
@@ -114,12 +114,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   handle: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
   },
   bio: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: ts(12),
+    lineHeight: ts(18),
     marginTop: 8,
   },
   separatorContainer: {
@@ -129,19 +129,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    paddingVertical: 4,
+    paddingVertical: sp(4),
   },
   statCol: {
     alignItems: "center",
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: ts(10),
     marginTop: 2,
   },
   actionsRow: {
     marginTop: 20,
     flexDirection: "row",
-    gap: 8,
+    gap: sp(8),
   },
   actionBtn: {
     flex: 1,

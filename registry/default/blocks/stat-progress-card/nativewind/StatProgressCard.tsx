@@ -37,23 +37,23 @@ export function StatProgressCard({
   return (
     <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
-        <Text variant="muted" className="text-xs font-semibold uppercase tracking-wider">
+        <Text variant="muted" className="type-xs weight-label uppercase tracking-wider">
           {goalTitle}
         </Text>
         <Badge variant="primary" size="sm" label={`🔥 ${streakDays}d Streak`} />
       </View>
 
       <View className="mt-4 flex-row items-baseline justify-between">
-        <View className="flex-row items-baseline gap-1.5">
-          <Text variant="h1" className="text-3xl font-black text-foreground font-mono">
+        <View className="flex-row items-baseline sp-gap-1.5">
+          <Text variant="h1" className="type-3xl weight-heading text-foreground font-mono">
             {currentValue}
           </Text>
-          <Text variant="muted" className="text-xs">
+          <Text variant="muted" className="type-xs">
             / {targetValue}
           </Text>
         </View>
 
-        <Text className="text-sm font-bold text-primary font-mono">
+        <Text className="type-sm weight-title text-primary font-mono">
           {clamped}%
         </Text>
       </View>
@@ -66,9 +66,9 @@ export function StatProgressCard({
         />
       </View>
 
-      <View className="mt-3 flex-row items-center justify-between pt-2 border-t border-border">
-        <Text variant="muted" className="text-[11px] font-medium">{unit}</Text>
-        <Text variant="muted" className="text-[11px] font-bold text-success">
+      <View className="mt-3 flex-row items-center justify-between sp-pt-2 border-t border-border">
+        <Text variant="muted" className="type-2xs font-medium">{unit}</Text>
+        <Text variant="muted" className="type-2xs weight-title text-success">
           On track for target
         </Text>
       </View>

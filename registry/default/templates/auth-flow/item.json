@@ -4,7 +4,7 @@
   "description": "A complete mobile authentication template with Sign In, Sign Up, Forgot Password, and OTP verification steps.",
   "type": "template",
   "status": "stable",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

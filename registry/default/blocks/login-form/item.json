@@ -4,7 +4,7 @@
   "description": "A full authentication block with email, password, and sign-in action.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": {
     "android": true,

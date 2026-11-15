@@ -23,7 +23,7 @@ const fabVariants = cva(
         "bottom-center": "bottom-6 left-1/2 -translate-x-1/2",
       },
       extended: {
-        true: "w-auto px-5 rounded-full gap-2",
+        true: "w-auto sp-px-5 rounded-full sp-gap-2",
         false: "",
       },
     },
@@ -71,7 +71,7 @@ export function Fab({
     >
       {children}
       {label && (
-        <Text className={cn("font-semibold text-sm", variant === "secondary" ? "text-background" : variant === "accent" ? "text-success-foreground" : "text-primary-foreground")}>
+        <Text className={cn("weight-label type-sm", variant === "secondary" ? "text-background" : variant === "accent" ? "text-success-foreground" : "text-primary-foreground")}>
           {label}
         </Text>
       )}

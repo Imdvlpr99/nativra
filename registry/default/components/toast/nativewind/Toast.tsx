@@ -27,15 +27,15 @@ export function Toast({
   return (
     <View
       accessibilityRole="alert"
-      className="w-full max-w-sm flex-row items-start justify-between rounded-surface bg-foreground px-[18px] py-3.5"
+      className="w-full max-w-sm flex-row items-start justify-between rounded-surface bg-foreground px-[18px] sp-py-3.5"
       style={elevation("raised")}
     >
-      <View className="flex-row items-start gap-3 flex-1 pr-2">
+      <View className="flex-row items-start sp-gap-3 flex-1 sp-pr-2">
         <View className={`mt-1.5 h-2 w-2 rounded-full ${dotColors[variant]}`} />
         <View className="flex-1">
-          <Text className="text-sm font-semibold text-background">{title}</Text>
+          <Text className="type-sm weight-label text-background">{title}</Text>
           {description ? (
-            <Text className="mt-0.5 text-[13px] leading-[18px] text-background/70">{description}</Text>
+            <Text className="mt-0.5 type-sm leading-[18px] text-background/70">{description}</Text>
           ) : null}
         </View>
       </View>
@@ -45,7 +45,7 @@ export function Toast({
           accessibilityLabel="Dismiss toast"
           className="h-[26px] w-[26px] items-center justify-center rounded-full bg-background/10 active:opacity-70"
         >
-          <Text className="text-xs font-bold text-background/80">✕</Text>
+          <Text className="type-xs weight-title text-background/80">✕</Text>
         </Pressable>
       ) : null}
     </View>

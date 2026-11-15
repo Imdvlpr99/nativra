@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors, elevation, scrim, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation, scrim, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -73,8 +73,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderTopWidth: 1,
     borderColor: c.border,
     backgroundColor: c.background,
-    padding: 24,
-    paddingBottom: 40,
+    padding: sp(24),
+    paddingBottom: sp(40),
     ...elevation("overlay"),
     shadowOffset: { width: 0, height: -themeStyle.shadow.overlay.offsetY },
   },
@@ -89,8 +89,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.input,
   },
   titleText: {
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: ts(17),
+    fontWeight: themeStyle.fontWeight.title,
     color: c.foreground,
     marginBottom: 16,
   },

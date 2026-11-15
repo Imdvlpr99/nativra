@@ -16,7 +16,7 @@ import {
   StyleSheet,
   type ViewProps,
 } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -147,10 +147,8 @@ export function DataTable<T extends Record<string, any>>({
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
+    ...surface(c),
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: c.border,
-    backgroundColor: c.card,
     overflow: "hidden",
   },
   contentTable: {
@@ -161,12 +159,12 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: c.border,
     backgroundColor: c.muted,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(16),
   },
   headerTitle: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: c["muted-foreground"],
@@ -175,14 +173,14 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: c.border,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: sp(14),
+    paddingHorizontal: sp(16),
   },
   stripedRow: {
     backgroundColor: alpha(c.muted, 0.5),
   },
   cellText: {
-    fontSize: 14,
+    fontSize: ts(14),
     color: c.foreground,
   },
   alignLeft: {
@@ -207,34 +205,34 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     textAlign: "right",
   },
   emptyContainer: {
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingVertical: sp(32),
+    paddingHorizontal: sp(16),
     alignItems: "center",
     justifyContent: "center",
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: ts(14),
     color: c["muted-foreground"],
   },
   footerContainer: {
     borderTopWidth: 1,
     borderTopColor: c.border,
     backgroundColor: c.muted,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(10),
   },
   defaultFooter: {
     borderTopWidth: 1,
     borderTopColor: c.border,
     backgroundColor: c.muted,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(8),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   footerText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: c["muted-foreground"],
   },
 });

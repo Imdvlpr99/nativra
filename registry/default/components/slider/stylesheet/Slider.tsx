@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Pressable, StyleSheet, type GestureResponderEvent, type ViewProps } from "react-native";
-import { type ThemeColors, useThemeColors, elevation } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation, sp } from "@/hooks/use-theme-colors";
 
 export interface SliderProps extends ViewProps {
   value?: number;
@@ -61,7 +61,7 @@ export function Slider({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: sp(12),
     justifyContent: "center",
     position: "relative",
   },

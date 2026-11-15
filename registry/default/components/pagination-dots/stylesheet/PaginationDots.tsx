@@ -1,7 +1,7 @@
 /** Nativra — PaginationDots (StyleSheet). Install: npx nativra-cli add pagination-dots */
 import React from "react";
 import { Pressable, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, sp } from "@/hooks/use-theme-colors";
 
 export interface PaginationDotsProps extends ViewProps {
   total: number;
@@ -47,7 +47,7 @@ export function PaginationDots({
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 },
+  container: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: sp(6) },
   dot: { width: 8, height: 8, borderRadius: 9999, backgroundColor: c.input },
   dotActive: { width: 24, backgroundColor: c.primary },
 });

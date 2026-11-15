@@ -35,7 +35,7 @@ export function Tabs({
   return (
     <View
       accessibilityRole="tablist"
-      className={`w-full flex-row items-center p-1 ${
+      className={`w-full flex-row items-center sp-p-1 ${
         variant === "pill"
           ? "rounded-control bg-muted border border-border"
           : "border-b border-border"
@@ -50,20 +50,20 @@ export function Tabs({
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected }}
             onPress={() => onValueChange(tab.value)}
-            className={`flex-1 py-2 px-3 items-center justify-center rounded-small flex-row gap-1.5 transition-all active:opacity-75 ${
+            className={`flex-1 sp-py-2 sp-px-3 items-center justify-center rounded-small flex-row sp-gap-1.5 transition-all active:opacity-75 ${
               variant === "pill"
                 ? isSelected
                   ? "bg-background shadow-sm"
                   : "bg-transparent"
                 : isSelected
-                ? "border-b-2 border-primary pb-2.5 -mb-px"
-                : "pb-2.5"
+                ? "border-b-2 border-primary sp-pb-2.5 -mb-px"
+                : "sp-pb-2.5"
             }`}
           >
             <Text
-              className={`text-xs font-semibold ${
+              className={`type-xs weight-label ${
                 isSelected
-                  ? "text-foreground font-bold"
+                  ? "text-foreground weight-title"
                   : "text-muted-foreground"
               }`}
             >
@@ -72,14 +72,14 @@ export function Tabs({
 
             {tab.badge !== undefined && (
               <View
-                className={`px-1.5 py-0.2 rounded-full ${
+                className={`sp-px-1.5 py-0.2 rounded-full ${
                   isSelected
                     ? "bg-primary/15"
                     : "bg-muted"
                 }`}
               >
                 <Text
-                  className={`text-[10px] font-mono font-bold ${
+                  className={`type-2xs font-mono weight-title ${
                     isSelected
                       ? "text-primary"
                       : "text-muted-foreground"

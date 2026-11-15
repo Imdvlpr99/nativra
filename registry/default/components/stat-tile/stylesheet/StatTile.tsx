@@ -1,7 +1,7 @@
 /** Nativra — StatTile (StyleSheet). Install: npx nativra-cli add stat-tile */
 import React from "react";
 import { StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface StatTileProps extends ViewProps {
   label: string;
@@ -64,22 +64,22 @@ export function StatTile({
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: c.border,
     backgroundColor: c.background,
-    padding: 16,
+    padding: sp(16),
   },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  label: { fontSize: 12, fontWeight: "500", color: c["muted-foreground"] },
-  badge: { borderRadius: 9999, paddingHorizontal: 8, paddingVertical: 2 },
+  label: { fontSize: ts(12), fontWeight: "500", color: c["muted-foreground"] },
+  badge: { borderRadius: 9999, paddingHorizontal: sp(8), paddingVertical: sp(2) },
   badgeUp: { backgroundColor: alpha(c.success, 0.1) },
   badgeDown: { backgroundColor: alpha(c.destructive, 0.08) },
   badgeNeutral: { backgroundColor: c.muted },
-  badgeText: { fontSize: 10, fontWeight: "700" },
+  badgeText: { fontSize: ts(10), fontWeight: themeStyle.fontWeight.title },
   badgeTextUp: { color: c.success },
   badgeTextDown: { color: c.destructive },
   badgeTextNeutral: { color: c.foreground },
-  value: { marginTop: 6, fontSize: 24, fontWeight: "800", color: c.foreground },
-  caption: { marginTop: 4, fontSize: 11, color: c["muted-foreground"] },
+  value: { marginTop: 6, fontSize: ts(24), fontWeight: themeStyle.fontWeight.heading, color: c.foreground },
+  caption: { marginTop: 4, fontSize: ts(11), color: c["muted-foreground"] },
 });
 

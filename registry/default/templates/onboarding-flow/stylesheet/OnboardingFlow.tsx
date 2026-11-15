@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface OnboardingSlide {
   id: string;
@@ -128,7 +128,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
-    padding: 32,
+    padding: sp(32),
     backgroundColor: palette.background,
   },
   header: {
@@ -139,7 +139,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   badgeDot: {
     width: 8,
@@ -148,62 +148,60 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.primary,
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette["muted-foreground"],
     textTransform: "uppercase",
     fontFamily: "monospace",
   },
   skipBtn: {
-    padding: 8,
+    padding: sp(8),
   },
   skipText: {
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: ts(13),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette["muted-foreground"],
   },
   body: {
     alignItems: "center",
-    gap: 24,
+    gap: sp(24),
     marginVertical: "auto",
   },
   artBox: {
+    ...surface(palette),
     width: 120,
     height: 120,
     borderRadius: themeStyle.radius.surface,
-    backgroundColor: palette.card,
-    borderWidth: 1,
-    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
   emojiText: {
-    fontSize: 54,
+    fontSize: ts(54),
   },
   textWrap: {
-    gap: 12,
-    paddingHorizontal: 16,
+    gap: sp(12),
+    paddingHorizontal: sp(16),
   },
   titleText: {
-    fontSize: 24,
-    fontWeight: "900",
+    fontSize: ts(24),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
     textAlign: "center",
   },
   descText: {
-    fontSize: 14,
+    fontSize: ts(14),
     color: palette["muted-foreground"],
     textAlign: "center",
-    lineHeight: 20,
+    lineHeight: ts(20),
   },
   footer: {
-    gap: 24,
+    gap: sp(24),
   },
   dotsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: sp(8),
   },
   dot: {
     height: 8,
@@ -221,18 +219,15 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     width: "100%",
     borderRadius: themeStyle.radius.card,
     backgroundColor: palette.primary,
-    paddingVertical: 15,
+    paddingVertical: sp(15),
     alignItems: "center",
     justifyContent: "center",
   },
-  btnPressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.9,
-  },
+  btnPressed: { ...pressedStyle(true) },
   actionBtnText: {
     color: palette["primary-foreground"],
-    fontWeight: "700",
-    fontSize: 15,
+    fontWeight: themeStyle.fontWeight.title,
+    fontSize: ts(15),
   },
 });
 

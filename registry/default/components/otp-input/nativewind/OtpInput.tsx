@@ -55,7 +55,7 @@ export function OtpInput({
       {/* Visible Cell Matrix */}
       <Pressable accessible={false} importantForAccessibility="no"
         onPress={handleCellPress}
-        className="flex-row items-center justify-center gap-2.5"
+        className="flex-row items-center justify-center sp-gap-2.5"
       >
         {digits.map((digit, idx) => {
           const isActive = isFocused && idx === Math.min(value.length, length - 1);
@@ -76,7 +76,7 @@ export function OtpInput({
                 disabled && "opacity-50"
               )}
             >
-              <Text className="text-xl font-bold font-mono text-foreground">
+              <Text className="type-xl weight-title font-mono text-foreground">
                 {isFilled ? (secureTextEntry ? "•" : digit) : ""}
               </Text>
             </View>

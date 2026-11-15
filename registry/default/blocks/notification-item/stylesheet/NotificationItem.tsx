@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface NotificationItemProps {
   avatarFallback?: string;
@@ -77,21 +77,20 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     width: "100%",
     maxWidth: 360,
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    padding: 14,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(14),
   },
   cardUnread: {
     backgroundColor: alpha(palette.primary, 0.1),
     borderColor: alpha(palette.primary, 0.3),
   },
   cardRead: {
-    backgroundColor: palette.card,
-    borderColor: palette.border,
+    ...surface(palette),
   },
   contentRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
+    gap: sp(12),
   },
   avatarWrapper: {
     position: "relative",
@@ -106,8 +105,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   avatarText: {
     color: palette["primary-foreground"],
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
   unreadDot: {
     position: "absolute",
@@ -122,7 +121,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   details: {
     flex: 1,
-    gap: 4,
+    gap: sp(4),
   },
   topRow: {
     flexDirection: "row",
@@ -130,8 +129,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
     borderRadius: 9999,
   },
   badgeUnread: {
@@ -141,8 +140,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.muted,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
   },
   badgeTextUnread: {
     color: palette.primary,
@@ -151,21 +150,21 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     color: palette["muted-foreground"],
   },
   timeAgo: {
-    fontSize: 11,
+    fontSize: ts(11),
     color: palette["muted-foreground"],
     fontFamily: "monospace",
   },
   message: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: ts(12),
+    lineHeight: ts(18),
     color: palette.foreground,
   },
   sender: {
-    fontWeight: "700",
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   resource: {
-    fontWeight: "600",
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.primary,
   },
 });

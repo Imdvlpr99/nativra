@@ -14,7 +14,7 @@ import {
   StyleSheet,
   type TextProps,
 } from "react-native";
-import { type ThemeColors, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, ts, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface LabelProps extends TextProps {
   children: string;
@@ -63,7 +63,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginBottom: 6,
   },
   label: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
     letterSpacing: -0.1,
   },
@@ -73,8 +73,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   required: {
     color: c.destructive,
     marginLeft: 4,
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
 

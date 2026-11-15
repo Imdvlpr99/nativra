@@ -53,33 +53,33 @@ export function TeamMemberRow({
       accessibilityLabel={`Team member ${name}, ${role}, email ${email}`}
       onPress={onPress}
       disabled={!onPress}
-      className={`flex-row items-center justify-between rounded-control border border-border bg-card p-3.5 active:opacity-75 ${className}`.trim()}
+      className={`surface flex-row items-center justify-between rounded-control sp-p-3.5 active:opacity-75 ${className}`.trim()}
       style={style}
       {...props}
     >
-      <View className="flex-row items-center gap-3 flex-1 pr-3">
+      <View className="flex-row items-center sp-gap-3 flex-1 sp-pr-3">
         <View className="h-10 w-10 items-center justify-center rounded-full bg-muted border border-border">
-          <Text className="text-xs font-bold text-foreground">
+          <Text className="type-xs weight-title text-foreground">
             {displayInitials}
           </Text>
         </View>
 
         <View className="flex-1">
-          <View className="flex-row items-center gap-1.5">
+          <View className="flex-row items-center sp-gap-1.5">
             <Text
-              className="text-sm font-semibold text-foreground"
+              className="type-sm weight-label text-foreground"
               numberOfLines={1}
             >
               {name}
             </Text>
             {isCurrentUser && (
-              <Text className="text-[10px] font-semibold text-muted-foreground">
+              <Text className="type-2xs weight-label text-muted-foreground">
                 (You)
               </Text>
             )}
           </View>
           <Text
-            className="text-xs text-muted-foreground mt-0.5"
+            className="type-xs text-muted-foreground mt-0.5"
             numberOfLines={1}
           >
             {email}
@@ -87,9 +87,9 @@ export function TeamMemberRow({
         </View>
       </View>
 
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row items-center sp-gap-2">
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${
+          className={`flex-row items-center sp-gap-1 rounded-full sp-px-2.5 sp-py-1 ${
             isHighPrivilege
               ? "bg-primary/10 text-primary"
               : "bg-muted"
@@ -97,7 +97,7 @@ export function TeamMemberRow({
         >
           {isHighPrivilege && <Shield size={12} color={palette.primary} />}
           <Text
-            className={`text-xs font-semibold ${
+            className={`type-xs weight-label ${
               isHighPrivilege
                 ? "text-primary"
                 : "text-muted-foreground"
@@ -115,7 +115,7 @@ export function TeamMemberRow({
               e.stopPropagation?.();
               onOptionsPress();
             }}
-            className="p-1.5 rounded-control active:bg-muted"
+            className="sp-p-1.5 rounded-control active:bg-muted"
           >
             <MoreVertical size={16} color={palette["muted-foreground"]} />
           </Pressable>

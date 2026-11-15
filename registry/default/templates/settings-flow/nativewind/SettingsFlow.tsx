@@ -22,67 +22,67 @@ export function SettingsFlow({
 
   return (
     <ScrollView
-      contentContainerClassName="p-5 pb-12 space-y-6"
+      contentContainerClassName="sp-p-5 sp-pb-12 space-y-6"
       className={cn("flex-1 bg-background", className)}
     >
       {/* User Profile Card Header */}
-      <View className="rounded-card border border-border bg-card p-5 shadow-sm">
-        <View className="flex-row items-center gap-4">
+      <View className="surface rounded-card sp-p-5 shadow-sm">
+        <View className="flex-row items-center sp-gap-4">
           <View className="h-14 w-14 rounded-card bg-gradient-to-tr from-primary to-primary items-center justify-center shadow-md">
-            <Text className="text-lg font-black text-primary-foreground">SM</Text>
+            <Text className="type-lg weight-heading text-primary-foreground">SM</Text>
           </View>
 
           <View className="flex-1 space-y-0.5">
-            <View className="flex-row items-center gap-2">
-              <Text className="text-base font-bold text-foreground">
+            <View className="flex-row items-center sp-gap-2">
+              <Text className="type-base weight-title text-foreground">
                 {userName}
               </Text>
-              <Text className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success font-mono">
+              <Text className="rounded-full bg-success/15 sp-px-2 sp-py-0.5 type-2xs weight-title text-success font-mono">
                 PRO
               </Text>
             </View>
-            <Text className="text-xs text-muted-foreground">{userEmail}</Text>
+            <Text className="type-xs text-muted-foreground">{userEmail}</Text>
           </View>
         </View>
       </View>
 
       {/* Preferences Section */}
       <View className="space-y-2">
-        <Text className="px-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        <Text className="sp-px-1 type-2xs weight-title uppercase tracking-wider text-muted-foreground">
           Preferences
         </Text>
 
-        <View className="rounded-card border border-border bg-card p-4 shadow-sm divide-y divide-border">
-          <View className="flex-row items-center justify-between py-2.5">
+        <View className="surface rounded-card sp-p-4 shadow-sm divide-y divide-border">
+          <View className="flex-row items-center justify-between sp-py-2.5">
             <View className="space-y-0.5">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 Push Notifications
               </Text>
-              <Text className="text-xs text-muted-foreground">
+              <Text className="type-xs text-muted-foreground">
                 Receive activity pings and release alerts
               </Text>
             </View>
             <Switch value={pushEnabled} onValueChange={setPushEnabled} />
           </View>
 
-          <View className="flex-row items-center justify-between py-2.5">
+          <View className="flex-row items-center justify-between sp-py-2.5">
             <View className="space-y-0.5">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 Biometric Login
               </Text>
-              <Text className="text-xs text-muted-foreground">
+              <Text className="type-xs text-muted-foreground">
                 Face ID / Fingerprint fast unlock
               </Text>
             </View>
             <Switch value={biometrics} onValueChange={setBiometrics} />
           </View>
 
-          <View className="flex-row items-center justify-between py-2.5">
+          <View className="flex-row items-center justify-between sp-py-2.5">
             <View className="space-y-0.5">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 Platform Haptics
               </Text>
-              <Text className="text-xs text-muted-foreground">
+              <Text className="type-xs text-muted-foreground">
                 Tactile feedback on button presses
               </Text>
             </View>
@@ -93,17 +93,17 @@ export function SettingsFlow({
 
       {/* Data & Network Section */}
       <View className="space-y-2">
-        <Text className="px-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        <Text className="sp-px-1 type-2xs weight-title uppercase tracking-wider text-muted-foreground">
           Storage & Sync
         </Text>
 
-        <View className="rounded-card border border-border bg-card p-4 shadow-sm">
-          <View className="flex-row items-center justify-between py-1">
+        <View className="surface rounded-card sp-p-4 shadow-sm">
+          <View className="flex-row items-center justify-between sp-py-1">
             <View className="space-y-0.5">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 Offline Local-First Cache
               </Text>
-              <Text className="text-xs text-muted-foreground">
+              <Text className="type-xs text-muted-foreground">
                 Cache full registry items locally
               </Text>
             </View>
@@ -113,12 +113,12 @@ export function SettingsFlow({
       </View>
 
       {/* Danger Zone */}
-      <View className="pt-2">
+      <View className="sp-pt-2">
         <Pressable accessibilityRole="button"
           onPress={onLogout}
-          className="w-full items-center justify-center rounded-card border border-destructive/30 bg-destructive/70 p-3.5 active:bg-destructive/15"
+          className="w-full items-center justify-center rounded-card border border-destructive/30 bg-destructive/70 sp-p-3.5 active:bg-destructive/15"
         >
-          <Text className="text-xs font-bold text-destructive">
+          <Text className="type-xs weight-title text-destructive">
             Sign Out of Account
           </Text>
         </Pressable>

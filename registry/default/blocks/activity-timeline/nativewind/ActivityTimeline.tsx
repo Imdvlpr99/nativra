@@ -79,16 +79,16 @@ export function ActivityTimeline({
             </View>
 
             {/* Content Card */}
-            <View className={`flex-1 ${!isLast ? "pb-6" : ""}`}>
-              <View className="flex-row items-center justify-between gap-2">
-                <Text className="font-semibold text-foreground text-sm">
+            <View className={`flex-1 ${!isLast ? "sp-pb-6" : ""}`}>
+              <View className="flex-row items-center justify-between sp-gap-2">
+                <Text className="weight-label text-foreground type-sm">
                   {event.title}
                 </Text>
-                <Text className="text-xs text-muted-foreground">{event.timestamp}</Text>
+                <Text className="type-xs text-muted-foreground">{event.timestamp}</Text>
               </View>
 
               {event.description && (
-                <Text className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                <Text className="type-xs text-muted-foreground mt-1 leading-relaxed">
                   {event.description}
                 </Text>
               )}

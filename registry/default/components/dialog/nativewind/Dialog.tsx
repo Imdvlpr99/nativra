@@ -45,35 +45,35 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View className="flex-1 items-center justify-center bg-scrim px-6" accessibilityViewIsModal>
+      <View className="flex-1 items-center justify-center bg-scrim sp-px-6" accessibilityViewIsModal>
         <Pressable accessible={false} importantForAccessibility="no" className="absolute inset-0" onPress={handleCancel} />
-        <View className="w-full max-w-sm rounded-surface border border-border bg-card p-6 z-10" style={elevation("overlay")}>
-          <Text className="text-lg font-bold text-foreground">{title}</Text>
+        <View className="surface w-full max-w-sm rounded-surface sp-p-6 z-10" style={elevation("overlay")}>
+          <Text className="type-lg weight-title text-foreground">{title}</Text>
           {description ? (
-            <Text className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            <Text className="mt-2 type-sm text-muted-foreground leading-relaxed">
               {description}
             </Text>
           ) : null}
 
           {children ? <View className="mt-4">{children}</View> : null}
 
-          <View className="mt-6 flex-row justify-end gap-3">
+          <View className="mt-6 flex-row justify-end sp-gap-3">
             <Pressable accessibilityRole="button"
               onPress={handleCancel}
-              className="h-10 px-4 rounded-control border border-input items-center justify-center active:opacity-75"
+              className="min-h-control sp-px-4 rounded-control border border-input items-center justify-center active:opacity-75"
             >
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="type-sm weight-label text-foreground">
                 {cancelText}
               </Text>
             </Pressable>
             <Pressable accessibilityRole="button"
               onPress={handleConfirm}
-              className={`h-10 px-4 rounded-control items-center justify-center active:opacity-75 ${
+              className={`h-10 sp-px-4 rounded-control items-center justify-center active:opacity-75 ${
                 destructive ? "bg-destructive" : "bg-foreground"
               }`}
             >
               <Text
-                className={`text-sm font-semibold ${
+                className={`type-sm weight-label ${
                   destructive ? "text-destructive-foreground" : "text-background"
                 }`}
               >

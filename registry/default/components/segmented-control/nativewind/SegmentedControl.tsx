@@ -83,7 +83,7 @@ export function SegmentedControl({
   const heightClass =
     size === "sm" ? "h-9" : size === "lg" ? "h-13" : "h-11";
   const textClass =
-    size === "sm" ? "text-xs" : size === "lg" ? "text-base font-semibold" : "text-sm font-medium";
+    size === "sm" ? "type-xs" : size === "lg" ? "type-base weight-label" : "type-sm font-medium";
 
   const translateX = animatedIndex.interpolate({
     inputRange: options.map((_, i) => i),
@@ -95,7 +95,7 @@ export function SegmentedControl({
     <View
       onLayout={handleLayout}
       accessibilityRole="tablist"
-      className={`relative w-full flex-row items-center rounded-control bg-muted p-1 border border-border ${heightClass} ${
+      className={`relative w-full flex-row items-center rounded-control bg-muted sp-p-1 border border-border ${heightClass} ${
         disabled ? "opacity-50" : ""
       } ${className}`.trim()}
       style={style}
@@ -127,13 +127,13 @@ export function SegmentedControl({
             accessibilityLabel={option.label}
             disabled={isItemDisabled}
             onPress={() => onValueChange(option.value)}
-            className="flex-1 z-10 h-full flex-row items-center justify-center gap-1.5 px-2 active:opacity-80"
+            className="flex-1 z-10 h-full flex-row items-center justify-center sp-gap-1.5 sp-px-2 active:opacity-80"
           >
             {option.icon && <View>{option.icon}</View>}
             <Text
               className={`${textClass} transition-colors ${
                 isSelected
-                  ? "text-foreground font-semibold"
+                  ? "text-foreground weight-label"
                   : "text-muted-foreground"
               }`}
               numberOfLines={1}
@@ -142,14 +142,14 @@ export function SegmentedControl({
             </Text>
             {option.badge !== undefined && (
               <View
-                className={`ml-1 rounded-full px-1.5 py-0.2 ${
+                className={`ml-1 rounded-full sp-px-1.5 py-0.2 ${
                   isSelected
                     ? "bg-foreground text-background"
                     : "bg-muted"
                 }`}
               >
                 <Text
-                  className={`text-[10px] font-bold ${
+                  className={`type-2xs weight-title ${
                     isSelected
                       ? "text-background"
                       : "text-muted-foreground"

@@ -67,14 +67,14 @@ export function DataTable<T extends Record<string, any>>({
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="min-w-full">
           {/* Header */}
-          <View className="flex-row border-b border-border bg-muted py-3 px-4">
+          <View className="flex-row border-b border-border bg-muted sp-py-3 sp-px-4">
             {columns.map((col, idx) => (
               <View
                 key={String(col.key || idx)}
                 style={{ width: col.width || 120 }}
                 className={`justify-center ${getAlignClass(col.align)}`}
               >
-                <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Text className="type-xs weight-label uppercase tracking-wider text-muted-foreground">
                   {col.title}
                 </Text>
               </View>
@@ -83,8 +83,8 @@ export function DataTable<T extends Record<string, any>>({
 
           {/* Rows */}
           {data.length === 0 ? (
-            <View className="py-8 px-4 items-center justify-center">
-              <Text className="text-sm text-muted-foreground">
+            <View className="sp-py-8 sp-px-4 items-center justify-center">
+              <Text className="type-sm text-muted-foreground">
                 {emptyMessage}
               </Text>
             </View>
@@ -98,7 +98,7 @@ export function DataTable<T extends Record<string, any>>({
                   key={rowKey}
                   disabled={!onRowPress}
                   onPress={() => onRowPress?.(item, rowIndex)}
-                  className={`flex-row border-b border-border py-3.5 px-4 active:opacity-70 ${
+                  className={`flex-row border-b border-border sp-py-3.5 sp-px-4 active:opacity-70 ${
                     isStriped ? "bg-muted/50" : "bg-transparent"
                   }`}
                 >
@@ -114,7 +114,7 @@ export function DataTable<T extends Record<string, any>>({
                           col.render(rawVal, item, rowIndex)
                         ) : (
                           <Text
-                            className="text-sm text-foreground"
+                            className="type-sm text-foreground"
                             numberOfLines={1}
                           >
                             {rawVal !== undefined && rawVal !== null ? String(rawVal) : "-"}
@@ -132,12 +132,12 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Footer */}
       {footer ? (
-        <View className="border-t border-border bg-muted px-4 py-2.5">
+        <View className="border-t border-border bg-muted sp-px-4 sp-py-2.5">
           {footer}
         </View>
       ) : (
-        <View className="flex-row items-center justify-between border-t border-border bg-muted px-4 py-2">
-          <Text className="text-xs text-muted-foreground">
+        <View className="flex-row items-center justify-between border-t border-border bg-muted sp-px-4 sp-py-2">
+          <Text className="type-xs text-muted-foreground">
             Total {data.length} records
           </Text>
         </View>

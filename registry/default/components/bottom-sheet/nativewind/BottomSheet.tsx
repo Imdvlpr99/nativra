@@ -37,7 +37,7 @@ export function BottomSheet({
         {/* Sheet Content Panel */}
         <View
           className={cn(
-            "w-full rounded-t-surface border-t border-border bg-card p-6 pb-10 shadow-2xl",
+            "w-full rounded-t-surface border-t border-border bg-card sp-p-6 sp-pb-10 shadow-2xl",
             className
           )}
         >
@@ -47,7 +47,7 @@ export function BottomSheet({
           </View>
 
           {title && (
-            <Text className="mb-4 text-base font-bold text-foreground">
+            <Text className="mb-4 type-base weight-title text-foreground">
               {title}
             </Text>
           )}

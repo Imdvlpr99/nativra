@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, pressedStyle } from "@/hooks/use-theme-colors";
 
 export type IconButtonVariant = "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost";
 export type IconButtonSize = "sm" | "md" | "lg";
@@ -101,7 +101,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   secondary: {
     backgroundColor: c.muted,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: c.border,
   },
   destructive: {
@@ -109,16 +109,13 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   outline: {
     backgroundColor: "transparent",
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: c.input,
   },
   ghost: {
     backgroundColor: "transparent",
   },
-  pressed: {
-    transform: [{ scale: 0.96 }],
-    opacity: 0.85,
-  },
+  pressed: { ...pressedStyle(true) },
   disabled: {
     opacity: 0.5,
   },

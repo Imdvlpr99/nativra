@@ -48,33 +48,33 @@ export function TransactionRow({
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      className={`flex-row items-center justify-between py-3.5 px-4 rounded-card bg-card/60 border border-border/80 active:bg-muted/50 ${className}`.trim()}
+      className={`flex-row items-center justify-between sp-py-3.5 sp-px-4 rounded-card bg-card/60 border border-border/80 active:bg-muted/50 ${className}`.trim()}
     >
-      <View className="flex-row items-center gap-3 flex-1 mr-3">
+      <View className="flex-row items-center sp-gap-3 flex-1 mr-3">
         {/* Avatar / Icon Chip */}
-        <View className="w-10 h-10 rounded-control bg-muted border border-border items-center justify-center">
-          <Text className="text-xs font-bold text-foreground">
+        <View className="w-10 min-h-control rounded-control bg-muted border border-border items-center justify-center">
+          <Text className="type-xs weight-title text-foreground">
             {iconText.slice(0, 3).toUpperCase()}
           </Text>
         </View>
 
         {/* Labels */}
         <View className="flex-1">
-          <Text className="font-semibold text-foreground text-sm leading-tight" numberOfLines={1}>
+          <Text className="weight-label text-foreground type-sm leading-tight" numberOfLines={1}>
             {title}
           </Text>
-          <View className="flex-row items-center gap-2 mt-1">
-            <Text className="text-xs text-muted-foreground">{category}</Text>
-            <Text className="text-xs text-muted-foreground">•</Text>
-            <Text className="text-xs text-muted-foreground">{date}</Text>
+          <View className="flex-row items-center sp-gap-2 mt-1">
+            <Text className="type-xs text-muted-foreground">{category}</Text>
+            <Text className="type-xs text-muted-foreground">•</Text>
+            <Text className="type-xs text-muted-foreground">{date}</Text>
           </View>
         </View>
       </View>
 
       {/* Amount & Status */}
-      <View className="items-end gap-1">
+      <View className="items-end sp-gap-1">
         <Text
-          className={`font-bold text-sm ${
+          className={`weight-title type-sm ${
             isIncome ? "text-success" : "text-foreground"
           }`}
         >

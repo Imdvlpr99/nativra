@@ -17,7 +17,7 @@ import {
   type LayoutChangeEvent,
   type ViewProps,
 } from "react-native";
-import { type ThemeColors, useThemeColors, themeStyle, elevation } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface SegmentedControlOption {
   value: string;
@@ -167,9 +167,9 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: "center",
     borderRadius: themeStyle.radius.control,
     backgroundColor: c.muted,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: c.border,
-    padding: 4,
+    padding: sp(4),
   },
   containerSm: {
     height: 36,
@@ -196,7 +196,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: sp(8),
   },
   iconContainer: {
     marginRight: 6,
@@ -205,20 +205,20 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     textAlign: "center",
   },
   textSm: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
   },
   textMd: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   textLg: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.label,
   },
   textSelected: {
     color: c.foreground,
-    fontWeight: "600",
+    fontWeight: themeStyle.fontWeight.label,
   },
   textUnselected: {
     color: c["muted-foreground"],
@@ -226,8 +226,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   badge: {
     marginLeft: 6,
     borderRadius: 9999,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
   },
   badgeSelected: {
     backgroundColor: c.muted,
@@ -236,8 +236,8 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.background,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
   },
   badgeTextSelected: {
     color: c.foreground,

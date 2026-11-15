@@ -14,7 +14,7 @@ import { Text } from "./Text";
 import { Switch } from "./Switch";
 import { Badge } from "./Badge";
 import { Separator } from "./Separator";
-import { themeStyle } from "@/hooks/use-theme-colors";
+import { themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 const noop = () => {};
 
@@ -105,11 +105,11 @@ const styles = StyleSheet.create({
     borderRadius: themeStyle.radius.card,
   },
   header: {
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
     marginBottom: 8,
   },
   headerSub: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
   },
   separatorContainer: {
@@ -119,35 +119,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(4),
   },
   rowInfo: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: sp(12),
   },
   rowTitle: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   rowDesc: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
   },
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   navRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(4),
   },
   chevron: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.label,
   },
 });

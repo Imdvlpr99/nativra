@@ -8,7 +8,7 @@
  */
 import React from "react";
 import { View, Text, StyleSheet, type ViewStyle, type TextStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 type BadgeVariant = "default" | "primary" | "secondary" | "destructive" | "outline";
 type BadgeSize = "sm" | "md" | "lg";
@@ -21,12 +21,12 @@ export interface BadgeProps {
 
 const styles = StyleSheet.create({
   base: { flexDirection: "row", alignItems: "center", borderRadius: 999, alignSelf: "flex-start" },
-  sm:  { paddingHorizontal: 6,  paddingVertical: 2 },
-  md:  { paddingHorizontal: 10, paddingVertical: 2 },
-  lg:  { paddingHorizontal: 12, paddingVertical: 4 },
-  textSm: { fontSize: 11 },
-  textMd: { fontSize: 11, fontWeight: "500" },
-  textLg: { fontSize: 13, fontWeight: "500" },
+  sm:  { paddingHorizontal: sp(6),  paddingVertical: sp(2) },
+  md:  { paddingHorizontal: sp(10), paddingVertical: sp(2) },
+  lg:  { paddingHorizontal: sp(12), paddingVertical: sp(4) },
+  textSm: { fontSize: ts(11) },
+  textMd: { fontSize: ts(11), fontWeight: "500" },
+  textLg: { fontSize: ts(13), fontWeight: "500" },
 });
 
 function getContainerStyle(variant: BadgeVariant, c: ThemeColors): ViewStyle {
@@ -35,7 +35,7 @@ function getContainerStyle(variant: BadgeVariant, c: ThemeColors): ViewStyle {
     primary:     { backgroundColor: alpha(c.primary, 0.12) },
     secondary:   { backgroundColor: c.muted },
     destructive: { backgroundColor: alpha(c.destructive, 0.12) },
-    outline:     { borderWidth: 1, borderColor: c.input, backgroundColor: "transparent" },
+    outline:     { borderWidth: themeStyle.borderWidth, borderColor: c.input, backgroundColor: "transparent" },
   };
   return map[variant];
 }

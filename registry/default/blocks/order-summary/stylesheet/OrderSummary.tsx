@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface OrderItem {
   id: string;
@@ -119,14 +119,11 @@ export function OrderSummary({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     width: "100%",
     maxWidth: 360,
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 24,
-    ...elevation("card"),
+    padding: sp(24),
   },
   header: {
     flexDirection: "row",
@@ -134,24 +131,24 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(3),
     borderRadius: 9999,
     backgroundColor: palette.muted,
   },
   badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette["muted-foreground"],
   },
   itemList: {
     marginTop: 16,
-    gap: 10,
+    gap: sp(10),
   },
   row: {
     flexDirection: "row",
@@ -159,18 +156,18 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   itemText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     flex: 1,
     marginRight: 8,
   },
   qtyText: {
-    fontWeight: "700",
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   itemPrice: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
   },
   separator: {
@@ -179,36 +176,36 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     marginVertical: 16,
   },
   breakdown: {
-    gap: 8,
+    gap: sp(8),
   },
   label: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   value: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
     color: palette.foreground,
   },
   voucherContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   voucherBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
     borderRadius: themeStyle.radius.small,
     backgroundColor: alpha(palette.primary, 0.15),
   },
   voucherText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.primary,
   },
   discountText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.success,
   },
   totalRow: {
@@ -218,26 +215,26 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     marginBottom: 20,
   },
   totalLabel: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   totalValue: {
-    fontSize: 22,
-    fontWeight: "900",
+    fontSize: ts(22),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
   },
   checkoutBtn: {
     borderRadius: themeStyle.radius.button,
     backgroundColor: palette.primary,
-    paddingVertical: 14,
+    paddingVertical: sp(14),
     alignItems: "center",
     justifyContent: "center",
   },
   btnText: {
     color: palette["primary-foreground"],
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
 

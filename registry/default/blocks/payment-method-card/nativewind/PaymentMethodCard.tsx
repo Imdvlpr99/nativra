@@ -52,41 +52,41 @@ export function PaymentMethodCard({
       accessibilityRole="button"
       accessibilityLabel={`${brandLabel} ending in ${last4}, expires ${expiry}`}
       onPress={onSelect}
-      className={`rounded-card border p-4.5 transition-all ${
+      className={`rounded-card border sp-p-4.5 transition-all ${
         selected
           ? "border-primary bg-primary/5"
-          : "border-border bg-card"
+          : "surface"
       } ${className}`.trim()}
       style={style}
       {...props}
     >
       <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View className="h-10 w-14 items-center justify-center rounded-control bg-primary px-2 border border-border">
-            <Text className="text-[11px] font-black tracking-wider text-primary-foreground uppercase">
+        <View className="flex-row items-center sp-gap-3">
+          <View className="min-h-control w-14 items-center justify-center rounded-control bg-primary sp-px-2 border border-border">
+            <Text className="type-2xs weight-heading tracking-wider text-primary-foreground uppercase">
               {brandLabel}
             </Text>
           </View>
           <View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-base font-bold text-foreground">
+            <View className="flex-row items-center sp-gap-2">
+              <Text className="type-base weight-title text-foreground">
                 •••• {last4}
               </Text>
               {isDefault && (
-                <View className="rounded-full bg-muted px-2 py-0.5">
-                  <Text className="text-[10px] font-semibold text-muted-foreground">
+                <View className="rounded-full bg-muted sp-px-2 sp-py-0.5">
+                  <Text className="type-2xs weight-label text-muted-foreground">
                     Default
                   </Text>
                 </View>
               )}
             </View>
-            <Text className="text-xs text-muted-foreground mt-0.5">
+            <Text className="type-xs text-muted-foreground mt-0.5">
               Expires {expiry}
             </Text>
           </View>
         </View>
 
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center sp-gap-2">
           {onDelete && (
             <Pressable
               accessibilityRole="button"
@@ -95,7 +95,7 @@ export function PaymentMethodCard({
                 e.stopPropagation?.();
                 onDelete();
               }}
-              className="p-2 rounded-control active:bg-muted"
+              className="sp-p-2 rounded-control active:bg-muted"
             >
               <Trash2 size={16} color={palette["muted-foreground"]} />
             </Pressable>
@@ -105,8 +105,8 @@ export function PaymentMethodCard({
       </View>
 
       {cardholderName && (
-        <View className="mt-3 border-t border-border pt-2.5">
-          <Text className="text-xs font-medium text-muted-foreground">
+        <View className="mt-3 border-t border-border sp-pt-2.5">
+          <Text className="type-xs font-medium text-muted-foreground">
             {cardholderName.toUpperCase()}
           </Text>
         </View>

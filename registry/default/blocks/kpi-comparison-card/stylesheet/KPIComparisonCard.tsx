@@ -12,7 +12,7 @@ import { StyleSheet, View, Text as RNText } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
-import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, surface } from "@/hooks/use-theme-colors";
 
 export interface KPIComparisonCardProps {
   title?: string;
@@ -79,11 +79,9 @@ export function KPIComparisonCard({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     width: "100%",
     borderRadius: themeStyle.radius.card,
-    backgroundColor: palette.card,
-    borderWidth: 1,
-    borderColor: palette.border,
   },
   topRow: {
     flexDirection: "row",
@@ -91,8 +89,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   titleText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -103,18 +101,18 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   currentText: {
-    fontSize: 28,
-    fontWeight: "900",
+    fontSize: ts(28),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
   },
   targetText: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
     color: palette["muted-foreground"],
   },
   percentText: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   track: {

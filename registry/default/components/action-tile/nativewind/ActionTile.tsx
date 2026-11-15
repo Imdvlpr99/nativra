@@ -29,7 +29,7 @@ export function ActionTile({
       ? "bg-primary border-primary"
       : variant === "outline"
       ? "bg-transparent border-border"
-      : "bg-card border-border";
+      : "surface";
 
   const iconWrapClasses =
     variant === "primary"
@@ -44,17 +44,17 @@ export function ActionTile({
       accessibilityState={{ disabled }}
       accessibilityLabel={label}
       style={style}
-      className={`flex-1 items-center justify-center rounded-card border p-3.5 shadow-sm ${surfaceClasses} ${
+      className={`flex-1 items-center justify-center rounded-card border sp-p-3.5 shadow-sm ${surfaceClasses} ${
         disabled ? "opacity-50" : "active:opacity-80"
       } ${className}`}
       {...rest}
     >
       <View className={`mb-2 h-10 w-10 items-center justify-center rounded-control ${iconWrapClasses}`}>
-        <Text className="text-base">{icon}</Text>
+        <Text className="type-base">{icon}</Text>
       </View>
       <Text
         numberOfLines={1}
-        className={`text-xs font-bold ${
+        className={`type-xs weight-title ${
           variant === "primary" ? "text-primary-foreground" : "text-foreground"
         }`}
       >
@@ -63,7 +63,7 @@ export function ActionTile({
       {subtitle ? (
         <Text
           numberOfLines={1}
-          className={`mt-0.5 text-[10px] ${
+          className={`mt-0.5 type-2xs ${
             variant === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"
           }`}
         >

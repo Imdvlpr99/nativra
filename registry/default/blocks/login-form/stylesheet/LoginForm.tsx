@@ -16,6 +16,7 @@ import { Input } from "./Input";
 import { Button } from "./Button";
 import { Separator } from "./Separator";
 
+import { sp } from "@/hooks/use-theme-colors";
 export interface LoginFormProps {
   onSignIn?: (credentials: { email: string; password: string }) => void;
   onForgotPassword?: () => void;
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   form: {
-    gap: 16,
+    gap: sp(16),
   },
   field: {},
   passwordRow: {
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    gap: sp(4),
   },
 });
 

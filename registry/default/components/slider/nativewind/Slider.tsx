@@ -46,7 +46,7 @@ export function Slider({
       accessibilityValue={{ min, max, now: value }}
       disabled={disabled}
       onPress={handlePress}
-      className={`w-full py-3 justify-center relative select-none ${disabled ? "opacity-50" : ""} ${className}`.trim()}
+      className={`w-full sp-py-3 justify-center relative select-none ${disabled ? "opacity-50" : ""} ${className}`.trim()}
       {...props}
     >
       {/* Background Track */}

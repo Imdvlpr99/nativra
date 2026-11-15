@@ -1,7 +1,7 @@
 /** Nativra — RadioGroup (StyleSheet). Install: npx nativra-cli add radio-group */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface RadioOption {
   label: string;
@@ -79,13 +79,13 @@ export function RadioGroup({
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  group: { width: "100%", gap: 12 },
-  item: { flexDirection: "row", alignItems: "flex-start", gap: 12, borderRadius: themeStyle.radius.control, borderWidth: 1, padding: 14 },
+  group: { width: "100%", gap: sp(12) },
+  item: { flexDirection: "row", alignItems: "flex-start", gap: sp(12), borderRadius: themeStyle.radius.control, borderWidth: themeStyle.borderWidth, padding: sp(14) },
   disabled: { opacity: 0.5 },
   circle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: "center", justifyContent: "center", marginTop: 2 },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: c.primary },
   textWrap: { flex: 1 },
-  label: { fontSize: 14, fontWeight: "600" },
-  description: { fontSize: 12, marginTop: 2, lineHeight: 16 },
+  label: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.label },
+  description: { fontSize: ts(12), marginTop: 2, lineHeight: ts(16) },
 });
 

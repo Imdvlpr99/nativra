@@ -10,7 +10,7 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
 import { CheckCircle2, Trash2 } from "lucide-react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface PaymentMethodCardProps extends ViewProps {
   brand?: "visa" | "mastercard" | "amex" | "applepay";
@@ -106,12 +106,11 @@ export function PaymentMethodCard({
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    padding: 18,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(18),
   },
   cardUnselected: {
-    borderColor: palette.border,
-    backgroundColor: palette.card,
+    ...surface(palette),
   },
   cardSelected: {
     borderColor: palette.primary,
@@ -125,68 +124,68 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   leftCol: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
   },
   brandBox: {
     height: 40,
     width: 56,
     borderRadius: themeStyle.radius.control,
     backgroundColor: palette.background,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 6,
+    paddingHorizontal: sp(6),
   },
   brandText: {
-    fontSize: 11,
-    fontWeight: "900",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
     letterSpacing: 0.5,
   },
   panRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   panText: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   defaultPill: {
     borderRadius: 9999,
     backgroundColor: palette.muted,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
   },
   defaultPillText: {
-    fontSize: 10,
-    fontWeight: "600",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette["muted-foreground"],
   },
   expiryText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 2,
   },
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   iconBtn: {
-    padding: 8,
+    padding: sp(8),
   },
   holderRow: {
     marginTop: 12,
     borderTopWidth: 1,
     borderTopColor: alpha(palette.border, 0.8),
-    paddingTop: 8,
+    paddingTop: sp(8),
   },
   holderText: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette["muted-foreground"],
     letterSpacing: 0.5,
   },

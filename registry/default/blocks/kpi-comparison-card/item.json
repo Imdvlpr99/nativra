@@ -4,7 +4,7 @@
   "description": "Enterprise dual-metric comparison card featuring current vs target performance, progress indicators, and trend badges.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { type ThemeColors, useThemeColors, elevation } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, elevation, ts, sp, pressedStyle, themeStyle } from "@/hooks/use-theme-colors";
 
 export type FabVariant = "primary" | "secondary" | "accent";
 export type FabSize = "sm" | "md" | "lg";
@@ -77,7 +77,7 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   sm: { width: 40, height: 40 },
   md: { width: 56, height: 56 },
   lg: { width: 64, height: 64 },
-  extended: { width: "auto", paddingHorizontal: 20, gap: 8 },
+  extended: { width: "auto", paddingHorizontal: sp(20), gap: sp(8) },
   primary: { backgroundColor: c.primary },
   secondary: { backgroundColor: c.foreground },
   accent: { backgroundColor: c.success },
@@ -86,13 +86,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   "bottom-center": { bottom: 24, alignSelf: "center" },
   labelText: {
     color: c["primary-foreground"],
-    fontWeight: "700",
-    fontSize: 14,
+    fontWeight: themeStyle.fontWeight.title,
+    fontSize: ts(14),
   },
-  pressed: {
-    transform: [{ scale: 0.95 }],
-    opacity: 0.9,
-  },
+  pressed: { ...pressedStyle(true) },
   disabled: {
     opacity: 0.5,
   },

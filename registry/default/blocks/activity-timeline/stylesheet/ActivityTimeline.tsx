@@ -11,7 +11,7 @@ import React from "react";
 import { StyleSheet, View, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
-import { useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, type ThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface TimelineEvent {
   id: string;
@@ -150,28 +150,28 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   pbExtra: {
-    paddingBottom: 24,
+    paddingBottom: sp(24),
   },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8,
+    gap: sp(8),
   },
   titleText: {
-    fontWeight: "600",
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
-    fontSize: 14,
+    fontSize: ts(14),
   },
   timeText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   descText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 4,
-    lineHeight: 18,
+    lineHeight: ts(18),
   },
   badgeRow: {
     flexDirection: "row",

@@ -40,16 +40,16 @@ export function MiniSparklineCard({
 
   return (
     <View
-      className={`rounded-card border border-border bg-card p-4.5 shadow-sm ${className}`.trim()}
+      className={`surface rounded-card sp-p-4.5 shadow-sm ${className}`.trim()}
       style={style}
       {...props}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Text className="type-xs weight-label uppercase tracking-wider text-muted-foreground">
           {title}
         </Text>
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2 py-0.5 ${
+          className={`flex-row items-center sp-gap-1 rounded-full sp-px-2 sp-py-0.5 ${
             isPositive
               ? "bg-success/10 text-success"
               : "bg-destructive/10 text-destructive"
@@ -61,7 +61,7 @@ export function MiniSparklineCard({
             <TrendingDown size={12} color={palette.destructive} />
           )}
           <Text
-            className={`text-xs font-bold ${
+            className={`type-xs weight-title ${
               isPositive
                 ? "text-success"
                 : "text-destructive"
@@ -73,14 +73,14 @@ export function MiniSparklineCard({
       </View>
 
       <View className="mt-3 flex-row items-end justify-between">
-        <Text className="text-2xl font-black tracking-tight text-foreground">
+        <Text className="type-2xl weight-heading tracking-tight text-foreground">
           {value}
         </Text>
 
         {/* Zero-dependency Micro Sparkline Bar Series */}
         <View
           style={{ height: sparklineHeight }}
-          className="flex-row items-end gap-1.5"
+          className="flex-row items-end sp-gap-1.5"
         >
           {data.map((val, idx) => {
             const normalizedHeight = Math.max(

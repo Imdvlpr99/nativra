@@ -14,7 +14,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface PricingCardProps {
   planName?: string;
@@ -95,40 +95,40 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   description: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 4,
   },
   priceRow: {
     flexDirection: "row",
     alignItems: "baseline",
-    gap: 4,
+    gap: sp(4),
     marginTop: 20,
   },
   price: {
-    fontSize: 28,
-    fontWeight: "800",
+    fontSize: ts(28),
+    fontWeight: themeStyle.fontWeight.heading,
   },
   period: {
-    fontSize: 12,
+    fontSize: ts(12),
   },
   separatorContainer: {
     marginVertical: 20,
   },
   featuresList: {
-    gap: 12,
+    gap: sp(12),
   },
   featureItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: sp(10),
   },
   checkIcon: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.success,
   },
   featureText: {
-    fontSize: 12,
+    fontSize: ts(12),
   },
   submitBtn: {
     marginTop: 24,

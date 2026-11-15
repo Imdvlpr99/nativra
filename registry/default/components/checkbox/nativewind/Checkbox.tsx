@@ -44,13 +44,13 @@ export function Checkbox({
         }`}
       >
         {checked && (
-          <Text className="text-background text-xs font-bold leading-none">
+          <Text className="text-background type-xs weight-title leading-none">
             ✓
           </Text>
         )}
       </View>
       {label ? (
-        <Text className="ml-2 text-sm text-foreground font-medium">
+        <Text className="ml-2 type-sm text-foreground font-medium">
           {label}
         </Text>
       ) : null}

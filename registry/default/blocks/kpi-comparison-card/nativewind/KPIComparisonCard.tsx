@@ -39,7 +39,7 @@ export function KPIComparisonCard({
   return (
     <Card elevated padding="lg" className={`w-full rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
-        <Text variant="muted" className="text-xs font-semibold uppercase tracking-wider">
+        <Text variant="muted" className="type-xs weight-label uppercase tracking-wider">
           {title}
         </Text>
         <Badge
@@ -51,14 +51,14 @@ export function KPIComparisonCard({
 
       <View className="mt-4 flex-row items-baseline justify-between">
         <View>
-          <Text variant="h1" className="text-3xl font-black text-foreground">
+          <Text variant="h1" className="type-3xl weight-heading text-foreground">
             {currentValue}
           </Text>
-          <Text variant="muted" className="text-xs mt-0.5">
+          <Text variant="muted" className="type-xs mt-0.5">
             Target: {targetValue} ({period})
           </Text>
         </View>
-        <Text className="text-base font-bold text-foreground">
+        <Text className="type-base weight-title text-foreground">
           {clamped}%
         </Text>
       </View>

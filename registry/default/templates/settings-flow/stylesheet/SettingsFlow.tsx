@@ -9,7 +9,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface SettingsFlowProps {
   userName?: string;
@@ -120,20 +120,17 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.background,
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 48,
-    gap: 24,
+    padding: sp(20),
+    paddingBottom: sp(48),
+    gap: sp(24),
   },
   profileCard: {
+    ...surface(palette),
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: sp(16),
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 20,
-    ...elevation("card"),
+    padding: sp(20),
   },
   avatar: {
     width: 56,
@@ -145,77 +142,74 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   avatarText: {
     color: palette["primary-foreground"],
-    fontSize: 18,
-    fontWeight: "800",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.heading,
   },
   profileMeta: {
     flex: 1,
-    gap: 4,
+    gap: sp(4),
   },
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   nameText: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   proBadge: {
     borderRadius: 9999,
     backgroundColor: alpha(palette.success, 0.15),
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
   },
   proBadgeText: {
-    fontSize: 10,
-    fontWeight: "800",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.success,
     fontFamily: "monospace",
   },
   emailText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   section: {
-    gap: 8,
+    gap: sp(8),
   },
   sectionTitle: {
-    paddingHorizontal: 4,
-    fontSize: 11,
-    fontWeight: "700",
+    paddingHorizontal: sp(4),
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.title,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: palette["muted-foreground"],
   },
   card: {
+    ...surface(palette),
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    ...elevation("card"),
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(8),
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
+    paddingVertical: sp(12),
   },
   rowMeta: {
     flex: 1,
-    gap: 2,
-    paddingRight: 12,
+    gap: sp(2),
+    paddingRight: sp(12),
   },
   rowTitle: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
   },
   rowDesc: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   divider: {
@@ -225,19 +219,17 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   logoutBtn: {
     width: "100%",
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(palette.destructive, 0.3),
     backgroundColor: alpha(palette.destructive, 0.1),
-    paddingVertical: 14,
+    paddingVertical: sp(14),
     alignItems: "center",
     justifyContent: "center",
   },
-  btnPressed: {
-    opacity: 0.8,
-  },
+  btnPressed: { ...pressedStyle(true) },
   logoutBtnText: {
-    fontSize: 13,
-    fontWeight: "700",
+    fontSize: ts(13),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.destructive,
   },
 });

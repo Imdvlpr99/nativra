@@ -10,7 +10,7 @@
 import React from "react";
 import { View, Text, StyleSheet, type ViewProps } from "react-native";
 import { TrendingUp, TrendingDown } from "lucide-react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface MiniSparklineCardProps extends ViewProps {
   title: string;
@@ -89,11 +89,9 @@ export function MiniSparklineCard({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 18,
+    padding: sp(18),
   },
   topRow: {
     flexDirection: "row",
@@ -101,8 +99,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: palette["muted-foreground"],
@@ -110,10 +108,10 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   badge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: sp(4),
     borderRadius: 9999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
   },
   badgePos: {
     backgroundColor: alpha(palette.success, 0.1),
@@ -122,8 +120,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: alpha(palette.destructive, 0.1),
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
   },
   textPos: {
     color: palette.success,
@@ -138,15 +136,15 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   value: {
-    fontSize: 24,
-    fontWeight: "900",
+    fontSize: ts(24),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
     letterSpacing: -0.5,
   },
   sparklineContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 6,
+    gap: sp(6),
   },
   sparklineBar: {
     width: 4,

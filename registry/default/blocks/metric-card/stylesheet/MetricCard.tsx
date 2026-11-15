@@ -12,7 +12,7 @@ import { View, StyleSheet } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
-import { themeStyle, useThemeColors, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface MetricCardProps {
   title?: string;
@@ -72,8 +72,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -81,12 +81,12 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     marginTop: 12,
   },
   value: {
-    fontSize: 32,
-    fontWeight: "900",
+    fontSize: ts(32),
+    fontWeight: themeStyle.fontWeight.heading,
   },
   footer: {
     marginTop: 16,
-    paddingTop: 8,
+    paddingTop: sp(8),
     borderTopWidth: 1,
     borderTopColor: palette.border,
     flexDirection: "row",
@@ -94,10 +94,10 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   timeframe: {
-    fontSize: 11,
+    fontSize: ts(11),
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: ts(11),
     fontWeight: "500",
   },
 });

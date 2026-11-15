@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, sp } from "@/hooks/use-theme-colors";
 
 export interface RatingStarsProps extends ViewProps {
   rating: number;
@@ -85,9 +85,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: sp(4),
   },
   starButton: {
-    padding: 4,
+    padding: sp(4),
   },
 });

@@ -1,7 +1,7 @@
 /** Nativra — Accordion (StyleSheet). Install: npx nativra-cli add accordion */
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface AccordionItem {
   id: string;
@@ -73,13 +73,13 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
 }
 
 const createStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { width: "100%", borderRadius: themeStyle.radius.card, borderWidth: 1, overflow: "hidden" },
+  container: { width: "100%", borderRadius: themeStyle.radius.card, borderWidth: themeStyle.borderWidth, overflow: "hidden" },
   itemWrap: { width: "100%" },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 16 },
-  title: { fontSize: 16, fontWeight: "600", flex: 1, paddingRight: 12 },
-  arrow: { fontSize: 10, color: c["muted-foreground"] },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: sp(20), paddingVertical: sp(16) },
+  title: { fontSize: ts(16), fontWeight: themeStyle.fontWeight.label, flex: 1, paddingRight: sp(12) },
+  arrow: { fontSize: ts(10), color: c["muted-foreground"] },
   arrowOpen: { transform: [{ rotate: "180deg" }] },
-  body: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 4 },
-  content: { fontSize: 14, lineHeight: 20 },
+  body: { paddingHorizontal: sp(20), paddingBottom: sp(16), paddingTop: sp(4) },
+  content: { fontSize: ts(14), lineHeight: ts(20) },
 });
 

@@ -16,7 +16,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { useThemeColors, themeStyle, ts } from "@/hooks/use-theme-colors";
 
 export interface CheckboxProps {
   checked: boolean;
@@ -83,13 +83,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   checkmark: {
-    fontSize: 12,
-    fontWeight: "700",
-    lineHeight: 14,
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    lineHeight: ts(14),
   },
   label: {
     marginLeft: 8,
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   disabled: {

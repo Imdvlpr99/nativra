@@ -80,22 +80,22 @@ export function AuthFlow({
 
   return (
     <ScrollView
-      contentContainerClassName="flex-grow justify-center p-6 bg-background"
+      contentContainerClassName="flex-grow justify-center sp-p-6 bg-background"
       className={cn("w-full", className)}
     >
       <View className="w-full max-w-sm mx-auto space-y-6">
         {/* Header Branding */}
         <View className="items-center space-y-2">
           <View className="h-12 w-12 rounded-card bg-primary items-center justify-center shadow-lg shadow-primary/20">
-            <Text className="text-xl font-black text-primary-foreground">NV</Text>
+            <Text className="type-xl weight-heading text-primary-foreground">NV</Text>
           </View>
-          <Text className="text-2xl font-black text-foreground text-center">
+          <Text className="type-2xl weight-heading text-foreground text-center">
             {step === "login" && `Welcome to ${appName}`}
             {step === "signup" && "Create an Account"}
             {step === "forgot" && "Reset Password"}
             {step === "otp" && "Verify Code"}
           </Text>
-          <Text className="text-xs text-muted-foreground text-center">
+          <Text className="type-xs text-muted-foreground text-center">
             {step === "login" && "Enter your credentials to access your mobile workspace."}
             {step === "signup" && "Join thousands of developers building native UI."}
             {step === "forgot" && "We will send a 6-digit one-time code to your email."}
@@ -104,10 +104,10 @@ export function AuthFlow({
         </View>
 
         {/* Form Body */}
-        <View className="rounded-card border border-border bg-card p-6 shadow-xl space-y-4">
+        <View className="surface rounded-card sp-p-6 shadow-xl space-y-4">
           {step === "signup" && (
             <View className="space-y-1.5">
-              <Text className="text-xs font-semibold text-foreground">Full Name</Text>
+              <Text className="type-xs weight-label text-foreground">Full Name</Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
@@ -115,14 +115,14 @@ export function AuthFlow({
                 autoComplete="name"
                 textContentType="name"
                 placeholder="Alex Morgan"
-                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
+                className="field w-full rounded-control sp-px-3.5 sp-py-2.5 type-sm text-foreground"
               />
             </View>
           )}
 
           {(step === "login" || step === "signup" || step === "forgot") && (
             <View className="space-y-1.5">
-              <Text className="text-xs font-semibold text-foreground">Email Address</Text>
+              <Text className="type-xs weight-label text-foreground">Email Address</Text>
               <TextInput
                 value={email}
                 onChangeText={setEmail}
@@ -133,7 +133,7 @@ export function AuthFlow({
                 textContentType="emailAddress"
                 autoCapitalize="none"
                 placeholder="alex@example.com"
-                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
+                className="field w-full rounded-control sp-px-3.5 sp-py-2.5 type-sm text-foreground"
               />
             </View>
           )}
@@ -141,10 +141,10 @@ export function AuthFlow({
           {(step === "login" || step === "signup") && (
             <View className="space-y-1.5">
               <View className="flex-row items-center justify-between">
-                <Text className="text-xs font-semibold text-foreground">Password</Text>
+                <Text className="type-xs weight-label text-foreground">Password</Text>
                 {step === "login" && (
                   <Pressable accessibilityRole="button" onPress={() => goTo("forgot")}>
-                    <Text className="text-[11px] font-medium text-primary">Forgot?</Text>
+                    <Text className="type-2xs font-medium text-primary">Forgot?</Text>
                   </Pressable>
                 )}
               </View>
@@ -156,20 +156,20 @@ export function AuthFlow({
                 autoComplete={step === "signup" ? "new-password" : "current-password"}
                 textContentType={step === "signup" ? "newPassword" : "password"}
                 placeholder="••••••••"
-                className="w-full rounded-control border border-border bg-background px-3.5 py-2.5 text-sm text-foreground"
+                className="field w-full rounded-control sp-px-3.5 sp-py-2.5 type-sm text-foreground"
               />
             </View>
           )}
 
           {step === "otp" && (
-            <View className="space-y-2 py-2">
-              <View className="flex-row justify-center gap-2">
+            <View className="space-y-2 sp-py-2">
+              <View className="flex-row justify-center sp-gap-2">
                 {[0, 1, 2, 3, 4, 5].map((idx) => (
                   <View
                     key={idx}
-                    className="h-12 w-10 items-center justify-center rounded-control border-2 border-border bg-background"
+                    className="min-h-control w-10 items-center justify-center rounded-control border-2 border-border bg-background"
                   >
-                    <Text className="text-lg font-bold font-mono text-foreground">
+                    <Text className="type-lg weight-title font-mono text-foreground">
                       {otp[idx] ?? ""}
                     </Text>
                   </View>
@@ -184,13 +184,13 @@ export function AuthFlow({
                 autoComplete="one-time-code"
                 textContentType="oneTimeCode"
                 placeholder="Type 6 digits..."
-                className="w-full rounded-control border border-border bg-background px-3 py-2 text-center text-xs text-foreground"
+                className="field w-full rounded-control sp-px-3 sp-py-2 text-center type-xs text-foreground"
               />
             </View>
           )}
 
           {error ? (
-            <Text accessibilityRole="alert" className="text-[13px] leading-[18px] text-destructive">
+            <Text accessibilityRole="alert" className="type-sm leading-[18px] text-destructive">
               {error}
             </Text>
           ) : null}
@@ -202,11 +202,11 @@ export function AuthFlow({
             disabled={loading || !canSubmit}
             onPress={handleSubmit}
             className={cn(
-              "w-full items-center justify-center rounded-control bg-primary py-3 shadow-md shadow-primary/20 active:scale-95 transition-all",
+              "w-full items-center justify-center rounded-control bg-primary sp-py-3 shadow-md shadow-primary/20 active:scale-95 transition-all",
               !canSubmit && "opacity-50"
             )}
           >
-            <Text className="text-sm font-bold text-primary-foreground">
+            <Text className="type-sm weight-title text-primary-foreground">
               {loading
                 ? "Processing..."
                 : step === "login"
@@ -221,15 +221,15 @@ export function AuthFlow({
         </View>
 
         {/* Footer Toggle Navigation */}
-        <View className="flex-row items-center justify-center gap-1.5 text-xs">
-          <Text className="text-muted-foreground text-xs">
+        <View className="flex-row items-center justify-center sp-gap-1.5 type-xs">
+          <Text className="text-muted-foreground type-xs">
             {step === "login" ? "Don't have an account?" : "Already have an account?"}
           </Text>
           <Pressable
             accessibilityRole="button"
             onPress={() => goTo(step === "login" ? "signup" : "login")}
           >
-            <Text className="text-xs font-bold text-primary">
+            <Text className="type-xs weight-title text-primary">
               {step === "login" ? "Sign Up" : "Sign In"}
             </Text>
           </Pressable>

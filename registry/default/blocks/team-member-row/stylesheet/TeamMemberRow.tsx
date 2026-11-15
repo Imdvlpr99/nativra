@@ -10,7 +10,7 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
 import { MoreVertical, Shield } from "lucide-react-native";
-import { useThemeColors, alpha, type ThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { useThemeColors, alpha, type ThemeColors, themeStyle, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface TeamMemberRowProps extends Omit<ViewProps, "role"> {
   name: string;
@@ -103,35 +103,33 @@ export function TeamMemberRow({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
+    ...surface(palette),
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 14,
+    padding: sp(14),
   },
   leftCol: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
     flex: 1,
-    paddingRight: 12,
+    paddingRight: sp(12),
   },
   avatar: {
     height: 40,
     width: 40,
     borderRadius: 20,
     backgroundColor: palette.muted,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   textCol: {
@@ -140,35 +138,35 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   nameText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
   },
   youPill: {
-    fontSize: 10,
-    fontWeight: "600",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette["muted-foreground"],
   },
   emailText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 2,
   },
   rightCol: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   rolePill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: sp(4),
     borderRadius: 9999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: sp(10),
+    paddingVertical: sp(4),
   },
   roleHigh: {
     backgroundColor: alpha(palette.primary, 0.1),
@@ -177,8 +175,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.muted,
   },
   roleText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
   },
   roleHighText: {
     color: palette.primary,
@@ -187,7 +185,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     color: palette["muted-foreground"],
   },
   optionsBtn: {
-    padding: 6,
+    padding: sp(6),
   },
 });
 

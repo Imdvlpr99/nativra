@@ -1,7 +1,7 @@
 /** Nativra — ActionTile (StyleSheet). Install: npx nativra-cli add action-tile */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface ActionTileProps extends Omit<PressableProps, "style"> {
   label: string;
@@ -64,14 +64,14 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    padding: 14,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(14),
   },
   default: { backgroundColor: c.background, borderColor: c.border },
   primary: { backgroundColor: c.primary, borderColor: c.primary },
   outline: { backgroundColor: "transparent", borderColor: c.border },
   disabled: { opacity: 0.5 },
-  pressed: { opacity: 0.8 },
+  pressed: { ...pressedStyle(true) },
   iconWrap: {
     width: 40,
     height: 40,
@@ -82,10 +82,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     marginBottom: 8,
   },
   iconWrapPrimary: { backgroundColor: alpha(c["primary-foreground"], 0.2) },
-  iconText: { fontSize: 16 },
-  label: { fontSize: 12, fontWeight: "700", color: c.foreground },
+  iconText: { fontSize: ts(16) },
+  label: { fontSize: ts(12), fontWeight: themeStyle.fontWeight.title, color: c.foreground },
   labelPrimary: { color: c["primary-foreground"] },
-  subtitle: { fontSize: 10, color: c["muted-foreground"], marginTop: 2 },
+  subtitle: { fontSize: ts(10), color: c["muted-foreground"], marginTop: 2 },
   subtitlePrimary: { color: alpha(c["primary-foreground"], 0.8) },
 });
 

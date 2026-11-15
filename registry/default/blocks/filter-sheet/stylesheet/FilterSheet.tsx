@@ -13,7 +13,7 @@ import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { Slider } from "./Slider";
 import { Text } from "./Text";
-import { useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, alpha, type ThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface FilterOption {
   id: string;
@@ -150,48 +150,48 @@ export function FilterSheet({
 
 const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-    paddingTop: 12,
-    gap: 20,
+    paddingHorizontal: sp(20),
+    paddingBottom: sp(32),
+    paddingTop: sp(12),
+    gap: sp(20),
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingBottom: 12,
+    paddingBottom: sp(12),
     borderBottomWidth: 1,
     borderBottomColor: palette.border,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   resetBtn: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.primary,
   },
   section: {
-    gap: 10,
+    gap: sp(10),
   },
   sectionLabel: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: palette["muted-foreground"],
   },
   chipsRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: sp(8),
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingHorizontal: sp(14),
+    paddingVertical: sp(6),
     borderRadius: 9999,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
   },
   chipActive: {
     backgroundColor: palette.primary,
@@ -202,8 +202,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     borderColor: palette.border,
   },
   chipText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
   },
   chipTextActive: {
     color: palette["primary-foreground"],
@@ -217,13 +217,13 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     justifyContent: "space-between",
   },
   priceVal: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   btnRow: {
     flexDirection: "row",
-    gap: 12,
+    gap: sp(12),
     marginTop: 8,
   },
   flexOne: {

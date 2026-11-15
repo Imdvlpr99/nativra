@@ -42,9 +42,9 @@ export function SettingsList({
 }: SettingsListProps) {
   return (
     <Card elevated padding="md" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
-      <View className="mb-2 px-1">
+      <View className="mb-2 sp-px-1">
         <Text variant="h3">{title}</Text>
-        <Text variant="muted" className="text-xs">Manage your mobile app experience</Text>
+        <Text variant="muted" className="type-xs">Manage your mobile app experience</Text>
       </View>
 
       <View className="my-2">
@@ -52,10 +52,10 @@ export function SettingsList({
       </View>
 
       {/* Row 1: Notifications */}
-      <View className="flex-row items-center justify-between py-3 px-1">
-        <View className="flex-1 pr-3">
-          <Text variant="p" className="font-medium text-sm">Push Notifications</Text>
-          <Text variant="muted" className="text-xs">Receive updates and mentions</Text>
+      <View className="flex-row items-center justify-between sp-py-3 sp-px-1">
+        <View className="flex-1 sp-pr-3">
+          <Text variant="p" className="font-medium type-sm">Push Notifications</Text>
+          <Text variant="muted" className="type-xs">Receive updates and mentions</Text>
         </View>
         <Switch value={notifications} onValueChange={onNotificationsChange ?? noop} />
       </View>
@@ -63,10 +63,10 @@ export function SettingsList({
       <Separator />
 
       {/* Row 2: Dark Mode */}
-      <View className="flex-row items-center justify-between py-3 px-1">
-        <View className="flex-1 pr-3">
-          <Text variant="p" className="font-medium text-sm">Dark Theme</Text>
-          <Text variant="muted" className="text-xs">Switch to midnight dark palette</Text>
+      <View className="flex-row items-center justify-between sp-py-3 sp-px-1">
+        <View className="flex-1 sp-pr-3">
+          <Text variant="p" className="font-medium type-sm">Dark Theme</Text>
+          <Text variant="muted" className="type-xs">Switch to midnight dark palette</Text>
         </View>
         <Switch value={darkMode} onValueChange={onDarkModeChange ?? noop} />
       </View>
@@ -74,13 +74,13 @@ export function SettingsList({
       <Separator />
 
       {/* Row 3: Biometrics */}
-      <View className="flex-row items-center justify-between py-3 px-1">
-        <View className="flex-1 pr-3">
-          <View className="flex-row items-center gap-1.5">
-            <Text variant="p" className="font-medium text-sm">Face ID / Biometrics</Text>
+      <View className="flex-row items-center justify-between sp-py-3 sp-px-1">
+        <View className="flex-1 sp-pr-3">
+          <View className="flex-row items-center sp-gap-1.5">
+            <Text variant="p" className="font-medium type-sm">Face ID / Biometrics</Text>
             <Badge variant="primary" size="sm" label="Secure" />
           </View>
-          <Text variant="muted" className="text-xs">Require authentication on launch</Text>
+          <Text variant="muted" className="type-xs">Require authentication on launch</Text>
         </View>
         <Switch value={biometrics} onValueChange={onBiometricsChange ?? noop} />
       </View>
@@ -90,13 +90,13 @@ export function SettingsList({
       {/* Row 4: Account Security navigation */}
       <Pressable accessibilityRole="button"
         onPress={onAccountPress}
-        className="flex-row items-center justify-between py-3 px-1 active:opacity-70"
+        className="flex-row items-center justify-between sp-py-3 sp-px-1 active:opacity-70"
       >
         <View>
-          <Text variant="p" className="font-medium text-sm">Account & Security</Text>
-          <Text variant="muted" className="text-xs">Password, 2FA, session tokens</Text>
+          <Text variant="p" className="font-medium type-sm">Account & Security</Text>
+          <Text variant="muted" className="type-xs">Password, 2FA, session tokens</Text>
         </View>
-        <Text variant="muted" className="text-sm font-semibold">›</Text>
+        <Text variant="muted" className="type-sm weight-label">›</Text>
       </Pressable>
     </Card>
   );

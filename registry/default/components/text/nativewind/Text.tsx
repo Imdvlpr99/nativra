@@ -19,14 +19,14 @@ export interface TextProps extends RNTextProps {
 }
 
 const VARIANTS: Record<TextVariant, string> = {
-  h1: "text-3xl text-foreground",
-  h2: "text-2xl text-foreground",
-  h3: "text-xl text-foreground",
-  h4: "text-lg text-foreground",
-  p: "text-base leading-7 text-foreground",
-  lead: "text-lg text-muted-foreground",
-  muted: "text-sm text-muted-foreground",
-  code: "font-mono text-sm bg-muted text-foreground px-1 py-0.5 rounded-small",
+  h1: "type-3xl text-foreground",
+  h2: "type-2xl text-foreground",
+  h3: "type-xl text-foreground",
+  h4: "type-lg text-foreground",
+  p: "type-base leading-7 text-foreground",
+  lead: "type-lg text-muted-foreground",
+  muted: "type-sm text-muted-foreground",
+  code: "font-mono type-sm bg-muted text-foreground sp-px-1 sp-py-0.5 rounded-small",
 };
 
 /** Heading weight and tracking from the installed theme's style tokens. */

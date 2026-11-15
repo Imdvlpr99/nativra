@@ -4,7 +4,7 @@
   "description": "A floating toast notification with success, error, and info variants.",
   "type": "component",
   "status": "stable",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

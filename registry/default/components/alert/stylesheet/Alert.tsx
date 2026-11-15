@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
-import { alpha, type ThemeColors, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { alpha, type ThemeColors, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export type AlertVariant = "default" | "info" | "success" | "warning" | "destructive";
 
@@ -84,35 +84,35 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    padding: 16,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(16),
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
+    gap: sp(12),
   },
   icon: {
     marginTop: 2,
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: sp(4),
   },
   title: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
   description: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: ts(12),
+    lineHeight: ts(18),
   },
   closeBtn: {
-    padding: 4,
+    padding: sp(4),
     marginTop: -4,
     marginRight: -4,
   },
   closeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
 

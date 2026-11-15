@@ -32,28 +32,28 @@ export function StatTile({
     <View
       accessibilityRole="summary"
       style={style}
-      className={`rounded-card border border-border bg-card p-4 shadow-sm ${className}`}
+      className={`surface rounded-card sp-p-4 shadow-sm ${className}`}
       {...rest}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-medium text-muted-foreground">
+        <Text className="type-xs font-medium text-muted-foreground">
           {label}
         </Text>
         {delta ? (
-          <View className={`rounded-full px-2 py-0.5 ${badgeClasses}`}>
-            <Text className={`text-[10px] font-bold ${badgeClasses}`}>
+          <View className={`rounded-full sp-px-2 sp-py-0.5 ${badgeClasses}`}>
+            <Text className={`type-2xs weight-title ${badgeClasses}`}>
               {delta}
             </Text>
           </View>
         ) : null}
       </View>
 
-      <Text className="mt-1.5 text-2xl font-extrabold tracking-tight text-foreground">
+      <Text className="mt-1.5 type-2xl weight-heading tracking-tight text-foreground">
         {value}
       </Text>
 
       {caption ? (
-        <Text className="mt-1 text-[11px] text-muted-foreground">
+        <Text className="mt-1 type-2xs text-muted-foreground">
           {caption}
         </Text>
       ) : null}

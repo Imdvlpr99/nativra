@@ -66,10 +66,10 @@ export function FilterSheet({
 
   return (
     <BottomSheet isOpen={open} onClose={() => onOpenChange(false)}>
-      <View className="px-5 pb-8 pt-3 gap-5">
+      <View className="sp-px-5 sp-pb-8 sp-pt-3 sp-gap-5">
         {/* Header */}
-        <View className="flex-row items-center justify-between pb-3 border-b border-border">
-          <Text className="text-lg font-bold text-foreground">Filter Results</Text>
+        <View className="flex-row items-center justify-between sp-pb-3 border-b border-border">
+          <Text className="type-lg weight-title text-foreground">Filter Results</Text>
           <TouchableOpacity
             onPress={() => {
               setCurrentCategory("all");
@@ -77,16 +77,16 @@ export function FilterSheet({
               onReset?.();
             }}
           >
-            <Text className="text-xs font-semibold text-primary">Reset</Text>
+            <Text className="type-xs weight-label text-primary">Reset</Text>
           </TouchableOpacity>
         </View>
 
         {/* Categories Chips */}
-        <View className="gap-2.5">
-          <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <View className="sp-gap-2.5">
+          <Text className="type-xs weight-label uppercase tracking-wider text-muted-foreground">
             Category
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row sp-gap-2">
             {categories.map((c) => {
               const active = c.id === currentCategory;
               return (
@@ -94,14 +94,14 @@ export function FilterSheet({
                   key={c.id}
                   activeOpacity={0.7}
                   onPress={() => handleCategoryPress(c.id)}
-                  className={`px-3.5 py-1.5 rounded-full border ${
+                  className={`sp-px-3.5 sp-py-1.5 rounded-full border ${
                     active
                       ? "bg-primary border-primary"
                       : "bg-muted/80 border-border"
                   }`}
                 >
                   <Text
-                    className={`text-xs font-semibold ${
+                    className={`type-xs weight-label ${
                       active ? "text-primary-foreground" : "text-muted-foreground"
                     }`}
                   >
@@ -114,12 +114,12 @@ export function FilterSheet({
         </View>
 
         {/* Price Range */}
-        <View className="gap-2.5">
+        <View className="sp-gap-2.5">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <Text className="type-xs weight-label uppercase tracking-wider text-muted-foreground">
               Max Budget
             </Text>
-            <Text className="text-sm font-bold text-foreground">
+            <Text className="type-sm weight-title text-foreground">
               ${Math.round(currentPrice)}
             </Text>
           </View>
@@ -133,7 +133,7 @@ export function FilterSheet({
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row gap-3 mt-2">
+        <View className="flex-row sp-gap-3 mt-2">
           <Button
             variant="outline"
             className="flex-1"

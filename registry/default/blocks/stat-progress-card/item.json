@@ -4,7 +4,7 @@
   "description": "Mobile goal KPI card with target value, percent indicator, and embedded progress bar with milestone indicators.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

@@ -27,7 +27,7 @@ export function HeaderBar({
     <View
       accessibilityRole="header"
       style={style}
-      className={`flex-row items-center justify-between border-b border-border bg-card px-4 py-3 ${
+      className={`flex-row items-center justify-between border-b border-border bg-card sp-px-4 sp-py-3 ${
         elevated ? "shadow-sm" : ""
       } ${className}`}
       {...rest}
@@ -39,23 +39,23 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            className="flex-row items-center gap-1 rounded-button py-1 pr-2 active:opacity-70"
+            className="flex-row items-center sp-gap-1 rounded-button sp-py-1 sp-pr-2 active:opacity-70"
           >
-            <Text className="text-base font-bold text-primary">‹</Text>
-            <Text className="text-xs font-semibold text-primary">Back</Text>
+            <Text className="type-base weight-title text-primary">‹</Text>
+            <Text className="type-xs weight-label text-primary">Back</Text>
           </Pressable>
         ) : null}
       </View>
 
-      <View className="flex-1 items-center px-2">
+      <View className="flex-1 items-center sp-px-2">
         <Text
           numberOfLines={1}
-          className="text-sm font-bold tracking-tight text-foreground"
+          className="type-sm weight-title tracking-tight text-foreground"
         >
           {title}
         </Text>
         {subtitle ? (
-          <Text numberOfLines={1} className="text-[11px] text-muted-foreground">
+          <Text numberOfLines={1} className="type-2xs text-muted-foreground">
             {subtitle}
           </Text>
         ) : null}
@@ -68,9 +68,9 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={rightLabel}
-            className="rounded-button bg-primary/10 px-2.5 py-1 active:opacity-75"
+            className="rounded-button bg-primary/10 sp-px-2.5 sp-py-1 active:opacity-75"
           >
-            <Text className="text-xs font-semibold text-primary">
+            <Text className="type-xs weight-label text-primary">
               {rightLabel}
             </Text>
           </Pressable>

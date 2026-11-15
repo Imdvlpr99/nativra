@@ -92,22 +92,22 @@ export function AppSidebar({
   return (
     <View className="flex-1 w-full max-w-xs bg-background border-r border-border flex-col justify-between">
       {/* Brand Header */}
-      <View className="p-4 border-b border-border/80 flex-row items-center gap-3">
+      <View className="sp-p-4 border-b border-border/80 flex-row items-center sp-gap-3">
         <View className="h-9 w-9 rounded-control bg-primary/20 border border-primary/40 items-center justify-center">
-          <Text className="text-base font-extrabold text-primary font-mono">N</Text>
+          <Text className="type-base weight-heading text-primary font-mono">N</Text>
         </View>
         <View>
-          <Text className="text-sm font-bold text-foreground tracking-tight">Nativra Workspace</Text>
-          <Text className="text-[11px] text-muted-foreground font-mono">v4.0.0 Enterprise</Text>
+          <Text className="type-sm weight-title text-foreground tracking-tight">Nativra Workspace</Text>
+          <Text className="type-2xs text-muted-foreground font-mono">v4.0.0 Enterprise</Text>
         </View>
       </View>
 
       {/* Navigation Groups List */}
-      <ScrollView className="flex-1 px-3 py-4" contentContainerStyle={{ gap: 20 }}>
+      <ScrollView className="flex-1 sp-px-3 sp-py-4" contentContainerStyle={{ gap: 20 }}>
         {groups.map((group, gIdx) => (
           <View key={gIdx} className="space-y-1">
             {group.title && (
-              <Text className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase px-2 mb-1.5">
+              <Text className="type-2xs weight-title text-muted-foreground tracking-wider uppercase sp-px-2 mb-1.5">
                 {group.title}
               </Text>
             )}
@@ -120,27 +120,27 @@ export function AppSidebar({
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  className={`flex-row items-center justify-between px-3 py-2.5 rounded-control transition-colors ${
+                  className={`flex-row items-center justify-between sp-px-3 sp-py-2.5 rounded-control transition-colors ${
                     isActive
-                      ? "bg-primary/15 border border-primary/30 text-foreground font-semibold"
+                      ? "bg-primary/15 border border-primary/30 text-foreground weight-label"
                       : "bg-transparent text-muted-foreground active:bg-card"
                   }`}
                 >
-                  <View className="flex-row items-center gap-2.5">
+                  <View className="flex-row items-center sp-gap-2.5">
                     {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
                     <Text
-                      className={`text-xs ${
-                        isActive ? "text-foreground font-semibold" : "text-muted-foreground font-normal"
+                      className={`type-xs ${
+                        isActive ? "text-foreground weight-label" : "text-muted-foreground font-normal"
                       }`}
                     >
                       {item.label}
                     </Text>
                   </View>
 
-                  <View className="flex-row items-center gap-1.5">
+                  <View className="flex-row items-center sp-gap-1.5">
                     {item.badge !== undefined && (
                       <View
-                        className={`px-1.5 py-0.5 rounded-small ${
+                        className={`sp-px-1.5 sp-py-0.5 rounded-small ${
                           item.badgeVariant === "primary"
                             ? "bg-primary/20 border border-primary/40"
                             : item.badgeVariant === "destructive"
@@ -149,7 +149,7 @@ export function AppSidebar({
                         }`}
                       >
                         <Text
-                          className={`text-[10px] font-bold ${
+                          className={`type-2xs weight-title ${
                             item.badgeVariant === "primary"
                               ? "text-primary"
                               : item.badgeVariant === "destructive"
@@ -171,23 +171,23 @@ export function AppSidebar({
       </ScrollView>
 
       {/* User Profile & Actions Footer */}
-      <View className="p-3 border-t border-border/80 bg-card/40">
+      <View className="sp-p-3 border-t border-border/80 bg-card/40">
         <TouchableOpacity
           onPress={onProfilePress}
           activeOpacity={0.7}
-          className="flex-row items-center justify-between p-2 rounded-control bg-card/80 border border-border hover:border-border"
+          className="flex-row items-center justify-between sp-p-2 rounded-control bg-card/80 border border-border hover:border-border"
         >
-          <View className="flex-row items-center gap-2.5 flex-1 mr-2">
+          <View className="flex-row items-center sp-gap-2.5 flex-1 mr-2">
             <View className="h-9 w-9 rounded-full bg-success/20 border border-success/40 items-center justify-center">
-              <Text className="text-xs font-bold text-success font-mono">
+              <Text className="type-xs weight-title text-success font-mono">
                 {avatarFallback}
               </Text>
             </View>
             <View className="flex-1">
-              <Text className="text-xs font-bold text-foreground truncate" numberOfLines={1}>
+              <Text className="type-xs weight-title text-foreground truncate" numberOfLines={1}>
                 {userName}
               </Text>
-              <Text className="text-[10px] text-muted-foreground truncate" numberOfLines={1}>
+              <Text className="type-2xs text-muted-foreground truncate" numberOfLines={1}>
                 {userEmail}
               </Text>
             </View>

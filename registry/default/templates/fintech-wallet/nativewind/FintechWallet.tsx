@@ -34,40 +34,40 @@ export function FintechWallet() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
-      <ScrollView className="flex-1 px-4 py-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 sp-px-4 sp-py-6" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-2xl font-black text-foreground">Wallet</Text>
-            <Text className="text-xs text-muted-foreground mt-1">Multi-Chain Vault</Text>
+            <Text className="type-2xl weight-heading text-foreground">Wallet</Text>
+            <Text className="type-xs text-muted-foreground mt-1">Multi-Chain Vault</Text>
           </View>
           <TouchableOpacity
             onPress={() => setHideBalance((h) => !h)}
-            className="px-3 py-1.5 rounded-control bg-card border border-border"
+            className="surface sp-px-3 sp-py-1.5 rounded-control"
           >
-            <Text className="text-xs font-semibold text-muted-foreground">
+            <Text className="type-xs weight-label text-muted-foreground">
               {hideBalance ? "Reveal" : "Hide Balance"}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Total Net Worth Card */}
-        <Card elevated padding="lg" className="rounded-card bg-success/15 border border-success/25 p-5 mb-6">
+        <Card elevated padding="lg" className="rounded-card bg-success/15 border border-success/25 sp-p-5 mb-6">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-success">
+            <Text className="type-xs weight-label uppercase tracking-wider text-success">
               Total Portfolio Valuation
             </Text>
             <Badge size="sm" variant="primary" label="+8.4% (24h)" />
           </View>
-          <Text className="text-4xl font-black text-foreground mt-3">
+          <Text className="type-4xl weight-heading text-foreground mt-3">
             {hideBalance ? "••••••••" : "$160,523.00"}
           </Text>
-          <Text className="text-xs text-muted-foreground mt-1">
+          <Text className="type-xs text-muted-foreground mt-1">
             +$12,480.00 unrealized gains this month
           </Text>
 
           {/* Quick Action Pills */}
-          <View className="flex-row gap-2 mt-5">
+          <View className="flex-row sp-gap-2 mt-5">
             <Button variant="primary" className="flex-1 h-10">
               Send
             </Button>
@@ -82,31 +82,31 @@ export function FintechWallet() {
 
         {/* Assets List */}
         <View className="mb-6">
-          <Text className="text-base font-bold text-foreground mb-3">Allocated Assets</Text>
-          <View className="gap-3">
+          <Text className="type-base weight-title text-foreground mb-3">Allocated Assets</Text>
+          <View className="sp-gap-3">
             {assets.map((asset) => (
               <Card
                 key={asset.id}
                 elevated
                 padding="md"
-                className="rounded-card bg-card/80 border border-border p-4 flex-row items-center justify-between"
+                className="rounded-card bg-card/80 border border-border sp-p-4 flex-row items-center justify-between"
               >
-                <View className="flex-row items-center gap-3">
-                  <View className="w-10 h-10 rounded-control bg-muted border border-border items-center justify-center">
-                    <Text className="text-xs font-black text-foreground">{asset.symbol.slice(0, 3)}</Text>
+                <View className="flex-row items-center sp-gap-3">
+                  <View className="w-10 min-h-control rounded-control bg-muted border border-border items-center justify-center">
+                    <Text className="type-xs weight-heading text-foreground">{asset.symbol.slice(0, 3)}</Text>
                   </View>
                   <View>
-                    <Text className="font-bold text-foreground text-sm">{asset.name}</Text>
-                    <Text className="text-xs text-muted-foreground mt-0.5">{asset.balance}</Text>
+                    <Text className="weight-title text-foreground type-sm">{asset.name}</Text>
+                    <Text className="type-xs text-muted-foreground mt-0.5">{asset.balance}</Text>
                   </View>
                 </View>
 
                 <View className="items-end">
-                  <Text className="font-bold text-foreground text-sm">
+                  <Text className="weight-title text-foreground type-sm">
                     {hideBalance ? "••••" : asset.fiat}
                   </Text>
                   <Text
-                    className={`text-xs font-semibold mt-0.5 ${
+                    className={`type-xs weight-label mt-0.5 ${
                       asset.isPos ? "text-success" : "text-destructive"
                     }`}
                   >
@@ -119,18 +119,18 @@ export function FintechWallet() {
         </View>
 
         {/* Recent Activity */}
-        <Card elevated padding="lg" className="rounded-card bg-card/90 border border-border mb-8 p-4">
-          <Text className="text-base font-bold text-foreground mb-3">Recent Ledger</Text>
-          <View className="gap-3">
+        <Card elevated padding="lg" className="rounded-card bg-card/90 border border-border mb-8 sp-p-4">
+          <Text className="type-base weight-title text-foreground mb-3">Recent Ledger</Text>
+          <View className="sp-gap-3">
             {recentTx.map((tx, idx) => (
               <React.Fragment key={tx.id}>
-                <View className="flex-row items-center justify-between py-1">
+                <View className="flex-row items-center justify-between sp-py-1">
                   <View>
-                    <Text className="font-semibold text-sm text-foreground">{tx.counterparty}</Text>
-                    <Text className="text-xs text-muted-foreground mt-0.5">{tx.date}</Text>
+                    <Text className="weight-label type-sm text-foreground">{tx.counterparty}</Text>
+                    <Text className="type-xs text-muted-foreground mt-0.5">{tx.date}</Text>
                   </View>
                   <Text
-                    className={`font-bold text-sm ${
+                    className={`weight-title type-sm ${
                       tx.isIncome ? "text-success" : "text-foreground"
                     }`}
                   >

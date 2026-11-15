@@ -22,7 +22,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export function AccountSettingsFlow() {
   const palette = useThemeColors();
@@ -210,7 +210,7 @@ export function AccountSettingsFlow() {
           <View style={styles.tabContent}>
             <Card style={styles.card}>
               <View style={styles.rowBetween}>
-                <View style={{ flex: 1, paddingRight: 16 }}>
+                <View style={{ flex: 1, paddingRight: sp(16) }}>
                   <Text style={styles.cardTitle}>Two-Factor Auth (2FA)</Text>
                   <Text style={styles.cardSubtitle}>Require TOTP code on every sign-in</Text>
                 </View>
@@ -318,13 +318,13 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(24),
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: sp(16),
     marginBottom: 24,
   },
   avatar: {
@@ -337,45 +337,43 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   avatarText: {
     color: palette["primary-foreground"],
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
   },
   headerTextCol: {
     flex: 1,
   },
   userName: {
-    fontSize: 20,
-    fontWeight: "900",
+    fontSize: ts(20),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
     marginRight: 8,
   },
   userEmail: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 2,
   },
   navBar: {
+    ...surface(palette),
     flexDirection: "row",
     alignItems: "center",
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 4,
+    padding: sp(4),
     marginBottom: 24,
   },
   navTab: {
     flex: 1,
     alignItems: "center",
     borderRadius: themeStyle.radius.control,
-    paddingVertical: 8,
+    paddingVertical: sp(8),
   },
   navTabActive: {
     backgroundColor: palette.muted,
   },
   navTabText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
   },
   navTabTextActive: {
     color: palette.foreground,
@@ -384,22 +382,20 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     color: palette["muted-foreground"],
   },
   tabContent: {
-    gap: 16,
+    gap: sp(16),
   },
   card: {
+    ...surface(palette),
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.card,
-    padding: 20,
+    padding: sp(20),
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   cardSubtitle: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 4,
   },
@@ -408,29 +404,29 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.muted,
   },
   fieldGroup: {
-    gap: 12,
+    gap: sp(12),
   },
   fieldLabel: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
     color: palette["muted-foreground"],
     marginBottom: 4,
   },
   fieldInput: {
     borderRadius: themeStyle.radius.control,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: palette.border,
     backgroundColor: palette.background,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: sp(14),
+    paddingVertical: sp(10),
   },
   fieldText: {
-    fontSize: 14,
+    fontSize: ts(14),
     color: palette["muted-foreground"],
   },
   fieldTextBold: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
   },
   toggleRow: {
@@ -440,15 +436,15 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   },
   toggleTextCol: {
     flex: 1,
-    paddingRight: 16,
+    paddingRight: sp(16),
   },
   toggleTitle: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
     color: palette.foreground,
   },
   toggleSub: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   progressBarBg: {
@@ -465,17 +461,17 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.primary,
   },
   listCol: {
-    gap: 12,
+    gap: sp(12),
   },
   memberRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: themeStyle.radius.control,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(palette.border, 0.6),
     backgroundColor: alpha(palette.background, 0.6),
-    padding: 12,
+    padding: sp(12),
   },
   memberAvatar: {
     height: 36,
@@ -487,63 +483,63 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     marginRight: 12,
   },
   memberAvatarText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   memberName: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
     marginRight: 8,
   },
   memberEmail: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
   },
   revokeBtn: {
     borderRadius: themeStyle.radius.control,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(palette.destructive, 0.3),
     backgroundColor: alpha(palette.destructive, 0.1),
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: sp(10),
+    paddingVertical: sp(4),
   },
   revokeBtnText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.destructive,
   },
   signOutAllBtn: {
     marginTop: 16,
     alignItems: "center",
     borderRadius: themeStyle.radius.control,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(palette.destructive, 0.4),
     backgroundColor: alpha(palette.destructive, 0.1),
-    paddingVertical: 12,
+    paddingVertical: sp(12),
   },
   signOutAllText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.destructive,
   },
   planKicker: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: palette["muted-foreground"],
   },
   planTitle: {
-    fontSize: 22,
-    fontWeight: "900",
+    fontSize: ts(22),
+    fontWeight: themeStyle.fontWeight.heading,
     color: palette.foreground,
     marginTop: 4,
   },
   planPrice: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
     marginTop: 8,
   },
@@ -552,10 +548,10 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: themeStyle.radius.control,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: palette.border,
     backgroundColor: palette.background,
-    padding: 12,
+    padding: sp(12),
   },
   cardBrand: {
     height: 28,
@@ -567,31 +563,31 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     marginRight: 12,
   },
   cardBrandText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   cardNumber: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
   },
   cardExp: {
-    fontSize: 10,
+    fontSize: ts(10),
     color: palette["muted-foreground"],
   },
   invoiceId: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     color: palette.foreground,
   },
   invoiceDate: {
-    fontSize: 10,
+    fontSize: ts(10),
     color: palette["muted-foreground"],
   },
   invoiceAmount: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
     marginRight: 12,
   },

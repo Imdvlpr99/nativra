@@ -62,19 +62,19 @@ const TEXT_VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  xs: "px-3 py-1.5 gap-1",
-  sm: "px-4 py-2 gap-1.5",
-  md: "px-5 py-3 gap-2",
-  lg: "px-6 py-3.5 gap-2",
-  xl: "px-7 py-4 gap-2.5",
+  xs: "sp-px-3 sp-py-1.5 sp-gap-1",
+  sm: "sp-px-4 sp-py-2 sp-gap-1.5",
+  md: "min-h-control px-control sp-gap-2",
+  lg: "sp-px-6 sp-py-3.5 sp-gap-2",
+  xl: "sp-px-7 sp-py-4 sp-gap-2.5",
 };
 
 const TEXT_SIZES: Record<ButtonSize, string> = {
-  xs: "text-xs font-semibold",
-  sm: "text-sm font-semibold",
-  md: "text-[15px] font-semibold",
-  lg: "text-base font-semibold",
-  xl: "text-[17px] font-semibold",
+  xs: "type-xs weight-label",
+  sm: "type-sm weight-label",
+  md: "type-sm weight-label",
+  lg: "type-base weight-label",
+  xl: "type-base weight-label",
 };
 
 // ---------------------------------------------------------------------------

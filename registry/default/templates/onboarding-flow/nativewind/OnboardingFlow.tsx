@@ -60,34 +60,34 @@ export function OnboardingFlow({
   };
 
   return (
-    <View className={cn("flex-1 justify-between p-8 bg-background select-none", className)}>
+    <View className={cn("flex-1 justify-between sp-p-8 bg-background select-none", className)}>
       {/* Top Header Controls */}
       <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-1.5">
+        <View className="flex-row items-center sp-gap-1.5">
           <View className="h-2 w-2 rounded-full bg-primary" />
-          <Text className="text-xs font-bold text-muted-foreground uppercase tracking-widest font-mono">
+          <Text className="type-xs weight-title text-muted-foreground uppercase tracking-widest font-mono">
             {currentSlide.badge}
           </Text>
         </View>
 
         {!isLast && (
-          <Pressable accessibilityRole="button" onPress={onSkip} className="p-2">
-            <Text className="text-xs font-semibold text-muted-foreground hover:text-muted-foreground">Skip</Text>
+          <Pressable accessibilityRole="button" onPress={onSkip} className="sp-p-2">
+            <Text className="type-xs weight-label text-muted-foreground hover:text-muted-foreground">Skip</Text>
           </Pressable>
         )}
       </View>
 
       {/* Middle Illustration & Text */}
       <View className="items-center text-center space-y-6 my-auto">
-        <View className="h-32 w-32 rounded-card bg-card border border-border items-center justify-center shadow-2xl shadow-primary/10">
+        <View className="surface h-32 w-32 rounded-card items-center justify-center shadow-2xl shadow-primary/10">
           <Text className="text-6xl">{currentSlide.emoji}</Text>
         </View>
 
-        <View className="space-y-3 px-4">
-          <Text className="text-2xl font-black text-foreground text-center tracking-tight">
+        <View className="space-y-3 sp-px-4">
+          <Text className="type-2xl weight-heading text-foreground text-center tracking-tight">
             {currentSlide.title}
           </Text>
-          <Text className="text-sm text-muted-foreground text-center leading-relaxed">
+          <Text className="type-sm text-muted-foreground text-center leading-relaxed">
             {currentSlide.description}
           </Text>
         </View>
@@ -95,7 +95,7 @@ export function OnboardingFlow({
 
       {/* Bottom Navigation & Pagination Dots */}
       <View className="space-y-6">
-        <View className="flex-row items-center justify-center gap-2">
+        <View className="flex-row items-center justify-center sp-gap-2">
           {slides.map((_, idx) => (
             <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
               key={idx}
@@ -110,9 +110,9 @@ export function OnboardingFlow({
 
         <Pressable accessibilityRole="button"
           onPress={handleNext}
-          className="w-full rounded-card bg-primary py-4 items-center justify-center shadow-lg shadow-primary/25 active:scale-95 transition-all"
+          className="w-full rounded-card bg-primary sp-py-4 items-center justify-center shadow-lg shadow-primary/25 active:scale-95 transition-all"
         >
-          <Text className="text-sm font-bold text-primary-foreground">
+          <Text className="type-sm weight-title text-primary-foreground">
             {isLast ? "Get Started" : "Continue"}
           </Text>
         </Pressable>

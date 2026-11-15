@@ -15,7 +15,7 @@ import {
   StyleSheet,
   type ViewProps,
 } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   fallback: {
-    fontWeight: "600",
+    fontWeight: themeStyle.fontWeight.label,
   },
 });
 

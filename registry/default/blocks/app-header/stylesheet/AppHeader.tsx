@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface AppHeaderProps {
   title: string;
@@ -137,8 +137,8 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     backgroundColor: palette.background,
     borderBottomWidth: 1,
     borderBottomColor: palette.border,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(12),
   },
   topBar: {
     flexDirection: "row",
@@ -148,7 +148,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
   leftSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
     flex: 1,
     marginRight: 8,
   },
@@ -156,28 +156,26 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   titleText: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.foreground,
     letterSpacing: -0.2,
   },
   subtitleText: {
-    fontSize: 12,
+    fontSize: ts(12),
     color: palette["muted-foreground"],
     marginTop: 2,
   },
   rightSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   iconBtn: {
+    ...surface(palette),
     height: 36,
     width: 36,
     borderRadius: themeStyle.radius.button,
-    backgroundColor: palette.card,
-    borderWidth: 1,
-    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -188,7 +186,7 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     right: -4,
     minWidth: 18,
     height: 18,
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
     borderRadius: 9,
     backgroundColor: palette.destructive,
     alignItems: "center",
@@ -197,42 +195,40 @@ const createStyles = (palette: ThemeColors) => StyleSheet.create({
     borderColor: palette.border,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette["destructive-foreground"],
-    lineHeight: 12,
+    lineHeight: ts(12),
   },
   avatarBtn: {
     height: 36,
     width: 36,
     borderRadius: 18,
     backgroundColor: alpha(palette.primary, 0.15),
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(palette.primary, 0.4),
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 4,
   },
   avatarText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     color: palette.primary,
   },
   searchBar: {
+    ...surface(palette),
     marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: palette.card,
-    borderWidth: 1,
-    borderColor: palette.border,
     borderRadius: themeStyle.radius.control,
-    paddingHorizontal: 12,
+    paddingHorizontal: sp(12),
     height: 40,
   },
   searchInput: {
     flex: 1,
     marginLeft: 10,
-    fontSize: 13,
+    fontSize: ts(13),
     color: palette.foreground,
   },
 });

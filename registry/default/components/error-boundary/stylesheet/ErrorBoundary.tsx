@@ -1,7 +1,7 @@
 /** Nativra — ErrorBoundary (StyleSheet). Install: npx nativra-cli add error-boundary */
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { type ThemeColors, alpha, useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -70,23 +70,23 @@ function ErrorFallback({ title, message, onReset }: { title: string; message: st
 const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     borderRadius: themeStyle.radius.card,
-    borderWidth: 1,
+    borderWidth: themeStyle.borderWidth,
     borderColor: alpha(c.destructive, 0.3),
     backgroundColor: alpha(c.destructive, 0.08),
-    padding: 20,
+    padding: sp(20),
   },
-  header: { flexDirection: "row", alignItems: "center", gap: 8 },
-  icon: { fontSize: 16 },
-  title: { fontSize: 14, fontWeight: "700", color: c.destructive },
-  message: { marginTop: 6, fontSize: 12, lineHeight: 18, color: c.destructive },
+  header: { flexDirection: "row", alignItems: "center", gap: sp(8) },
+  icon: { fontSize: ts(16) },
+  title: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.destructive },
+  message: { marginTop: 6, fontSize: ts(12), lineHeight: ts(18), color: c.destructive },
   button: {
     marginTop: 16,
     alignSelf: "flex-start",
     borderRadius: themeStyle.radius.control,
     backgroundColor: c.destructive,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(8),
   },
-  buttonText: { fontSize: 12, fontWeight: "600", color: c["destructive-foreground"] },
+  buttonText: { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label, color: c["destructive-foreground"] },
 });
 

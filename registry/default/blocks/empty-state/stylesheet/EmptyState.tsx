@@ -9,7 +9,7 @@
  */
 import React from "react";
 import { View, StyleSheet, type ViewStyle } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 import { Card } from "./Card";
 import { Text } from "./Text";
 import { Button } from "./Button";
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
+    padding: sp(32),
   },
   iconCircle: {
     width: 64,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   icon: {
-    fontSize: 28,
+    fontSize: ts(28),
   },
   title: {
     textAlign: "center",

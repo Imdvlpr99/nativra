@@ -59,19 +59,19 @@ export function Alert({
   return (
     <View
       accessibilityRole="alert"
-      className={`w-full rounded-card border p-4 flex-row items-start gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
+      className={`w-full rounded-card border sp-p-4 flex-row items-start sp-gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
       {...props}
     >
       {icon && <View className="mt-0.5 shrink-0">{icon}</View>}
 
       <View className="flex-1 space-y-1">
         {title && (
-          <Text className={`text-sm font-bold ${TITLE_VARIANTS[variant]}`}>
+          <Text className={`type-sm weight-title ${TITLE_VARIANTS[variant]}`}>
             {title}
           </Text>
         )}
         {description && (
-          <Text className={`text-xs leading-relaxed ${DESC_VARIANTS[variant]}`}>
+          <Text className={`type-xs leading-relaxed ${DESC_VARIANTS[variant]}`}>
             {description}
           </Text>
         )}
@@ -83,9 +83,9 @@ export function Alert({
           accessibilityRole="button"
           accessibilityLabel="Dismiss alert"
           onPress={onClose}
-          className="p-1 -mr-1 -mt-1 rounded-control active:opacity-60"
+          className="sp-p-1 -mr-1 -mt-1 rounded-control active:opacity-60"
         >
-          <Text className={`text-xs font-bold ${DESC_VARIANTS[variant]}`}>✕</Text>
+          <Text className={`type-xs weight-title ${DESC_VARIANTS[variant]}`}>✕</Text>
         </Pressable>
       )}
     </View>

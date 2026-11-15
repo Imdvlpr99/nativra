@@ -1,7 +1,7 @@
 /** Nativra — BottomTabBar (StyleSheet). Install: npx nativra-cli add bottom-tab-bar */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
-import { type ThemeColors, alpha, useThemeColors } from "@/hooks/use-theme-colors";
+import { type ThemeColors, alpha, useThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface BottomTabItem {
   id: string;
@@ -69,14 +69,14 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: c.border,
     backgroundColor: c.background,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(8),
   },
-  tabItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 4 },
+  tabItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: sp(4) },
   iconWrap: { position: "relative", alignItems: "center", justifyContent: "center" },
-  pill: { borderRadius: 9999, paddingHorizontal: 14, paddingVertical: 4 },
+  pill: { borderRadius: 9999, paddingHorizontal: sp(14), paddingVertical: sp(4) },
   pillActive: { backgroundColor: alpha(c.primary, 0.08) },
-  icon: { fontSize: 14 },
+  icon: { fontSize: ts(14) },
   badge: {
     position: "absolute",
     right: -4,
@@ -87,10 +87,10 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.destructive,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
   },
-  badgeText: { fontSize: 9, fontWeight: "700", color: c["primary-foreground"] },
-  label: { marginTop: 4, fontSize: 11, fontWeight: "500", color: c["muted-foreground"] },
-  labelActive: { fontWeight: "700", color: c.primary },
+  badgeText: { fontSize: ts(9), fontWeight: themeStyle.fontWeight.title, color: c["primary-foreground"] },
+  label: { marginTop: 4, fontSize: ts(11), fontWeight: "500", color: c["muted-foreground"] },
+  labelActive: { fontWeight: themeStyle.fontWeight.title, color: c.primary },
 });
 
