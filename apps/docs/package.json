@@ -15,7 +15,7 @@
     "clean": "rimraf dist dist-server",
     "preview:build": "node scripts/build-preview.mjs",
     "test": "vitest run",
-    "pretest": "node ../../scripts/build-registry.mjs"
+    "pretest": "node ../../scripts/build-registry.mjs --out .test-registry"
   },
   "dependencies": {
     "@codemirror/lang-css": "6.3.0",

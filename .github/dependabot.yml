@@ -14,13 +14,21 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
-    # Expo 52 (the preview app and examples) builds only with Babel 7, and Metro 0.81 needs
-    # image-size 1.x. Lift these when moving to an Expo SDK that supports the newer majors.
+    # Expo 52 (the preview app and examples) builds only with Babel 7 and React Native 0.76, and
+    # Metro 0.81 needs image-size 1.x. React Native and react-native-web are 0.x, so a "minor"
+    # bump (0.76 -> 0.88) is a breaking one. Move these with the Expo SDK (`npx expo install
+    # --fix`), not one by one; lift the rules when upgrading the SDK.
     ignore:
       - dependency-name: "@babel/core"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "@babel/runtime"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "image-size"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native-web"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     groups:
       production-dependencies:
         dependency-type: "production"

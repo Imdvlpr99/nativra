@@ -5,7 +5,9 @@ import { PlaygroundShell, type Line } from "./cli";
 import { starterProject, type ProjectFiles, type Target } from "./project";
 
 // The shell fetches /registry.json and /items/<id>.json; serve them from the built registry.
-const REGISTRY = resolve(__dirname, "../../../../dist/registry");
+// Built by the pretest script into a private folder: rebuilding the shared dist/registry would
+// race with the CLI tests that read it when Turbo runs the packages in parallel.
+const REGISTRY = resolve(__dirname, "../../.test-registry");
 
 beforeAll(() => {
   vi.stubGlobal("fetch", async (url: string) => {
