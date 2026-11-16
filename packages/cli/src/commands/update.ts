@@ -1,12 +1,14 @@
 import type { Command } from "commander";
-import { readFile } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import chalk from "chalk";
 import type { RegistryItem } from "@nativra/registry-schema";
-import { sha256 } from "@nativra/utils";
 import { createClient, formatItemRef, parseItemRef } from "../client.js";
-import { loadConfig } from "../config.js";
+import { loadConfig, type NativraConfig } from "../config.js";
 import {
+  assertSafeWriteTarget,
+  contentHash,
   createBackup,
+  sameContent,
   upstreamHashes,
   discardBackup,
   PartialRollbackError,
@@ -17,6 +19,9 @@ import {
   renderFile,
   writeLock,
   toLockKey,
+  registryClash,
+  resolveLockFilePath,
+  type LockEntry,
   type PlannedInstallFile,
 } from "../install.js";
 import {
@@ -28,6 +33,37 @@ import {
 import { markFailed, printable, readLockOrExit } from "./shared.js";
 import { ensureNativeWindTheme, installedStyleId, installedThemeId } from "../theme-css.js";
 
+interface DroppedFile {
+  /** The key as recorded in the lock entry (legacy entries may hold absolute paths) */
+  key: string;
+  path: string;
+  exists: boolean;
+  /** Changed since Nativra wrote it */
+  edited: boolean;
+}
+
+/**
+ * Tracked files of an installed item that its registry version no longer ships. Themes and styles
+ * are skipped: `theme add --as` records extra files under the theme's id on purpose.
+ */
+async function droppedFiles(cwd: string, item: RegistryItem, entry: LockEntry, config: NativraConfig): Promise<DroppedFile[]> {
+  if (item.type === "theme" || item.type === "style") return [];
+  const shipped = new Set(filesForTarget(item, config).map((f) => toLockKey(cwd, destPathFor(cwd, item, f, config))));
+  const dropped: DroppedFile[] = [];
+  for (const [key, hash] of Object.entries(entry.files)) {
+    let path: string;
+    try {
+      path = resolveLockFilePath(cwd, key);
+    } catch {
+      continue; // an unsafe entry is never touched; `remove` reports it
+    }
+    if (shipped.has(toLockKey(cwd, path))) continue;
+    const local = await readFile(path, "utf8").catch(() => null);
+    dropped.push({ key, path, exists: local !== null, edited: local !== null && contentHash(local) !== hash });
+  }
+  return dropped;
+}
+
 export function registerUpdateCommand(program: Command) {
   program
     .command("update [ids...]")
@@ -36,7 +72,9 @@ export function registerUpdateCommand(program: Command) {
     .option("--registry <url>", "Override registry location")
     .option("--force", "Overwrite locally modified files")
     .option("--dry-run", "Show what would change without writing anything")
-    .action(async (ids: string[], options: { cwd: string; registry?: string; force?: boolean; dryRun?: boolean }) => {
+    .option("--check", "Like --dry-run, but exit with code 1 if anything is out of date (for CI)")
+    .action(async (ids: string[], options: { cwd: string; registry?: string; force?: boolean; dryRun?: boolean; check?: boolean }) => {
+      if (options.check) options.dryRun = true;
       const config = await loadConfig(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -54,6 +92,8 @@ export function registerUpdateCommand(program: Command) {
       const npmDeps = new Map<string, PackageDependency>();
       const handled = new Set<string>();
       let pending = 0;
+      /** Files with a registry change that local edits or an untracked file keep from applying. */
+      let blocked = 0;
 
       for (const target of targets) {
         let items: RegistryItem[];
@@ -69,6 +109,8 @@ export function registerUpdateCommand(program: Command) {
               ? (lock.items[id]?.registry ?? "default")
               : ref.registry;
           const resolved = await client.resolveWithSources(id, registry);
+          const clash = options.registry ? undefined : registryClash(resolved, lock);
+          if (clash) throw new Error(clash);
           items = resolved.map((r) => r.item);
           for (const r of resolved) registryOf.set(r.item.id, r.registry);
         } catch (e) {
@@ -117,26 +159,35 @@ export function registerUpdateCommand(program: Command) {
             const local = await readFile(dest, "utf8").catch(() => null);
 
             // Same version, different source: either the registry forgot a version bump or the
-            // content was tampered with. Either way, review before trusting it.
+            // content was tampered with. Either way, review before trusting it. A file that already
+            // matches what the registry renders has nothing left to review.
             const recordedUpstream = entry?.upstream?.[key];
-            if (entry?.version === item.version && recordedUpstream && file.hash && recordedUpstream !== file.hash.toLowerCase()) {
+            const upToDate = local !== null && sameContent(local, next);
+            if (!upToDate && entry?.version === item.version && recordedUpstream && file.hash && recordedUpstream !== file.hash.toLowerCase()) {
               console.log(
-                chalk.yellow(`  ⚠ ${dest}: the registry changed this file without bumping ${item.id} past ${item.version}. Review it with 'nativra diff ${item.id}'.`)
+                chalk.yellow(`  ⚠ ${printable(dest)}: the registry changed this file without bumping ${item.id} past ${item.version}. Review it with 'nativra diff ${item.id}'.`)
               );
             }
 
-            if (local === next) {
-              console.log(chalk.gray(`  = ${dest} (up to date)`));
-              unchanged[dest] = sha256(next);
+            if (local !== null && sameContent(local, next)) {
+              console.log(chalk.gray(`  = ${printable(dest)} (up to date)`));
+              unchanged[dest] = contentHash(next);
               continue;
             }
             if (local !== null && isNewDependency) {
-              console.log(chalk.yellow(`  ! ${dest} already exists and is not tracked — skipped`));
+              console.log(chalk.yellow(`  ! ${printable(dest)} already exists and is not tracked — skipped`));
+              blocked++;
               continue;
             }
-            const locallyModified = local !== null && sha256(local) !== recordedHash;
+            const locallyModified = local !== null && contentHash(local) !== recordedHash;
             if (locallyModified && !options.force) {
-              console.log(chalk.yellow(`  ! ${dest} has local changes — skipped (use --force, or 'nativra diff ${item.id}')`));
+              if (recordedHash !== undefined && contentHash(next) === recordedHash) {
+                // The registry still renders what was installed: the only difference is the user's edit.
+                console.log(chalk.gray(`  = ${printable(dest)} (your edits; no registry changes)`));
+                continue;
+              }
+              console.log(chalk.yellow(`  ! ${printable(dest)} has local changes — skipped (use --force, or 'nativra diff ${item.id}')`));
+              blocked++;
               continue;
             }
             // Created files are recorded too (as absent before), so rollback removes them.
@@ -144,11 +195,25 @@ export function registerUpdateCommand(program: Command) {
             plan.push({ componentId: item.id, destPath: dest, content: next, action: local === null ? "create" : "overwrite" });
           }
 
+          // Files the installed version had that this version no longer ships.
+          const dropped = entry ? await droppedFiles(options.cwd, item, entry, config) : [];
+
           if (options.dryRun) {
-            for (const p of plan) console.log(chalk.cyan(`  ~ would ${p.action === "create" ? "create" : "update"} ${p.destPath}`));
-            pending += plan.length;
+            for (const p of plan) console.log(chalk.cyan(`  ~ would ${p.action === "create" ? "create" : "update"} ${printable(p.destPath)}`));
+            for (const d of dropped) {
+              console.log(
+                chalk.cyan(
+                  d.edited
+                    ? `  ~ would stop tracking ${printable(d.path)} (no longer part of ${item.id}; your edits are kept)`
+                    : `  ~ would remove ${printable(d.path)} (no longer part of ${item.id})`
+                )
+              );
+            }
+            pending += plan.length + dropped.length;
             continue;
           }
+          // Unedited dropped files are removed after the update, so they are backed up with it.
+          for (const d of dropped) if (d.exists && !d.edited) toBackup.push({ destPath: d.path, exists: true });
 
           let backupId: string | undefined;
           if (toBackup.length > 0) {
@@ -179,7 +244,22 @@ export function registerUpdateCommand(program: Command) {
             markFailed();
             continue;
           }
-          for (const path of Object.keys(writtenFiles)) console.log(chalk.green(`  ✓ Updated ${path}`));
+          for (const path of Object.keys(writtenFiles)) console.log(chalk.green(`  ✓ Updated ${printable(path)}`));
+          for (const d of dropped) {
+            if (d.edited) {
+              console.log(chalk.yellow(`  ! ${printable(d.path)} is no longer part of ${item.id}; kept with your edits and no longer tracked`));
+            } else if (d.exists) {
+              try {
+                await assertSafeWriteTarget(options.cwd, d.path);
+                await rm(d.path, { force: true });
+                console.log(chalk.green(`  - Removed ${printable(d.path)} (no longer part of ${item.id})`));
+              } catch (err) {
+                console.error(chalk.yellow(`  ⚠ Could not remove ${printable(d.path)}: ${(err as Error).message}`));
+              }
+            }
+            delete entry?.files[d.key];
+            if (entry?.upstream) delete entry.upstream[d.key];
+          }
           recordLockEntry(lock, options.cwd, item, { ...unchanged, ...writtenFiles }, {
             registry: registryOf.get(item.id),
             upstream: upstreamHashes(options.cwd, item, config),
@@ -193,8 +273,12 @@ export function registerUpdateCommand(program: Command) {
         console.log(
           pending > 0
             ? chalk.bold(`\n[Dry Run] ${pending} file(s) would change. Nothing was written.\n`)
-            : chalk.bold.green("\n✓ Everything is up to date.\n")
+            : blocked > 0
+              ? chalk.bold.yellow(`\n[Dry Run] Nothing would change; ${blocked} file(s) with registry changes were skipped (see above).\n`)
+              : chalk.bold.green("\n✓ Everything is up to date.\n")
         );
+        // --check: CI fails while anything is out of date, including updates blocked by local edits.
+        if (options.check && pending + blocked > 0) process.exitCode = 1;
         return;
       }
 

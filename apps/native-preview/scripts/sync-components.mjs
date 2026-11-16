@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Copies the StyleSheet implementation of every registry component, block and template, plus
- * the use-theme-colors hook and every theme, into apps/native-preview/components/nativra, so the
+ * every hook and every theme, into apps/native-preview/components/nativra, so the
  * preview app runs the exact source the CLI installs. The preview app has no path aliases, so
  * registry aliases are rewritten to sibling imports.
  *
@@ -66,7 +66,14 @@ export function useColorScheme(): "light" | "dark" | null | undefined {
 }
 `
 );
-await copy(join(registry, "hooks/use-theme-colors/use-theme-colors.ts"), "use-theme-colors.ts");
+// Every hook: components import them (use-theme-colors, use-reduced-motion, ...) as siblings.
+// use-color-scheme is skipped: preview-env.ts provides the URL-aware useColorScheme instead.
+for (const id of (await readdir(join(registry, "hooks"))).sort()) {
+  if (id === "use-color-scheme") continue;
+  for (const f of await readdir(join(registry, "hooks", id))) {
+    if (/\.tsx?$/.test(f)) await copy(join(registry, "hooks", id, f), f);
+  }
+}
 
 // Every theme, plus a theme.ts that picks one from the URL.
 const themeIds = (await readdir(join(registry, "themes"))).sort();
@@ -150,6 +157,11 @@ export type PreviewItemType = "component" | "block" | "template";
 export const ITEMS: Record<string, { type: PreviewItemType; Component: ComponentType<any> }> = {
 ${items.map(([id, type, name]) => `  "${id}": { type: "${type.replace(/s$/, "")}", Component: ${name} },`).join("\n")}
 };
+
+/** The same components with their exact types, for fixture-check.ts. */
+export const ITEM_COMPONENTS = {
+${items.map(([id, , name]) => `  "${id}": ${name},`).join("\n")}
+} as const;
 `
 );
 // The playground's NativeWind target compiles classes with Tailwind's browser build, served from

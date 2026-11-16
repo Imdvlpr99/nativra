@@ -24,7 +24,7 @@ export function HeaderBar({
   ...rest
 }: HeaderBarProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <View
       accessibilityRole="header"

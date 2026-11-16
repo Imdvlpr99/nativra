@@ -36,7 +36,7 @@ export function Fab({
   ...props
 }: FabProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const isExtended = Boolean(label);
 
   return (

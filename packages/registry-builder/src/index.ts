@@ -79,6 +79,94 @@ export interface BuildResult {
   errors: string[];
 }
 
+/**
+ * Accessibility rules a source file can be checked against without running it. An "adjustable"
+ * element is announced as adjustable (swipe up or down), so it must handle those swipes; without
+ * onAccessibilityAction the swipe silently does nothing.
+ */
+export function checkAccessibility(item: RegistryItem): string[] {
+  const errors: string[] = [];
+  for (const file of item.files) {
+    const src = file.content ?? "";
+    if (/accessibilityRole=\{?[^}\n]*["']adjustable["']/.test(src) && !/\bonAccessibilityAction\b/.test(src)) {
+      errors.push(`${file.path}: accessibilityRole "adjustable" needs onAccessibilityAction (increment/decrement)`);
+    }
+  }
+  return errors;
+}
+
+/** The install folder an item type shares with others under the CLI's default configuration. */
+function installFolder(type: RegistryItem["type"]): string {
+  switch (type) {
+    case "hook":
+      return "hooks";
+    case "utility":
+      return "utils";
+    case "theme":
+    case "style":
+      return "themes";
+    default:
+      // components, templates, and blocks (blocksDir defaults to componentsDir)
+      return "components";
+  }
+}
+
+/**
+ * Files from different items that would install under the same name in the same folder, so one
+ * would overwrite the other. Themes share theme.ts and styles share style.ts on purpose: each
+ * fills that one slot.
+ */
+export function findFileCollisions(items: RegistryItem[]): string[] {
+  const owners = new Map<string, RegistryItem>();
+  const errors: string[] = [];
+  for (const item of items) {
+    for (const target of item.stylingTargets) {
+      const names = new Set(
+        item.files.filter((f) => !f.target || f.target === target).map((f) => f.path.split(/[/\\]/).pop() ?? f.path)
+      );
+      for (const name of names) {
+        const key = `${installFolder(item.type)}/${target}/${name}`;
+        const other = owners.get(key);
+        if (!other) {
+          owners.set(key, item);
+        } else if (other.id !== item.id && !(other.type === item.type && (item.type === "theme" || item.type === "style"))) {
+          errors.push(`[${item.id}] ${name} would overwrite the file of the same name from "${other.id}" (${target})`);
+        }
+      }
+    }
+  }
+  return [...new Set(errors)];
+}
+
+/**
+ * Cycles among same-registry dependencies, one error per cycle ("a -> b -> a"). The CLI would
+ * refuse to install any item on such a cycle, so the build refuses to publish it.
+ */
+export function findDependencyCycles(items: RegistryItem[], registryName: string): string[] {
+  const deps = new Map(
+    items.map((i) => [
+      i.id,
+      (i.registryDependencies ?? []).filter((d) => (d.registry ?? "default") === registryName).map((d) => d.id),
+    ])
+  );
+  const done = new Set<string>();
+  const errors: string[] = [];
+  const visit = (id: string, stack: string[]) => {
+    const at = stack.indexOf(id);
+    if (at >= 0) {
+      errors.push(`[${id}] Dependency cycle: ${[...stack.slice(at), id].join(" -> ")}`);
+      return;
+    }
+    if (done.has(id)) return;
+    stack.push(id);
+    for (const dep of deps.get(id) ?? []) visit(dep, stack);
+    stack.pop();
+    done.add(id);
+  };
+  for (const id of deps.keys()) visit(id, []);
+  return errors;
+}
+
 export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
   const registryName = config.registryName ?? "default";
   const registrySourceDir = join(config.sourceDir, registryName);
@@ -146,11 +234,8 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           }
         }
 
-        // Set updatedAt to now if not present
-        if (!def["updatedAt"]) {
-          def["updatedAt"] = new Date().toISOString();
-        }
-
+        // `updatedAt` is only ever the authored value: stamping the build time made every build
+        // rewrite every item file, so identical sources never produced identical output.
         const parsed = RegistryItemSchema.safeParse(def);
         if (!parsed.success) {
           errors.push(
@@ -165,9 +250,24 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           errors.push(`[${entry}] Item id "${parsed.data.id}" must match its directory name`);
           continue;
         }
+        errors.push(...checkAccessibility(parsed.data).map((e) => `[${entry}] ${e}`));
+        if (parsed.data.status === "deprecated" && !parsed.data.deprecationMessage?.trim()) {
+          errors.push(`[${entry}] A deprecated item needs a "deprecationMessage" saying what to use instead`);
+        }
         for (const file of parsed.data.files) {
           if (file.target && !parsed.data.stylingTargets.includes(file.target)) {
             errors.push(`[${entry}] File "${file.path}" targets "${file.target}", which is not listed in stylingTargets`);
+          }
+        }
+        // The CLI installs every file by its basename into one folder, so two files a project
+        // receives (same target, or untargeted) must not share a name.
+        for (const target of parsed.data.stylingTargets) {
+          const byName = new Map<string, string>();
+          for (const file of parsed.data.files.filter((f) => !f.target || f.target === target)) {
+            const name = file.path.split(/[/\\]/).pop() ?? file.path;
+            const other = byName.get(name);
+            if (other) errors.push(`[${entry}] "${file.path}" and "${other}" both install as ${name} for ${target}`);
+            byName.set(name, file.path);
           }
         }
         items.push(parsed.data);
@@ -190,6 +290,9 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
       }
     }
   }
+
+  errors.push(...findFileCollisions(items));
+  errors.push(...findDependencyCycles(items, registryName));
 
   // If errors were encountered, fail without modifying output files (Plan Section 2.7 & 3.4)
   if (errors.length > 0) {

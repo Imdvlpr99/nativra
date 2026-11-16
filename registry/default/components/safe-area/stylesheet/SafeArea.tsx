@@ -22,7 +22,7 @@ export function SafeArea({
   ...props
 }: SafeAreaProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <SafeView edges={edges} style={[styles.container, style]} {...props}>
       {children}

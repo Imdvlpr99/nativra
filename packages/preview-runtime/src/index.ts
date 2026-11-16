@@ -12,7 +12,11 @@ export interface PreviewFixture {
 /** Stand-in for required callbacks in fixtures. */
 const noop = () => {};
 
-export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
+/**
+ * Kept with its literal types (`satisfies`, not an annotation), so the preview app can check every
+ * fixture's props against the real component's props at compile time.
+ */
+const FIXTURES = {
   button: [
     { name: "Default", props: { children: "Button" } },
     { name: "Primary", props: { variant: "primary", children: "Primary" } },
@@ -85,9 +89,9 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
     { name: "Warning 75%", props: { value: 75, variant: "destructive", size: "sm" } },
   ],
   slider: [
-    { name: "Midpoint 50", props: { value: 50, min: 0, max: 100 } },
-    { name: "High Value 85", props: { value: 85, min: 0, max: 100 } },
-    { name: "Low Value 15", props: { value: 15, min: 0, max: 100 } },
+    { name: "Midpoint 50", props: { defaultValue: 50, min: 0, max: 100 } },
+    { name: "High Value 85", props: { defaultValue: 85, min: 0, max: 100 } },
+    { name: "Stepped by 10", props: { defaultValue: 30, min: 0, max: 100, step: 10 } },
     { name: "Disabled", props: { value: 40, disabled: true } },
   ],
   tabs: [
@@ -192,13 +196,12 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
 
   // Blocks
   "empty-state": [
-    { name: "Default", props: { title: "No Items Found", description: "Get started by creating your first item." } },
-    { name: "No Action", props: { title: "Inbox Zero", description: "All caught up for today!", showAction: false } },
+    { name: "With Action", props: { title: "No Items Found", description: "Get started by creating your first item.", actionLabel: "Create item", onAction: noop } },
+    { name: "No Action", props: { title: "Inbox Zero", description: "All caught up for today!" } },
   ],
   "login-form": [
-    { name: "Default", props: { title: "Welcome back", submitLabel: "Sign In" } },
-    { name: "Loading", props: { title: "Signing In", loading: true } },
-    { name: "Disabled", props: { title: "Account Suspended", disabled: true } },
+    { name: "Default", props: { onSignIn: noop, onForgotPassword: noop, onSignUp: noop } },
+    { name: "Loading", props: { onSignIn: noop, isLoading: true } },
   ],
   "user-profile": [
     { name: "Verified Pro", props: { name: "Sophia Martinez", handle: "@sophiam", verified: true, isFollowing: false } },
@@ -277,7 +280,12 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
     { name: "Member", props: { name: "Alex Kim", email: "alex@acme.dev", role: "Admin" } },
     { name: "Current user", props: { name: "Sam Rivera", email: "sam@acme.dev", role: "Owner", isCurrentUser: true } },
   ],
-};
+} satisfies Record<string, PreviewFixture[]>;
+
+/** The fixtures' exact types, for compile-time checks against component props. */
+export type FixtureDefinitions = typeof FIXTURES;
+
+export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = FIXTURES;
 
 export function getFixtures(id: string): PreviewFixture[] {
   return PREVIEW_FIXTURES[id] ?? [];

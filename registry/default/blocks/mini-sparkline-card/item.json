@@ -4,7 +4,7 @@
   "description": "Executive KPI metric card with integrated zero-dependency trend sparkline curve.",
   "type": "block",
   "status": "stable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"
@@ -38,7 +38,7 @@
   "npmDependencies": [
     {
       "package": "lucide-react-native",
-      "version": "^0.460.0"
+      "version": "^1.73.0"
     },
     {
       "package": "react-native-svg",

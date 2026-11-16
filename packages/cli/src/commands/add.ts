@@ -1,4 +1,5 @@
 import type { Command } from "commander";
+import { readFile } from "node:fs/promises";
 import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
@@ -8,6 +9,7 @@ import { loadConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
 import {
   createBackup,
+  sameContent,
   upstreamHashes,
   discardBackup,
   PartialRollbackError,
@@ -20,6 +22,7 @@ import {
   renderFile,
   lockOwnerOf,
   toLockKey,
+  registryClash,
   type PlannedInstallFile,
 } from "../install.js";
 import {
@@ -163,6 +166,9 @@ export function registerAddCommand(program: Command) {
             }
             items = resolved.map((r) => r.item);
             for (const r of resolved) registryOf.set(r.item.id, r.registry);
+            // --registry replaces every source for one run, so it is exempt.
+            const clash = options.registry ? undefined : registryClash(resolved, lock);
+            if (clash) throw new Error(clash);
             spinner.succeed(`Resolved ${items.length} item(s)`);
           } catch (err) {
             spinner.fail(chalk.red(`Failed to fetch "${printable(componentId)}": ${printable((err as Error).message)}`));
@@ -179,7 +185,7 @@ export function registerAddCommand(program: Command) {
           console.log(chalk.bold("\nInstallation plan:"));
           for (const item of items) {
             for (const file of filesForTarget(item, config)) {
-              console.log(chalk.gray(`  + ${destPathFor(options.cwd, item, file, config)}`));
+              console.log(chalk.gray(`  + ${printable(destPathFor(options.cwd, item, file, config))}`));
             }
           }
 
@@ -190,7 +196,7 @@ export function registerAddCommand(program: Command) {
               if (item.npmDependencies && item.npmDependencies.length > 0) {
                 hasDeps = true;
                 const deps = item.npmDependencies.map((d) => `${d.package}@${d.version}`).join(" ");
-                console.log(chalk.cyan(`  • ${item.name}: ${deps}`));
+                console.log(chalk.cyan(`  • ${printable(item.name)}: ${deps}`));
               }
             }
             if (!hasDeps) {
@@ -216,9 +222,11 @@ export function registerAddCommand(program: Command) {
 
           // Build transactional installation plan with import alias rewriting
           const plan: PlannedInstallFile[] = [];
+          const identical = new Set<string>();
           for (const item of items) {
             for (const file of filesForTarget(item, config)) {
               const destPath = destPathFor(options.cwd, item, file, config);
+              const content = renderFile(options.cwd, item, file, items, config);
               let action: "create" | "overwrite" | "skip" = "create";
 
               if (await fileExists(destPath)) {
@@ -227,20 +235,26 @@ export function registerAddCommand(program: Command) {
                 // never replace the installed theme or style.
                 if ((item.type === "theme" || item.type === "style") && item.id !== requestedId) {
                   action = "skip";
-                  console.log(chalk.gray(`  → Kept installed ${item.type}: ${destPath}`));
+                  console.log(chalk.gray(`  → Kept installed ${item.type}: ${printable(destPath)}`));
+                } else if (sameContent(await readFile(destPath, "utf8"), content)) {
+                  // Already exactly what would be written: no conflict to ask about, nothing to back
+                  // up. Writing it again records it in the lockfile if it wasn't tracked.
+                  action = "overwrite";
+                  identical.add(destPath);
+                  console.log(chalk.gray(`  = Already up to date: ${printable(destPath)}`));
                 } else if (conflictMode === "error") {
-                  console.error(chalk.red(`\n✗ File conflict: "${destPath}" already exists and --on-conflict=error is set.\n`));
+                  console.error(chalk.red(`\n✗ File conflict: "${printable(destPath)}" already exists and --on-conflict=error is set.\n`));
                   process.exit(1);
                 } else if (conflictMode === "overwrite") {
                   action = "overwrite";
                 } else if (conflictMode === "skip") {
                   action = "skip";
-                  console.log(chalk.gray(`  → Skipped (existing file): ${destPath}`));
+                  console.log(chalk.gray(`  → Skipped (existing file): ${printable(destPath)}`));
                 } else {
                   const { chosen } = await prompts({
                     type: "select",
                     name: "chosen",
-                    message: `${chalk.yellow(destPath)} already exists. What should Nativra do?`,
+                    message: `${chalk.yellow(printable(destPath))} already exists. What should Nativra do?`,
                     choices: [
                       { title: "Skip", value: "skip" },
                       { title: "Overwrite", value: "overwrite" },
@@ -250,19 +264,14 @@ export function registerAddCommand(program: Command) {
                 }
               }
 
-              plan.push({
-                componentId: item.id,
-                destPath,
-                content: renderFile(options.cwd, item, file, items, config),
-                action,
-              });
+              plan.push({ componentId: item.id, destPath, content, action });
             }
           }
 
           // Overwriting replaces files that may hold local edits: snapshot them first so
           // `nativra rollback <id>` can restore them.
           const overwritesByItem = new Map<string, Array<{ destPath: string; exists: boolean }>>();
-          for (const p of plan.filter((p) => p.action === "overwrite")) {
+          for (const p of plan.filter((p) => p.action === "overwrite" && !identical.has(p.destPath))) {
             // Grouped by the item that owns the file now, so rolling it back restores its tracking.
             const owner = lockOwnerOf(lock, toLockKey(options.cwd, p.destPath)) ?? p.componentId;
             const list = overwritesByItem.get(owner) ?? [];
@@ -302,7 +311,7 @@ export function registerAddCommand(program: Command) {
             continue;
           }
           for (const [path] of Object.entries(writtenFiles)) {
-            console.log(chalk.green(`  ✓ Written: ${path}`));
+            console.log(chalk.green(`  ✓ Written: ${printable(path)}`));
           }
 
           // Update lockfile metadata only after transaction commits

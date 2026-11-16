@@ -1,0 +1,16 @@
+# Text files are LF in every checkout. Registry file hashes and the CLI's lockfile hashes are
+# computed from exact bytes, and Git for Windows (core.autocrlf) would otherwise check sources out
+# as CRLF, so a registry built on Windows would differ from the one CI builds.
+* text=auto eol=lf
+
+# Binary assets: never touched by line-ending conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary

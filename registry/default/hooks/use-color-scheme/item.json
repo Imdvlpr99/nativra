@@ -3,7 +3,7 @@
   "name": "useColorScheme",
   "description": "Theme mode hook supporting system theme synchronization with manual light/dark toggle override.",
   "type": "hook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [{ "path": "use-color-scheme.ts" }],

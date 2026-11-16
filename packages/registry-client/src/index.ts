@@ -30,6 +30,44 @@ async function readLimitedText(response: Response, limit: number, url: string): 
   return Buffer.concat(chunks).toString("utf8");
 }
 
+export const MAX_REDIRECTS = 5;
+
+/** Plain HTTP is only ever allowed for a registry on this machine. */
+function isLoopbackHttp(url: URL): boolean {
+  return url.protocol === "http:" && isLoopbackHost(url);
+}
+
+function isLoopbackHost(url: URL): boolean {
+  return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+}
+
+/**
+ * Follows redirects one hop at a time, so a hop from HTTPS to plain HTTP (or from a local HTTP
+ * registry to a remote one) is refused before any request is sent to it.
+ */
+async function fetchWithSafeRedirects(url: string, signal: AbortSignal): Promise<Response> {
+  let current = new URL(url);
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    const response = await fetch(current, { signal, redirect: "manual" });
+    const location = response.headers.get("location");
+    if (response.status < 300 || response.status > 399 || response.status === 304 || !location) return response;
+    await response.body?.cancel();
+    const next = new URL(location, current);
+    if (next.protocol !== "https:" && !isLoopbackHttp(next)) {
+      throw new Error(`Registry redirect to insecure URL rejected: "${next.href}"`);
+    }
+    if (current.protocol === "https:" && next.protocol !== "https:") {
+      throw new Error(`Registry redirect to insecure URL rejected: "${next.href}"`);
+    }
+    // A local development registry stays local: it may not send the CLI to a remote host.
+    if (isLoopbackHttp(current) && !isLoopbackHost(next)) {
+      throw new Error(`Registry redirect from a local registry to a remote host rejected: "${next.href}"`);
+    }
+    current = next;
+  }
+  throw new Error(`Registry request exceeded ${MAX_REDIRECTS} redirects: ${url}`);
+}
+
 function isSafeRelativePath(targetPath: string): boolean {
   if (!targetPath || typeof targetPath !== "string") return false;
   if (
@@ -86,6 +124,8 @@ export class RegistryClient {
   private readonly manifestCache = new Map<string, RegistryManifest>();
   /** Simple in-memory cache: `registryName/itemId` -> item */
   private readonly itemCache = new Map<string, RegistryItem>();
+  /** Requests in flight, so concurrent lookups of one item share a single fetch */
+  private readonly inflight = new Map<string, Promise<RegistryItem>>();
 
   constructor(sources: RegistrySource[], options?: RegistryClientOptions) {
     if (sources.length === 0) {
@@ -124,7 +164,14 @@ export class RegistryClient {
     const cacheKey = `${registryName}/${id}`;
     const cached = this.itemCache.get(cacheKey);
     if (cached) return cached;
+    const pending = this.inflight.get(cacheKey);
+    if (pending) return pending;
+    const request = this.fetchItem(id, registryName, cacheKey).finally(() => this.inflight.delete(cacheKey));
+    this.inflight.set(cacheKey, request);
+    return request;
+  }
 
+  private async fetchItem(id: string, registryName: string, cacheKey: string): Promise<RegistryItem> {
     const source = this.findSource(registryName);
     const raw = await this.fetchJson<unknown>(source, `items/${id}.json`);
     const item = RegistryItemSchema.parse(raw);
@@ -192,6 +239,12 @@ export class RegistryClient {
       visitingStack.push(key);
       const item = await this.getItem(itemId, registry);
 
+      // Start fetching every dependency at once; the walk below stays in order and finds them
+      // cached. Failures are reported by that walk, in order, so they're ignored here.
+      for (const dep of item.registryDependencies ?? []) {
+        this.getItem(dep.id, dep.registry ?? "default").catch(() => undefined);
+      }
+
       // Resolve dependencies first
       for (const dep of item.registryDependencies ?? []) {
         await resolve(dep.id, dep.registry ?? "default");
@@ -258,8 +311,8 @@ export class RegistryClient {
     }, this.timeoutMs);
 
     try {
-      const response = await fetch(url, { signal: controller.signal });
-      // fetch follows redirects; never accept a downgrade from https to plain http
+      const response = await fetchWithSafeRedirects(url, controller.signal);
+      // Backstop for fetch implementations that follow redirects despite `redirect: "manual"`.
       if (url.startsWith("https:") && response.url && !response.url.startsWith("https:")) {
         throw new Error(`Registry redirect to insecure URL rejected: "${response.url}"`);
       }

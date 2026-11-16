@@ -5,8 +5,11 @@ import ora from "ora";
 import { join } from "node:path";
 import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
-import { fileExists } from "../install.js";
+import { createBackup, fileExists } from "../install.js";
 import { STYLE_PRESETS } from "@nativra/theme-engine";
+
+/** Backup id for the nativra.json that `init` replaces (`nativra rollback nativra-config`). */
+export const CONFIG_BACKUP_ID = "nativra-config";
 
 const STYLE_HINTS: Record<string, string> = {
   soft: "Pill buttons, generous rounding, soft shadows",
@@ -134,9 +137,20 @@ export function registerInitCommand(program: Command) {
       );
       for (const w of warnings) console.log(chalk.yellow(`  ⚠ ${w}`));
 
+      // Replacing a config loses its custom registries and aliases: keep the old one restorable.
+      const configPath = join(options.cwd, CONFIG_FILENAME);
+      let backedUp = false;
+      if (await fileExists(configPath)) {
+        await createBackup(options.cwd, CONFIG_BACKUP_ID, [{ destPath: configPath, exists: true }]);
+        backedUp = true;
+      }
+
       const spinner = ora("Writing nativra.json...").start();
       try {
         await saveConfig(options.cwd, config);
+        if (backedUp) {
+          console.log(chalk.gray(`  The previous ${CONFIG_FILENAME} was backed up. Restore it with: nativra rollback ${CONFIG_BACKUP_ID}`));
+        }
         spinner.succeed(chalk.green("nativra.json created!"));
         if (await ensureGitignored(options.cwd)) {
           console.log(chalk.gray("  Added .nativra/ (local backups) to .gitignore"));

@@ -1,9 +1,9 @@
 import type { Command } from "commander";
 import { readFile, writeFile, access } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { stripVTControlCharacters } from "node:util";
 import chalk from "chalk";
 import { checkProjectCompatibility } from "@nativra/registry-schema";
-import { sha256 } from "@nativra/utils";
 import { createClient } from "../client.js";
 import {
   CONFIG_FILENAME,
@@ -13,7 +13,7 @@ import {
   saveConfig,
   type NativraConfig,
 } from "../config.js";
-import { assertSafeWriteTarget, readLock, resolveLockFilePath } from "../install.js";
+import { assertSafeWriteTarget, contentHash, readLock, resolveLockFilePath } from "../install.js";
 import { detectProjectEnvironment } from "../detect.js";
 import { printable } from "./shared.js";
 import {
@@ -47,8 +47,9 @@ export function registerDoctorCommand(program: Command) {
     .description("Inspect project setup, dependencies, and diagnose configuration problems")
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--fix", "Automatically resolve or scaffold missing configurations")
-    .action(async (options: { cwd: string; fix?: boolean }) => {
-      console.log(chalk.bold("\n🩺 Nativra Doctor — Project Diagnostic\n"));
+    .option("--json", "Print the checks as JSON for CI (exit code 1 if any check fails)")
+    .action(async (options: { cwd: string; fix?: boolean; json?: boolean }) => {
+      if (!options.json) console.log(chalk.bold("\n🩺 Nativra Doctor — Project Diagnostic\n"));
 
       const checks: Check[] = [];
 
@@ -143,6 +144,7 @@ export function registerDoctorCommand(program: Command) {
           react: reactVer,
           typescript: tsVer,
           nativewind: nativewindVer,
+          tailwindcss: allDeps["tailwindcss"],
         });
 
         if (compatResult.compatible) {
@@ -343,7 +345,7 @@ export function registerDoctorCommand(program: Command) {
             }
             const content = await readFile(path, "utf8").catch(() => null);
             if (content === null) missingFiles.push(key);
-            else if (sha256(content) !== hash) modified++;
+            else if (contentHash(content) !== hash) modified++;
           }
         }
         if (itemCount > 0) {
@@ -384,13 +386,14 @@ export function registerDoctorCommand(program: Command) {
         if (itemCount > 0 && Object.keys(allDeps).length > 0) {
           const needed = new Set<string>();
           const client = config ? createClient(config, undefined, options.cwd) : null;
-          for (const [id, entry] of Object.entries(lock.items)) {
-            try {
-              const item = await client?.getItem(id, entry.registry ?? "default");
-              for (const dep of item?.npmDependencies ?? []) if (!allDeps[dep.package]) needed.add(dep.package);
-            } catch {
-              // Offline or removed from the registry: nothing to compare against.
-            }
+          // In parallel: one at a time, a network that drops requests cost the full timeout per item.
+          // A failure (offline, or removed from the registry) just leaves nothing to compare against.
+          const results = await Promise.allSettled(
+            Object.entries(lock.items).map(([id, entry]) => client?.getItem(id, entry.registry ?? "default"))
+          );
+          for (const result of results) {
+            if (result.status !== "fulfilled") continue;
+            for (const dep of result.value?.npmDependencies ?? []) if (!allDeps[dep.package]) needed.add(dep.package);
           }
           // A warning: in a monorepo they may be declared in the workspace root's package.json.
           checks.push({
@@ -407,6 +410,21 @@ export function registerDoctorCommand(program: Command) {
           pass: false,
           detail: (err as Error).message,
         });
+      }
+
+      if (options.json) {
+        const status = (c: Check) => (!c.pass ? "fail" : c.warn ? "warn" : "pass");
+        const report = {
+          ok: checks.every((c) => c.pass),
+          checks: checks.map((c) => ({
+            name: c.name,
+            status: status(c),
+            ...(c.detail ? { detail: stripVTControlCharacters(c.detail) } : {}),
+          })),
+        };
+        console.log(JSON.stringify(report, null, 2));
+        if (!report.ok) process.exitCode = 1;
+        return;
       }
 
       // Print Diagnostic Results

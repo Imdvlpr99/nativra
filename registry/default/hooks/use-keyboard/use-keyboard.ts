@@ -1,6 +1,6 @@
 /** Nativra — useKeyboard. Install: npx nativra-cli add use-keyboard */
 import { useEffect, useState } from "react";
-import { Keyboard, type KeyboardEvent } from "react-native";
+import { Keyboard, Platform, type KeyboardEvent } from "react-native";
 
 export function useKeyboard() {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,8 +17,11 @@ export function useKeyboard() {
       setKeyboardHeight(0);
     };
 
-    const showSub = Keyboard.addListener("keyboardDidShow", onShow);
-    const hideSub = Keyboard.addListener("keyboardDidHide", onHide);
+    // iOS sends "will" events as the keyboard starts moving, so layouts move with it; "did" events
+    // arrive after the animation. Android only sends "did" events.
+    const ios = Platform.OS === "ios";
+    const showSub = Keyboard.addListener(ios ? "keyboardWillShow" : "keyboardDidShow", onShow);
+    const hideSub = Keyboard.addListener(ios ? "keyboardWillHide" : "keyboardDidHide", onHide);
 
     return () => {
       showSub.remove();

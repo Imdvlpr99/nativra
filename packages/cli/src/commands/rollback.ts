@@ -7,6 +7,7 @@ import { loadConfig } from "../config.js";
 import {
   assertChildOfRoot,
   assertNotSymlink,
+  contentHash,
   assertSafeWriteTarget,
   backupDirFor,
   BACKUP_ID_REGEX,
@@ -60,24 +61,57 @@ export function registerRollbackCommand(program: Command) {
         else delete lockEntry.dependencies;
       }
 
+      /** Another item's tracked file this rollback restored, while that file was unedited. */
+      const ownerRefreshes: Array<{ owner: string; key: string; hash: string }> = [];
       try {
-        // Resolve every target and refuse to discard edits made after the operation being undone.
-        const targets: Array<{ entry: BackupManifest["files"][number]; targetPath: string }> = [];
+        if (!Array.isArray(manifest.files)) throw new Error(`Backup manifest in ${backupDir} has no "files" list`);
+        // Phase 1, nothing written yet: resolve every target, read and verify every backup file, and
+        // refuse to discard edits made after the operation being undone. A bad backup file then
+        // fails the rollback before any file has changed.
+        const targets: Array<{
+          entry: BackupManifest["files"][number];
+          targetPath: string;
+          /** Backup content to write back; absent for a file the operation created (it is removed) */
+          restore?: { content: string; hash: string };
+          /** What is on disk now, put back if a later write fails */
+          current: string | null;
+          cleanOwner?: string;
+        }> = [];
         const editedSince: string[] = [];
         for (const entry of manifest.files) {
+          if (typeof entry?.projectRelativePath !== "string") {
+            throw new Error(`Backup manifest in ${backupDir} has an entry without a path`);
+          }
           const targetPath = assertChildOfRoot(options.cwd, join(options.cwd, entry.projectRelativePath), "rollback target path");
           await assertSafeWriteTarget(options.cwd, targetPath);
-          targets.push({ entry, targetPath });
+
+          let restore: { content: string; hash: string } | undefined;
+          if (entry.stateBefore === "present") {
+            if (!entry.backupFileName) {
+              throw new Error(`Backup manifest entry for "${entry.projectRelativePath}" has no backup file`);
+            }
+            const safeBackupFile = assertChildOfRoot(backupDir, join(backupDir, entry.backupFileName), "backup source file");
+            await assertNotSymlink(safeBackupFile);
+            const content = await readFile(safeBackupFile, "utf8");
+            // Integrity is about the backup file's exact bytes; the lockfile hash ignores line endings.
+            if (entry.sha256 && sha256(content) !== entry.sha256.toLowerCase()) {
+              throw new Error(`Backup integrity check failed for "${entry.projectRelativePath}": SHA-256 mismatch. Nothing was changed`);
+            }
+            restore = { content, hash: contentHash(content) };
+          }
 
           // Compare against whoever tracks the file now: this item, or one that took it over since
           // (e.g. a newer theme in theme.ts after `remove zinc` + `theme add rose`).
           const key = entry.projectRelativePath;
           const owner = lock.items[id]?.files[key] !== undefined ? id : lockOwnerOf(lock, key, id);
           const recorded = owner ? lock.items[owner]?.files[key] : undefined;
-          if (recorded && (await fileExists(targetPath))) {
-            const current = sha256(await readFile(targetPath, "utf8"));
-            if (current !== recorded) editedSince.push(entry.projectRelativePath);
+          const current = (await fileExists(targetPath)) ? await readFile(targetPath, "utf8") : null;
+          let cleanOwner: string | undefined;
+          if (recorded && current !== null) {
+            if (contentHash(current) !== recorded) editedSince.push(entry.projectRelativePath);
+            else if (owner !== id) cleanOwner = owner;
           }
+          targets.push({ entry, targetPath, current, ...(restore ? { restore } : {}), ...(cleanOwner ? { cleanOwner } : {}) });
         }
         if (editedSince.length > 0 && !options.force) {
           console.error(chalk.red(`\n✗ These files changed after the operation you're undoing, and rollback would discard that:`));
@@ -88,30 +122,53 @@ export function registerRollbackCommand(program: Command) {
 
         console.log(chalk.bold(`\n⏪ Rolling back "${id}" from backup ${manifest.backupId}...`));
 
-        for (const { entry, targetPath } of targets) {
-          if (entry.stateBefore === "present") {
-            if (!entry.backupFileName) {
-              throw new Error(`Backup manifest entry for "${entry.projectRelativePath}" has no backup file`);
+        // Phase 2: write. If a write fails, the files already written are put back as they were,
+        // so the project still matches the lockfile (which is only written afterwards).
+        const done: typeof targets = [];
+        try {
+          for (const target of targets) {
+            if (target.restore) {
+              await mkdir(dirname(target.targetPath), { recursive: true });
+              await writeFile(target.targetPath, target.restore.content, "utf8");
+            } else {
+              await rm(target.targetPath, { force: true });
             }
-            const safeBackupFile = assertChildOfRoot(backupDir, join(backupDir, entry.backupFileName), "backup source file");
-            await assertNotSymlink(safeBackupFile);
-            const backupContent = await readFile(safeBackupFile, "utf8");
-            const hash = sha256(backupContent);
-            if (entry.sha256 && hash !== entry.sha256.toLowerCase()) {
-              throw new Error(`Backup integrity check failed for "${entry.projectRelativePath}": SHA-256 mismatch`);
+            done.push(target);
+          }
+        } catch (err) {
+          const unrestored: string[] = [];
+          for (const { targetPath, current, entry } of done.reverse()) {
+            try {
+              if (current === null) await rm(targetPath, { force: true });
+              else await writeFile(targetPath, current, "utf8");
+            } catch {
+              unrestored.push(entry.projectRelativePath);
             }
-            await mkdir(dirname(targetPath), { recursive: true });
-            await writeFile(targetPath, backupContent, "utf8");
+          }
+          throw new Error(
+            `${(err as Error).message}. ` +
+              (unrestored.length > 0
+                ? `These files could not be put back and may hold the backup's content: ${unrestored.join(", ")}`
+                : "Every file was put back as it was; nothing changed")
+          );
+        }
+
+        for (const { entry, restore, cleanOwner } of targets) {
+          if (restore) {
+            const hash = restore.hash;
             // A file Nativra didn't track before the operation (the user's own, replaced by
             // `add --overwrite`) goes back to untracked, so `update` won't overwrite it unasked.
             const wasTracked = manifest.lockEntry ? entry.projectRelativePath in manifest.lockEntry.files : false;
             if (lockEntry) {
               if (wasTracked) lockEntry.files[entry.projectRelativePath] = hash;
               else delete lockEntry.files[entry.projectRelativePath];
+            } else if (cleanOwner) {
+              // A snapshot with no item of its own (`audit-fix`): the owner's hash follows the content
+              // back, as `audit --fix` moved it forward.
+              ownerRefreshes.push({ owner: cleanOwner, key: entry.projectRelativePath, hash });
             }
             console.log(chalk.green(`  ✓ Restored ${entry.projectRelativePath}`));
           } else {
-            await rm(targetPath, { force: true });
             if (lockEntry) delete lockEntry.files[entry.projectRelativePath];
             console.log(chalk.yellow(`  - Removed newly created file: ${entry.projectRelativePath}`));
           }
@@ -135,6 +192,12 @@ export function registerRollbackCommand(program: Command) {
         else delete lock.items[id];
         await writeLock(options.cwd, lock);
         if (restoringEntry && lock.items[id]) console.log(chalk.green(`  ✓ "${id}" is tracked in nativra.lock.json again`));
+      } else if (ownerRefreshes.length > 0) {
+        for (const { owner, key, hash } of ownerRefreshes) {
+          const files = lock.items[owner]?.files;
+          if (files) files[key] = hash;
+        }
+        await writeLock(options.cwd, lock);
       }
 
       // Consume the snapshot so the next rollback steps further back.

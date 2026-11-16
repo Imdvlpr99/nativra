@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtemp, rm, writeFile, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { sha256 } from "@nativra/utils";
 import {
   runProjectAudit,
   planLegacyTouchableFix,
@@ -92,6 +93,28 @@ export function LegacyButton() {
     // A backup snapshot is written so the change can be rolled back
     const snapshots = await readdir(join(testDir, ".nativra", "backups", "audit-fix"));
     expect(snapshots).toHaveLength(1);
+  });
+
+  it("refreshes lock hashes of unedited tracked files only", async () => {
+    const legacy = (name: string) =>
+      `import { TouchableOpacity } from "react-native";\nexport const ${name} = () => <TouchableOpacity />;\n`;
+    const clean = legacy("Clean");
+    const edited = legacy("Edited");
+    await writeFile(join(testDir, "Clean.tsx"), clean, "utf8");
+    await writeFile(join(testDir, "Edited.tsx"), edited, "utf8");
+    const lock = {
+      items: {
+        clean: { version: "1.0.0", files: { "Clean.tsx": sha256(clean) } },
+        edited: { version: "1.0.0", files: { "Edited.tsx": sha256("what nativra originally wrote") } },
+      },
+    };
+    await writeFile(join(testDir, "nativra.lock.json"), JSON.stringify(lock), "utf8");
+
+    expect(await applyLegacyTouchableFix(testDir, await planLegacyTouchableFix(testDir))).toBe(2);
+
+    const after = JSON.parse(await readFile(join(testDir, "nativra.lock.json"), "utf8")) as typeof lock;
+    expect(after.items.clean.files["Clean.tsx"]).toBe(sha256(await readFile(join(testDir, "Clean.tsx"), "utf8")));
+    expect(after.items.edited.files["Edited.tsx"]).toBe(lock.items.edited.files["Edited.tsx"]);
   });
 });
 

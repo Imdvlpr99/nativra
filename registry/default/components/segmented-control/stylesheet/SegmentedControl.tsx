@@ -47,7 +47,7 @@ export function SegmentedControl({
   ...props
 }: SegmentedControlProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const options: SegmentedControlOption[] = React.useMemo(() => {
     if (providedOptions) return providedOptions;
     if (values) return values.map((v) => ({ value: v, label: v }));

@@ -1,6 +1,9 @@
 /** Nativra — useHaptics. Install: npx nativra-cli add use-haptics */
 import { useCallback } from "react";
 import { Platform } from "react-native";
+// A static import: Metro resolves `import()` while bundling too, so a dynamic one never made
+// expo-haptics optional. The item installs it.
+import * as Haptics from "expo-haptics";
 
 export function useHaptics() {
   const trigger = useCallback(
@@ -9,7 +12,6 @@ export function useHaptics() {
     ) => {
       if (Platform.OS === "web") return;
       try {
-        const Haptics = await import("expo-haptics");
         if (type === "light") {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         } else if (type === "medium") {
@@ -24,7 +26,7 @@ export function useHaptics() {
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
       } catch {
-        // Gracefully no-op if expo-haptics is not installed
+        // Haptics are a nicety: a device without them (simulators, some Android) just stays silent.
       }
     },
     []

@@ -24,3 +24,24 @@ export default function Example() {
 }
 ```
 
+
+Drag the thumb or tap anywhere on the track. Values snap to `step`. Screen readers adjust it by one step with a swipe up or down.
+
+## Uncontrolled
+
+```tsx
+<Slider defaultValue={20} step={5} onSlidingComplete={(val) => save(val)} />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| value | number | — | Controlled value |
+| defaultValue | number | middle of the range | Starting value when `value` is not set |
+| min | number | 0 | Lowest value |
+| max | number | 100 | Highest value |
+| step | number | 1 | Values snap to multiples of `step` from `min` |
+| disabled | boolean | false | Ignores touches and screen-reader adjustments |
+| onValueChange | (value: number) => void | — | Every new value while dragging, tapping or adjusting |
+| onSlidingComplete | (value: number) => void | — | The final value when a drag or tap ends |

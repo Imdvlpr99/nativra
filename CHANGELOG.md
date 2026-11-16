@@ -7,6 +7,82 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### 🔒 Security
+- Registry file paths may no longer contain control characters, and `add`, `update` and `diff` strip them from every path they print, so a registry can't send terminal escape sequences. Registry names in `registryDependencies` and `nativra.json` must be lowercase letters, numbers and `-`, and names in `nativra.json` must be unique.
+- Remote registries are fetched one redirect at a time: a hop from HTTPS to plain HTTP (or from `http://localhost` to anywhere else) is refused before it is requested, and more than 5 redirects fail.
+- `nativra.lock.json`, `nativra.json`, `.gitignore` and `.nativra/backups/` are no longer written or deleted through a symbolic link.
+- Release workflow: each job gets only the permissions it needs, checkout no longer leaves a token in `.git/config`, and an optional job publishes to npm with provenance through trusted publishing.
+- The npm publish job installs dependencies with `--ignore-scripts`, so no install script runs while the job can mint a publish token.
+- `add --dry-run` strips control characters from item names too, the last registry text the CLI printed unfiltered.
+- A `http://localhost` registry may only redirect to localhost, as documented.
+- `pnpm audit` no longer ignores the two `image-size` advisories: Expo SDK 58's Metro doesn't use `image-size` at all. The unused `deepmerge` override is gone.
+- CodeQL also scans the GitHub Actions workflows (`actions` language).
+
+### ✨ CLI
+- `nativra update --check`: like `--dry-run`, but exits with code 1 while anything is out of date. An edited file whose registry source hasn't changed is reported as your edit and doesn't count.
+- `nativra doctor --json` prints the checks as JSON for CI.
+- `add` no longer treats a file that already matches what it would write as a conflict, and starts tracking it.
+- Import rewriting also covers side-effect `import "@/…"`, `import("@/…")` and `require("@/…")`.
+- `nativra diff --exit-code` exits with code 1 while the installed files differ from the registry, for CI.
+- `update` removes files that a new item version no longer ships (backed up first, so `rollback` restores them). A dropped file you edited is kept and no longer tracked.
+- `nativra doctor` warns when the project's NativeWind major isn't one Nativra's sources target, and when NativeWind 4 is paired with Tailwind CSS 4.
+- `init --force` (or answering yes to replace) backs up the previous `nativra.json`; `nativra rollback nativra-config` restores it.
+- Items with many dependencies resolve faster: each item's dependencies are fetched at once, and concurrent lookups of one item share a request.
+- `nativra info <id>` shows the installed version and whether an update is available (`installedVersion` and `updateAvailable` with `--json`).
+- `nativra list --installed` lists what the project has installed, each with the registry's current version and whether an update is available (`--json` too).
+
+### 🐛 Fixes
+- Installing an item whose id is already installed from another registry (`acme/button` after `button`) is refused instead of overwriting the other's lockfile entry and backups.
+- `audit --fix` refreshes lockfile hashes of the files it migrates that were unedited before, so `update` keeps updating them; `rollback audit-fix` moves them back.
+- A lockfile entry without a `version` or `files` map gets the "restore it from git" error instead of a crash.
+- `remove` no longer deletes the install folders named in `nativra.json` when they become empty.
+- The registry build rejects an item with two files that would install under the same name.
+- Docs home page: the registry overview counts every item type (utilities included) from the registry, so each card matches the catalog it links to.
+- `rollback` reads and verifies every backup file before it changes anything. A corrupt backup used to fail halfway, leaving some files restored and the lockfile stale; if a write fails now, the files already restored are put back.
+- Lockfile ids are looked up without `Object.prototype`, so `nativra remove constructor` reports an unknown item instead of crashing, and a registry item named like a prototype member can't leave files untracked.
+- Path checks work in a project at a drive or filesystem root (`C:\`), where every path used to be rejected.
+- On Windows, dependency installs run as one quoted command line, avoiding Node 24's DEP0190 warning.
+- `theme add` and `style add` render files through the same code as `add`, `update` and `diff`.
+- The registry build no longer stamps `updatedAt` with the build time, so identical sources build identical files. It also rejects dependency cycles and deprecated items without a `deprecationMessage`. It also rejects two items that would install a file with the same name into the same folder.
+- `doctor` fetches installed items in parallel: on a network that drops requests, each one used to wait out the 15 s timeout in turn.
+- Style and theme preset lookups ignore `Object.prototype` members, like the lockfile.
+- Package-manager detection stops at the git root, so a stray lockfile in a folder above the project no longer picks the package manager.
+- Release notes: tagging `v0.3.1` no longer picks up a `v0.3.10` section, tags with `+` work, and a tag without a CHANGELOG section fails the release instead of publishing placeholder notes.
+- **Line endings no longer count as edits.** Git for Windows checks files out with CRLF by default (`core.autocrlf`), so after a commit and checkout every installed file looked modified: `update` skipped them as local changes, `remove` asked before deleting them, `rollback` refused, `add` treated identical files as conflicts and `diff` showed every line changed. Lockfile hashes and all comparisons now ignore line endings; existing lockfiles keep working.
+- `update` no longer warns that a registry changed a file without a version bump when the installed file already matches the registry.
+
+### ♿ Registry
+- React Native 0.88 compatibility: Dialog and OTP Input no longer use APIs removed from RN 0.88's types (`StyleSheet.absoluteFillObject`, `useRef<TextInput>`).
+- Badge accepts `className` (NativeWind) and `style` (StyleSheet); the e-commerce template already passed `className` and failed to type-check.
+- Skeleton follows the style's radius roles (`sm`, `md`, `lg` → small, control, card) and holds still when Reduce Motion is on. Its `width`/`height` are typed as `DimensionValue`.
+- Toast's close button has a 44pt touch target, and screen readers hear the variant ("Error. …") that the dot shows by color.
+- 25 StyleSheet components no longer rebuild their styles on every render.
+- **Slider** works on any width. It used to assume a 200pt track and measure taps from whichever child was touched. It now drags, honours `step`, takes `defaultValue` (uncontrolled) and `onSlidingComplete`, survives `min === max`, and screen readers adjust it by one step.
+- **DatePicker** is a real date picker: a month grid with previous/next month, quick picks computed from today (they were fixed November 2026 dates), `minDate`/`maxDate`, `locale`, `weekStartsOn` and `defaultValue`. Values stay `"YYYY-MM-DD"`, read as local days.
+- OTP Input: pasting a formatted code (`123 456`) keeps every digit, Android gets SMS-code autofill (`autoComplete="sms-otp"`), and the input covers the cells so a long press offers Paste.
+- PaginationDots: with `onDotPress`, screen readers change the page with a swipe up or down.
+- BottomSheet keeps VoiceOver inside the open sheet (`accessibilityViewIsModal`), like Dialog and Select.
+- The registry build fails an `adjustable` element that doesn't handle `onAccessibilityAction`.
+- Slider calls a caller's `onLayout` instead of being replaced by it (which stopped dragging), and drags the right way in right-to-left layouts.
+- Input forwards its ref to the `TextInput` (React 18 and 19), so forms can move focus between fields.
+- LoginForm: password managers and autofill fill it (`autoComplete`, `textContentType`), screen readers read "Email" and "Password" instead of the placeholders, Next on the email field moves to the password, Go signs in, and it can't submit twice while loading.
+- `useColorScheme`: choosing "system" after "dark" or "light" follows the system again; it used to stay on the forced scheme.
+- `useKeyboard` uses the iOS "will" keyboard events, so layouts move with the keyboard instead of after it.
+- `useHaptics` imports `expo-haptics` statically: Metro resolves `import()` while bundling, so the dynamic import never made it optional.
+- npm ranges match what the sources are tested with: `lucide-react-native` `^1.73.0` (was `^0.460.0`, which stayed on 0.460.x), `react-native-safe-area-context` `>=4.10.0` and `expo-haptics` `>=13.0.0`, so new installs get the current majors that React Native 0.88 needs.
+
+### 🧰 Repo
+- The preview app now runs Expo SDK 58 (React Native 0.88, React 19.3, TypeScript 6.0) and copies every hook. Its `typecheck` also type-checks every NativeWind source with NativeWind's `className` types, which nothing compiled before.
+- Every package that runs `tsc` declares its own `typescript` (5.x), so the Expo apps' TypeScript 6 can't be picked up through hoisting.
+- The docs playground uses the CLI's own install logic (`filesForTarget`, the cross-folder import map) instead of a copy, so it can't drift from what `nativra add` writes.
+- The preview playground batches console output, so code that logs on every render no longer floods the editor page.
+- Docs pages keep `og:url` in sync on client-side navigation, and a 404's `noindex` no longer sticks to the next page.
+- `.gitattributes` makes every checkout LF, so the registry builds byte-for-byte the same on Windows as in CI.
+- CI checks that every registry npm range accepts the version the preview app tests with (`scripts/check-registry-deps.mjs`) and that the example apps are current with the registry (`scripts/check-examples.mjs`, `--fix` to refresh them). The examples are refreshed.
+- The preview type-checks fixture props against the components (`fixture-check.ts`); the LoginForm and EmptyState fixtures used props that don't exist and are fixed.
+- The docs' Yarn tab runs `npx`, since `yarn dlx` doesn't exist in Yarn 1.
+- The compatibility matrix lists Expo SDK 58, React Native 0.88.1, React 19.3, TypeScript 6.0 and NativeWind 4.2 as tested.
+
 ## [v0.3.0] - 2026-11-16
 
 ### 🧪 Playground: try Nativra in the browser

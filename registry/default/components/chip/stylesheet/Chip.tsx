@@ -26,7 +26,7 @@ export function Chip({
   ...rest
 }: ChipProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}

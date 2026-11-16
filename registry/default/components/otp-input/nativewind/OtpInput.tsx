@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, TextInput, Text, Pressable } from "react-native";
+import { View, TextInput, Text, Pressable, Platform } from "react-native";
 import { cn } from "@/lib/utils";
 
 export interface OtpInputProps {
@@ -21,7 +21,7 @@ export function OtpInput({
   secureTextEntry = false,
   className,
 }: OtpInputProps) {
-  const inputRef = React.useRef<TextInput>(null);
+  const inputRef = React.useRef<React.ComponentRef<typeof TextInput>>(null);
   const [isFocused, setIsFocused] = React.useState(false);
 
   const handleCellPress = () => {
@@ -44,12 +44,17 @@ export function OtpInput({
         }}
         keyboardType="number-pad"
         textContentType="oneTimeCode"
-        maxLength={length}
+        // SMS code autofill: iOS reads textContentType, Android reads autoComplete.
+        autoComplete={Platform.OS === "android" ? "sms-otp" : "one-time-code"}
+        caretHidden
+        // No maxLength: it would cut a pasted "123 456" before the space is removed. The
+        // handler keeps digits only and trims to `length` itself.
         editable={!disabled}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="absolute h-0 w-0 opacity-0"
-        accessibilityLabel="OTP pin input"
+        // Transparent and on top of the cells: a tap focuses it, a long press offers Paste.
+        className="absolute inset-0 z-10 opacity-0"
+        accessibilityLabel={`One-time code, ${length} digits`}
       />
 
       {/* Visible Cell Matrix */}

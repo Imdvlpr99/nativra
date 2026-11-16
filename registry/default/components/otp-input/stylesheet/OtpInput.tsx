@@ -4,6 +4,7 @@ import {
   TextInput,
   Text,
   Pressable,
+  Platform,
   StyleSheet,
   type StyleProp,
   type ViewStyle,
@@ -30,8 +31,8 @@ export function OtpInput({
   style,
 }: OtpInputProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
-  const inputRef = React.useRef<TextInput>(null);
+  const styles = React.useMemo(() => createStyles(c), [c]);
+  const inputRef = React.useRef<React.ComponentRef<typeof TextInput>>(null);
   const [isFocused, setIsFocused] = React.useState(false);
 
   const handleCellPress = () => {
@@ -54,12 +55,17 @@ export function OtpInput({
         }}
         keyboardType="number-pad"
         textContentType="oneTimeCode"
-        maxLength={length}
+        // SMS code autofill: iOS reads textContentType, Android reads autoComplete.
+        autoComplete={Platform.OS === "android" ? "sms-otp" : "one-time-code"}
+        caretHidden
+        // No maxLength: it would cut a pasted "123 456" before the space is removed. The
+        // handler keeps digits only and trims to `length` itself.
         editable={!disabled}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        // Transparent and on top of the cells: a tap focuses it, a long press offers Paste.
         style={styles.hiddenInput}
-        accessibilityLabel="OTP pin input"
+        accessibilityLabel={`One-time code, ${length} digits`}
       />
 
       {/* Visible Cell Matrix */}
@@ -98,8 +104,11 @@ const createStyles = (c: ThemeColors) => StyleSheet.create({
   },
   hiddenInput: {
     position: "absolute",
-    width: 0,
-    height: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 1,
     opacity: 0,
   },
   cellRow: {

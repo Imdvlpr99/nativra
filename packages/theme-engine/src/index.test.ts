@@ -149,4 +149,11 @@ describe("style tokens and status colors", () => {
       `.bg-scrim { background-color: rgba(0, 0, 0, ${defaultTheme.style.scrimOpacity}); }`
     );
   });
+
+  it("preset lookups ignore Object.prototype members", () => {
+    expect(STYLE_PRESETS["constructor"]).toBeUndefined();
+    expect(THEME_PRESETS["toString"]).toBeUndefined();
+    expect(getStylePreset("constructor")).toBe(STYLE_PRESETS.soft);
+    expect(getThemePreset("constructor")).toBe(THEME_PRESETS.zinc);
+  });
 });

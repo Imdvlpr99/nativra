@@ -6,9 +6,8 @@ on:
       - "v*"
   workflow_dispatch:
 
-permissions:
-  contents: write
-  packages: write
+# Each job asks for only what it needs.
+permissions: {}
 
 jobs:
   publish-gpr:
@@ -17,9 +16,16 @@ jobs:
     # so a branch can never ship an unverified version.
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Dependency install scripts run below; don't leave a write-scoped token in .git/config.
+          # The steps that need the token get it explicitly through env.
+          persist-credentials: false
 
       # The tag is the release's identity: refuse to publish if it disagrees with the CLI version.
       - name: Verify tag matches CLI version
@@ -102,3 +108,42 @@ jobs:
           else
             pnpm publish --no-git-checks
           fi
+
+  # Publishes nativra-cli to npmjs.com with a provenance attestation, using npm trusted publishing
+  # (OIDC, no long-lived token). Off until a trusted publisher is configured for nativra-cli on
+  # npmjs.com (repo Imdvlpr99/Nativra, workflow publish-github-package.yml) and the repository
+  # variable NPM_TRUSTED_PUBLISHING is set to "true".
+  publish-npm:
+    name: Publish nativra-cli to npm (provenance)
+    needs: publish-gpr
+    if: startsWith(github.ref, 'refs/tags/v') && vars.NPM_TRUSTED_PUBLISHING == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      # Trusted publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@11.21.1
+      # This job can mint an npm publish token (id-token: write), so no dependency's install
+      # script may run here. The CLI build (tsup/esbuild) doesn't need any.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm --filter "nativra-cli..." build
+      - name: Publish
+        working-directory: packages/cli
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          if npm view "nativra-cli@$VERSION" version >/dev/null 2>&1; then
+            echo "nativra-cli@$VERSION is already on npm; skipping."
+            exit 0
+          fi
+          # pnpm pack rewrites workspace: specifiers; npm publishes the tarball with provenance.
+          TGZ=$(pnpm pack --pack-destination "$RUNNER_TEMP" | tail -n 1)
+          npm publish "$TGZ" --provenance --access public

@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add login-form
  */
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, type TextInput } from "react-native";
 import { Card } from "./Card";
 import { Text } from "./Text";
 import { Label } from "./Label";
@@ -31,8 +31,10 @@ export function LoginForm({
 }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const passwordRef = React.useRef<React.ComponentRef<typeof TextInput>>(null);
 
   const handleSubmit = () => {
+    if (isLoading) return;
     onSignIn?.({ email, password });
   };
 
@@ -56,6 +58,16 @@ export function LoginForm({
             placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
+            // Read by screen readers instead of the placeholder; the visible Label isn't linked.
+            accessibilityLabel="Email"
+            // Password managers and iOS/Android autofill fill the field from these.
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="next"
+            // Keeps the keyboard up while focus moves on (single-line inputs blur on submit).
+            submitBehavior="submit"
+            onSubmitEditing={() => passwordRef.current?.focus()}
           />
         </View>
 
@@ -73,10 +85,16 @@ export function LoginForm({
             )}
           </View>
           <Input
+            ref={passwordRef}
             value={password}
             onChangeText={setPassword}
             placeholder="••••••••"
             secureTextEntry
+            accessibilityLabel="Password"
+            autoComplete="current-password"
+            textContentType="password"
+            returnKeyType="go"
+            onSubmitEditing={handleSubmit}
           />
         </View>
 

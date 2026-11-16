@@ -18,13 +18,21 @@ export function PaginationDots({
   ...rest
 }: PaginationDotsProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const safeTotal = Math.max(1, total);
 
   return (
     <View
-      accessibilityRole="adjustable"
+      // One element for screen readers. With onDotPress, a swipe up or down changes the page.
+      accessible
+      accessibilityRole={onDotPress ? "adjustable" : undefined}
       accessibilityLabel={`Page ${currentIndex + 1} of ${safeTotal}`}
+      accessibilityValue={{ min: 1, max: safeTotal, now: currentIndex + 1 }}
+      accessibilityActions={onDotPress ? [{ name: "increment" }, { name: "decrement" }] : undefined}
+      onAccessibilityAction={(e) => {
+        const next = currentIndex + (e.nativeEvent.actionName === "increment" ? 1 : e.nativeEvent.actionName === "decrement" ? -1 : 0);
+        if (next !== currentIndex && next >= 0 && next < safeTotal) onDotPress?.(next);
+      }}
       style={[styles.container, style]}
       {...rest}
     >

@@ -12,21 +12,28 @@ export type ListedItem = RegistryManifest["items"][number] & { registry: string;
  * are reported on stderr and skipped.
  */
 export async function listAllItems(client: RegistryClient): Promise<ListedItem[]> {
+  return (await listAllItemsWithFailures(client)).items;
+}
+
+/** Like listAllItems, but also names the registries that couldn't be read. */
+export async function listAllItemsWithFailures(client: RegistryClient): Promise<{ items: ListedItem[]; unavailable: Set<string> }> {
   const names = client.registryNames();
-  const results: ListedItem[] = [];
+  const items: ListedItem[] = [];
   const failures: string[] = [];
+  const unavailable = new Set<string>();
   for (const registry of names) {
     try {
       for (const item of await client.listItems(registry)) {
-        results.push({ ...item, registry, ref: formatItemRef(item.id, registry) });
+        items.push({ ...item, registry, ref: formatItemRef(item.id, registry) });
       }
     } catch (err) {
       failures.push(`${registry}: ${(err as Error).message}`);
+      unavailable.add(registry);
     }
   }
   if (failures.length === names.length) throw new Error(failures.join("; "));
   for (const f of failures) console.error(chalk.yellow(`  ⚠ Skipped registry ${printable(f)}`));
-  return results;
+  return { items, unavailable };
 }
 
 /** Reads nativra.lock.json, or prints why it can't be used and exits (it is never overwritten). */

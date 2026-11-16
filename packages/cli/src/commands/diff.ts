@@ -6,7 +6,7 @@ import ora from "ora";
 import { createClient, parseItemRef } from "../client.js";
 import { loadConfig } from "../config.js";
 import type { RegistryItem } from "@nativra/registry-schema";
-import { destPathFor, filesForTarget, readLock, renderFile } from "../install.js";
+import { destPathFor, filesForTarget, normalizeEol, readLock, renderFile, sameContent } from "../install.js";
 import { printable } from "./shared.js";
 
 export function registerDiffCommand(program: Command) {
@@ -15,7 +15,8 @@ export function registerDiffCommand(program: Command) {
     .description('Compare installed files with the current registry version ("button", or "<registry>/<id>")')
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry URL")
-    .action(async (id: string, options: { cwd: string; registry?: string }) => {
+    .option("--exit-code", "Exit with code 1 when the installed files differ from the registry (for CI)")
+    .action(async (id: string, options: { cwd: string; registry?: string; exitCode?: boolean }) => {
       const config = await loadConfig(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -59,20 +60,21 @@ export function registerDiffCommand(program: Command) {
         try {
           localContent = await readFile(localPath, "utf8");
         } catch {
-          console.log(chalk.yellow(`\n  Not installed: ${localPath}`));
+          console.log(chalk.yellow(`\n  Not installed: ${printable(localPath)}`));
           hasDiff = true;
           continue;
         }
 
         // Compare against what `add`/`update` would actually write (aliases rewritten)
         const registryContent = renderFile(options.cwd, item, file, related, config);
-        if (localContent === registryContent) {
-          console.log(chalk.green(`  ✓ Up to date: ${localPath}`));
+        if (sameContent(localContent, registryContent)) {
+          console.log(chalk.green(`  ✓ Up to date: ${printable(localPath)}`));
           continue;
         }
 
         hasDiff = true;
-        const patch = createPatch(localPath, localContent, registryContent, "installed", "registry");
+        // Compared as LF: a CRLF checkout would otherwise show every line as changed.
+        const patch = createPatch(localPath, normalizeEol(localContent), normalizeEol(registryContent), "installed", "registry");
         const lines = patch.split("\n");
         for (const raw of lines) {
           const line = printable(raw);
@@ -82,6 +84,7 @@ export function registerDiffCommand(program: Command) {
         }
       }
 
+      if (hasDiff && options.exitCode) process.exitCode = 1;
       if (!hasDiff) {
         console.log(chalk.bold.green(`\n✓ "${id}" is up to date.\n`));
       }

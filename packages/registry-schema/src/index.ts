@@ -37,6 +37,9 @@ export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9~][a-z0-9-._~]*\/)?[a-z0-9~][a-z0-
  */
 export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*+][a-z0-9^~>=<.*+-]*$/i;
 export const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/i;
+/** Registry names as used in nativra.json and "<registry>/<id>" references. */
+export const REGISTRY_NAME_REGEX = /^[a-z0-9][a-z0-9-]*$/;
+export const NO_CONTROL_CHARS_REGEX = /^[^\u0000-\u001f\u007f-\u009f]*$/;
 
 // ---------------------------------------------------------------------------
 // Accessibility metadata contract (V4 §3 & §15)
@@ -94,7 +97,9 @@ export const RegistryDependencySchema = z.object({
     message: "ID must be lowercase letters, numbers and hyphens, starting with a letter",
   }),
   /** Registry name, defaults to "default" */
-  registry: z.string().min(1).max(64).default("default"),
+  registry: z.string().min(1).max(64).regex(REGISTRY_NAME_REGEX, {
+    message: "Registry name must be lowercase letters, numbers and hyphens",
+  }).default("default"),
 });
 export type RegistryDependency = z.infer<typeof RegistryDependencySchema>;
 
@@ -103,8 +108,13 @@ export type RegistryDependency = z.infer<typeof RegistryDependencySchema>;
 // ---------------------------------------------------------------------------
 
 export const SourceFileSchema = z.object({
-  /** Relative path within the installed location, e.g. "components/ui/Button.tsx" */
-  path: z.string().min(1).max(260),
+  /**
+   * Relative path within the installed location, e.g. "components/ui/Button.tsx". Control
+   * characters are rejected: the CLI prints paths, so they could carry terminal escape sequences.
+   */
+  path: z.string().min(1).max(260).regex(NO_CONTROL_CHARS_REGEX, {
+    message: "Path must not contain control characters",
+  }),
   /** Styling target this file is for */
   target: StylingTargetSchema.optional(),
   /** Raw source content (populated during build) */
@@ -253,12 +263,13 @@ export function compareVersions(a: [number, number, number], b: [number, number,
   return 0;
 }
 
+/** Minimums are what the registry supports; "tested" lists what the examples and preview app run (Expo SDK 58 since 0.3). */
 export const DEFAULT_COMPATIBILITY_MATRIX: CompatibilityMatrix = {
-  reactNative: { min: "0.74.0", tested: ["0.74.5", "0.76.0", "0.76.3"] },
-  expo: { minSdk: 51, testedSdks: [51, 52] },
-  react: { min: "18.2.0", tested: ["18.2.0", "18.3.1", "19.0.0"] },
-  typescript: { min: "5.0.0", tested: ["5.3.3", "5.4.5", "5.9.3"] },
-  nativewind: { supportedVersions: ["^4.0.1", "^4.1.0"] },
+  reactNative: { min: "0.74.0", tested: ["0.74.5", "0.76.0", "0.76.3", "0.88.1"] },
+  expo: { minSdk: 51, testedSdks: [51, 52, 58] },
+  react: { min: "18.2.0", tested: ["18.2.0", "18.3.1", "19.0.0", "19.3.0"] },
+  typescript: { min: "5.0.0", tested: ["5.3.3", "5.4.5", "5.9.3", "6.0.3"] },
+  nativewind: { supportedVersions: ["^4.0.1", "^4.1.0", "^4.2.0"] },
   reactNavigation: { supportedVersions: ["^6.0.0", "^7.0.0"] },
   android: { minSdk: 24, targetSdk: 35 },
   ios: { minDeploymentTarget: "15.1" },
@@ -270,6 +281,7 @@ export interface ProjectEnvironment {
   react?: string | undefined;
   typescript?: string | undefined;
   nativewind?: string | undefined;
+  tailwindcss?: string | undefined;
 }
 
 export interface CompatibilityCheckResult {
@@ -302,6 +314,22 @@ export function checkProjectCompatibility(
         `React Native version ${env.reactNative} is below tested minimum ${matrix.reactNative.min}.`
       );
     }
+  }
+
+  // NativeWind sources are written for one NativeWind major, which pins its Tailwind major.
+  const nativewind = env.nativewind ? parseVersion(env.nativewind) : null;
+  const supportedMajors = new Set(
+    matrix.nativewind.supportedVersions.map((r) => parseVersion(r)?.[0]).filter((m): m is number => m !== undefined)
+  );
+  if (nativewind && supportedMajors.size > 0 && !supportedMajors.has(nativewind[0])) {
+    warnings.push(
+      `NativeWind ${env.nativewind} isn't supported: Nativra's NativeWind sources target ${matrix.nativewind.supportedVersions.join(" / ")}. ` +
+        `Use the StyleSheet target, or NativeWind ${[...supportedMajors].join("/")}.`
+    );
+  }
+  const tailwind = env.tailwindcss ? parseVersion(env.tailwindcss) : null;
+  if (nativewind && nativewind[0] === 4 && tailwind && tailwind[0] !== 3) {
+    warnings.push(`NativeWind 4 needs Tailwind CSS 3, but the project has tailwindcss ${env.tailwindcss}.`);
   }
 
   return {

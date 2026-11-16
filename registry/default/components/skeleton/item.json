@@ -1,10 +1,10 @@
 {
   "id": "skeleton",
   "name": "Skeleton",
-  "description": "Loading placeholder skeleton with subtle pulse animation effect.",
+  "description": "Loading placeholder skeleton with a subtle pulse that holds still when Reduce Motion is on.",
   "type": "component",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": [
     "nativewind",
     "stylesheet"
@@ -28,6 +28,10 @@
   "registryDependencies": [
     {
       "id": "use-theme-colors",
+      "registry": "default"
+    },
+    {
+      "id": "use-reduced-motion",
       "registry": "default"
     }
   ],

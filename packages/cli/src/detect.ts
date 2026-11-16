@@ -136,7 +136,7 @@ const LOCKFILES: Array<[string, PackageManager]> = [
 
 /**
  * The project's package manager: package.json's `packageManager` field ("pnpm@9.15.0"), else
- * the nearest lockfile in the project or a parent folder (a monorepo keeps it at the root),
+ * the nearest lockfile in the project or a parent folder up to the git root (a monorepo keeps it at the root),
  * else npm.
  */
 export async function detectPackageManager(cwd: string, packageManagerField?: string): Promise<PackageManager> {
@@ -147,6 +147,9 @@ export async function detectPackageManager(cwd: string, packageManagerField?: st
     for (const [file, manager] of LOCKFILES) {
       if (await fileOrDirExists(join(dir, file))) return manager;
     }
+    // The repository root is as far as the project goes: a lockfile above it (say, a stray
+    // ~/package-lock.json) belongs to something else.
+    if (await fileOrDirExists(join(dir, ".git"))) return "npm";
     const parent = dirname(dir);
     if (parent === dir) return "npm";
     dir = parent;

@@ -30,7 +30,7 @@ export function Label({
   ...props
 }: LabelProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const textColor = c.foreground;
 
   return (

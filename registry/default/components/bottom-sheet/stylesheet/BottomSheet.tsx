@@ -26,7 +26,7 @@ export function BottomSheet({
   style,
 }: BottomSheetProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   if (!isOpen) return null;
 
   return (
@@ -36,7 +36,8 @@ export function BottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.backdrop}>
+      {/* accessibilityViewIsModal: VoiceOver stays inside the sheet, like Dialog and Select. */}
+      <View style={styles.backdrop} accessibilityViewIsModal>
         {/* Backdrop Dismiss */}
         <Pressable accessibilityRole="button"
           style={StyleSheet.absoluteFill}

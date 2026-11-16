@@ -26,7 +26,8 @@ export function BottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-scrim">
+      {/* accessibilityViewIsModal: VoiceOver stays inside the sheet, like Dialog and Select. */}
+      <View className="flex-1 justify-end bg-scrim" accessibilityViewIsModal>
         {/* Backdrop Dismiss */}
         <Pressable accessibilityRole="button"
           className="absolute inset-0"

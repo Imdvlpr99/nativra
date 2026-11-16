@@ -24,7 +24,7 @@ export function RadioGroup({
   disabled = false,
 }: RadioGroupProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
 
   return (
     <View accessibilityRole="radiogroup" style={styles.group}>

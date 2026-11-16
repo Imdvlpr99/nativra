@@ -2,7 +2,8 @@ import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { buildRegistry } from "./index.js";
+import { buildRegistry, checkAccessibility, findDependencyCycles, findFileCollisions } from "./index.js";
+import type { RegistryItem } from "@nativra/registry-schema";
 
 const item = (extra: Record<string, unknown> = {}) => ({
   id: "thing",
@@ -85,6 +86,25 @@ describe("buildRegistry", () => {
     expect(r.errors.join()).toMatch(/not listed in stylingTargets/);
   });
 
+  it("rejects two files that would install under the same name", async () => {
+    const { src, out } = await setup(item({ files: [{ path: "Thing.tsx" }, { path: "./Thing.tsx", target: "stylesheet" }] }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toMatch(/both install as Thing\.tsx for stylesheet/);
+  });
+
+  it("allows the same name once per styling target", async () => {
+    const def = item({
+      stylingTargets: ["stylesheet", "nativewind"],
+      files: [
+        { path: "Thing.tsx", target: "stylesheet" },
+        { path: "Thing.tsx", target: "nativewind" },
+      ],
+    });
+    const { src, out } = await setup(def);
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors).toEqual([]);
+  });
+
   it("hydrates docs from docsPath and reports a missing docs file", async () => {
     const ok = await setup(item({ docsPath: "docs.mdx" }));
     await writeFile(join(ok.src, "default", "components", "thing", "docs.mdx"), "# Thing");
@@ -95,5 +115,72 @@ describe("buildRegistry", () => {
     const missing = await setup(item({ docsPath: "nope.mdx" }));
     const r2 = await buildRegistry({ sourceDir: missing.src, outDir: missing.out });
     expect(r2.errors.join()).toMatch(/Could not read docs file/);
+  });
+
+  it("produces identical output for identical sources (no build timestamp)", async () => {
+    const { src, out } = await setup(item());
+    await buildRegistry({ sourceDir: src, outDir: out });
+    const first = await readFile(join(out, "items", "thing.json"), "utf8");
+    await buildRegistry({ sourceDir: src, outDir: out });
+    expect(await readFile(join(out, "items", "thing.json"), "utf8")).toBe(first);
+    expect(JSON.parse(first).updatedAt).toBeUndefined();
+  });
+
+  it("requires a deprecationMessage on deprecated items", async () => {
+    const { src, out } = await setup(item({ status: "deprecated" }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toMatch(/deprecationMessage/);
+    const ok = await setup(item({ status: "deprecated", deprecationMessage: "Use other-thing." }));
+    expect((await buildRegistry({ sourceDir: ok.src, outDir: ok.out })).errors).toEqual([]);
+  });
+});
+
+describe("findDependencyCycles", () => {
+  const node = (id: string, ...deps: string[]) =>
+    ({ id, registryDependencies: deps.map((d) => ({ id: d, registry: "default" })) }) as unknown as RegistryItem;
+
+  it("reports each cycle once", () => {
+    expect(findDependencyCycles([node("a", "b"), node("b", "a"), node("c", "a")], "default")).toEqual([
+      "[a] Dependency cycle: a -> b -> a",
+    ]);
+  });
+
+  it("accepts an acyclic graph and ignores other registries", () => {
+    const external = { id: "x", registryDependencies: [{ id: "x", registry: "acme" }] } as unknown as RegistryItem;
+    expect(findDependencyCycles([node("a", "b"), node("b"), external], "default")).toEqual([]);
+  });
+});
+
+describe("findFileCollisions", () => {
+  const it_ = (id: string, type: string, ...paths: string[]) =>
+    ({ id, type, stylingTargets: ["stylesheet"], files: paths.map((path) => ({ path })) }) as unknown as RegistryItem;
+
+  it("reports two items installing the same file name into the same folder", () => {
+    const errors = findFileCollisions([it_("card", "component", "Card.tsx"), it_("promo", "block", "Promo.tsx", "Card.tsx")]);
+    expect(errors).toEqual(['[promo] Card.tsx would overwrite the file of the same name from "card" (stylesheet)']);
+  });
+
+  it("allows the same name in different folders, and themes sharing theme.ts", () => {
+    expect(
+      findFileCollisions([
+        it_("button", "component", "Button.tsx"),
+        it_("use-button", "hook", "Button.tsx"),
+        it_("zinc", "theme", "theme.ts"),
+        it_("rose", "theme", "theme.ts"),
+      ])
+    ).toEqual([]);
+  });
+});
+
+describe("checkAccessibility", () => {
+  const withSource = (content: string) => ({ files: [{ path: "nativewind/Thing.tsx", content }] }) as unknown as RegistryItem;
+
+  it("requires adjustable elements to handle increment and decrement", () => {
+    expect(checkAccessibility(withSource('<View accessibilityRole="adjustable" />'))).toEqual([
+      'nativewind/Thing.tsx: accessibilityRole "adjustable" needs onAccessibilityAction (increment/decrement)',
+    ]);
+    expect(checkAccessibility(withSource('<View accessibilityRole={x ? "adjustable" : undefined} />'))).toHaveLength(1);
+    expect(checkAccessibility(withSource('<View accessibilityRole="adjustable" onAccessibilityAction={f} />'))).toEqual([]);
+    expect(checkAccessibility(withSource('<View accessibilityRole="button" />'))).toEqual([]);
   });
 });

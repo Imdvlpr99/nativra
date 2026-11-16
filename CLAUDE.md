@@ -18,6 +18,8 @@ node scripts/build-registry.mjs [--pretty]   # registry/ -> dist/registry + mirr
 pnpm dev                   # docs site on :3000 (predev rebuilds registry)
 pnpm --filter @nativra/native-preview sync   # copy StyleSheet components into the Expo preview app
 pnpm --filter @nativra/native-preview web    # or android / ios
+node scripts/check-registry-deps.mjs   # item npm ranges accept the versions the preview tests with
+node scripts/check-examples.mjs [--fix]   # examples/ are current with dist/registry (needs CLI + registry built)
 ```
 
 Single package or single test (Vitest):
@@ -26,6 +28,7 @@ pnpm --filter nativra-cli test
 pnpm --filter nativra-cli exec vitest run src/transform.test.ts
 pnpm --filter nativra-cli exec vitest run -t "test name"
 ```
+`-t` works for every file except `e2e.test.ts`, whose tests share one project and run in order. Put self-contained CLI cases in `regressions.test.ts`.
 The CLI e2e test ([packages/cli/src/e2e.test.ts](packages/cli/src/e2e.test.ts)) runs the built `packages/cli/dist/cli.js` against `dist/registry`. Run `pnpm build` and `node scripts/build-registry.mjs` before it, or it throws.
 
 CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs typecheck, lint, build, test, `pnpm audit --audit-level=high`, and a registry build. Pushing a `v*` tag creates a GitHub Release, with notes extracted from `CHANGELOG.md` by `scripts/extract-release-notes.mjs`.
@@ -35,7 +38,7 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs typecheck, lint, 
 **Registry content: `registry/default/{components,blocks,hooks,templates,themes,utilities}/<id>/`**
 - `item.json` holds the metadata: `type`, `status`, `platforms`, `files[]` (each with `path` and an optional `target: nativewind|stylesheet`), `registryDependencies`, `npmDependencies` and `docsPath`. The shape is validated by Zod in `packages/registry-schema`.
 - `nativewind/` and `stylesheet/` hold the source. `docs.mdx` holds the docs.
-- Source must import through canonical aliases: `@/components/ui`, `@/lib/utils`, `@/hooks`, `@/blocks`. The CLI rewrites these to the consumer's paths ([packages/cli/src/transform.ts](packages/cli/src/transform.ts)), so other import styles won't be rewritten.
+- Source must import through canonical aliases: `@/components/ui`, `@/lib/utils`, `@/hooks`, `@/blocks`. The CLI rewrites these to the consumer's paths ([packages/cli/src/transform.ts](packages/cli/src/transform.ts)) in `from`, side-effect `import "…"`, `import()` and `require()` specifiers. Any other path style (e.g. `../`) won't be rewritten.
 
 **Build pipeline**
 `registry-builder` turns `registry/` into `dist/registry/registry.json` plus `items/<id>.json`, with file contents inlined. `scripts/build-registry.mjs` then mirrors this output into `apps/docs/public/` (gitignored). `apps/docs/scripts/generate-data.mjs` then writes `apps/docs/src/generated/docs-index.json` (item metadata, CLI version, compatibility matrix) and `scripts/build-cli-docs.mjs` writes `src/generated/cli.json` from the CLI's `--help`. The deployed docs site (https://nativra.vercel.app) serves as the default remote registry.
@@ -58,8 +61,8 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs typecheck, lint, 
 
 **Apps**
 - `apps/docs`: Vite 8 (Rolldown) + React 19 + React Router 7, Tailwind 3. Routes are in `src/App.tsx`, pages in `src/pages/`. `pnpm build` runs a client build, an SSR build of `src/entry-server.tsx`, then `scripts/prerender.mjs`, which writes static HTML for every route plus `sitemap.xml`, `robots.txt` and `404.html` into `dist/`. Item pages load full items from `public/items/<id>.json` (from disk while prerendering). Start dev servers from a `D:`-cased path on Windows: a lowercase drive letter duplicates modules.
-- `apps/native-preview`: an Expo app (React 18, Babel 7). `scripts/sync-components.mjs` copies the StyleSheet source of every component, block and template, the hook and all themes from `registry/` into `components/nativra`, so the preview runs exactly what the CLI installs. On web, `?item=<id>` renders `Embed.tsx` (one item, `?theme=`, `?scheme=light|dark`, `?fixture=n`, `?layout=screen`). Demo props live in `@nativra/preview-runtime`; an item without required props in a fixture renders empty or crashes.
-- **Live previews in the docs:** `apps/docs/scripts/build-preview.mjs` exports the preview app as static web (`experiments.baseUrl: "/preview"`) into `apps/docs/public/preview/` (gitignored), and item pages embed it via `src/components/PreviewFrame.tsx`. `prebuild` always re-exports; `predev` only when missing (`pnpm --filter @nativra/docs preview:build` to refresh). The docs tsconfig pins `react` types to its own React 19 because the workspace also has React 18 types.
+- `apps/native-preview`: an Expo app (Expo SDK 58, React Native 0.88, React 19, Babel 7). `scripts/sync-components.mjs` copies the StyleSheet source of every component, block and template, every hook and all themes from `registry/` into `components/nativra`, so the preview runs exactly what the CLI installs. On web, `?item=<id>` renders `Embed.tsx` (one item, `?theme=`, `?scheme=light|dark`, `?fixture=n`, `?layout=screen`). Demo props live in `@nativra/preview-runtime`; an item without required props in a fixture renders empty or crashes. Its `typecheck` also runs `scripts/check-nativewind.mjs`, which stages every NativeWind source in `.nativewind-check/` (gitignored) and type-checks it with NativeWind's `className` types; nothing else compiles the NativeWind sources.
+- **Live previews in the docs:** `apps/docs/scripts/build-preview.mjs` exports the preview app as static web (`experiments.baseUrl: "/preview"`) into `apps/docs/public/preview/` (gitignored), and item pages embed it via `src/components/PreviewFrame.tsx`. `prebuild` always re-exports; `predev` only when missing (`pnpm --filter @nativra/docs preview:build` to refresh). The docs and preview tsconfigs each pin `react` types to their own `@types/react`, so a dependency without its own copy can't resolve a different hoisted version.
 
 ## Conventions
 

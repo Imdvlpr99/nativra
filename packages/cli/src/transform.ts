@@ -1,5 +1,41 @@
-import type { RegistryItemType } from "@nativra/registry-schema";
+import type { RegistryItem, RegistryItemType, SourceFile } from "@nativra/registry-schema";
 import type { NativraConfig } from "./config.js";
+
+// This module has no Node imports on purpose: the docs playground runs it in the browser, so the
+// playground installs exactly what the CLI would.
+
+/** The files a project with this styling target receives. */
+export function filesForTarget(item: RegistryItem, config: NativraConfig): SourceFile[] {
+  return item.files.filter((f) => !f.target || f.target === config.stylingTarget);
+}
+
+/**
+ * Sibling imports (`./Card`) from `item` to files of `related` items that get installed in a
+ * different folder, mapped to the alias that reaches them. `folderOf` names an item's install
+ * folder (the CLI passes an absolute path, the playground a project path).
+ */
+export function siblingImportMap(
+  item: RegistryItem,
+  related: RegistryItem[],
+  config: NativraConfig,
+  folderOf: (item: RegistryItem) => string
+): Record<string, string> {
+  const ownFolder = folderOf(item);
+  const targets = importTargets(config);
+  const baseName = (path: string) => (path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
+  // An item's own sibling files always resolve next to it, even if a dependency shares the name.
+  const own = new Set(filesForTarget(item, config).map((f) => baseName(f.path)));
+  const map: Record<string, string> = {};
+  for (const other of related) {
+    if (other.id === item.id || folderOf(other) === ownFolder) continue;
+    const base = importBaseForType(other.type, targets);
+    for (const file of filesForTarget(other, config)) {
+      const name = baseName(file.path);
+      if (name && !own.has(name)) map[name] = `${base}/${name}`;
+    }
+  }
+  return map;
+}
 
 export interface ImportTargets {
   components: string;
@@ -71,6 +107,12 @@ export function importBaseForType(type: RegistryItemType, targets: ImportTargets
 }
 
 /**
+ * Everything before a module specifier's path, captured with its opening quote: `from "`
+ * (imports and re-exports), `import "` (side-effect imports), `import("` and `require("`.
+ */
+const SPECIFIER_OPEN = String.raw`((?:\bfrom\s+|\bimport\s*\(\s*|\bimport\s+|\brequire\s*\(\s*)["'])`;
+
+/**
  * Transforms import statements in authored registry source to match the consumer project's
  * configured aliases and directories.
  *
@@ -88,16 +130,17 @@ export function transformFileImports(
   // Replacer functions, not strings: a configured alias containing "$&" or "$1" must be inserted
   // literally rather than expanded as a replacement pattern.
   const to = (target: string) => (_match: string, open: string) => `${open}${target}`;
+  const spec = (pattern: string) => new RegExp(`${SPECIFIER_OPEN}${pattern}`, "g");
   let transformed = content
-    .replace(/(from\s+["'])@\/lib\/utils(?=["'])/g, to(targets.utils))
-    .replace(/(from\s+["'])@\/lib\/themes(?=\/|["'])/g, to(targets.themes))
-    .replace(/(from\s+["'])@\/components\/ui(?=\/|["'])/g, to(targets.components))
-    .replace(/(from\s+["'])@\/hooks(?=\/|["'])/g, to(targets.hooks))
-    .replace(/(from\s+["'])@\/blocks(?=\/|["'])/g, to(targets.blocks));
+    .replace(spec(String.raw`@\/lib\/utils(?=["'])`), to(targets.utils))
+    .replace(spec(String.raw`@\/lib\/themes(?=\/|["'])`), to(targets.themes))
+    .replace(spec(String.raw`@\/components\/ui(?=\/|["'])`), to(targets.components))
+    .replace(spec(String.raw`@\/hooks(?=\/|["'])`), to(targets.hooks))
+    .replace(spec(String.raw`@\/blocks(?=\/|["'])`), to(targets.blocks));
 
   if (Object.keys(relativeImports).length > 0) {
     transformed = transformed.replace(
-      /(from\s+["'])\.\/([A-Za-z0-9_-]+)(["'])/g,
+      spec(String.raw`\.\/([A-Za-z0-9_-]+)(["'])`),
       (match, open: string, name: string, close: string) => {
         const target = relativeImports[name];
         return target ? `${open}${target}${close}` : match;

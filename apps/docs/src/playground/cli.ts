@@ -6,7 +6,7 @@
  */
 import type { RegistryItem, RegistryItemType, RegistryManifest, SourceFile } from "@nativra/registry-schema";
 import { STYLE_PRESETS, THEME_PRESETS, getStylePreset, toCssVariables, toStyleCss } from "@nativra/theme-engine";
-import { importBaseForType, importTargets, transformFileImports } from "../../../../packages/cli/src/transform";
+import { filesForTarget, importBaseForType, importTargets, siblingImportMap, transformFileImports } from "../../../../packages/cli/src/transform";
 import type { NativraConfig } from "../../../../packages/cli/src/config";
 import { nativraJson, starterProject, type ProjectFiles, type Target } from "./project";
 
@@ -143,24 +143,11 @@ function destDir(type: RegistryItemType, config: NativraConfig): string {
 }
 
 const baseName = (path: string) => path.split(/[/\\]/).pop() ?? path;
-const filesForTarget = (item: RegistryItem, config: NativraConfig): SourceFile[] =>
-  item.files.filter((f) => !f.target || f.target === config.stylingTarget);
 const destPath = (item: RegistryItem, file: SourceFile, config: NativraConfig) => `${destDir(item.type, config)}/${baseName(file.path)}`;
 
-/** Sibling imports that cross install folders (e.g. a block importing ./Card). */
-function crossImports(item: RegistryItem, related: RegistryItem[], config: NativraConfig): Record<string, string> {
-  const own = destDir(item.type, config);
-  const targets = importTargets(config);
-  const map: Record<string, string> = {};
-  for (const other of related) {
-    if (other.id === item.id || destDir(other.type, config) === own) continue;
-    for (const file of filesForTarget(other, config)) {
-      const name = baseName(file.path).replace(/\.(tsx?|jsx?)$/, "");
-      if (name) map[name] = `${importBaseForType(other.type, targets)}/${name}`;
-    }
-  }
-  return map;
-}
+/** Sibling imports that cross install folders (e.g. a block importing ./Card): the CLI's own rules. */
+const crossImports = (item: RegistryItem, related: RegistryItem[], config: NativraConfig): Record<string, string> =>
+  siblingImportMap(item, related, config, (i) => destDir(i.type, config));
 
 async function sha256(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));

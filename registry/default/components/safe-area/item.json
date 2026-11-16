@@ -4,7 +4,7 @@
   "description": "Cross-platform viewport safe area container respecting notch and navigation bar insets.",
   "type": "component",
   "status": "stable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"
@@ -38,7 +38,7 @@
   "npmDependencies": [
     {
       "package": "react-native-safe-area-context",
-      "version": "^4.10.0",
+      "version": ">=4.10.0",
       "peer": true
     }
   ],

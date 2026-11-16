@@ -3,7 +3,7 @@
   "name": "useKeyboard",
   "description": "React Native software keyboard observer tracking height, visibility, and dismissal.",
   "type": "hook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [{ "path": "use-keyboard.ts" }],

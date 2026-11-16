@@ -10,7 +10,11 @@ export interface InputProps extends TextInputProps {
   disabled?: boolean;
 }
 
-export function Input({ label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest }: InputProps) {
+/** Forwards its ref to the TextInput, so forms can focus the next field (React 18 and 19). */
+export const Input = React.forwardRef<React.ComponentRef<typeof TextInput>, InputProps>(function Input(
+  { label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest },
+  ref
+) {
   const palette = useThemeColors();
   const [focused, setFocused] = React.useState(false);
   const filled = themeStyle.field === "filled";
@@ -18,6 +22,7 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
     <View className="w-full sp-gap-1.5">
       {label ? <Text className="type-sm weight-label text-foreground">{label}</Text> : null}
       <TextInput
+        ref={ref}
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
@@ -42,4 +47,4 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
       {error && errorMessage ? <Text className="type-xs text-destructive">{errorMessage}</Text> : null}
     </View>
   );
-}
+});

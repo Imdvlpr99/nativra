@@ -16,7 +16,7 @@ export interface AccordionProps {
 
 export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const fg = c.foreground;
   const border = c.border;

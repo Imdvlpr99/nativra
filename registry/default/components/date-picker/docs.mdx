@@ -5,7 +5,7 @@ description: Native-feeling calendar date and quick-preset selector input for mo
 
 # DatePicker
 
-A mobile date selector trigger and expandable calendar preset drawer for due dates, booking flows, and reminders.
+A date field that opens a month calendar with quick picks (Today, Tomorrow, Next week, End of month). No native module or date library: dates are plain `"YYYY-MM-DD"` strings, read as local calendar days so time zones never shift them.
 
 ## Installation
 
@@ -20,8 +20,27 @@ import { useState } from "react";
 import { DatePicker } from "@/components/ui/DatePicker";
 
 export function DueDateField() {
-  const [date, setDate] = useState("2026-11-09");
+  const [date, setDate] = useState("");
   return <DatePicker label="Due date" value={date} onChange={setDate} />;
 }
 ```
 
+## Booking window
+
+```tsx
+<DatePicker label="Check-in" defaultValue="2027-03-14" minDate="2027-03-01" maxDate="2027-06-30" locale="en-GB" weekStartsOn={1} />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| value | string | — | Controlled value, `"YYYY-MM-DD"` (`""` for none) |
+| defaultValue | string | — | Starting value when `value` is not set |
+| onChange | (dateIso: string) => void | — | Called with the chosen day |
+| minDate / maxDate | string | — | Earliest and latest selectable day, `"YYYY-MM-DD"` |
+| locale | string | device locale | BCP 47 locale for month and weekday names |
+| weekStartsOn | 0 \| 1 | 0 | 0 starts weeks on Sunday, 1 on Monday |
+| placeholder | string | "Select date..." | Shown when no day is selected |
+| label | string | — | Field label, also read by screen readers |
+| disabled | boolean | false | Disables the field |
