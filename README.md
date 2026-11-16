@@ -19,6 +19,7 @@
 <p align="center">
   <a href="https://github.com/Imdvlpr99/nativra/actions/workflows/ci.yml"><img src="https://github.com/Imdvlpr99/nativra/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://www.npmjs.com/package/nativra-cli"><img src="https://img.shields.io/npm/v/nativra-cli?style=flat-square&logo=npm" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/nativra-cli"><img src="https://img.shields.io/npm/dt/nativra-cli?style=flat-square&logo=npm&label=downloads" alt="Total npm downloads" /></a>
   <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.74+-22c55e?style=flat-square&logo=react" alt="React Native 0.74+" /></a>
   <a href="https://expo.dev"><img src="https://img.shields.io/badge/Expo-SDK%2051+-000000?style=flat-square&logo=expo" alt="Expo SDK 51+" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License" /></a>
