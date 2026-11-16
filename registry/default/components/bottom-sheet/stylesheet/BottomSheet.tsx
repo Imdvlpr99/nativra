@@ -8,6 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors, elevation, scrim, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ export function BottomSheet({
   children,
   style,
 }: BottomSheetProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   if (!isOpen) return null;
 
   return (
@@ -35,7 +38,7 @@ export function BottomSheet({
     >
       <View style={styles.backdrop}>
         {/* Backdrop Dismiss */}
-        <Pressable
+        <Pressable accessibilityRole="button"
           style={StyleSheet.absoluteFill}
           onPress={onClose}
           accessibilityLabel="Dismiss bottom sheet"
@@ -57,26 +60,23 @@ export function BottomSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: scrim(),
   },
   sheet: {
     width: "100%",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderTopWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
-    padding: 24,
-    paddingBottom: 40,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 12,
+    borderColor: c.border,
+    backgroundColor: c.background,
+    padding: sp(24),
+    paddingBottom: sp(40),
+    ...elevation("overlay"),
+    shadowOffset: { width: 0, height: -themeStyle.shadow.overlay.offsetY },
   },
   handleContainer: {
     alignItems: "center",
@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 5,
     borderRadius: 9999,
-    backgroundColor: "#D4D4D8",
+    backgroundColor: c.input,
   },
   titleText: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#18181B",
+    fontSize: ts(17),
+    fontWeight: themeStyle.fontWeight.title,
+    color: c.foreground,
     marginBottom: 16,
   },
 });

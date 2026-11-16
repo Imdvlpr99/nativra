@@ -1,22 +1,29 @@
 /** Nativra — Card (StyleSheet). Install: npx nativra-cli add card */
 import React from "react";
-import { StyleSheet, View, useColorScheme, type ViewProps } from "react-native";
+import { StyleSheet, View, type ViewProps } from "react-native";
+import { elevation, sp, surface, themeStyle, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface CardProps extends ViewProps {
+  /** Lift the card off the page: a solid card with the style's "raised" shadow */
   elevated?: boolean;
   padding?: "sm" | "md" | "lg";
 }
 
-const PAD = { sm: 12, md: 16, lg: 24 } as const;
+const PAD = { sm: sp(12), md: sp(20), lg: sp(24) } as const;
+
+/** Tinted and grey surfaces read as flat; an elevated card is solid in every style. */
+const FLAT_SURFACE = themeStyle.surface === "tonal" || themeStyle.surface === "fill";
 
 export function Card({ elevated = false, padding = "md", style, ...rest }: CardProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
   return (
     <View
       style={[
         styles.base,
-        { backgroundColor: dark ? "#18181b" : "#ffffff", borderColor: dark ? "#27272a" : "#e4e4e7", padding: PAD[padding] },
-        elevated && styles.elevated,
+        // A hairline keeps the card's edge visible in dark mode, where shadows disappear.
+        elevated && FLAT_SURFACE ? { backgroundColor: c.card, borderWidth: themeStyle.borderWidth, borderColor: c.border } : surface(c),
+        { padding: PAD[padding] },
+        elevated && elevation("raised"),
         style,
       ]}
       {...rest}
@@ -25,7 +32,5 @@ export function Card({ elevated = false, padding = "md", style, ...rest }: CardP
 }
 
 const styles = StyleSheet.create({
-  base: { borderWidth: 1, borderRadius: 12 },
-  elevated: { elevation: 4, shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+  base: { borderRadius: themeStyle.radius.card },
 });
-

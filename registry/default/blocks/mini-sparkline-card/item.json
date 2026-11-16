@@ -4,8 +4,11 @@
   "description": "Executive KPI metric card with integrated zero-dependency trend sparkline curve.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -26,15 +29,30 @@
     {
       "id": "badge",
       "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
     }
   ],
   "npmDependencies": [
     {
       "package": "lucide-react-native",
       "version": "^0.460.0"
+    },
+    {
+      "package": "react-native-svg",
+      "version": "^15.8.0"
     }
   ],
-  "tags": ["sparkline", "chart", "metrics", "kpi", "analytics", "metronic"],
+  "tags": [
+    "sparkline",
+    "chart",
+    "metrics",
+    "kpi",
+    "analytics",
+    "metronic"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }

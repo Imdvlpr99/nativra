@@ -29,7 +29,7 @@ export function Label({
     <View className="flex-row items-center mb-1.5">
       <Text
         accessibilityRole="text"
-        className={`text-sm font-medium text-zinc-900 dark:text-zinc-100 ${
+        className={`type-sm font-medium text-foreground ${
           disabled ? "opacity-50" : ""
         } ${className}`.trim()}
         style={style}
@@ -38,7 +38,7 @@ export function Label({
         {children}
       </Text>
       {required ? (
-        <Text className="text-red-500 ml-1 text-sm font-bold" accessibilityLabel="required">
+        <Text className="text-destructive ml-1 type-sm weight-title" accessibilityLabel="required">
           *
         </Text>
       ) : null}

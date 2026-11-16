@@ -8,7 +8,8 @@
  * Install: npx nativra-cli add empty-state
  */
 import React from "react";
-import { View, StyleSheet, useColorScheme, type ViewStyle } from "react-native";
+import { View, StyleSheet, type ViewStyle } from "react-native";
+import { useThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 import { Card } from "./Card";
 import { Text } from "./Text";
 import { Button } from "./Button";
@@ -30,12 +31,11 @@ export function EmptyState({
   onAction,
   style,
 }: EmptyStateProps) {
-  const isDark = useColorScheme() === "dark";
-  const iconBg = isDark ? "#27272a" : "#f4f4f5";
+  const palette = useThemeColors();
 
   return (
     <Card padding="lg" style={[styles.card, style]}>
-      <View style={[styles.iconCircle, { backgroundColor: iconBg }]}>
+      <View style={[styles.iconCircle, { backgroundColor: palette.muted }]}>
         <Text style={styles.icon}>{icon}</Text>
       </View>
       <Text variant="h3" style={styles.title}>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
+    padding: sp(32),
   },
   iconCircle: {
     width: 64,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   icon: {
-    fontSize: 28,
+    fontSize: ts(28),
   },
   title: {
     textAlign: "center",

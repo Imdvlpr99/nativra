@@ -35,10 +35,10 @@ export function Tabs({
   return (
     <View
       accessibilityRole="tablist"
-      className={`w-full flex-row items-center p-1 ${
+      className={`w-full flex-row items-center sp-p-1 ${
         variant === "pill"
-          ? "rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
-          : "border-b border-zinc-200 dark:border-zinc-800"
+          ? "rounded-control bg-muted border border-border"
+          : "border-b border-border"
       } ${className}`.trim()}
       {...props}
     >
@@ -50,21 +50,21 @@ export function Tabs({
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected }}
             onPress={() => onValueChange(tab.value)}
-            className={`flex-1 py-2 px-3 items-center justify-center rounded-xl flex-row gap-1.5 transition-all active:opacity-75 ${
+            className={`flex-1 sp-py-2 sp-px-3 items-center justify-center rounded-small flex-row sp-gap-1.5 transition-all active:opacity-75 ${
               variant === "pill"
                 ? isSelected
-                  ? "bg-white dark:bg-zinc-800 shadow-sm"
+                  ? "bg-background shadow-sm"
                   : "bg-transparent"
                 : isSelected
-                ? "border-b-2 border-sky-500 pb-2.5 -mb-px"
-                : "pb-2.5"
+                ? "border-b-2 border-primary sp-pb-2.5 -mb-px"
+                : "sp-pb-2.5"
             }`}
           >
             <Text
-              className={`text-xs font-semibold ${
+              className={`type-xs weight-label ${
                 isSelected
-                  ? "text-zinc-900 dark:text-zinc-50 font-bold"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-foreground weight-title"
+                  : "text-muted-foreground"
               }`}
             >
               {tab.label}
@@ -72,17 +72,17 @@ export function Tabs({
 
             {tab.badge !== undefined && (
               <View
-                className={`px-1.5 py-0.2 rounded-full ${
+                className={`sp-px-1.5 py-0.2 rounded-full ${
                   isSelected
-                    ? "bg-sky-500/15 dark:bg-sky-500/20"
-                    : "bg-zinc-200 dark:bg-zinc-800"
+                    ? "bg-primary/15"
+                    : "bg-muted"
                 }`}
               >
                 <Text
-                  className={`text-[10px] font-mono font-bold ${
+                  className={`type-2xs font-mono weight-title ${
                     isSelected
-                      ? "text-sky-600 dark:text-sky-400"
-                      : "text-zinc-600 dark:text-zinc-400"
+                      ? "text-primary"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {tab.badge}

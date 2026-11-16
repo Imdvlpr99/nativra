@@ -14,6 +14,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface PricingCardProps {
   planName?: string;
@@ -41,6 +42,8 @@ export function PricingCard({
   buttonText = "Start 14-Day Free Trial",
   onSubscribe,
 }: PricingCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <Card elevated padding="lg" style={styles.card}>
       <View style={styles.header}>
@@ -80,11 +83,11 @@ export function PricingCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     flexDirection: "row",
@@ -92,40 +95,40 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   description: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 4,
   },
   priceRow: {
     flexDirection: "row",
     alignItems: "baseline",
-    gap: 4,
+    gap: sp(4),
     marginTop: 20,
   },
   price: {
-    fontSize: 28,
-    fontWeight: "800",
+    fontSize: ts(28),
+    fontWeight: themeStyle.fontWeight.heading,
   },
   period: {
-    fontSize: 12,
+    fontSize: ts(12),
   },
   separatorContainer: {
     marginVertical: 20,
   },
   featuresList: {
-    gap: 12,
+    gap: sp(12),
   },
   featureItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: sp(10),
   },
   checkIcon: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#059669",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.success,
   },
   featureText: {
-    fontSize: 12,
+    fontSize: ts(12),
   },
   submitBtn: {
     marginTop: 24,

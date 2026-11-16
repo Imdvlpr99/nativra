@@ -1,6 +1,7 @@
 /** Nativra — BottomTabBar (StyleSheet). Install: npx nativra-cli add bottom-tab-bar */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface BottomTabItem {
   id: string;
@@ -23,6 +24,8 @@ export function BottomTabBar({
   style,
   ...rest
 }: BottomTabBarProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <View accessibilityRole="tablist" style={[styles.container, style]} {...rest}>
       {tabs.map((tab) => {
@@ -58,22 +61,22 @@ export function BottomTabBar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
     borderTopWidth: 1,
-    borderTopColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    borderTopColor: c.border,
+    backgroundColor: c.background,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(8),
   },
-  tabItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 4 },
+  tabItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: sp(4) },
   iconWrap: { position: "relative", alignItems: "center", justifyContent: "center" },
-  pill: { borderRadius: 9999, paddingHorizontal: 14, paddingVertical: 4 },
-  pillActive: { backgroundColor: "#f0f9ff" },
-  icon: { fontSize: 14 },
+  pill: { borderRadius: 9999, paddingHorizontal: sp(14), paddingVertical: sp(4) },
+  pillActive: { backgroundColor: alpha(c.primary, 0.08) },
+  icon: { fontSize: ts(14) },
   badge: {
     position: "absolute",
     right: -4,
@@ -81,13 +84,13 @@ const styles = StyleSheet.create({
     minWidth: 16,
     height: 16,
     borderRadius: 9999,
-    backgroundColor: "#f43f5e",
+    backgroundColor: c.destructive,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
   },
-  badgeText: { fontSize: 9, fontWeight: "700", color: "#ffffff" },
-  label: { marginTop: 4, fontSize: 11, fontWeight: "500", color: "#71717a" },
-  labelActive: { fontWeight: "700", color: "#0284c7" },
+  badgeText: { fontSize: ts(9), fontWeight: themeStyle.fontWeight.title, color: c["primary-foreground"] },
+  label: { marginTop: 4, fontSize: ts(11), fontWeight: "500", color: c["muted-foreground"] },
+  labelActive: { fontWeight: themeStyle.fontWeight.title, color: c.primary },
 });
 

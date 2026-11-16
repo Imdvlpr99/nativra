@@ -17,6 +17,7 @@ export const RegistryItemTypeSchema = z.enum([
   "block",
   "template",
   "theme",
+  "style",
 ]);
 export type RegistryItemType = z.infer<typeof RegistryItemTypeSchema>;
 
@@ -24,8 +25,17 @@ export const ItemStatusSchema = z.enum(["stable", "beta", "experimental", "depre
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
 
 export const ITEM_ID_REGEX = /^[a-z][a-z0-9-]*$/;
-export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
-export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*|+ -]+$/i;
+/**
+ * An npm package name. The first character can't be "-", so a registry can't pass a flag such as
+ * "--global" to the package manager as if it were a package.
+ */
+export const NPM_PACKAGE_REGEX = /^(?:@[a-z0-9~][a-z0-9-._~]*\/)?[a-z0-9~][a-z0-9-._~]*$/;
+/**
+ * A single semver range token. Whitespace, "|" and other shell syntax are rejected because
+ * ranges end up in package-manager install commands; compound ranges ("^1 || ^2") are unsupported.
+ * A leading "-" is rejected for the same reason as in package names.
+ */
+export const SEMVER_RANGE_REGEX = /^[a-z0-9^~>=<.*+][a-z0-9^~>=<.*+-]*$/i;
 export const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/i;
 
 // ---------------------------------------------------------------------------
@@ -170,8 +180,10 @@ export const RegistryItemSchema = z.object({
   tags: z.array(z.string().max(64)).max(50).optional(),
   /** Relative path to preview image or gif */
   previewImage: z.string().optional(),
-  /** Relative path to documentation MDX file */
+  /** Relative path to the item's Markdown documentation file */
   docsPath: z.string().optional(),
+  /** Markdown documentation, hydrated from `docsPath` at build time */
+  docs: z.string().max(262144).optional(),
   /** Deprecation message, set when status is "deprecated" */
   deprecationMessage: z.string().optional(),
   /** ISO date when this item was added */
@@ -214,38 +226,32 @@ export type RegistryManifest = z.infer<typeof RegistryManifestSchema>;
 // Compatibility Matrix Contract (V4 §16)
 // ---------------------------------------------------------------------------
 
-export const CompatibilityMatrixSchema = z.object({
-  reactNative: z.object({
-    min: z.string(),
-    tested: z.array(z.string()),
-  }),
-  expo: z.object({
-    minSdk: z.number(),
-    testedSdks: z.array(z.number()),
-  }),
-  react: z.object({
-    min: z.string(),
-    tested: z.array(z.string()),
-  }),
-  typescript: z.object({
-    min: z.string(),
-    tested: z.array(z.string()),
-  }),
-  nativewind: z.object({
-    supportedVersions: z.array(z.string()),
-  }),
-  reactNavigation: z.object({
-    supportedVersions: z.array(z.string()),
-  }),
-  android: z.object({
-    minSdk: z.number(),
-    targetSdk: z.number(),
-  }),
-  ios: z.object({
-    minDeploymentTarget: z.string(),
-  }),
-});
-export type CompatibilityMatrix = z.infer<typeof CompatibilityMatrixSchema>;
+export interface CompatibilityMatrix {
+  reactNative: { min: string; tested: string[] };
+  expo: { minSdk: number; testedSdks: number[] };
+  react: { min: string; tested: string[] };
+  typescript: { min: string; tested: string[] };
+  nativewind: { supportedVersions: string[] };
+  reactNavigation: { supportedVersions: string[] };
+  android: { minSdk: number; targetSdk: number };
+  ios: { minDeploymentTarget: string };
+}
+
+/** Extracts [major, minor, patch] from a version or simple range ("^0.76.3", "~52.0.0", "0.100"). */
+export function parseVersion(input: string): [number, number, number] | null {
+  const match = input.match(/(\d+)(?:\.(\d+))?(?:\.(\d+))?/);
+  if (!match) return null;
+  return [Number(match[1]), Number(match[2] ?? 0), Number(match[3] ?? 0)];
+}
+
+/** Numeric semver comparison: negative if a < b, 0 if equal, positive if a > b. */
+export function compareVersions(a: [number, number, number], b: [number, number, number]): number {
+  for (let i = 0; i < 3; i++) {
+    const diff = a[i]! - b[i]!;
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
 
 export const DEFAULT_COMPATIBILITY_MATRIX: CompatibilityMatrix = {
   reactNative: { min: "0.74.0", tested: ["0.74.5", "0.76.0", "0.76.3"] },
@@ -289,8 +295,9 @@ export function checkProjectCompatibility(
   }
 
   if (env.reactNative) {
-    const minRN = matrix.reactNative.min.replace(/^[~^]/, "");
-    if (env.reactNative < minRN) {
+    const installed = parseVersion(env.reactNative);
+    const minimum = parseVersion(matrix.reactNative.min);
+    if (installed && minimum && compareVersions(installed, minimum) < 0) {
       warnings.push(
         `React Native version ${env.reactNative} is below tested minimum ${matrix.reactNative.min}.`
       );
@@ -304,62 +311,3 @@ export function checkProjectCompatibility(
   };
 }
 
-// ---------------------------------------------------------------------------
-// V4 Project Configuration Contract (V4 §5)
-// ---------------------------------------------------------------------------
-
-export const ProjectAliasesSchema = z.object({
-  components: z.string().default("@/components"),
-  utils: z.string().default("@/lib/utils"),
-  hooks: z.string().optional(),
-  themes: z.string().optional(),
-});
-export type ProjectAliases = z.infer<typeof ProjectAliasesSchema>;
-
-export const ComponentsConfigSchema = z.object({
-  directory: z.string().default("src/components/ui"),
-  aliases: ProjectAliasesSchema.default({
-    components: "@/components",
-    utils: "@/lib/utils",
-  }),
-});
-export type ComponentsConfig = z.infer<typeof ComponentsConfigSchema>;
-
-export const NativraConfigV4Schema = z.object({
-  $schema: z.string().optional(),
-  version: z.number().default(4),
-  typescript: z.boolean().default(true),
-  framework: z.enum(["expo", "bare"]).default("expo"),
-  styling: z.enum(["nativewind", "stylesheet"]).default("nativewind"),
-  components: ComponentsConfigSchema.default({
-    directory: "src/components/ui",
-    aliases: {
-      components: "@/components",
-      utils: "@/lib/utils",
-    },
-  }),
-  registry: z.record(z.string(), z.string()).default({
-    default: "https://nativra.vercel.app",
-  }),
-  theme: z
-    .object({
-      default: z.string().default("default"),
-    })
-    .default({ default: "default" }),
-
-  // Backward compatibility fields for legacy v1-v3 configurations
-  registries: z
-    .array(
-      z.object({
-        name: z.string().default("default"),
-        url: z.string(),
-      })
-    )
-    .optional(),
-  componentsDir: z.string().optional(),
-  hooksDir: z.string().optional(),
-  utilsDir: z.string().optional(),
-  stylingTarget: z.enum(["nativewind", "stylesheet"]).optional(),
-  aliasPrefix: z.string().optional(),
-});
-export type NativraConfigV4 = z.infer<typeof NativraConfigV4Schema>;

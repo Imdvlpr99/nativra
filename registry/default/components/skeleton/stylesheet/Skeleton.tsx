@@ -11,9 +11,9 @@ import React, { useEffect, useRef } from "react";
 import {
   Animated,
   StyleSheet,
-  useColorScheme,
   type ViewProps,
 } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface SkeletonProps extends ViewProps {
   width?: number | string;
@@ -36,8 +36,8 @@ export function Skeleton({
   style,
   ...props
 }: SkeletonProps) {
-  const isDark = useColorScheme() === "dark";
-  const bg = isDark ? "#27272a" : "#e4e4e7";
+  const c = useThemeColors();
+  const bg = c.muted;
   const opacity = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {

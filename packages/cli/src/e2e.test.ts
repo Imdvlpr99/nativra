@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const CLI = resolve(__dirname, "../dist/cli.js");
@@ -17,7 +17,7 @@ beforeAll(() => {
     throw new Error("Run `pnpm build` and `node scripts/build-registry.mjs` before the CLI tests.");
   }
   cwd = mkdtempSync(join(tmpdir(), "nativra-e2e-"));
-  writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { nativewind: "4" } }));
+  writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
   writeFileSync(join(cwd, "app.json"), "{}");
 });
 
@@ -123,15 +123,55 @@ describe("nativra CLI (local registry)", () => {
     expect(out).toContain("Button.tsx");
   });
 
-  it("rollback command safely reports or restores", () => {
-    const out = run("rollback", "button");
-    expect(out).toMatch(/backup/i);
+  it("rollback refuses to discard edits made after the update, and restores with --force", () => {
+    // The diff test above edited Button.tsx after the last update; rollback would lose that.
+    expect(() => run("rollback", "button")).toThrow(/changed after/);
+    expect(run("rollback", "button", "--force")).toMatch(/backup/i);
+  });
+
+  it("rollback walks back through successive backups and refreshes the lock", () => {
+    const file = join(cwd, "components/ui/Button.tsx");
+    writeFileSync(file, "// v1");
+    runReg("update", "button", "--force");
+    writeFileSync(file, "// v2");
+    runReg("update", "button", "--force");
+
+    run("rollback", "button");
+    expect(readFileSync(file, "utf8")).toBe("// v2");
+    // The restored file is now the tracked baseline, so update no longer sees local changes
+    expect(runReg("update", "button")).not.toContain("local changes");
+
+    run("rollback", "button"); // undo that update
+    run("rollback", "button");
+    expect(readFileSync(file, "utf8")).toBe("// v1");
+    runReg("update", "button", "--force");
+  });
+
+  it("diff reports an untouched install as up to date", () => {
+    runReg("add", "empty-state", "--yes", "--overwrite");
+    expect(runReg("diff", "empty-state")).toContain("is up to date");
+  });
+
+  it("remove refuses to delete an item other installed items depend on", () => {
+    expect(() => run("remove", "card", "--yes")).toThrow();
+    expect(existsSync(join(cwd, "components/ui/Card.tsx"))).toBe(true);
   });
 
 
   it("theme add writes the theme file", () => {
     runReg("theme", "add", "dark-slate");
     expect(existsSync(join(cwd, "lib/themes/theme.ts"))).toBe(true);
+  });
+
+  it("theme add never silently overwrites an existing theme file", () => {
+    const file = join(cwd, "lib/themes/theme.ts");
+    const before = readFileSync(file, "utf8");
+    expect(runReg("theme", "add", "zinc")).toContain("Skipped");
+    expect(readFileSync(file, "utf8")).toBe(before);
+
+    runReg("theme", "add", "zinc", "--as", "zinc");
+    expect(existsSync(join(cwd, "lib/themes/zinc.ts"))).toBe(true);
+    expect(() => runReg("theme", "add", "zinc", "--as", "../evil")).toThrow();
   });
 
   it("registry add / list round-trips", () => {
@@ -187,7 +227,7 @@ describe("nativra CLI (local registry)", () => {
     expect(run("doctor")).toContain("All checks passed");
 
     const fixDir = mkdtempSync(join(tmpdir(), "nativra-fix-test-"));
-    writeFileSync(join(fixDir, "package.json"), JSON.stringify({ name: "fix-test", dependencies: { nativewind: "4" } }));
+    writeFileSync(join(fixDir, "package.json"), JSON.stringify({ name: "fix-test", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
     writeFileSync(join(fixDir, "app.json"), "{}");
     const fixRun = (...args: string[]) => execFileSync("node", [CLI, ...args, "--cwd", fixDir], { encoding: "utf8" });
 
@@ -235,5 +275,90 @@ describe("nativra CLI (local registry)", () => {
     delete lock.items["evil-item"];
     writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock, null, 2));
   });
+
+  it("init git-ignores local backups", () => {
+    expect(readFileSync(join(cwd, ".gitignore"), "utf8")).toContain(".nativra/");
+  });
+
+  it("--version matches package.json", () => {
+    const pkg = JSON.parse(readFileSync(resolve(__dirname, "../package.json"), "utf8"));
+    expect(execFileSync("node", [CLI, "--version"], { encoding: "utf8" }).trim()).toBe(pkg.version);
+  });
 });
 
+describe("nativra CLI (src/ project with tsconfig alias)", () => {
+  let dir: string;
+  const runIn = (...args: string[]) =>
+    execFileSync("node", [CLI, ...args, "--cwd", dir, "--registry", REGISTRY], { encoding: "utf8" });
+
+  beforeAll(() => {
+    dir = mkdtempSync(join(tmpdir(), "nativra-src-"));
+    mkdirSync(join(dir, "src"));
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "s", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
+    writeFileSync(join(dir, "tsconfig.json"), JSON.stringify({ compilerOptions: { paths: { "@/*": ["./src/*"] } } }));
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", dir], { encoding: "utf8" });
+  });
+
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("accepts a relative --cwd without doubling paths", () => {
+    execFileSync("node", [CLI, "add", "label", "--yes", "--cwd", basename(dir), "--registry", REGISTRY], {
+      cwd: dirname(dir),
+      encoding: "utf8",
+    });
+    expect(existsSync(join(dir, "src/components/ui/Label.tsx"))).toBe(true);
+    expect(existsSync(join(dir, basename(dir)))).toBe(false);
+  });
+
+  it("installs into src/ but imports through the alias", () => {
+    runIn("add", "badge", "--yes");
+    const badge = readFileSync(join(dir, "src/components/ui/Badge.tsx"), "utf8");
+    expect(badge).not.toContain("@/src/");
+    expect(runIn("diff", "badge")).toContain("is up to date");
+  });
+});
+
+
+describe("nativra CLI (theme-aware components)", () => {
+  let dir: string;
+  const runIn = (...args: string[]) =>
+    execFileSync("node", [CLI, ...args, "--cwd", dir, "--registry", REGISTRY], { encoding: "utf8" });
+
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it("StyleSheet: add installs the theme hook and default theme, and the component reads them", () => {
+    dir = mkdtempSync(join(tmpdir(), "nativra-theme-ss-"));
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "t", dependencies: { "react-native": "0.76.0" } }));
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", dir], { encoding: "utf8" });
+    runIn("add", "button", "--yes", "--no-install");
+
+    const button = readFileSync(join(dir, "components/ui/Button.tsx"), "utf8");
+    expect(button).toContain('from "@/hooks/use-theme-colors"');
+    expect(button).not.toMatch(/"#(18181b|0284c7|ef4444)"/i);
+    expect(readFileSync(join(dir, "hooks/use-theme-colors.ts"), "utf8")).toContain('from "@/lib/themes/theme"');
+    expect(readFileSync(join(dir, "lib/themes/theme.ts"), "utf8")).toContain("export const themeColors = { light: zinc, dark: zincDark }");
+  });
+
+  it("theme add --overwrite switches the palette every component reads", () => {
+    runIn("theme", "add", "midnight", "--overwrite");
+    expect(readFileSync(join(dir, "lib/themes/theme.ts"), "utf8")).toContain("export const themeColors = { light: midnight, dark: midnightDark }");
+  });
+
+  it("NativeWind: add writes theme variables into global.css and flags an unmapped Tailwind config", () => {
+    const nw = mkdtempSync(join(tmpdir(), "nativra-theme-nw-"));
+    writeFileSync(join(nw, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0", nativewind: "4" } }));
+    writeFileSync(join(nw, "global.css"), "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n");
+    writeFileSync(join(nw, "tailwind.config.js"), "module.exports = { content: [], theme: { extend: {} } };\n");
+    execFileSync("node", [CLI, "init", "--yes", "--cwd", nw], { encoding: "utf8" });
+    const out = execFileSync("node", [CLI, "add", "button", "--yes", "--no-install", "--cwd", nw, "--registry", REGISTRY], {
+      encoding: "utf8",
+    });
+
+    const css = readFileSync(join(nw, "global.css"), "utf8");
+    expect(css).toContain("/* NATIVRA THEME START: zinc */");
+    expect(css).toMatch(/--color-primary: \d+ \d+ \d+;/);
+    expect(readFileSync(join(nw, "components/ui/Button.tsx"), "utf8")).toContain("bg-primary");
+    expect(out).toContain("rgb(var(--color-primary) / <alpha-value>)");
+    rmSync(nw, { recursive: true, force: true });
+  });
+});

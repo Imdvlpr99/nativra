@@ -23,7 +23,7 @@ export function RadioGroup({
   disabled = false,
 }: RadioGroupProps) {
   return (
-    <View accessibilityRole="radiogroup" className="w-full gap-3">
+    <View accessibilityRole="radiogroup" className="w-full sp-gap-3">
       {options.map((opt) => {
         const isSelected = opt.value === value;
         const isDisabled = disabled || opt.disabled;
@@ -35,30 +35,30 @@ export function RadioGroup({
             accessibilityState={{ selected: isSelected, disabled: isDisabled }}
             onPress={() => !isDisabled && onValueChange(opt.value)}
             disabled={isDisabled}
-            className={`flex-row items-start gap-3 rounded-xl border p-3.5 transition-colors ${
+            className={`flex-row items-start sp-gap-3 rounded-control border sp-p-3.5 transition-colors ${
               isSelected
-                ? "border-sky-500 bg-sky-500/10 dark:border-sky-400 dark:bg-sky-950/20"
-                : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+                ? "border-primary bg-primary/10"
+                : "surface"
             } ${isDisabled ? "opacity-50" : "active:opacity-85"}`}
           >
             {/* Radio Circle */}
             <View
               className={`mt-0.5 h-5 w-5 rounded-full border items-center justify-center ${
-                isSelected ? "border-sky-500 dark:border-sky-400" : "border-zinc-400 dark:border-zinc-600"
+                isSelected ? "border-primary" : "border-input"
               }`}
             >
               {isSelected ? (
-                <View className="h-2.5 w-2.5 rounded-full bg-sky-500 dark:bg-sky-400" />
+                <View className="h-2.5 w-2.5 rounded-full bg-primary" />
               ) : null}
             </View>
 
             {/* Labels */}
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+              <Text className="type-sm weight-label text-foreground">
                 {opt.label}
               </Text>
               {opt.description ? (
-                <Text className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
+                <Text className="mt-0.5 type-xs text-muted-foreground leading-normal">
                   {opt.description}
                 </Text>
               ) : null}

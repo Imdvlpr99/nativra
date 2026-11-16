@@ -28,6 +28,7 @@ import {
   Circle,
   MoreVertical,
 } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 interface Message {
   id: string;
@@ -37,6 +38,7 @@ interface Message {
 }
 
 export function ChatFlow() {
+  const palette = useThemeColors();
   const [activeThreadId, setActiveThreadId] = useState<string | null>("t1");
   const [inputText, setInputText] = useState("");
   const [filterTab, setFilterTab] = useState<"all" | "support" | "direct">("all");
@@ -112,7 +114,7 @@ export function ChatFlow() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
 
       {activeThreadId ? (
@@ -122,42 +124,42 @@ export function ChatFlow() {
           className="flex-1"
         >
           {/* Thread Header */}
-          <View className="flex-row items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <View className="flex-row items-center gap-3">
+          <View className="flex-row items-center justify-between border-b border-border bg-card/90 sp-px-4 sp-py-3">
+            <View className="flex-row items-center sp-gap-3">
               <TouchableOpacity
                 onPress={() => setActiveThreadId(null)}
-                className="p-1 -ml-1 rounded-lg active:bg-zinc-800"
+                className="sp-p-1 -ml-1 rounded-control active:bg-muted"
               >
-                <ChevronLeft size={22} color="#ffffff" />
+                <ChevronLeft size={22} color={palette.foreground} />
               </TouchableOpacity>
 
               <View className="relative">
-                <View className="h-10 w-10 items-center justify-center rounded-full bg-sky-600">
-                  <Text className="text-xs font-bold text-white">SD</Text>
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-primary">
+                  <Text className="type-xs weight-title text-primary-foreground">SD</Text>
                 </View>
-                <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-zinc-900" />
+                <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success border-2 border-border" />
               </View>
 
               <View>
-                <Text className="text-sm font-bold text-white">Enterprise Support</Text>
-                <Text className="text-[11px] text-emerald-400">Online • Typically replies in 5m</Text>
+                <Text className="type-sm weight-title text-foreground">Enterprise Support</Text>
+                <Text className="type-2xs text-success">Online • Typically replies in 5m</Text>
               </View>
             </View>
 
-            <TouchableOpacity className="p-1 rounded-lg">
-              <MoreVertical size={18} color="#a1a1aa" />
+            <TouchableOpacity className="sp-p-1 rounded-control">
+              <MoreVertical size={18} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           </View>
 
           {/* Messages Scroll View */}
           <ScrollView
-            className="flex-1 px-4 py-4"
+            className="flex-1 sp-px-4 sp-py-4"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ gap: 12 }}
           >
             <View className="items-center my-2">
-              <View className="rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1">
-                <Text className="text-[10px] font-semibold text-zinc-400">Today, November 7</Text>
+              <View className="surface rounded-full sp-px-3 sp-py-1">
+                <Text className="type-2xs weight-label text-muted-foreground">Today, November 7</Text>
               </View>
             </View>
 
@@ -169,28 +171,28 @@ export function ChatFlow() {
                   className={`flex-row ${isUser ? "justify-end" : "justify-start"}`}
                 >
                   <View
-                    className={`max-w-[78%] rounded-2xl px-4 py-2.5 ${
+                    className={`max-w-[78%] rounded-card sp-px-4 sp-py-2.5 ${
                       isUser
-                        ? "bg-sky-600 rounded-br-xs"
-                        : "bg-zinc-900 border border-zinc-800 rounded-bl-xs"
+                        ? "bg-primary rounded-br-xs"
+                        : "surface rounded-bl-xs"
                     }`}
                   >
                     <Text
-                      className={`text-sm leading-relaxed ${
-                        isUser ? "text-white font-medium" : "text-zinc-200"
+                      className={`type-sm leading-relaxed ${
+                        isUser ? "text-primary-foreground font-medium" : "text-foreground"
                       }`}
                     >
                       {msg.text}
                     </Text>
-                    <View className="flex-row items-center justify-end gap-1 mt-1">
+                    <View className="flex-row items-center justify-end sp-gap-1 mt-1">
                       <Text
-                        className={`text-[10px] ${
-                          isUser ? "text-sky-200" : "text-zinc-500"
+                        className={`type-2xs ${
+                          isUser ? "text-primary-foreground" : "text-muted-foreground"
                         }`}
                       >
                         {msg.time}
                       </Text>
-                      {isUser && <CheckCheck size={12} color="#bae6fd" />}
+                      {isUser && <CheckCheck size={12} color={palette["primary-foreground"]} />}
                     </View>
                   </View>
                 </View>
@@ -199,67 +201,67 @@ export function ChatFlow() {
           </ScrollView>
 
           {/* Message Input Bar */}
-          <View className="border-t border-zinc-800 bg-zinc-900 px-4 py-3 flex-row items-center gap-2">
-            <TouchableOpacity className="p-2 rounded-xl bg-zinc-800 active:bg-zinc-700">
-              <Paperclip size={18} color="#a1a1aa" />
+          <View className="border-t border-border bg-card sp-px-4 sp-py-3 flex-row items-center sp-gap-2">
+            <TouchableOpacity className="sp-p-2 rounded-control bg-muted active:bg-accent">
+              <Paperclip size={18} color={palette["muted-foreground"]} />
             </TouchableOpacity>
 
             <TextInput
               value={inputText}
               onChangeText={setInputText}
               placeholder="Type your message..."
-              placeholderTextColor="#71717a"
-              className="flex-1 rounded-xl bg-zinc-950 border border-zinc-800 px-4 py-2.5 text-sm text-white"
+              placeholderTextColor={palette["muted-foreground"]}
+              className="field flex-1 rounded-control sp-px-4 sp-py-2.5 type-sm text-foreground"
             />
 
             <TouchableOpacity
               onPress={handleSendMessage}
-              className={`p-2.5 rounded-xl ${
-                inputText.trim() ? "bg-sky-600" : "bg-zinc-800"
+              className={`sp-p-2.5 rounded-control ${
+                inputText.trim() ? "bg-primary" : "bg-muted"
               }`}
             >
               <Send
                 size={18}
-                color={inputText.trim() ? "#ffffff" : "#71717a"}
+                color={inputText.trim() ? palette.foreground : palette["muted-foreground"]}
               />
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       ) : (
         /* SCREEN 1: CONVERSATION LIST */
-        <View className="flex-1 px-4 py-4">
+        <View className="flex-1 sp-px-4 sp-py-4">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-2xl font-black text-white">Messages</Text>
-            <View className="rounded-full bg-zinc-900 border border-zinc-800 px-2.5 py-1">
-              <Text className="text-xs font-bold text-zinc-300">3 Threads</Text>
+            <Text className="type-2xl weight-heading text-foreground">Messages</Text>
+            <View className="surface rounded-full sp-px-2.5 sp-py-1">
+              <Text className="type-xs weight-title text-muted-foreground">3 Threads</Text>
             </View>
           </View>
 
           {/* Search Box */}
-          <View className="flex-row items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-3 py-2.5 mb-4">
-            <Search size={16} color="#71717a" />
+          <View className="surface flex-row items-center sp-gap-2 rounded-control sp-px-3 sp-py-2.5 mb-4">
+            <Search size={16} color={palette["muted-foreground"]} />
             <TextInput
               placeholder="Search conversations..."
-              placeholderTextColor="#71717a"
-              className="flex-1 text-xs text-white"
+              placeholderTextColor={palette["muted-foreground"]}
+              className="flex-1 type-xs text-foreground"
             />
           </View>
 
           {/* Filter Pills */}
-          <View className="flex-row gap-2 mb-4">
+          <View className="flex-row sp-gap-2 mb-4">
             {(["all", "support", "direct"] as const).map((tab) => (
               <TouchableOpacity
                 key={tab}
                 onPress={() => setFilterTab(tab)}
-                className={`rounded-xl px-3 py-1.5 capitalize ${
+                className={`rounded-control sp-px-3 sp-py-1.5 capitalize ${
                   filterTab === tab
-                    ? "bg-white"
-                    : "bg-zinc-900 border border-zinc-800"
+                    ? "bg-foreground"
+                    : "surface"
                 }`}
               >
                 <Text
-                  className={`text-xs font-bold ${
-                    filterTab === tab ? "text-zinc-950" : "text-zinc-400"
+                  className={`type-xs weight-title ${
+                    filterTab === tab ? "text-muted-foreground" : "text-muted-foreground"
                   }`}
                 >
                   {tab}
@@ -270,38 +272,38 @@ export function ChatFlow() {
 
           {/* Thread List */}
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="gap-2.5">
+            <View className="sp-gap-2.5">
               {filteredThreads.map((thread) => (
                 <TouchableOpacity
                   key={thread.id}
                   onPress={() => setActiveThreadId(thread.id)}
-                  className="flex-row items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-900/80 p-3.5 active:bg-zinc-800"
+                  className="flex-row items-center justify-between rounded-card border border-border bg-card/80 sp-p-3.5 active:bg-muted"
                 >
-                  <View className="flex-row items-center gap-3 flex-1 pr-3">
+                  <View className="flex-row items-center sp-gap-3 flex-1 sp-pr-3">
                     <View className="relative">
-                      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-zinc-800">
-                        <Text className="text-sm font-bold text-white">{thread.initials}</Text>
+                      <View className="h-11 w-11 items-center justify-center rounded-card bg-muted">
+                        <Text className="type-sm weight-title text-foreground">{thread.initials}</Text>
                       </View>
                       {thread.online && (
-                        <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-zinc-900" />
+                        <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success border-2 border-border" />
                       )}
                     </View>
 
                     <View className="flex-1">
-                      <Text className="text-sm font-bold text-white" numberOfLines={1}>
+                      <Text className="type-sm weight-title text-foreground" numberOfLines={1}>
                         {thread.name}
                       </Text>
-                      <Text className="text-xs text-zinc-400 mt-0.5" numberOfLines={1}>
+                      <Text className="type-xs text-muted-foreground mt-0.5" numberOfLines={1}>
                         {thread.preview}
                       </Text>
                     </View>
                   </View>
 
-                  <View className="items-end gap-1">
-                    <Text className="text-[10px] text-zinc-500">{thread.time}</Text>
+                  <View className="items-end sp-gap-1">
+                    <Text className="type-2xs text-muted-foreground">{thread.time}</Text>
                     {thread.unread > 0 && (
-                      <View className="h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5">
-                        <Text className="text-[10px] font-bold text-white">{thread.unread}</Text>
+                      <View className="h-5 min-w-5 items-center justify-center rounded-full bg-primary sp-px-1.5">
+                        <Text className="type-2xs weight-title text-primary-foreground">{thread.unread}</Text>
                       </View>
                     )}
                   </View>

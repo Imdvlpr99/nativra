@@ -1,11 +1,14 @@
 {
   "id": "header-bar",
-  "name": "HeaderBar",
+  "name": "Header Bar",
   "description": "Mobile screen navigation bar with back action, title, subtitle, and right action button.",
   "type": "component",
   "status": "stable",
-  "version": "0.2.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.3.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -13,13 +16,29 @@
     "expoGo": true
   },
   "files": [
-    { "path": "nativewind/HeaderBar.tsx", "target": "nativewind" },
-    { "path": "stylesheet/HeaderBar.tsx", "target": "stylesheet" }
+    {
+      "path": "nativewind/HeaderBar.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/HeaderBar.tsx",
+      "target": "stylesheet"
+    }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["header", "navbar", "navigation", "topbar", "screen"],
+  "tags": [
+    "header",
+    "navbar",
+    "navigation",
+    "topbar",
+    "screen"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2026-11-09T00:00:00.000Z"
 }
-

@@ -26,9 +26,9 @@ export function BottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-black/50">
+      <View className="flex-1 justify-end bg-scrim">
         {/* Backdrop Dismiss */}
-        <Pressable
+        <Pressable accessibilityRole="button"
           className="absolute inset-0"
           onPress={onClose}
           accessibilityLabel="Dismiss bottom sheet"
@@ -37,17 +37,17 @@ export function BottomSheet({
         {/* Sheet Content Panel */}
         <View
           className={cn(
-            "w-full rounded-t-3xl border-t border-zinc-200 bg-white p-6 pb-10 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900",
+            "w-full rounded-t-surface border-t border-border bg-card sp-p-6 sp-pb-10 shadow-2xl",
             className
           )}
         >
           {/* Grab Handle */}
           <View className="mb-4 items-center">
-            <View className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <View className="h-1.5 w-12 rounded-full bg-muted" />
           </View>
 
           {title && (
-            <Text className="mb-4 text-base font-bold text-zinc-900 dark:text-zinc-50">
+            <Text className="mb-4 type-base weight-title text-foreground">
               {title}
             </Text>
           )}

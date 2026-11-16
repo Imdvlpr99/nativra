@@ -1,6 +1,7 @@
 /** Nativra — Toast (StyleSheet). Install: npx nativra-cli add toast */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, useThemeColors, themeStyle, alpha, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface ToastProps {
   title: string;
@@ -15,34 +16,20 @@ export function Toast({
   variant = "default",
   onDismiss,
 }: ToastProps) {
-  const bgColors = {
-    default: "#18181b",
-    success: "#064e3b",
-    error: "#7f1d1d",
-    warning: "#78350f",
-  };
-
-  const borderColors = {
-    default: "#27272a",
-    success: "#059669",
-    error: "#dc2626",
-    warning: "#d97706",
-  };
-
+  const c = useThemeColors();
+  const styles = createStyles(c);
+  // Status shows as the dot; the surface is the same inverted card for every variant.
   const dotColors = {
-    default: "#a1a1aa",
-    success: "#34d399",
-    error: "#f87171",
-    warning: "#fbbf24",
+    default: alpha(c.background, 0.6),
+    success: c.success,
+    error: c.destructive,
+    warning: c.warning,
   };
 
   return (
     <View
       accessibilityRole="alert"
-      style={[
-        styles.toast,
-        { backgroundColor: bgColors[variant], borderColor: borderColors[variant] },
-      ]}
+      style={styles.toast}
     >
       <View style={styles.content}>
         <View style={[styles.dot, { backgroundColor: dotColors[variant] }]} />
@@ -52,7 +39,7 @@ export function Toast({
         </View>
       </View>
       {onDismiss ? (
-        <Pressable onPress={onDismiss} accessibilityLabel="Dismiss toast" style={styles.closeBtn}>
+        <Pressable accessibilityRole="button" onPress={onDismiss} accessibilityLabel="Dismiss toast" style={styles.closeBtn}>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
       ) : null}
@@ -60,14 +47,14 @@ export function Toast({
   );
 }
 
-const styles = StyleSheet.create({
-  toast: { width: "100%", maxWidth: 360, flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", borderRadius: 16, borderWidth: 1, padding: 16, shadowColor: "#000", shadowOpacity: 0.25, shadowRadius: 8, elevation: 5 },
-  content: { flexDirection: "row", alignItems: "flex-start", gap: 12, flex: 1, paddingRight: 8 },
-  dot: { width: 8, height: 8, borderRadius: 4, marginTop: 5 },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  toast: { width: "100%", maxWidth: 360, flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", borderRadius: themeStyle.radius.surface, backgroundColor: c.foreground, paddingVertical: sp(14), paddingHorizontal: sp(18), ...elevation("raised") },
+  content: { flexDirection: "row", alignItems: "flex-start", gap: sp(12), flex: 1, paddingRight: sp(8) },
+  dot: { width: 8, height: 8, borderRadius: 9999, marginTop: 5 },
   textWrap: { flex: 1 },
-  title: { fontSize: 14, fontWeight: "600", color: "#ffffff" },
-  description: { fontSize: 12, color: "#d4d4d8", marginTop: 2, lineHeight: 16 },
-  closeBtn: { width: 24, height: 24, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
-  closeText: { fontSize: 11, fontWeight: "700", color: "#d4d4d8" },
+  title: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.background },
+  description: { fontSize: ts(13), color: alpha(c.background, 0.7), marginTop: 2, lineHeight: ts(18) },
+  closeBtn: { width: 26, height: 26, borderRadius: 9999, backgroundColor: alpha(c.background, 0.12), alignItems: "center", justifyContent: "center" },
+  closeText: { fontSize: ts(11), fontWeight: themeStyle.fontWeight.title, color: alpha(c.background, 0.8) },
 });
 

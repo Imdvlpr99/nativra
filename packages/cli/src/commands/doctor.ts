@@ -1,11 +1,29 @@
 import type { Command } from "commander";
 import { readFile, writeFile, access } from "node:fs/promises";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import chalk from "chalk";
 import { checkProjectCompatibility } from "@nativra/registry-schema";
-import { loadConfig, saveConfig, NativraConfigSchema } from "../config.js";
-import { readLock } from "../install.js";
+import { sha256 } from "@nativra/utils";
+import { createClient } from "../client.js";
+import {
+  CONFIG_FILENAME,
+  createProjectConfig,
+  ensureGitignored,
+  loadConfig,
+  saveConfig,
+  type NativraConfig,
+} from "../config.js";
+import { assertSafeWriteTarget, readLock, resolveLockFilePath } from "../install.js";
 import { detectProjectEnvironment } from "../detect.js";
+import { printable } from "./shared.js";
+import {
+  TAILWIND_COLORS_SNIPPET,
+  findGlobalCss,
+  findTailwindConfig,
+  hasThemeCss,
+  outdatedThemeCss,
+  tailwindMapsThemeColors,
+} from "../theme-css.js";
 
 interface Check {
   name: string;
@@ -36,43 +54,41 @@ export function registerDoctorCommand(program: Command) {
 
       // 1. Check nativra.json & Configuration
       let stylingTarget = "nativewind";
-      let hasV4Config = false;
+      let config: NativraConfig | undefined;
       try {
-        const config = await loadConfig(options.cwd);
+        config = await loadConfig(options.cwd);
         stylingTarget = config.stylingTarget;
-        hasV4Config = config.version === 4;
         checks.push({
           name: "nativra.json configuration",
           pass: true,
-          detail: `styling: ${chalk.cyan(config.stylingTarget)}, schema: ${
-            hasV4Config ? chalk.green("v4-nested") : chalk.yellow("v1-flat")
-          }`,
+          detail: `styling: ${chalk.cyan(config.stylingTarget)}, components: ${chalk.cyan(config.componentsDir)}`,
         });
-      } catch {
-        if (options.fix) {
+      } catch (configErr) {
+        const configMissing = !(await fileExists(join(options.cwd, CONFIG_FILENAME)));
+        if (options.fix && !configMissing) {
+          // Never replace a config the user wrote; report why it is invalid instead.
+          checks.push({
+            name: "nativra.json configuration",
+            pass: false,
+            detail: `Invalid (not auto-fixed, fix it by hand): ${(configErr as Error).message}`,
+          });
+        } else if (options.fix) {
           try {
             const env = await detectProjectEnvironment(options.cwd);
             stylingTarget = env.stylingTarget;
-            hasV4Config = true;
-            const newConfig = NativraConfigSchema.parse({
-              $schema: "https://nativra.vercel.app/schema.json",
-              version: 4,
-              stylingTarget: env.stylingTarget,
-              componentsDir: env.suggestedComponentsDir,
-              hooksDir: env.suggestedHooksDir,
-              utilsDir: env.suggestedUtilsDir,
-              config: {
-                v4: {
-                  styling: env.stylingTarget,
-                },
+            const { config: newConfig } = createProjectConfig(
+              {
+                stylingTarget: env.stylingTarget,
+                componentsDir: env.suggestedComponentsDir,
+                hooksDir: env.suggestedHooksDir,
+                utilsDir: env.suggestedUtilsDir,
+                themesDir: env.suggestedThemesDir,
               },
-              aliases: {
-                components: env.suggestedComponentsDir,
-                hooks: env.suggestedHooksDir,
-                utils: env.suggestedUtilsDir,
-              },
-            });
+              env.importAlias
+            );
             await saveConfig(options.cwd, newConfig);
+            config = newConfig;
+            await ensureGitignored(options.cwd);
             checks.push({
               name: "nativra.json configuration",
               pass: true,
@@ -96,12 +112,15 @@ export function registerDoctorCommand(program: Command) {
 
       // 2. Check package.json & Ecosystem Compatibility
       let allDeps: Record<string, string> = {};
+      let pkgJson: { type?: string } | undefined;
       try {
         const pkgRaw = await readFile(join(options.cwd, "package.json"), "utf8");
         const pkg = JSON.parse(pkgRaw) as {
           dependencies?: Record<string, string>;
           devDependencies?: Record<string, string>;
+          type?: string;
         };
+        pkgJson = pkg;
         allDeps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) };
         checks.push({ name: "package.json found", pass: true });
 
@@ -156,21 +175,24 @@ export function registerDoctorCommand(program: Command) {
         });
       }
 
-      // 3. Expo Project Configuration
-      const hasAppJson = await fileExists(join(options.cwd, "app.json"));
-      const hasAppConfigTs = await fileExists(join(options.cwd, "app.config.ts"));
-      const hasAppConfigJs = await fileExists(join(options.cwd, "app.config.js"));
-      if (hasAppJson || hasAppConfigTs || hasAppConfigJs) {
+      // 3. Project type: Expo needs an app config; a React Native CLI app is fine without one.
+      if (allDeps["expo"]) {
+        let found: string | undefined;
+        for (const name of ["app.json", "app.config.ts", "app.config.js"]) {
+          if (!found && (await fileExists(join(options.cwd, name)))) found = name;
+        }
         checks.push({
-          name: "Expo Project Structure",
-          pass: true,
-          detail: hasAppJson ? "app.json detected" : "app.config detected",
+          name: "Expo project structure",
+          pass: Boolean(found),
+          detail: found ? `${found} detected` : "Expo is installed but there is no app.json or app.config",
         });
+      } else if (allDeps["react-native"]) {
+        checks.push({ name: "React Native project", pass: true, detail: "React Native CLI (no Expo)" });
       } else {
         checks.push({
-          name: "Expo Project Structure",
+          name: "React Native project",
           pass: false,
-          detail: "No app.json or app.config found — Expo project required",
+          detail: "Neither expo nor react-native is in package.json",
         });
       }
 
@@ -195,18 +217,43 @@ export function registerDoctorCommand(program: Command) {
       // 5. NativeWind v4 Configuration (if active)
       if (stylingTarget === "nativewind") {
         const hasNativeWindPkg = Boolean(allDeps["nativewind"]);
-        let hasTailwindConfig =
-          (await fileExists(join(options.cwd, "tailwind.config.js"))) ||
-          (await fileExists(join(options.cwd, "tailwind.config.ts")));
+        let hasTailwindConfig = (await findTailwindConfig(options.cwd)) !== null;
 
         if (!hasTailwindConfig && options.fix) {
-          const defaultTailwind = `/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],\n  presets: [require("nativewind/preset")],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n};\n`;
-          await writeFile(join(options.cwd, "tailwind.config.js"), defaultTailwind, "utf8");
+          const colors = TAILWIND_COLORS_SNIPPET.split("\n").map((l) => `      ${l}`).join("\n");
+          // Scan the app plus wherever Nativra installs components and blocks.
+          const contentDirs = [
+            ...new Set(
+              ["app", "src", config?.componentsDir, config?.blocksDir]
+                .filter((d): d is string => Boolean(d))
+                .map((d) => d.replace(/\\/g, "/").replace(/\/+$/, ""))
+            ),
+          ];
+          const content = contentDirs.map((d) => JSON.stringify(`./${d}/**/*.{js,jsx,ts,tsx}`)).join(", ");
+          const defaultTailwind = [
+            "/** @type {import('tailwindcss').Config} */",
+            "module.exports = {",
+            `  content: [${content}],`,
+            '  presets: [require("nativewind/preset")],',
+            "  theme: {",
+            "    extend: {",
+            colors,
+            "    },",
+            "  },",
+            "  plugins: [],",
+            "};",
+            "",
+          ].join("\n");
+          // module.exports only loads from a .js file when the package isn't ESM.
+          const isEsm = pkgJson?.type === "module";
+          const configName = isEsm ? "tailwind.config.cjs" : "tailwind.config.js";
+          const configPath = await assertSafeWriteTarget(options.cwd, join(options.cwd, configName));
+          await writeFile(configPath, defaultTailwind, "utf8");
           hasTailwindConfig = true;
           checks.push({
             name: "Tailwind CSS configuration",
             pass: true,
-            detail: chalk.green("⚡ Auto-fixed: Scaffolded tailwind.config.js"),
+            detail: chalk.green(`⚡ Auto-fixed: Scaffolded ${configName}`),
           });
         }
 
@@ -228,6 +275,48 @@ export function registerDoctorCommand(program: Command) {
               : "Consider running npx tailwindcss init or pass --fix",
           });
         }
+
+        if (hasTailwindConfig) {
+          const mapped = await tailwindMapsThemeColors(options.cwd);
+          checks.push({
+            name: "Theme colors mapped in Tailwind",
+            pass: true,
+            warn: mapped === false,
+            detail:
+              mapped === false
+                ? "Components use bg-primary, text-muted-foreground, … — map them to var(--color-*) (see /docs/styling/nativewind)"
+                : "rgb(var(--color-*)) colors configured",
+          });
+        }
+      }
+
+      // 5b. NativeWind v4 build wiring: Metro must wrap the config and Babel needs the preset.
+      if (stylingTarget === "nativewind" && allDeps["nativewind"]) {
+        const firstFile = async (names: string[]) => {
+          for (const name of names) {
+            const text = await readFile(join(options.cwd, name), "utf8").catch(() => null);
+            if (text !== null) return { name, text };
+          }
+          return null;
+        };
+        const metro = await firstFile(["metro.config.js", "metro.config.cjs", "metro.config.mjs", "metro.config.ts"]);
+        checks.push({
+          name: "Metro configured for NativeWind",
+          pass: true,
+          warn: !metro?.text.includes("withNativeWind"),
+          detail: metro?.text.includes("withNativeWind")
+            ? `${metro.name} uses withNativeWind`
+            : `${metro ? metro.name : "metro.config.js"} should export withNativeWind(config, { input: "./global.css" })`,
+        });
+        const babel = await firstFile(["babel.config.js", "babel.config.cjs", "babel.config.mjs", ".babelrc"]);
+        checks.push({
+          name: "Babel configured for NativeWind",
+          pass: true,
+          warn: !babel?.text.includes("nativewind"),
+          detail: babel?.text.includes("nativewind")
+            ? `${babel.name} includes the NativeWind preset`
+            : `${babel ? babel.name : "babel.config.js"} should include "nativewind/babel" (and jsxImportSource: "nativewind")`,
+        });
       }
 
       // 6. Lockfile & Installed Components Integrity
@@ -239,11 +328,84 @@ export function registerDoctorCommand(program: Command) {
           pass: true,
           detail: `${itemCount} component(s) tracked`,
         });
-      } catch {
+
+        // Tracked files that are gone or edited since Nativra wrote them.
+        const missingFiles: string[] = [];
+        let modified = 0;
+        for (const entry of Object.values(lock.items)) {
+          for (const [key, hash] of Object.entries(entry.files)) {
+            let path: string;
+            try {
+              path = resolveLockFilePath(options.cwd, key);
+            } catch {
+              missingFiles.push(key);
+              continue;
+            }
+            const content = await readFile(path, "utf8").catch(() => null);
+            if (content === null) missingFiles.push(key);
+            else if (sha256(content) !== hash) modified++;
+          }
+        }
+        if (itemCount > 0) {
+          checks.push({
+            name: "Installed files",
+            pass: missingFiles.length === 0,
+            warn: modified > 0,
+            detail:
+              missingFiles.length > 0
+                ? `Missing: ${missingFiles.slice(0, 5).join(", ")}${missingFiles.length > 5 ? ", …" : ""} (re-add them or 'nativra remove' the item)`
+                : modified > 0
+                  ? `${modified} file(s) edited locally ('nativra update' will skip them)`
+                  : "All tracked files present and unmodified",
+          });
+        }
+
+        // NativeWind components read their colors and shapes from the theme block in global.css.
+        if (stylingTarget === "nativewind" && itemCount > 0) {
+          const css = await findGlobalCss(options.cwd);
+          const outdated = css ? await outdatedThemeCss(css) : null;
+          const present = css ? await hasThemeCss(css) : false;
+          // A warning, not a failure: the variables can also be wired by hand.
+          checks.push({
+            name: "Theme CSS in global.css",
+            pass: true,
+            warn: !present || Boolean(outdated),
+            detail: !css
+              ? "No global.css found"
+              : !present
+                ? `No Nativra theme block in ${relative(options.cwd, css)}; run 'nativra theme add <id>'`
+                : outdated
+                  ? "Theme block predates the current tokens; 'nativra update' refreshes it"
+                  : "Theme block present",
+          });
+        }
+
+        // npm packages the installed items need but package.json doesn't list.
+        if (itemCount > 0 && Object.keys(allDeps).length > 0) {
+          const needed = new Set<string>();
+          const client = config ? createClient(config, undefined, options.cwd) : null;
+          for (const [id, entry] of Object.entries(lock.items)) {
+            try {
+              const item = await client?.getItem(id, entry.registry ?? "default");
+              for (const dep of item?.npmDependencies ?? []) if (!allDeps[dep.package]) needed.add(dep.package);
+            } catch {
+              // Offline or removed from the registry: nothing to compare against.
+            }
+          }
+          // A warning: in a monorepo they may be declared in the workspace root's package.json.
+          checks.push({
+            name: "npm dependencies of installed items",
+            pass: true,
+            warn: needed.size > 0,
+            detail: needed.size === 0 ? "All declared" : `Not in package.json: ${[...needed].map(printable).join(", ")}`,
+          });
+        }
+      } catch (err) {
+        // readLock only throws for a lockfile that exists but can't be used (a missing one is empty).
         checks.push({
-          name: "nativra.lock.json",
-          pass: true,
-          detail: "No components tracked yet",
+          name: "nativra.lock.json integrity",
+          pass: false,
+          detail: (err as Error).message,
         });
       }
 
@@ -282,6 +444,8 @@ export function registerDoctorCommand(program: Command) {
             `\n⚠ ${failed.length} check(s) failed. Run ${chalk.cyan("nativra doctor --fix")} or see diagnostic details above to resolve.\n`
           )
         );
+        // Lets CI gate on `nativra doctor`.
+        process.exitCode = 1;
       }
     });
 }

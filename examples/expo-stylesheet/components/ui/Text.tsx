@@ -5,16 +5,16 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add text
+ * Install: npx nativra-cli add text
  */
 import React from "react";
 import {
   Text as RNText,
   StyleSheet,
-  useColorScheme,
   type TextProps as RNTextProps,
   type TextStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors, themeStyle, ts } from "@/hooks/use-theme-colors";
 
 export type TextVariant = "h1" | "h2" | "h3" | "h4" | "p" | "lead" | "muted" | "code";
 
@@ -23,8 +23,7 @@ export interface TextProps extends RNTextProps {
 }
 
 export function Text({ variant = "p", style, ...props }: TextProps) {
-  const isDark = useColorScheme() === "dark";
-  const color = isDark ? colorsDark[variant] : colorsLight[variant];
+  const color = variantColor(useThemeColors(), variant);
 
   return (
     <RNText
@@ -34,27 +33,15 @@ export function Text({ variant = "p", style, ...props }: TextProps) {
   );
 }
 
-const colorsLight: Record<TextVariant, string> = {
-  h1: "#09090b",
-  h2: "#09090b",
-  h3: "#09090b",
-  h4: "#09090b",
-  p: "#27272a",
-  lead: "#52525b",
-  muted: "#71717a",
-  code: "#27272a",
-};
-
-const colorsDark: Record<TextVariant, string> = {
-  h1: "#fafafa",
-  h2: "#fafafa",
-  h3: "#fafafa",
-  h4: "#fafafa",
-  p: "#e4e4e7",
-  lead: "#d4d4d8",
-  muted: "#a1a1aa",
-  code: "#e4e4e7",
-};
+function variantColor(c: ThemeColors, variant: TextVariant): string {
+  switch (variant) {
+    case "lead":
+    case "muted":
+      return c["muted-foreground"];
+    default:
+      return c.foreground;
+  }
+}
 
 const styles = StyleSheet.create({
   base: {
@@ -64,46 +51,48 @@ const styles = StyleSheet.create({
 
 const variantStyles: Record<TextVariant, TextStyle> = StyleSheet.create({
   h1: {
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: "700",
-    letterSpacing: -0.5,
+    fontSize: ts(30),
+    lineHeight: ts(36),
+    fontWeight: themeStyle.fontWeight.heading,
+    letterSpacing: themeStyle.headingLetterSpacing * 1.25,
   },
   h2: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: "600",
-    letterSpacing: -0.3,
+    fontSize: ts(24),
+    lineHeight: ts(30),
+    fontWeight: themeStyle.fontWeight.heading,
+    letterSpacing: themeStyle.headingLetterSpacing,
   },
   h3: {
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: "600",
+    fontSize: ts(20),
+    lineHeight: ts(26),
+    fontWeight: themeStyle.fontWeight.title,
+    letterSpacing: themeStyle.headingLetterSpacing * 0.5,
   },
   h4: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: "600",
+    fontSize: ts(18),
+    lineHeight: ts(24),
+    fontWeight: themeStyle.fontWeight.title,
   },
   p: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: ts(16),
+    lineHeight: ts(24),
     fontWeight: "400",
   },
   lead: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: ts(18),
+    lineHeight: ts(26),
     fontWeight: "400",
   },
   muted: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: ts(14),
+    lineHeight: ts(20),
     fontWeight: "400",
   },
   code: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: ts(14),
+    lineHeight: ts(20),
     fontWeight: "400",
     fontFamily: "Courier",
   },
 });
+

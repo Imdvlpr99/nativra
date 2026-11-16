@@ -48,34 +48,34 @@ export function TransactionRow({
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      className={`flex-row items-center justify-between py-3.5 px-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 active:bg-zinc-800/50 ${className}`.trim()}
+      className={`flex-row items-center justify-between sp-py-3.5 sp-px-4 rounded-card bg-card/60 border border-border/80 active:bg-muted/50 ${className}`.trim()}
     >
-      <View className="flex-row items-center gap-3 flex-1 mr-3">
+      <View className="flex-row items-center sp-gap-3 flex-1 mr-3">
         {/* Avatar / Icon Chip */}
-        <View className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 items-center justify-center">
-          <Text className="text-xs font-bold text-zinc-200">
+        <View className="w-10 min-h-control rounded-control bg-muted border border-border items-center justify-center">
+          <Text className="type-xs weight-title text-foreground">
             {iconText.slice(0, 3).toUpperCase()}
           </Text>
         </View>
 
         {/* Labels */}
         <View className="flex-1">
-          <Text className="font-semibold text-zinc-100 text-sm leading-tight" numberOfLines={1}>
+          <Text className="weight-label text-foreground type-sm leading-tight" numberOfLines={1}>
             {title}
           </Text>
-          <View className="flex-row items-center gap-2 mt-1">
-            <Text className="text-xs text-zinc-400">{category}</Text>
-            <Text className="text-xs text-zinc-600">•</Text>
-            <Text className="text-xs text-zinc-500">{date}</Text>
+          <View className="flex-row items-center sp-gap-2 mt-1">
+            <Text className="type-xs text-muted-foreground">{category}</Text>
+            <Text className="type-xs text-muted-foreground">•</Text>
+            <Text className="type-xs text-muted-foreground">{date}</Text>
           </View>
         </View>
       </View>
 
       {/* Amount & Status */}
-      <View className="items-end gap-1">
+      <View className="items-end sp-gap-1">
         <Text
-          className={`font-bold text-sm ${
-            isIncome ? "text-emerald-400" : "text-zinc-100"
+          className={`weight-title type-sm ${
+            isIncome ? "text-success" : "text-foreground"
           }`}
         >
           {isIncome && !amount.startsWith("+") ? `+${amount}` : amount}

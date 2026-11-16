@@ -1,6 +1,7 @@
 /** Nativra — Dialog (NativeWind). Install: npx nativra-cli add dialog */
 import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
+import { elevation } from "@/hooks/use-theme-colors";
 
 export interface DialogProps {
   open: boolean;
@@ -44,36 +45,36 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View className="flex-1 items-center justify-center bg-black/60 px-6">
-        <Pressable className="absolute inset-0" onPress={handleCancel} />
-        <View className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 z-10">
-          <Text className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{title}</Text>
+      <View className="flex-1 items-center justify-center bg-scrim sp-px-6" accessibilityViewIsModal>
+        <Pressable accessible={false} importantForAccessibility="no" className="absolute inset-0" onPress={handleCancel} />
+        <View className="surface w-full max-w-sm rounded-surface sp-p-6 z-10" style={elevation("overlay")}>
+          <Text className="type-lg weight-title text-foreground">{title}</Text>
           {description ? (
-            <Text className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <Text className="mt-2 type-sm text-muted-foreground leading-relaxed">
               {description}
             </Text>
           ) : null}
 
           {children ? <View className="mt-4">{children}</View> : null}
 
-          <View className="mt-6 flex-row justify-end gap-3">
-            <Pressable
+          <View className="mt-6 flex-row justify-end sp-gap-3">
+            <Pressable accessibilityRole="button"
               onPress={handleCancel}
-              className="h-10 px-4 rounded-xl border border-zinc-300 dark:border-zinc-700 items-center justify-center active:opacity-75"
+              className="min-h-control sp-px-4 rounded-control border border-input items-center justify-center active:opacity-75"
             >
-              <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+              <Text className="type-sm weight-label text-foreground">
                 {cancelText}
               </Text>
             </Pressable>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleConfirm}
-              className={`h-10 px-4 rounded-xl items-center justify-center active:opacity-75 ${
-                destructive ? "bg-red-600" : "bg-zinc-900 dark:bg-zinc-50"
+              className={`h-10 sp-px-4 rounded-control items-center justify-center active:opacity-75 ${
+                destructive ? "bg-destructive" : "bg-foreground"
               }`}
             >
               <Text
-                className={`text-sm font-semibold ${
-                  destructive ? "text-white" : "text-white dark:text-zinc-900"
+                className={`type-sm weight-label ${
+                  destructive ? "text-destructive-foreground" : "text-background"
                 }`}
               >
                 {confirmText}

@@ -11,6 +11,7 @@ import React from "react";
 import { StyleSheet, View, TouchableOpacity, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface TransactionRowProps {
   title: string;
@@ -35,6 +36,8 @@ export function TransactionRow({
   onPress,
   style,
 }: TransactionRowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const isIncome = type === "income";
 
   const statusVariant =
@@ -79,79 +82,79 @@ export function TransactionRow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    backgroundColor: "rgba(24, 24, 27, 0.7)",
-    borderWidth: 1,
-    borderColor: "rgba(39, 39, 42, 0.8)",
+    paddingVertical: sp(14),
+    paddingHorizontal: sp(16),
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: alpha(palette.card, 0.7),
+    borderWidth: themeStyle.borderWidth,
+    borderColor: alpha(palette.border, 0.8),
   },
   leftCol: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
     flex: 1,
     marginRight: 12,
   },
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: 12,
-    backgroundColor: "#27272a",
-    borderWidth: 1,
-    borderColor: "#3f3f46",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.muted,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#e4e4e7",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   metaCol: {
     flex: 1,
   },
   title: {
-    fontWeight: "600",
-    color: "#f4f4f5",
-    fontSize: 14,
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette.foreground,
+    fontSize: ts(14),
   },
   subRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
     marginTop: 4,
   },
   categoryText: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
   },
   dot: {
-    fontSize: 12,
-    color: "#52525b",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
   },
   dateText: {
-    fontSize: 12,
-    color: "#71717a",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
   },
   rightCol: {
     alignItems: "flex-end",
-    gap: 4,
+    gap: sp(4),
   },
   amountText: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
   incomeText: {
-    color: "#34d399",
+    color: palette.success,
   },
   expenseText: {
-    color: "#f4f4f5",
+    color: palette.foreground,
   },
 });
 

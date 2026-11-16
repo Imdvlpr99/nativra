@@ -10,6 +10,7 @@
 import React from "react";
 import { View, Text, StyleSheet, type ViewProps } from "react-native";
 import { TrendingUp, TrendingDown } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface MiniSparklineCardProps extends ViewProps {
   title: string;
@@ -30,6 +31,8 @@ export function MiniSparklineCard({
   style,
   ...props
 }: MiniSparklineCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const minVal = Math.min(...data);
   const maxVal = Math.max(...data);
   const range = maxVal - minVal || 1;
@@ -40,9 +43,9 @@ export function MiniSparklineCard({
         <Text style={styles.title}>{title}</Text>
         <View style={[styles.badge, isPositive ? styles.badgePos : styles.badgeNeg]}>
           {isPositive ? (
-            <TrendingUp size={12} color="#10b981" />
+            <TrendingUp size={12} color={palette.success} />
           ) : (
-            <TrendingDown size={12} color="#f43f5e" />
+            <TrendingDown size={12} color={palette.destructive} />
           )}
           <Text style={[styles.badgeText, isPositive ? styles.textPos : styles.textNeg]}>
             {change}
@@ -84,13 +87,11 @@ export function MiniSparklineCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
-    padding: 18,
+    ...surface(palette),
+    borderRadius: themeStyle.radius.card,
+    padding: sp(18),
   },
   topRow: {
     flexDirection: "row",
@@ -98,35 +99,35 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   badge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: sp(4),
     borderRadius: 9999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
   },
   badgePos: {
-    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    backgroundColor: alpha(palette.success, 0.1),
   },
   badgeNeg: {
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
+    backgroundColor: alpha(palette.destructive, 0.1),
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
   },
   textPos: {
-    color: "#34d399",
+    color: palette.success,
   },
   textNeg: {
-    color: "#fb7185",
+    color: palette.destructive,
   },
   bottomRow: {
     marginTop: 12,
@@ -135,31 +136,31 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   value: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: "#ffffff",
+    fontSize: ts(24),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
     letterSpacing: -0.5,
   },
   sparklineContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 6,
+    gap: sp(6),
   },
   sparklineBar: {
     width: 4,
     borderRadius: 9999,
   },
   barPosActive: {
-    backgroundColor: "#10b981",
+    backgroundColor: palette.success,
   },
   barNegActive: {
-    backgroundColor: "#f43f5e",
+    backgroundColor: palette.destructive,
   },
   barPosFaded: {
-    backgroundColor: "rgba(16, 185, 129, 0.35)",
+    backgroundColor: alpha(palette.success, 0.35),
   },
   barNegFaded: {
-    backgroundColor: "rgba(244, 63, 94, 0.35)",
+    backgroundColor: alpha(palette.destructive, 0.35),
   },
 });
 

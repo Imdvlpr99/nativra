@@ -28,6 +28,7 @@ import {
   CheckCheck,
   MoreVertical,
 } from "lucide-react-native";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 interface Message {
   id: string;
@@ -37,6 +38,8 @@ interface Message {
 }
 
 export function ChatFlow() {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>("t1");
   const [inputText, setInputText] = useState("");
   const [filterTab, setFilterTab] = useState<"all" | "support" | "direct">("all");
@@ -128,12 +131,12 @@ export function ChatFlow() {
                 onPress={() => setActiveThreadId(null)}
                 style={styles.backButton}
               >
-                <ChevronLeft size={22} color="#ffffff" />
+                <ChevronLeft size={22} color={palette.foreground} />
               </TouchableOpacity>
 
               <View style={styles.avatarWrapper}>
                 <View style={styles.agentAvatar}>
-                  <Text style={styles.avatarText}>SD</Text>
+                  <Text style={styles.agentAvatarText}>SD</Text>
                 </View>
                 <View style={styles.onlineDot} />
               </View>
@@ -145,7 +148,7 @@ export function ChatFlow() {
             </View>
 
             <TouchableOpacity style={styles.moreButton}>
-              <MoreVertical size={18} color="#a1a1aa" />
+              <MoreVertical size={18} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           </View>
 
@@ -181,7 +184,7 @@ export function ChatFlow() {
                       <Text style={[styles.timeText, isUser ? styles.timeUser : styles.timeAgent]}>
                         {msg.time}
                       </Text>
-                      {isUser && <CheckCheck size={12} color="#bae6fd" />}
+                      {isUser && <CheckCheck size={12} color={palette["primary-foreground"]} />}
                     </View>
                   </View>
                 </View>
@@ -192,14 +195,14 @@ export function ChatFlow() {
           {/* Message Input Bar */}
           <View style={styles.inputBar}>
             <TouchableOpacity style={styles.attachBtn}>
-              <Paperclip size={18} color="#a1a1aa" />
+              <Paperclip size={18} color={palette["muted-foreground"]} />
             </TouchableOpacity>
 
             <TextInput
               value={inputText}
               onChangeText={setInputText}
               placeholder="Type your message..."
-              placeholderTextColor="#71717a"
+              placeholderTextColor={palette["muted-foreground"]}
               style={styles.textInput}
             />
 
@@ -207,7 +210,7 @@ export function ChatFlow() {
               onPress={handleSendMessage}
               style={[styles.sendBtn, inputText.trim() ? styles.sendBtnActive : styles.sendBtnInactive]}
             >
-              <Send size={18} color={inputText.trim() ? "#ffffff" : "#71717a"} />
+              <Send size={18} color={inputText.trim() ? palette.foreground : palette["muted-foreground"]} />
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -223,10 +226,10 @@ export function ChatFlow() {
 
           {/* Search Box */}
           <View style={styles.searchBar}>
-            <Search size={16} color="#71717a" />
+            <Search size={16} color={palette["muted-foreground"]} />
             <TextInput
               placeholder="Search conversations..."
-              placeholderTextColor="#71717a"
+              placeholderTextColor={palette["muted-foreground"]}
               style={styles.searchInput}
             />
           </View>
@@ -296,10 +299,10 @@ export function ChatFlow() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#09090b",
+    backgroundColor: palette.background,
   },
   keyboardContainer: {
     flex: 1,
@@ -309,18 +312,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
-    backgroundColor: "#18181b",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderBottomColor: palette.border,
+    backgroundColor: palette.card,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(12),
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
   },
   backButton: {
-    padding: 4,
+    padding: sp(4),
     marginLeft: -4,
   },
   avatarWrapper: {
@@ -330,14 +333,19 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#0284c7",
+    backgroundColor: palette.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
+  },
+  agentAvatarText: {
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette["primary-foreground"],
   },
   onlineDot: {
     position: "absolute",
@@ -345,48 +353,46 @@ const styles = StyleSheet.create({
     right: 0,
     height: 12,
     width: 12,
-    borderRadius: 6,
-    backgroundColor: "#10b981",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.success,
     borderWidth: 2,
-    borderColor: "#18181b",
+    borderColor: palette.border,
   },
   headerTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   headerStatus: {
-    fontSize: 11,
-    color: "#34d399",
+    fontSize: ts(11),
+    color: palette.success,
     marginTop: 1,
   },
   moreButton: {
-    padding: 4,
+    padding: sp(4),
   },
   messagesScroll: {
     flex: 1,
   },
   messagesContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    gap: 12,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(16),
+    gap: sp(12),
   },
   dateBadgeWrapper: {
     alignItems: "center",
     marginVertical: 8,
   },
   dateBadge: {
+    ...surface(palette),
     borderRadius: 9999,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingHorizontal: sp(12),
+    paddingVertical: sp(4),
   },
   dateBadgeText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#a1a1aa",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette["muted-foreground"],
   },
   messageRow: {
     flexDirection: "row",
@@ -399,87 +405,85 @@ const styles = StyleSheet.create({
   },
   bubble: {
     maxWidth: "78%",
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    borderRadius: themeStyle.radius.card,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(10),
   },
   bubbleUser: {
-    backgroundColor: "#0284c7",
+    backgroundColor: palette.primary,
     borderBottomRightRadius: 2,
   },
   bubbleAgent: {
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
+    ...surface(palette),
     borderBottomLeftRadius: 2,
   },
   bubbleText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: ts(14),
+    lineHeight: ts(20),
   },
   textUser: {
-    color: "#ffffff",
+    color: palette["primary-foreground"],
     fontWeight: "500",
   },
   textAgent: {
-    color: "#f4f4f5",
+    color: palette.foreground,
   },
   bubbleFooter: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    gap: 4,
+    gap: sp(4),
     marginTop: 4,
   },
   timeText: {
-    fontSize: 10,
+    fontSize: ts(10),
   },
   timeUser: {
-    color: "#bae6fd",
+    color: palette["primary-foreground"],
   },
   timeAgent: {
-    color: "#71717a",
+    color: palette["muted-foreground"],
   },
   inputBar: {
     borderTopWidth: 1,
-    borderTopColor: "#27272a",
-    backgroundColor: "#18181b",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderTopColor: palette.border,
+    backgroundColor: palette.card,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(12),
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   attachBtn: {
-    padding: 8,
-    borderRadius: 12,
-    backgroundColor: "#27272a",
+    padding: sp(8),
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.muted,
   },
   textInput: {
     flex: 1,
-    borderRadius: 12,
-    backgroundColor: "#09090b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: "#ffffff",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.background,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: palette.border,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(10),
+    fontSize: ts(14),
+    color: palette.foreground,
   },
   sendBtn: {
-    padding: 10,
-    borderRadius: 12,
+    padding: sp(10),
+    borderRadius: themeStyle.radius.control,
   },
   sendBtnActive: {
-    backgroundColor: "#0284c7",
+    backgroundColor: palette.primary,
   },
   sendBtnInactive: {
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
   },
   inboxContainer: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(16),
   },
   inboxHeader: {
     flexDirection: "row",
@@ -488,97 +492,89 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inboxTitle: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: "#ffffff",
+    fontSize: ts(24),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
   },
   threadCountBadge: {
+    ...surface(palette),
     borderRadius: 9999,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: sp(10),
+    paddingVertical: sp(4),
   },
   threadCountText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#d4d4d8",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette["muted-foreground"],
   },
   searchBar: {
+    ...surface(palette),
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    borderRadius: 12,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    gap: sp(8),
+    borderRadius: themeStyle.radius.control,
+    paddingHorizontal: sp(12),
+    paddingVertical: sp(10),
     marginBottom: 16,
   },
   searchInput: {
     flex: 1,
-    fontSize: 12,
-    color: "#ffffff",
+    fontSize: ts(12),
+    color: palette.foreground,
   },
   filterRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: sp(8),
     marginBottom: 16,
   },
   filterPill: {
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: themeStyle.radius.control,
+    paddingHorizontal: sp(12),
+    paddingVertical: sp(6),
   },
   filterPillActive: {
-    backgroundColor: "#ffffff",
+    backgroundColor: palette.foreground,
   },
   filterPillInactive: {
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
+    ...surface(palette),
   },
   filterPillText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
     textTransform: "capitalize",
   },
   filterPillTextActive: {
-    color: "#09090b",
+    color: palette["muted-foreground"],
   },
   filterPillTextInactive: {
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   threadScroll: {
     flex: 1,
   },
   threadList: {
-    gap: 10,
+    gap: sp(10),
   },
   threadItem: {
+    ...surface(palette),
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
-    padding: 14,
+    borderRadius: themeStyle.radius.card,
+    padding: sp(14),
   },
   threadItemLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
     flex: 1,
-    paddingRight: 12,
+    paddingRight: sp(12),
   },
   threadAvatar: {
     height: 44,
     width: 44,
-    borderRadius: 16,
-    backgroundColor: "#27272a",
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.muted,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -586,22 +582,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   threadName: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   threadPreview: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   threadItemRight: {
     alignItems: "flex-end",
-    gap: 4,
+    gap: sp(4),
   },
   threadTime: {
-    fontSize: 10,
-    color: "#71717a",
+    fontSize: ts(10),
+    color: palette["muted-foreground"],
   },
   unreadBadge: {
     height: 20,
@@ -609,13 +605,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 9999,
-    backgroundColor: "#0284c7",
-    paddingHorizontal: 6,
+    backgroundColor: palette.primary,
+    paddingHorizontal: sp(6),
   },
   unreadText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
 });
 

@@ -1,0 +1,80 @@
+# useThemeColors
+
+Returns the semantic colors of your installed theme for the current light or dark scheme.
+
+## Usage
+
+```tsx
+import { View, Text } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+
+export function Banner() {
+  const c = useThemeColors();
+  return (
+    <View style={{ backgroundColor: c.muted, borderColor: c.border, borderWidth: 1 }}>
+      <Text style={{ color: c.foreground }}>Hello</Text>
+    </View>
+  );
+}
+```
+
+## How it works
+
+The hook reads `themeColors` from `lib/themes/theme.ts`. That file is installed with the default
+**zinc** theme the first time you add a component. Switch every component to another palette with:
+
+```bash
+npx nativra-cli theme add midnight --overwrite
+```
+
+## Tokens
+
+`background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`,
+`destructive`, `success`, `warning` and `info` (each with a `-foreground` pair), plus `border`,
+`input` and `ring`.
+
+## Styles
+
+The UI's character (shape, type, density, surfaces and press feedback) comes from
+`lib/themes/style.ts`, separate from the colors. It's installed with the default **soft** style.
+Switch every component to another style with:
+
+```bash
+npx nativra-cli style add ios
+```
+
+Available styles: `soft`, `crisp` (shadcn/ui-like), `tailwind` (Tailwind UI-like), `material`
+(Material 3-like) and `ios` (Apple-like).
+
+Helpers that follow the installed style, for your own components:
+
+| Helper | Returns |
+|---|---|
+| `themeStyle` | The style tokens: `radius.button`, `control.height`, `fontWeight.title`, … |
+| `ts(16)` | A font size from the base design, in the style's type scale |
+| `sp(12)` | A padding or gap from the base design, at the style's density |
+| `surface(c)` | A card background: bordered, ringed, tinted or grey, with its shadow |
+| `field(c, focused)` | A text input container: outlined or filled |
+| `elevation("raised")` | A drop shadow for menus (`raised`) and dialogs (`overlay`) |
+| `pressedStyle(pressed)` | Press feedback: shrink or dim |
+| `scrim()` | The backdrop color behind dialogs and sheets |
+
+```tsx
+import { Pressable, Text } from "react-native";
+import { pressedStyle, sp, surface, themeStyle, ts, useThemeColors } from "@/hooks/use-theme-colors";
+
+export function Tile({ title }: { title: string }) {
+  const c = useThemeColors();
+  return (
+    <Pressable style={({ pressed }) => [surface(c), { padding: sp(16), borderRadius: themeStyle.radius.card }, pressedStyle(pressed)]}>
+      <Text style={{ color: c.foreground, fontSize: ts(16), fontWeight: themeStyle.fontWeight.title }}>{title}</Text>
+    </Pressable>
+  );
+}
+```
+
+NativeWind components use the matching classes the CLI writes into `global.css`: `type-sm` …
+`type-4xl`, `weight-heading`, `weight-title`, `weight-label`, `surface`, `field`, `h-control`,
+`px-control`, the `rounded-<role>` classes, and density-aware spacing: `sp-p-4`, `sp-px-3`,
+`sp-gap-2` and so on mirror Tailwind's `p-4`, `px-3`, `gap-2`, scaled by the style's density
+(Tailwind's own classes stay unchanged for the rest of your app).

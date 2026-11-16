@@ -1,6 +1,7 @@
 /** Nativra — Dialog (StyleSheet). Install: npx nativra-cli add dialog */
 import React from "react";
-import { Modal, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useThemeColors, themeStyle, elevation, scrim, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface DialogProps {
   open: boolean;
@@ -27,7 +28,7 @@ export function Dialog({
   destructive = false,
   children,
 }: DialogProps) {
-  const dark = useColorScheme() === "dark";
+  const c = useThemeColors();
 
   const handleCancel = () => {
     onCancel?.();
@@ -46,12 +47,12 @@ export function Dialog({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <View style={styles.backdrop}>
-        <Pressable style={styles.dismissOverlay} onPress={handleCancel} />
-        <View style={[styles.card, { backgroundColor: dark ? "#18181b" : "#ffffff", borderColor: dark ? "#27272a" : "#e4e4e7" }]}>
-          <Text style={[styles.title, { color: dark ? "#fafafa" : "#18181b" }]}>{title}</Text>
+      <View style={styles.backdrop} accessibilityViewIsModal>
+        <Pressable accessible={false} importantForAccessibility="no" style={styles.dismissOverlay} onPress={handleCancel} />
+        <View style={[styles.card, { ...surface(c) }, elevation("overlay")]}>
+          <Text style={[styles.title, { color: c.foreground }]}>{title}</Text>
           {description ? (
-            <Text style={[styles.description, { color: dark ? "#a1a1aa" : "#71717a" }]}>
+            <Text style={[styles.description, { color: c["muted-foreground"] }]}>
               {description}
             </Text>
           ) : null}
@@ -59,25 +60,25 @@ export function Dialog({
           {children ? <View style={styles.content}>{children}</View> : null}
 
           <View style={styles.actions}>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleCancel}
-              style={[styles.cancelBtn, { borderColor: dark ? "#3f3f46" : "#d4d4d8" }]}
+              style={[styles.cancelBtn, { borderColor: c.input }]}
             >
-              <Text style={[styles.cancelText, { color: dark ? "#d4d4d8" : "#3f3f46" }]}>
+              <Text style={[styles.cancelText, { color: c.foreground }]}>
                 {cancelText}
               </Text>
             </Pressable>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={handleConfirm}
               style={[
                 styles.confirmBtn,
-                { backgroundColor: destructive ? "#dc2626" : dark ? "#fafafa" : "#18181b" },
+                { backgroundColor: destructive ? c.destructive : c.foreground },
               ]}
             >
               <Text
                 style={[
                   styles.confirmText,
-                  { color: destructive ? "#ffffff" : dark ? "#18181b" : "#ffffff" },
+                  { color: destructive ? c["destructive-foreground"] : c.background },
                 ]}
               >
                 {confirmText}
@@ -91,16 +92,16 @@ export function Dialog({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", alignItems: "center", justifyContent: "center", padding: 24 },
+  backdrop: { flex: 1, backgroundColor: scrim(), alignItems: "center", justifyContent: "center", padding: sp(24) },
   dismissOverlay: { ...StyleSheet.absoluteFillObject },
-  card: { width: "100%", maxWidth: 360, borderRadius: 20, borderWidth: 1, padding: 24, zIndex: 10 },
-  title: { fontSize: 18, fontWeight: "700" },
-  description: { fontSize: 14, marginTop: 8, lineHeight: 20 },
+  card: { width: "100%", maxWidth: 360, borderRadius: themeStyle.radius.surface, borderWidth: themeStyle.borderWidth, padding: sp(24), zIndex: 10 },
+  title: { fontSize: ts(18), fontWeight: themeStyle.fontWeight.title },
+  description: { fontSize: ts(14), marginTop: 8, lineHeight: ts(20) },
   content: { marginTop: 16 },
-  actions: { flexDirection: "row", justifyContent: "flex-end", gap: 12, marginTop: 24 },
-  cancelBtn: { height: 40, paddingHorizontal: 16, borderRadius: 12, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  cancelText: { fontSize: 14, fontWeight: "600" },
-  confirmBtn: { height: 40, paddingHorizontal: 16, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  confirmText: { fontSize: 14, fontWeight: "600" },
+  actions: { flexDirection: "row", justifyContent: "flex-end", gap: sp(12), marginTop: 24 },
+  cancelBtn: { height: 40, paddingHorizontal: sp(16), borderRadius: themeStyle.radius.control, borderWidth: themeStyle.borderWidth, alignItems: "center", justifyContent: "center" },
+  cancelText: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.label },
+  confirmBtn: { height: 40, paddingHorizontal: sp(16), borderRadius: themeStyle.radius.control, alignItems: "center", justifyContent: "center" },
+  confirmText: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.label },
 });
 

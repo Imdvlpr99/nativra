@@ -4,8 +4,11 @@
   "description": "Ready-to-use mobile subscription tier card with features list and checkout CTA.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,13 +26,38 @@
     }
   ],
   "registryDependencies": [
-    { "id": "card", "registry": "default" },
-    { "id": "button", "registry": "default" },
-    { "id": "badge", "registry": "default" },
-    { "id": "text", "registry": "default" },
-    { "id": "separator", "registry": "default" }
+    {
+      "id": "card",
+      "registry": "default"
+    },
+    {
+      "id": "button",
+      "registry": "default"
+    },
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "text",
+      "registry": "default"
+    },
+    {
+      "id": "separator",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["block", "pricing", "subscription", "paywall", "tier"],
+  "tags": [
+    "block",
+    "pricing",
+    "subscription",
+    "paywall",
+    "tier"
+  ],
   "addedAt": "2024-01-01T00:00:00.000Z"
 }

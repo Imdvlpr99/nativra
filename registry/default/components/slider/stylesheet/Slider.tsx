@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Pressable, StyleSheet, type GestureResponderEvent, type ViewProps } from "react-native";
+import { type ThemeColors, useThemeColors, elevation, sp } from "@/hooks/use-theme-colors";
 
 export interface SliderProps extends ViewProps {
   value?: number;
@@ -28,6 +29,8 @@ export function Slider({
   style,
   ...props
 }: SliderProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const percentage = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
 
   const handlePress = (e: GestureResponderEvent) => {
@@ -55,10 +58,10 @@ export function Slider({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: sp(12),
     justifyContent: "center",
     position: "relative",
   },
@@ -69,13 +72,13 @@ const styles = StyleSheet.create({
     height: 8,
     width: "100%",
     borderRadius: 9999,
-    backgroundColor: "#e4e4e7",
+    backgroundColor: c.muted,
     overflow: "hidden",
   },
   fill: {
     height: "100%",
     borderRadius: 9999,
-    backgroundColor: "#0ea5e9",
+    backgroundColor: c.primary,
   },
   thumb: {
     position: "absolute",
@@ -85,14 +88,10 @@ const styles = StyleSheet.create({
     height: 28,
     width: 28,
     borderRadius: 14,
-    backgroundColor: "#ffffff",
+    backgroundColor: c.background,
     borderWidth: 2,
-    borderColor: "#0ea5e9",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    borderColor: c.primary,
+    ...elevation("card"),
   },
 });
 

@@ -4,8 +4,11 @@
   "description": "An elevated circular action button anchored above screen content.",
   "type": "component",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -24,6 +27,10 @@
   ],
   "registryDependencies": [
     {
+      "id": "use-theme-colors",
+      "registry": "default"
+    },
+    {
       "id": "cn",
       "registry": "default"
     }
@@ -34,8 +41,13 @@
       "version": "^0.7.1"
     }
   ],
-  "tags": ["fab", "floating", "action", "button", "elevated"],
+  "tags": [
+    "fab",
+    "floating",
+    "action",
+    "button",
+    "elevated"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

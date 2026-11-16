@@ -4,6 +4,32 @@ import type { RegistryItem, RegistryManifest } from "@nativra/registry-schema";
 import { ITEM_ID_REGEX, RegistryItemSchema, RegistryManifestSchema } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 
+/** Upper bound for a single registry JSON document (items embed source, schema caps files at 512 KB × 50). */
+export const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
+
+async function readLimitedText(response: Response, limit: number, url: string): Promise<string> {
+  const declared = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > limit) {
+    throw new Error(`Registry response too large (${declared} bytes > ${limit}): ${url}`);
+  }
+  if (!response.body) return response.text();
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > limit) {
+      await reader.cancel();
+      throw new Error(`Registry response too large (> ${limit} bytes): ${url}`);
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
 function isSafeRelativePath(targetPath: string): boolean {
   if (!targetPath || typeof targetPath !== "string") return false;
   if (
@@ -102,6 +128,10 @@ export class RegistryClient {
     const source = this.findSource(registryName);
     const raw = await this.fetchJson<unknown>(source, `items/${id}.json`);
     const item = RegistryItemSchema.parse(raw);
+    // The id decides lockfile keys and backup directories, so it must be the one that was asked for.
+    if (item.id !== id) {
+      throw new Error(`Registry returned item "${item.id}" when "${id}" was requested`);
+    }
 
     // Verify integrity hashes and safe relative file paths (Plan Section 2.5 & 2.6)
     for (const file of item.files) {
@@ -138,7 +168,15 @@ export class RegistryClient {
    * Detects and reports cyclic dependencies with clear stack diagnostics.
    */
   async resolveWithDependencies(id: string, registryName = "default"): Promise<RegistryItem[]> {
-    const resolved: RegistryItem[] = [];
+    return (await this.resolveWithSources(id, registryName)).map((r) => r.item);
+  }
+
+  /** Like resolveWithDependencies, but also names the registry each item came from. */
+  async resolveWithSources(
+    id: string,
+    registryName = "default"
+  ): Promise<Array<{ item: RegistryItem; registry: string }>> {
+    const resolved: Array<{ item: RegistryItem; registry: string }> = [];
     const resolvedKeys = new Set<string>();
     const visitingStack: string[] = [];
 
@@ -161,7 +199,7 @@ export class RegistryClient {
 
       visitingStack.pop();
       resolvedKeys.add(key);
-      resolved.push(item);
+      resolved.push({ item, registry });
     };
 
     await resolve(id, registryName);
@@ -171,6 +209,11 @@ export class RegistryClient {
   // -------------------------------------------------------------------------
   // Cache management
   // -------------------------------------------------------------------------
+
+  /** Names of the configured registry sources, in configuration order. */
+  registryNames(): string[] {
+    return this.sources.map((s) => s.name ?? "default");
+  }
 
   clearCache(): void {
     this.manifestCache.clear();
@@ -216,12 +259,16 @@ export class RegistryClient {
 
     try {
       const response = await fetch(url, { signal: controller.signal });
+      // fetch follows redirects; never accept a downgrade from https to plain http
+      if (url.startsWith("https:") && response.url && !response.url.startsWith("https:")) {
+        throw new Error(`Registry redirect to insecure URL rejected: "${response.url}"`);
+      }
       if (!response.ok) {
         throw new Error(
           `Failed to fetch registry resource "${url}": ${response.status} ${response.statusText}`
         );
       }
-      return (await response.json()) as T;
+      return JSON.parse(await readLimitedText(response, MAX_RESPONSE_BYTES, url)) as T;
     } catch (err) {
       if (controller.signal.aborted) {
         throw new Error(`Registry request timed out after ${this.timeoutMs}ms: ${url}`);
@@ -247,16 +294,3 @@ export function createLocalRegistryClient(
     options
   );
 }
-
-/** Create a client targeting a remote registry URL */
-export function createRemoteRegistryClient(
-  baseUrl: string,
-  options?: RegistryClientOptions
-): RegistryClient {
-  return new RegistryClient(
-    [{ kind: "remote", location: baseUrl, name: "default" }],
-    options
-  );
-}
-
-

@@ -23,37 +23,37 @@ export function StatTile({
 }: StatTileProps) {
   const badgeClasses =
     trend === "up"
-      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
+      ? "bg-success/10 text-success"
       : trend === "down"
-      ? "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400"
-      : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+      ? "bg-destructive/10 text-destructive"
+      : "bg-muted text-foreground";
 
   return (
     <View
       accessibilityRole="summary"
       style={style}
-      className={`rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 ${className}`}
+      className={`surface rounded-card sp-p-4 shadow-sm ${className}`}
       {...rest}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <Text className="type-xs font-medium text-muted-foreground">
           {label}
         </Text>
         {delta ? (
-          <View className={`rounded-full px-2 py-0.5 ${badgeClasses}`}>
-            <Text className={`text-[10px] font-bold ${badgeClasses}`}>
+          <View className={`rounded-full sp-px-2 sp-py-0.5 ${badgeClasses}`}>
+            <Text className={`type-2xs weight-title ${badgeClasses}`}>
               {delta}
             </Text>
           </View>
         ) : null}
       </View>
 
-      <Text className="mt-1.5 text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+      <Text className="mt-1.5 type-2xl weight-heading tracking-tight text-foreground">
         {value}
       </Text>
 
       {caption ? (
-        <Text className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+        <Text className="mt-1 type-2xs text-muted-foreground">
           {caption}
         </Text>
       ) : null}

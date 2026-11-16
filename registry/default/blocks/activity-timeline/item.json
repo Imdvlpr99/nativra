@@ -4,8 +4,11 @@
   "description": "Vertical audit log and activity timeline item with status node, connector line, and timestamp metadata.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,11 +26,27 @@
     }
   ],
   "registryDependencies": [
-    { "id": "badge", "registry": "default" },
-    { "id": "text", "registry": "default" }
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "text",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["block", "timeline", "activity", "audit", "events", "metronic"],
+  "tags": [
+    "block",
+    "timeline",
+    "activity",
+    "audit",
+    "events",
+    "metronic"
+  ],
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

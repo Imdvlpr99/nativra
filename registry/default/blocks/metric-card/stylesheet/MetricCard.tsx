@@ -12,6 +12,7 @@ import { View, StyleSheet } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface MetricCardProps {
   title?: string;
@@ -30,6 +31,8 @@ export function MetricCard({
   positive = true,
   subtitle = "High organic growth",
 }: MetricCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <Card elevated padding="lg" style={styles.card}>
       <View style={styles.header}>
@@ -57,11 +60,11 @@ export function MetricCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
     flexDirection: "row",
@@ -69,8 +72,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -78,23 +81,23 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   value: {
-    fontSize: 32,
-    fontWeight: "900",
+    fontSize: ts(32),
+    fontWeight: themeStyle.fontWeight.heading,
   },
   footer: {
     marginTop: 16,
-    paddingTop: 8,
+    paddingTop: sp(8),
     borderTopWidth: 1,
-    borderTopColor: "#f4f4f5",
+    borderTopColor: palette.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   timeframe: {
-    fontSize: 11,
+    fontSize: ts(11),
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: ts(11),
     fontWeight: "500",
   },
 });

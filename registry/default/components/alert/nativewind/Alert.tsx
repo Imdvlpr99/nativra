@@ -23,27 +23,27 @@ export interface AlertProps extends ViewProps {
 }
 
 const CONTAINER_VARIANTS: Record<AlertVariant, string> = {
-  default: "bg-zinc-100 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800",
-  info: "bg-sky-50 border-sky-200 dark:bg-sky-950/40 dark:border-sky-800/60",
-  success: "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/60",
-  warning: "bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/60",
-  destructive: "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800/60",
+  default: "bg-muted border-border",
+  info: "bg-info/10 border-info/25",
+  success: "bg-success/10 border-success/25",
+  warning: "bg-warning/10 border-warning/25",
+  destructive: "bg-destructive/10 border-destructive/25",
 };
 
 const TITLE_VARIANTS: Record<AlertVariant, string> = {
-  default: "text-zinc-900 dark:text-zinc-100",
-  info: "text-sky-900 dark:text-sky-200",
-  success: "text-emerald-900 dark:text-emerald-200",
-  warning: "text-amber-900 dark:text-amber-200",
-  destructive: "text-red-900 dark:text-red-200",
+  default: "text-foreground",
+  info: "text-info",
+  success: "text-success",
+  warning: "text-warning",
+  destructive: "text-destructive",
 };
 
 const DESC_VARIANTS: Record<AlertVariant, string> = {
-  default: "text-zinc-600 dark:text-zinc-400",
-  info: "text-sky-700 dark:text-sky-300",
-  success: "text-emerald-700 dark:text-emerald-300",
-  warning: "text-amber-700 dark:text-amber-300",
-  destructive: "text-red-700 dark:text-red-300",
+  default: "text-muted-foreground",
+  info: "text-foreground/80",
+  success: "text-foreground/80",
+  warning: "text-foreground/80",
+  destructive: "text-foreground/80",
 };
 
 export function Alert({
@@ -59,19 +59,19 @@ export function Alert({
   return (
     <View
       accessibilityRole="alert"
-      className={`w-full rounded-2xl border p-4 flex-row items-start gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
+      className={`w-full rounded-card border sp-p-4 flex-row items-start sp-gap-3 ${CONTAINER_VARIANTS[variant]} ${className}`.trim()}
       {...props}
     >
       {icon && <View className="mt-0.5 shrink-0">{icon}</View>}
 
       <View className="flex-1 space-y-1">
         {title && (
-          <Text className={`text-sm font-bold ${TITLE_VARIANTS[variant]}`}>
+          <Text className={`type-sm weight-title ${TITLE_VARIANTS[variant]}`}>
             {title}
           </Text>
         )}
         {description && (
-          <Text className={`text-xs leading-relaxed ${DESC_VARIANTS[variant]}`}>
+          <Text className={`type-xs leading-relaxed ${DESC_VARIANTS[variant]}`}>
             {description}
           </Text>
         )}
@@ -83,9 +83,9 @@ export function Alert({
           accessibilityRole="button"
           accessibilityLabel="Dismiss alert"
           onPress={onClose}
-          className="p-1 -mr-1 -mt-1 rounded-lg active:opacity-60"
+          className="sp-p-1 -mr-1 -mt-1 rounded-control active:opacity-60"
         >
-          <Text className={`text-xs font-bold ${DESC_VARIANTS[variant]}`}>✕</Text>
+          <Text className={`type-xs weight-title ${DESC_VARIANTS[variant]}`}>✕</Text>
         </Pressable>
       )}
     </View>

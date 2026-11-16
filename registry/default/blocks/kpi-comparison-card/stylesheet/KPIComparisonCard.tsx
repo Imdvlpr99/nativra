@@ -12,6 +12,7 @@ import { StyleSheet, View, Text as RNText } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { themeStyle, useThemeColors, type ThemeColors, ts, surface } from "@/hooks/use-theme-colors";
 
 export interface KPIComparisonCardProps {
   title?: string;
@@ -34,6 +35,8 @@ export function KPIComparisonCard({
   isPositive = true,
   style,
 }: KPIComparisonCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const clamped = Math.min(100, Math.max(0, progressPercent));
 
   return (
@@ -74,13 +77,11 @@ export function KPIComparisonCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     width: "100%",
-    borderRadius: 24,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
+    borderRadius: themeStyle.radius.card,
   },
   topRow: {
     flexDirection: "row",
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   titleText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -100,26 +101,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   currentText: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#ffffff",
+    fontSize: ts(28),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
   },
   targetText: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
-    color: "#a1a1aa",
+    color: palette["muted-foreground"],
   },
   percentText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#f4f4f5",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   track: {
     marginTop: 16,
     height: 8,
     width: "100%",
     borderRadius: 9999,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     overflow: "hidden",
   },
   fill: {
@@ -127,10 +128,10 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   fillPositive: {
-    backgroundColor: "#10b981",
+    backgroundColor: palette.success,
   },
   fillNegative: {
-    backgroundColor: "#f43f5e",
+    backgroundColor: palette.destructive,
   },
 });
 

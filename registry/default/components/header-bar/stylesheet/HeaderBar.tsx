@@ -1,6 +1,7 @@
 /** Nativra — HeaderBar (StyleSheet). Install: npx nativra-cli add header-bar */
 import React from "react";
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface HeaderBarProps extends ViewProps {
   title: string;
@@ -22,6 +23,8 @@ export function HeaderBar({
   style,
   ...rest
 }: HeaderBarProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <View
       accessibilityRole="header"
@@ -71,38 +74,34 @@ export function HeaderBar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderBottomColor: c.border,
+    backgroundColor: c.background,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(12),
   },
   elevated: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    ...elevation("card"),
   },
   sideLeft: { width: 64, alignItems: "flex-start" },
   sideRight: { width: 64, alignItems: "flex-end" },
-  backBtn: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 },
-  backChevron: { fontSize: 16, fontWeight: "700", color: "#0284c7" },
-  backText: { fontSize: 12, fontWeight: "600", color: "#0284c7" },
-  center: { flex: 1, alignItems: "center", paddingHorizontal: 8 },
-  title: { fontSize: 14, fontWeight: "700", color: "#18181b" },
-  subtitle: { fontSize: 11, color: "#71717a", marginTop: 1 },
+  backBtn: { flexDirection: "row", alignItems: "center", gap: sp(4), paddingVertical: sp(4) },
+  backChevron: { fontSize: ts(16), fontWeight: themeStyle.fontWeight.title, color: c.primary },
+  backText: { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label, color: c.primary },
+  center: { flex: 1, alignItems: "center", paddingHorizontal: sp(8) },
+  title: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.foreground },
+  subtitle: { fontSize: ts(11), color: c["muted-foreground"], marginTop: 1 },
   rightBtn: {
-    borderRadius: 8,
-    backgroundColor: "#f0f9ff",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: themeStyle.radius.button,
+    backgroundColor: alpha(c.primary, 0.08),
+    paddingHorizontal: sp(10),
+    paddingVertical: sp(4),
   },
-  rightText: { fontSize: 12, fontWeight: "600", color: "#0284c7" },
+  rightText: { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label, color: c.primary },
 });
 

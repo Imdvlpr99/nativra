@@ -44,24 +44,24 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <View
           accessibilityRole="alert"
-          className="rounded-2xl border border-rose-200 bg-rose-50/70 p-5 dark:border-rose-900/60 dark:bg-rose-950/30"
+          className="rounded-card border border-destructive/30 bg-destructive/10 sp-p-5"
         >
-          <View className="flex-row items-center gap-2">
-            <Text className="text-base">⚠️</Text>
-            <Text className="text-sm font-bold text-rose-900 dark:text-rose-200">
+          <View className="flex-row items-center sp-gap-2">
+            <Text className="type-base">⚠️</Text>
+            <Text className="type-sm weight-title text-destructive">
               {title}
             </Text>
           </View>
-          <Text className="mt-1.5 text-xs leading-relaxed text-rose-700 dark:text-rose-300">
+          <Text className="mt-1.5 type-xs leading-relaxed text-destructive">
             {message}
           </Text>
           <Pressable
             onPress={this.handleReset}
             accessibilityRole="button"
             accessibilityLabel="Try again"
-            className="mt-4 self-start rounded-xl bg-rose-600 px-4 py-2 active:opacity-80"
+            className="mt-4 self-start rounded-control bg-destructive sp-px-4 sp-py-2 active:opacity-80"
           >
-            <Text className="text-xs font-semibold text-white">Try Again</Text>
+            <Text className="type-xs weight-label text-destructive-foreground">Try Again</Text>
           </Pressable>
         </View>
       );

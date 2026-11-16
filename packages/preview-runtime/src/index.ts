@@ -9,6 +9,9 @@ export interface PreviewFixture {
   props: PreviewProps;
 }
 
+/** Stand-in for required callbacks in fixtures. */
+const noop = () => {};
+
 export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
   button: [
     { name: "Default", props: { children: "Button" } },
@@ -228,6 +231,51 @@ export const PREVIEW_FIXTURES: Record<string, PreviewFixture[]> = {
   "stat-progress-card": [
     { name: "High Progress 80%", props: { goalTitle: "Weekly Workout Goal", currentValue: "4", targetValue: "5 sessions", progressPercent: 80, streakDays: 14 } },
     { name: "Goal Completed 100%", props: { goalTitle: "Savings Target", currentValue: "$5,000", targetValue: "$5,000", progressPercent: 100, streakDays: 30 } },
+  ],
+  chip: [
+    { name: "Default", props: { label: "Design" } },
+    { name: "Selected", props: { label: "Design", selected: true, variant: "primary" } },
+    { name: "Outline", props: { label: "Remote", variant: "outline" } },
+  ],
+  "stat-tile": [
+    { name: "Up", props: { label: "Revenue", value: "$48,920", delta: "+12.4%", trend: "up", caption: "vs last month" } },
+    { name: "Down", props: { label: "Churn", value: "2.1%", delta: "-0.4%", trend: "down", caption: "vs last month" } },
+  ],
+  "header-bar": [
+    { name: "With back", props: { title: "Settings", subtitle: "Account and privacy", onBack: noop, rightLabel: "Done", onRightPress: noop } },
+    { name: "Title only", props: { title: "Inbox", elevated: true } },
+  ],
+  "bottom-tab-bar": [
+    {
+      name: "Default",
+      props: {
+        tabs: [
+          { id: "home", label: "Home", icon: "🏠" },
+          { id: "search", label: "Search", icon: "🔍" },
+          { id: "inbox", label: "Inbox", icon: "✉️", badge: 3 },
+          { id: "profile", label: "Profile", icon: "👤" },
+        ],
+        activeTab: "home",
+        onTabChange: noop,
+      },
+    },
+  ],
+  "app-header": [
+    { name: "Dashboard", props: { title: "Dashboard", subtitle: "Welcome back, Alex", unreadNotificationsCount: 3, avatarFallback: "AK" } },
+    { name: "With search", props: { title: "Projects", showBack: true, showSearch: true, searchPlaceholder: "Search projects" } },
+  ],
+  "mini-sparkline-card": [
+    { name: "Positive", props: { title: "Active users", value: "12,480", change: "+8.2%", isPositive: true, data: [4, 6, 5, 8, 7, 10, 12] } },
+    { name: "Negative", props: { title: "Bounce rate", value: "38%", change: "-3.1%", isPositive: false, data: [12, 10, 11, 8, 9, 7, 6] } },
+  ],
+  "filter-sheet": [{ name: "Open", props: { open: true, onOpenChange: noop } }],
+  "pagination-dots": [
+    { name: "Second of five", props: { total: 5, currentIndex: 1 } },
+    { name: "Last", props: { total: 4, currentIndex: 3 } },
+  ],
+  "team-member-row": [
+    { name: "Member", props: { name: "Alex Kim", email: "alex@acme.dev", role: "Admin" } },
+    { name: "Current user", props: { name: "Sam Rivera", email: "sam@acme.dev", role: "Owner", isCurrentUser: true } },
   ],
 };
 

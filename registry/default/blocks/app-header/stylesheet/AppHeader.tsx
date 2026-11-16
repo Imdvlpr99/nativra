@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface AppHeaderProps {
   title: string;
@@ -34,6 +35,8 @@ export function AppHeader({
   onAvatarPress,
   rightAction,
 }: AppHeaderProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={styles.container}>
       {/* Top Bar: Brand, Title, Actions */}
@@ -47,7 +50,7 @@ export function AppHeader({
               accessibilityLabel="Go back"
               style={styles.iconBtn}
             >
-              <ChevronLeft size={20} color="#e4e4e7" />
+              <ChevronLeft size={20} color={palette.foreground} />
             </TouchableOpacity>
           )}
 
@@ -75,7 +78,7 @@ export function AppHeader({
               accessibilityLabel="Notifications"
               style={styles.iconBtn}
             >
-              <Bell size={18} color="#a1a1aa" />
+              <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>
@@ -105,12 +108,12 @@ export function AppHeader({
       {/* Integrated Search Bar */}
       {showSearch && (
         <View style={styles.searchBar}>
-          <Search size={16} color="#71717a" />
+          <Search size={16} color={palette["muted-foreground"]} />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
-            placeholderTextColor="#71717a"
+            placeholderTextColor={palette["muted-foreground"]}
             style={styles.searchInput}
             autoCapitalize="none"
           />
@@ -120,7 +123,7 @@ export function AppHeader({
               accessibilityRole="button"
               accessibilityLabel="Clear search"
             >
-              <X size={14} color="#a1a1aa" />
+              <X size={14} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           )}
         </View>
@@ -129,13 +132,13 @@ export function AppHeader({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
-    backgroundColor: "#09090b",
+    backgroundColor: palette.background,
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderBottomColor: palette.border,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(12),
   },
   topBar: {
     flexDirection: "row",
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
   leftSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
     flex: 1,
     marginRight: 8,
   },
@@ -153,28 +156,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   titleText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
     letterSpacing: -0.2,
   },
   subtitleText: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   rightSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   iconBtn: {
+    ...surface(palette),
     height: 36,
     width: 36,
-    borderRadius: 10,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
+    borderRadius: themeStyle.radius.button,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -185,52 +186,50 @@ const styles = StyleSheet.create({
     right: -4,
     minWidth: 18,
     height: 18,
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
     borderRadius: 9,
-    backgroundColor: "#f43f5e",
+    backgroundColor: palette.destructive,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
-    borderColor: "#09090b",
+    borderColor: palette.border,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#ffffff",
-    lineHeight: 12,
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette["destructive-foreground"],
+    lineHeight: ts(12),
   },
   avatarBtn: {
     height: 36,
     width: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.4)",
+    backgroundColor: alpha(palette.primary, 0.15),
+    borderWidth: themeStyle.borderWidth,
+    borderColor: alpha(palette.primary, 0.4),
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 4,
   },
   avatarText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#38bdf8",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.primary,
   },
   searchBar: {
+    ...surface(palette),
     marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    borderRadius: 12,
-    paddingHorizontal: 12,
+    borderRadius: themeStyle.radius.control,
+    paddingHorizontal: sp(12),
     height: 40,
   },
   searchInput: {
     flex: 1,
     marginLeft: 10,
-    fontSize: 13,
-    color: "#ffffff",
+    fontSize: ts(13),
+    color: palette.foreground,
   },
 });
 

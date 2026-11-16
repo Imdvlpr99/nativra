@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
+import { alpha, type ThemeColors, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export type AlertVariant = "default" | "info" | "success" | "warning" | "destructive";
 
@@ -21,16 +22,17 @@ export interface AlertProps extends ViewProps {
   children?: React.ReactNode;
 }
 
-const THEMES: Record<
+const THEMES = (c: ThemeColors): Record<
   AlertVariant,
   { bg: string; border: string; title: string; desc: string }
-> = {
-  default: { bg: "#f4f4f5", border: "#e4e4e7", title: "#18181b", desc: "#71717a" },
-  info: { bg: "#f0f9ff", border: "#bae6fd", title: "#0369a1", desc: "#0284c7" },
-  success: { bg: "#f0fdf4", border: "#bbf7d0", title: "#15803d", desc: "#16a34a" },
-  warning: { bg: "#fffbeb", border: "#fde68a", title: "#b45309", desc: "#d97706" },
-  destructive: { bg: "#fef2f2", border: "#fecaca", title: "#b91c1c", desc: "#dc2626" },
-};
+> => ({
+  // Status variants: a soft tint of the status color, its title in full color, body text readable.
+  default: { bg: c.muted, border: c.border, title: c.foreground, desc: c["muted-foreground"] },
+  info: { bg: alpha(c.info, 0.1), border: alpha(c.info, 0.25), title: c.info, desc: alpha(c.foreground, 0.8) },
+  success: { bg: alpha(c.success, 0.1), border: alpha(c.success, 0.25), title: c.success, desc: alpha(c.foreground, 0.8) },
+  warning: { bg: alpha(c.warning, 0.1), border: alpha(c.warning, 0.25), title: c.warning, desc: alpha(c.foreground, 0.8) },
+  destructive: { bg: alpha(c.destructive, 0.1), border: alpha(c.destructive, 0.25), title: c.destructive, desc: alpha(c.foreground, 0.8) },
+});
 
 export function Alert({
   variant = "default",
@@ -42,7 +44,9 @@ export function Alert({
   style,
   ...props
 }: AlertProps) {
-  const theme = THEMES[variant] ?? THEMES.default;
+  const c = useThemeColors();
+  const themes = THEMES(c);
+  const theme = themes[variant] ?? themes.default;
 
   return (
     <View
@@ -79,36 +83,36 @@ export function Alert({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
+    borderRadius: themeStyle.radius.card,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(16),
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
+    gap: sp(12),
   },
   icon: {
     marginTop: 2,
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: sp(4),
   },
   title: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
   description: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: ts(12),
+    lineHeight: ts(18),
   },
   closeBtn: {
-    padding: 4,
+    padding: sp(4),
     marginTop: -4,
     marginRight: -4,
   },
   closeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
 

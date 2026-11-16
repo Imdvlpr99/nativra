@@ -10,6 +10,7 @@
 import React from "react";
 import { View, Text, Pressable, type ViewProps } from "react-native";
 import { CreditCard, CheckCircle2, Trash2 } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface PaymentMethodCardProps extends ViewProps {
   brand?: "visa" | "mastercard" | "amex" | "applepay";
@@ -36,6 +37,7 @@ export function PaymentMethodCard({
   style,
   ...props
 }: PaymentMethodCardProps) {
+  const palette = useThemeColors();
   const brandLabel =
     brand === "mastercard"
       ? "Mastercard"
@@ -50,41 +52,41 @@ export function PaymentMethodCard({
       accessibilityRole="button"
       accessibilityLabel={`${brandLabel} ending in ${last4}, expires ${expiry}`}
       onPress={onSelect}
-      className={`rounded-2xl border p-4.5 transition-all ${
+      className={`rounded-card border sp-p-4.5 transition-all ${
         selected
-          ? "border-sky-500 bg-sky-500/5 dark:bg-sky-500/10"
-          : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+          ? "border-primary bg-primary/5"
+          : "surface"
       } ${className}`.trim()}
       style={style}
       {...props}
     >
       <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View className="h-10 w-14 items-center justify-center rounded-xl bg-zinc-950 px-2 dark:bg-zinc-800 border border-zinc-800">
-            <Text className="text-[11px] font-black tracking-wider text-white uppercase">
+        <View className="flex-row items-center sp-gap-3">
+          <View className="min-h-control w-14 items-center justify-center rounded-control bg-primary sp-px-2 border border-border">
+            <Text className="type-2xs weight-heading tracking-wider text-primary-foreground uppercase">
               {brandLabel}
             </Text>
           </View>
           <View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-base font-bold text-zinc-950 dark:text-white">
+            <View className="flex-row items-center sp-gap-2">
+              <Text className="type-base weight-title text-foreground">
                 •••• {last4}
               </Text>
               {isDefault && (
-                <View className="rounded-full bg-zinc-100 px-2 py-0.5 dark:bg-zinc-800">
-                  <Text className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
+                <View className="rounded-full bg-muted sp-px-2 sp-py-0.5">
+                  <Text className="type-2xs weight-label text-muted-foreground">
                     Default
                   </Text>
                 </View>
               )}
             </View>
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <Text className="type-xs text-muted-foreground mt-0.5">
               Expires {expiry}
             </Text>
           </View>
         </View>
 
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center sp-gap-2">
           {onDelete && (
             <Pressable
               accessibilityRole="button"
@@ -93,18 +95,18 @@ export function PaymentMethodCard({
                 e.stopPropagation?.();
                 onDelete();
               }}
-              className="p-2 rounded-lg active:bg-zinc-100 dark:active:bg-zinc-800"
+              className="sp-p-2 rounded-control active:bg-muted"
             >
-              <Trash2 size={16} color="#71717a" />
+              <Trash2 size={16} color={palette["muted-foreground"]} />
             </Pressable>
           )}
-          {selected && <CheckCircle2 size={20} color="#0284c7" />}
+          {selected && <CheckCircle2 size={20} color={palette.primary} />}
         </View>
       </View>
 
       {cardholderName && (
-        <View className="mt-3 border-t border-zinc-100 pt-2.5 dark:border-zinc-800/80">
-          <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <View className="mt-3 border-t border-border sp-pt-2.5">
+          <Text className="type-xs font-medium text-muted-foreground">
             {cardholderName.toUpperCase()}
           </Text>
         </View>

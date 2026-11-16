@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface AppHeaderProps {
   title: string;
@@ -34,29 +35,30 @@ export function AppHeader({
   onAvatarPress,
   rightAction,
 }: AppHeaderProps) {
+  const palette = useThemeColors();
   return (
-    <View className="bg-zinc-950 border-b border-zinc-800/80 px-4 py-3">
+    <View className="bg-background border-b border-border/80 sp-px-4 sp-py-3">
       {/* Top Bar: Brand, Title, Actions */}
       <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3 flex-1 mr-2">
+        <View className="flex-row items-center sp-gap-3 flex-1 mr-2">
           {showBack && (
             <TouchableOpacity
               onPress={onBack}
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Go back"
-              className="h-9 w-9 rounded-xl bg-zinc-900 border border-zinc-800 items-center justify-center active:bg-zinc-800"
+              className="surface h-9 w-9 rounded-control items-center justify-center active:bg-muted"
             >
-              <ChevronLeft size={20} color="#e4e4e7" />
+              <ChevronLeft size={20} color={palette.foreground} />
             </TouchableOpacity>
           )}
 
           <View className="flex-1">
-            <Text className="text-lg font-bold text-white tracking-tight" numberOfLines={1}>
+            <Text className="type-lg weight-title text-foreground tracking-tight" numberOfLines={1}>
               {title}
             </Text>
             {subtitle && (
-              <Text className="text-xs text-zinc-400 mt-0.5" numberOfLines={1}>
+              <Text className="type-xs text-muted-foreground mt-0.5" numberOfLines={1}>
                 {subtitle}
               </Text>
             )}
@@ -64,7 +66,7 @@ export function AppHeader({
         </View>
 
         {/* Right Action Icons & Avatar */}
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center sp-gap-2">
           {rightAction}
 
           {onNotificationsPress && (
@@ -73,12 +75,12 @@ export function AppHeader({
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Notifications"
-              className="relative h-9 w-9 rounded-xl bg-zinc-900 border border-zinc-800 items-center justify-center"
+              className="surface relative h-9 w-9 rounded-control items-center justify-center"
             >
-              <Bell size={18} color="#a1a1aa" />
+              <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
-                <View className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 items-center justify-center border-2 border-zinc-950">
-                  <Text className="text-[10px] font-bold text-white leading-none">
+                <View className="absolute -top-1 -right-1 min-w-[18px] h-[18px] sp-px-1 rounded-full bg-destructive items-center justify-center border-2 border-border">
+                  <Text className="type-2xs weight-title text-destructive-foreground leading-none">
                     {unreadNotificationsCount > 99 ? "99+" : unreadNotificationsCount}
                   </Text>
                 </View>
@@ -92,9 +94,9 @@ export function AppHeader({
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="User profile"
-              className="h-9 w-9 rounded-full bg-sky-500/20 border border-sky-500/40 items-center justify-center ml-1"
+              className="h-9 w-9 rounded-full bg-primary/20 border border-primary/40 items-center justify-center ml-1"
             >
-              <Text className="text-xs font-bold text-sky-400 font-mono">
+              <Text className="type-xs weight-title text-primary font-mono">
                 {avatarFallback}
               </Text>
             </TouchableOpacity>
@@ -104,14 +106,14 @@ export function AppHeader({
 
       {/* Integrated Search Bar */}
       {showSearch && (
-        <View className="mt-3 flex-row items-center bg-zinc-900/90 border border-zinc-800 rounded-xl px-3 h-10">
-          <Search size={16} color="#71717a" />
+        <View className="mt-3 flex-row items-center bg-card/90 border border-border rounded-control sp-px-3 min-h-control">
+          <Search size={16} color={palette["muted-foreground"]} />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
-            placeholderTextColor="#71717a"
-            className="flex-1 ml-2.5 text-xs text-white"
+            placeholderTextColor={palette["muted-foreground"]}
+            className="flex-1 ml-2.5 type-xs text-foreground"
             autoCapitalize="none"
           />
           {searchValue.length > 0 && onSearchChange && (
@@ -120,7 +122,7 @@ export function AppHeader({
               accessibilityRole="button"
               accessibilityLabel="Clear search"
             >
-              <X size={14} color="#a1a1aa" />
+              <X size={14} color={palette["muted-foreground"]} />
             </TouchableOpacity>
           )}
         </View>

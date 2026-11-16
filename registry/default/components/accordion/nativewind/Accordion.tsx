@@ -29,7 +29,7 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   };
 
   return (
-    <View className="w-full divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+    <View className="surface w-full divide-y divide-border rounded-card overflow-hidden">
       {items.map((item) => {
         const isOpen = openIds.has(item.id);
         return (
@@ -38,18 +38,18 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
               accessibilityRole="button"
               accessibilityState={{ expanded: isOpen }}
               onPress={() => toggle(item.id)}
-              className="flex-row items-center justify-between px-5 py-4 active:bg-zinc-50 dark:active:bg-zinc-800/60"
+              className="flex-row items-center justify-between sp-px-5 sp-py-4 active:bg-accent"
             >
-              <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50 flex-1 pr-3">
+              <Text className="type-base weight-label text-foreground flex-1 sp-pr-3">
                 {item.title}
               </Text>
-              <Text className={`text-xs text-zinc-400 transition-transform ${isOpen ? "rotate-180" : ""}`}>
+              <Text className={`type-xs text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}>
                 ▼
               </Text>
             </Pressable>
             {isOpen ? (
-              <View className="px-5 pb-4 pt-1">
-                <Text className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              <View className="sp-px-5 sp-pb-4 sp-pt-1">
+                <Text className="type-sm text-muted-foreground leading-relaxed">
                   {item.content}
                 </Text>
               </View>

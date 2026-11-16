@@ -11,6 +11,7 @@ import React from "react";
 import { StyleSheet, View, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
+import { useThemeColors, type ThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface TimelineEvent {
   id: string;
@@ -57,6 +58,8 @@ export function ActivityTimeline({
   ],
   style,
 }: ActivityTimelineProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={[styles.container, style]}>
       {events.map((event, idx) => {
@@ -102,7 +105,7 @@ export function ActivityTimeline({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
   },
@@ -122,53 +125,53 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   dotDefault: {
-    backgroundColor: "#0284c7",
-    borderColor: "#38bdf8",
+    backgroundColor: palette.primary,
+    borderColor: palette.primary,
   },
   dotSuccess: {
-    backgroundColor: "#10b981",
-    borderColor: "#34d399",
+    backgroundColor: palette.success,
+    borderColor: palette.success,
   },
   dotWarning: {
-    backgroundColor: "#f59e0b",
-    borderColor: "#fbbf24",
+    backgroundColor: palette.warning,
+    borderColor: palette.warning,
   },
   dotError: {
-    backgroundColor: "#ef4444",
-    borderColor: "#f87171",
+    backgroundColor: palette.destructive,
+    borderColor: palette.destructive,
   },
   line: {
     width: 2,
     flex: 1,
-    backgroundColor: "#27272a",
+    backgroundColor: palette.muted,
     marginVertical: 4,
   },
   bodyCol: {
     flex: 1,
   },
   pbExtra: {
-    paddingBottom: 24,
+    paddingBottom: sp(24),
   },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8,
+    gap: sp(8),
   },
   titleText: {
-    fontWeight: "600",
-    color: "#f4f4f5",
-    fontSize: 14,
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette.foreground,
+    fontSize: ts(14),
   },
   timeText: {
-    fontSize: 12,
-    color: "#71717a",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
   },
   descText: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
     marginTop: 4,
-    lineHeight: 18,
+    lineHeight: ts(18),
   },
   badgeRow: {
     flexDirection: "row",

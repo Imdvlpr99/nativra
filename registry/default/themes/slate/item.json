@@ -3,7 +3,7 @@
   "name": "Slate",
   "description": "A cool corporate slate-blue theme token set.",
   "type": "theme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true },
   "files": [{ "path": "theme.ts" }],

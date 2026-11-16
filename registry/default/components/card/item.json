@@ -4,17 +4,38 @@
   "description": "A surface container for grouped content.",
   "type": "component",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
-  "platforms": { "android": true, "ios": true, "expoGo": true },
-  "files": [
-    { "path": "nativewind/Card.tsx", "target": "nativewind" },
-    { "path": "stylesheet/Card.tsx", "target": "stylesheet" }
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
   ],
-  "registryDependencies": [],
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "expoGo": true
+  },
+  "files": [
+    {
+      "path": "nativewind/Card.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/Card.tsx",
+      "target": "stylesheet"
+    }
+  ],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["card", "surface", "container"],
+  "tags": [
+    "card",
+    "surface",
+    "container"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

@@ -53,9 +53,9 @@ export function OtpInput({
       />
 
       {/* Visible Cell Matrix */}
-      <Pressable
+      <Pressable accessible={false} importantForAccessibility="no"
         onPress={handleCellPress}
-        className="flex-row items-center justify-center gap-2.5"
+        className="flex-row items-center justify-center sp-gap-2.5"
       >
         {digits.map((digit, idx) => {
           const isActive = isFocused && idx === Math.min(value.length, length - 1);
@@ -65,18 +65,18 @@ export function OtpInput({
             <View
               key={idx}
               className={cn(
-                "h-14 w-12 items-center justify-center rounded-2xl border-2 bg-white dark:bg-zinc-900 transition-all shadow-sm",
+                "h-14 w-12 items-center justify-center rounded-control border-2 bg-card transition-all shadow-sm",
                 error
-                  ? "border-red-500 bg-red-50/20"
+                  ? "border-destructive bg-destructive/10"
                   : isActive
-                  ? "border-sky-500 ring-2 ring-sky-500/20"
+                  ? "border-primary ring-2 ring-ring/20"
                   : isFilled
-                  ? "border-zinc-400 dark:border-zinc-600"
-                  : "border-zinc-200 dark:border-zinc-800",
+                  ? "border-input"
+                  : "border-border",
                 disabled && "opacity-50"
               )}
             >
-              <Text className="text-xl font-bold font-mono text-zinc-900 dark:text-zinc-50">
+              <Text className="type-xl weight-title font-mono text-foreground">
                 {isFilled ? (secureTextEntry ? "•" : digit) : ""}
               </Text>
             </View>

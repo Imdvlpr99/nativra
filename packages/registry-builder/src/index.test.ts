@@ -66,6 +66,34 @@ describe("buildRegistry", () => {
     expect(existsSync(join(itemsDir, "old-stale-item.json"))).toBe(false);
     expect(existsSync(join(itemsDir, "thing.json"))).toBe(true);
   });
+
+  it("rejects an id that does not match its directory", async () => {
+    const { src, out } = await setup(item({ id: "other" }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toMatch(/must match its directory/);
+  });
+
+  it("rejects unknown registry dependencies", async () => {
+    const { src, out } = await setup(item({ registryDependencies: [{ id: "missing" }] }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toMatch(/Unknown registry dependency "missing"/);
+  });
+
+  it("rejects files whose target is not a declared styling target", async () => {
+    const { src, out } = await setup(item({ files: [{ path: "Thing.tsx", target: "nativewind" }] }));
+    const r = await buildRegistry({ sourceDir: src, outDir: out });
+    expect(r.errors.join()).toMatch(/not listed in stylingTargets/);
+  });
+
+  it("hydrates docs from docsPath and reports a missing docs file", async () => {
+    const ok = await setup(item({ docsPath: "docs.mdx" }));
+    await writeFile(join(ok.src, "default", "components", "thing", "docs.mdx"), "# Thing");
+    const r = await buildRegistry({ sourceDir: ok.src, outDir: ok.out });
+    expect(r.errors).toEqual([]);
+    expect(r.items[0]?.docs).toBe("# Thing");
+
+    const missing = await setup(item({ docsPath: "nope.mdx" }));
+    const r2 = await buildRegistry({ sourceDir: missing.src, outDir: missing.out });
+    expect(r2.errors.join()).toMatch(/Could not read docs file/);
+  });
 });
-
-

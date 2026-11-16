@@ -1,0 +1,25 @@
+{
+  "id": "ios",
+  "name": "iOS style",
+  "description": "Grey grouped surfaces, hairlines, larger type and dimming press feedback, in the spirit of iOS.",
+  "type": "style",
+  "version": "0.1.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "style.ts"
+    }
+  ],
+  "tags": [
+    "style",
+    "ios",
+    "tokens"
+  ]
+}

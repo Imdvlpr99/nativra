@@ -17,6 +17,7 @@ import {
   type LayoutChangeEvent,
   type ViewProps,
 } from "react-native";
+import { type ThemeColors, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface SegmentedControlOption {
   value: string;
@@ -45,6 +46,8 @@ export function SegmentedControl({
   style,
   ...props
 }: SegmentedControlProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const options: SegmentedControlOption[] = React.useMemo(() => {
     if (providedOptions) return providedOptions;
     if (values) return values.map((v) => ({ value: v, label: v }));
@@ -156,17 +159,17 @@ export function SegmentedControl({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     position: "relative",
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderColor: "#27272a",
-    padding: 4,
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: c.muted,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: c.border,
+    padding: sp(4),
   },
   containerSm: {
     height: 36,
@@ -182,13 +185,9 @@ const styles = StyleSheet.create({
   },
   indicator: {
     position: "absolute",
-    borderRadius: 12,
-    backgroundColor: "#27272a",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: c.background,
+    ...elevation("card"),
   },
   item: {
     flex: 1,
@@ -197,7 +196,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: sp(8),
   },
   iconContainer: {
     marginRight: 6,
@@ -206,45 +205,45 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textSm: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
   },
   textMd: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   textLg: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.label,
   },
   textSelected: {
-    color: "#ffffff",
-    fontWeight: "600",
+    color: c.foreground,
+    fontWeight: themeStyle.fontWeight.label,
   },
   textUnselected: {
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
   badge: {
     marginLeft: 6,
     borderRadius: 9999,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
   },
   badgeSelected: {
-    backgroundColor: "#ffffff",
+    backgroundColor: c.muted,
   },
   badgeUnselected: {
-    backgroundColor: "#27272a",
+    backgroundColor: c.background,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
   },
   badgeTextSelected: {
-    color: "#09090b",
+    color: c.foreground,
   },
   badgeTextUnselected: {
-    color: "#d4d4d8",
+    color: c["muted-foreground"],
   },
 });
 

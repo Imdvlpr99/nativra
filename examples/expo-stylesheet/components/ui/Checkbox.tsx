@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add checkbox
+ * Install: npx nativra-cli add checkbox
  */
 import React from "react";
 import {
@@ -13,10 +13,10 @@ import {
   View,
   Text,
   StyleSheet,
-  useColorScheme,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { useThemeColors, themeStyle, ts } from "@/hooks/use-theme-colors";
 
 export interface CheckboxProps {
   checked: boolean;
@@ -35,11 +35,11 @@ export function Checkbox({
   style,
   accessibilityLabel,
 }: CheckboxProps) {
-  const isDark = useColorScheme() === "dark";
-  const activeColor = isDark ? "#fafafa" : "#18181b";
-  const inactiveBorder = isDark ? "#52525b" : "#a1a1aa";
-  const checkColor = isDark ? "#18181b" : "#ffffff";
-  const labelColor = isDark ? "#f4f4f5" : "#18181b";
+  const c = useThemeColors();
+  const activeColor = c.foreground;
+  const inactiveBorder = c.input;
+  const checkColor = c.background;
+  const labelColor = c.foreground;
 
   return (
     <Pressable
@@ -77,22 +77,23 @@ const styles = StyleSheet.create({
   box: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: themeStyle.radius.small,
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
   },
   checkmark: {
-    fontSize: 12,
-    fontWeight: "700",
-    lineHeight: 14,
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    lineHeight: ts(14),
   },
   label: {
     marginLeft: 8,
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   disabled: {
     opacity: 0.5,
   },
 });
+

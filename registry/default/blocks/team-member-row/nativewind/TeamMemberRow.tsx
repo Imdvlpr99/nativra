@@ -10,8 +10,9 @@
 import React from "react";
 import { View, Text, Pressable, type ViewProps } from "react-native";
 import { MoreVertical, Shield } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
-export interface TeamMemberRowProps extends ViewProps {
+export interface TeamMemberRowProps extends Omit<ViewProps, "role"> {
   name: string;
   email: string;
   role: "Owner" | "Admin" | "Member" | "Viewer" | string;
@@ -34,6 +35,7 @@ export function TeamMemberRow({
   style,
   ...props
 }: TeamMemberRowProps) {
+  const palette = useThemeColors();
   const displayInitials =
     initials ||
     name
@@ -51,33 +53,33 @@ export function TeamMemberRow({
       accessibilityLabel={`Team member ${name}, ${role}, email ${email}`}
       onPress={onPress}
       disabled={!onPress}
-      className={`flex-row items-center justify-between rounded-xl border border-zinc-200 bg-white p-3.5 dark:border-zinc-800 dark:bg-zinc-900 active:opacity-75 ${className}`.trim()}
+      className={`surface flex-row items-center justify-between rounded-control sp-p-3.5 active:opacity-75 ${className}`.trim()}
       style={style}
       {...props}
     >
-      <View className="flex-row items-center gap-3 flex-1 pr-3">
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-          <Text className="text-xs font-bold text-zinc-900 dark:text-white">
+      <View className="flex-row items-center sp-gap-3 flex-1 sp-pr-3">
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-muted border border-border">
+          <Text className="type-xs weight-title text-foreground">
             {displayInitials}
           </Text>
         </View>
 
         <View className="flex-1">
-          <View className="flex-row items-center gap-1.5">
+          <View className="flex-row items-center sp-gap-1.5">
             <Text
-              className="text-sm font-semibold text-zinc-950 dark:text-white"
+              className="type-sm weight-label text-foreground"
               numberOfLines={1}
             >
               {name}
             </Text>
             {isCurrentUser && (
-              <Text className="text-[10px] font-semibold text-zinc-400">
+              <Text className="type-2xs weight-label text-muted-foreground">
                 (You)
               </Text>
             )}
           </View>
           <Text
-            className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
+            className="type-xs text-muted-foreground mt-0.5"
             numberOfLines={1}
           >
             {email}
@@ -85,20 +87,20 @@ export function TeamMemberRow({
         </View>
       </View>
 
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row items-center sp-gap-2">
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${
+          className={`flex-row items-center sp-gap-1 rounded-full sp-px-2.5 sp-py-1 ${
             isHighPrivilege
-              ? "bg-sky-500/10 text-sky-600 dark:text-sky-400"
-              : "bg-zinc-100 dark:bg-zinc-800"
+              ? "bg-primary/10 text-primary"
+              : "bg-muted"
           }`}
         >
-          {isHighPrivilege && <Shield size={12} color="#0284c7" />}
+          {isHighPrivilege && <Shield size={12} color={palette.primary} />}
           <Text
-            className={`text-xs font-semibold ${
+            className={`type-xs weight-label ${
               isHighPrivilege
-                ? "text-sky-600 dark:text-sky-400"
-                : "text-zinc-600 dark:text-zinc-300"
+                ? "text-primary"
+                : "text-muted-foreground"
             }`}
           >
             {role}
@@ -113,9 +115,9 @@ export function TeamMemberRow({
               e.stopPropagation?.();
               onOptionsPress();
             }}
-            className="p-1.5 rounded-lg active:bg-zinc-100 dark:active:bg-zinc-800"
+            className="sp-p-1.5 rounded-control active:bg-muted"
           >
-            <MoreVertical size={16} color="#71717a" />
+            <MoreVertical size={16} color={palette["muted-foreground"]} />
           </Pressable>
         )}
       </View>

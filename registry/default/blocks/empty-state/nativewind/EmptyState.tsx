@@ -31,9 +31,9 @@ export function EmptyState({
   className = "",
 }: EmptyStateProps) {
   return (
-    <Card padding="lg" className={`items-center justify-center text-center p-8 ${className}`.trim()}>
-      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
-        <Text className="text-3xl">{icon}</Text>
+    <Card padding="lg" className={`items-center justify-center text-center sp-p-8 ${className}`.trim()}>
+      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-muted">
+        <Text className="type-3xl">{icon}</Text>
       </View>
       <Text variant="h3" className="mb-2 text-center">
         {title}

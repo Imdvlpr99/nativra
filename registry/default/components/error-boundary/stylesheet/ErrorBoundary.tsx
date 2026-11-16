@@ -1,6 +1,7 @@
 /** Nativra — ErrorBoundary (StyleSheet). Install: npx nativra-cli add error-boundary */
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -41,49 +42,51 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         this.state.error?.message ??
         "An unexpected rendering error occurred on this screen.";
 
-      return (
-        <View accessibilityRole="alert" style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.icon}>⚠️</Text>
-            <Text style={styles.title}>{title}</Text>
-          </View>
-          <Text style={styles.message}>{message}</Text>
-          <Pressable
-            onPress={this.handleReset}
-            accessibilityRole="button"
-            accessibilityLabel="Try again"
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Try Again</Text>
-          </Pressable>
-        </View>
-      );
+      return <ErrorFallback title={title} message={message} onReset={this.handleReset} />;
     }
 
     return this.props.children;
   }
 }
 
-const styles = StyleSheet.create({
+/** Function component so the fallback can read theme colors (class components can't use hooks). */
+function ErrorFallback({ title, message, onReset }: { title: string; message: string; onReset: () => void }) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
+  return (
+    <View accessibilityRole="alert" style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.icon}>⚠️</Text>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+      <Text style={styles.message}>{message}</Text>
+      <Pressable onPress={onReset} accessibilityRole="button" accessibilityLabel="Try again" style={styles.button}>
+        <Text style={styles.buttonText}>Try Again</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#fecdd3",
-    backgroundColor: "#fff1f2",
-    padding: 20,
+    borderRadius: themeStyle.radius.card,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: alpha(c.destructive, 0.3),
+    backgroundColor: alpha(c.destructive, 0.08),
+    padding: sp(20),
   },
-  header: { flexDirection: "row", alignItems: "center", gap: 8 },
-  icon: { fontSize: 16 },
-  title: { fontSize: 14, fontWeight: "700", color: "#881337" },
-  message: { marginTop: 6, fontSize: 12, lineHeight: 18, color: "#be123c" },
+  header: { flexDirection: "row", alignItems: "center", gap: sp(8) },
+  icon: { fontSize: ts(16) },
+  title: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.destructive },
+  message: { marginTop: 6, fontSize: ts(12), lineHeight: ts(18), color: c.destructive },
   button: {
     marginTop: 16,
     alignSelf: "flex-start",
-    borderRadius: 12,
-    backgroundColor: "#e11d48",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: c.destructive,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(8),
   },
-  buttonText: { fontSize: 12, fontWeight: "600", color: "#ffffff" },
+  buttonText: { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label, color: c["destructive-foreground"] },
 });
 

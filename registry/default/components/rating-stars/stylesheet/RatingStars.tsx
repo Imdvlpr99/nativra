@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
+import { useThemeColors, sp } from "@/hooks/use-theme-colors";
 
 export interface RatingStarsProps extends ViewProps {
   rating: number;
@@ -27,6 +28,8 @@ export function RatingStars({
   style,
   ...props
 }: RatingStarsProps) {
+  const palette = useThemeColors();
+  const c = useThemeColors();
   const fontSize = size === "sm" ? 18 : size === "lg" ? 30 : 22;
 
   return (
@@ -44,7 +47,7 @@ export function RatingStars({
           <Text
             style={{
               fontSize,
-              color: isFilled ? "#f59e0b" : "#71717a",
+              color: isFilled ? c.warning : c["muted-foreground"],
               lineHeight: fontSize + 2,
             }}
           >
@@ -82,9 +85,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: sp(4),
   },
   starButton: {
-    padding: 4,
+    padding: sp(4),
   },
 });

@@ -35,7 +35,7 @@ export function RatingStars({
     <View
       accessibilityRole="radiogroup"
       accessibilityLabel={`Rating: ${rating} out of ${maxStars} stars`}
-      className={`flex-row items-center gap-1 ${className}`.trim()}
+      className={`flex-row items-center sp-gap-1 ${className}`.trim()}
       style={style}
       {...props}
     >
@@ -45,9 +45,9 @@ export function RatingStars({
 
         const starElement = (
           <Text
+            className={isFilled ? "text-warning" : "text-muted-foreground"}
             style={{
               fontSize,
-              color: isFilled ? "#f59e0b" : "#71717a",
               lineHeight: fontSize + 2,
             }}
           >
@@ -70,7 +70,7 @@ export function RatingStars({
             accessibilityLabel={`Rate ${starValue} of ${maxStars} stars`}
             accessibilityState={{ selected: isFilled }}
             onPress={() => onRatingChange?.(starValue)}
-            className="p-1 active:scale-110 active:opacity-75 transition-all"
+            className="sp-p-1 active:scale-110 active:opacity-75 transition-all"
             hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           >
             {starElement}

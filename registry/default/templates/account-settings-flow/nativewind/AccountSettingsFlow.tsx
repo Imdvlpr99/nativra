@@ -21,8 +21,10 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export function AccountSettingsFlow() {
+  const palette = useThemeColors();
   const [activeTab, setActiveTab] = useState<"profile" | "team" | "security" | "billing">("profile");
 
   // State toggles
@@ -50,25 +52,25 @@ export function AccountSettingsFlow() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
-      <ScrollView className="flex-1 px-4 py-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 sp-px-4 sp-py-6" showsVerticalScrollIndicator={false}>
         {/* Header Profile Summary */}
-        <View className="mb-6 flex-row items-center gap-4">
-          <View className="h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 shadow-md">
-            <Text className="text-lg font-bold text-white">JD</Text>
+        <View className="mb-6 flex-row items-center sp-gap-4">
+          <View className="h-14 w-14 items-center justify-center rounded-card bg-gradient-to-tr from-primary to-primary shadow-md">
+            <Text className="type-lg weight-title text-foreground">JD</Text>
           </View>
           <View className="flex-1">
-            <View className="flex-row items-center gap-2">
-              <Text className="text-xl font-black text-white">Jane Doe</Text>
+            <View className="flex-row items-center sp-gap-2">
+              <Text className="type-xl weight-heading text-foreground">Jane Doe</Text>
               <Badge variant="outline" label="Enterprise" />
             </View>
-            <Text className="text-xs text-zinc-400 mt-0.5">jane.doe@enterprise.corp</Text>
+            <Text className="type-xs text-muted-foreground mt-0.5">jane.doe@enterprise.corp</Text>
           </View>
         </View>
 
         {/* Section Navigation Pills */}
-        <View className="mb-6 flex-row items-center rounded-2xl border border-zinc-800 bg-zinc-900 p-1">
+        <View className="mb-6 flex-row items-center rounded-card surface sp-p-1">
           {(
             [
               { id: "profile", label: "Profile" },
@@ -82,13 +84,13 @@ export function AccountSettingsFlow() {
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                className={`flex-1 items-center rounded-xl py-2 ${
-                  active ? "bg-zinc-800 shadow" : ""
+                className={`flex-1 items-center rounded-control sp-py-2 ${
+                  active ? "bg-muted shadow" : ""
                 }`}
               >
                 <Text
-                  className={`text-xs font-semibold ${
-                    active ? "text-white" : "text-zinc-400"
+                  className={`type-xs weight-label ${
+                    active ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
                   {tab.label}
@@ -100,62 +102,62 @@ export function AccountSettingsFlow() {
 
         {/* TAB 1: PROFILE */}
         {activeTab === "profile" && (
-          <View className="gap-4">
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
-              <Text className="text-base font-bold text-white">Organization Details</Text>
-              <Text className="text-xs text-zinc-400 mt-1">Manage corporate entity and timezone</Text>
-              <Separator className="my-4 bg-zinc-800" />
+          <View className="sp-gap-4">
+            <Card className="sp-p-5">
+              <Text className="type-base weight-title text-foreground">Organization Details</Text>
+              <Text className="type-xs text-muted-foreground mt-1">Manage corporate entity and timezone</Text>
+              <Separator className="my-4 bg-muted" />
 
-              <View className="gap-3">
+              <View className="sp-gap-3">
                 <View>
-                  <Text className="text-xs font-medium text-zinc-400 mb-1">Company Name</Text>
-                  <View className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5">
-                    <Text className="text-sm font-semibold text-white">Acme Global Technologies Ltd.</Text>
+                  <Text className="type-xs font-medium text-muted-foreground mb-1">Company Name</Text>
+                  <View className="field rounded-control sp-px-3.5 sp-py-2.5">
+                    <Text className="type-sm weight-label text-foreground">Acme Global Technologies Ltd.</Text>
                   </View>
                 </View>
 
                 <View>
-                  <Text className="text-xs font-medium text-zinc-400 mb-1">Billing Contact Email</Text>
-                  <View className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5">
-                    <Text className="text-sm text-zinc-300">finance@acme.corp</Text>
+                  <Text className="type-xs font-medium text-muted-foreground mb-1">Billing Contact Email</Text>
+                  <View className="field rounded-control sp-px-3.5 sp-py-2.5">
+                    <Text className="type-sm text-muted-foreground">finance@acme.corp</Text>
                   </View>
                 </View>
 
                 <View>
-                  <Text className="text-xs font-medium text-zinc-400 mb-1">Timezone</Text>
-                  <View className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5">
-                    <Text className="text-sm text-zinc-300">UTC-05:00 (Eastern Time)</Text>
+                  <Text className="type-xs font-medium text-muted-foreground mb-1">Timezone</Text>
+                  <View className="field rounded-control sp-px-3.5 sp-py-2.5">
+                    <Text className="type-sm text-muted-foreground">UTC-05:00 (Eastern Time)</Text>
                   </View>
                 </View>
               </View>
             </Card>
 
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
-              <Text className="text-base font-bold text-white">Email Notifications</Text>
-              <Separator className="my-4 bg-zinc-800" />
+            <Card className="sp-p-5">
+              <Text className="type-base weight-title text-foreground">Email Notifications</Text>
+              <Separator className="my-4 bg-muted" />
 
-              <View className="gap-4">
+              <View className="sp-gap-4">
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-1 pr-4">
-                    <Text className="text-sm font-medium text-white">Product Releases</Text>
-                    <Text className="text-xs text-zinc-400">Weekly digest of features</Text>
+                  <View className="flex-1 sp-pr-4">
+                    <Text className="type-sm font-medium text-foreground">Product Releases</Text>
+                    <Text className="type-xs text-muted-foreground">Weekly digest of features</Text>
                   </View>
                   <Switch
                     value={emailAlerts}
                     onValueChange={setEmailAlerts}
-                    trackColor={{ false: "#27272a", true: "#0284c7" }}
+                    trackColor={{ false: palette.muted, true: palette.primary }}
                   />
                 </View>
 
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-1 pr-4">
-                    <Text className="text-sm font-medium text-white">Security Alerts</Text>
-                    <Text className="text-xs text-zinc-400">Immediate notice on login attempts</Text>
+                  <View className="flex-1 sp-pr-4">
+                    <Text className="type-sm font-medium text-foreground">Security Alerts</Text>
+                    <Text className="type-xs text-muted-foreground">Immediate notice on login attempts</Text>
                   </View>
                   <Switch
                     value={securityAlerts}
                     onValueChange={setSecurityAlerts}
-                    trackColor={{ false: "#27272a", true: "#0284c7" }}
+                    trackColor={{ false: palette.muted, true: palette.primary }}
                   />
                 </View>
               </View>
@@ -165,41 +167,41 @@ export function AccountSettingsFlow() {
 
         {/* TAB 2: TEAM */}
         {activeTab === "team" && (
-          <View className="gap-4">
+          <View className="sp-gap-4">
             {/* Seat Utilization Bar */}
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
+            <Card className="sp-p-5">
               <View className="flex-row items-center justify-between">
-                <Text className="text-base font-bold text-white">Team Seats</Text>
+                <Text className="type-base weight-title text-foreground">Team Seats</Text>
                 <Badge variant="outline" label="8 / 10 Active" />
               </View>
-              <View className="mt-3 h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
-                <View className="h-full w-4/5 rounded-full bg-sky-500" />
+              <View className="mt-3 h-2 w-full rounded-full bg-muted overflow-hidden">
+                <View className="h-full w-4/5 rounded-full bg-primary" />
               </View>
-              <Text className="text-xs text-zinc-400 mt-2">
+              <Text className="type-xs text-muted-foreground mt-2">
                 You have 2 seats remaining on your Enterprise plan.
               </Text>
             </Card>
 
             {/* Member List */}
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
+            <Card className="sp-p-5">
               <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-base font-bold text-white">Assigned Members</Text>
-                <Button size="sm" variant="default" label="+ Invite" />
+                <Text className="type-base weight-title text-foreground">Assigned Members</Text>
+                <Button size="sm" variant="default">+ Invite</Button>
               </View>
 
-              <View className="gap-3">
+              <View className="sp-gap-3">
                 {teamMembers.map((member) => (
                   <View
                     key={member.id}
-                    className="flex-row items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-950/60 p-3"
+                    className="flex-row items-center justify-between rounded-control border border-border/60 bg-background/60 sp-p-3"
                   >
-                    <View className="flex-row items-center gap-3">
-                      <View className="h-9 w-9 items-center justify-center rounded-full bg-zinc-800">
-                        <Text className="text-xs font-bold text-white">{member.initials}</Text>
+                    <View className="flex-row items-center sp-gap-3">
+                      <View className="h-9 w-9 items-center justify-center rounded-full bg-muted">
+                        <Text className="type-xs weight-title text-foreground">{member.initials}</Text>
                       </View>
                       <View>
-                        <Text className="text-sm font-semibold text-white">{member.name}</Text>
-                        <Text className="text-xs text-zinc-400">{member.email}</Text>
+                        <Text className="type-sm weight-label text-foreground">{member.name}</Text>
+                        <Text className="type-xs text-muted-foreground">{member.email}</Text>
                       </View>
                     </View>
                     <Badge
@@ -215,56 +217,56 @@ export function AccountSettingsFlow() {
 
         {/* TAB 3: SECURITY */}
         {activeTab === "security" && (
-          <View className="gap-4">
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
+          <View className="sp-gap-4">
+            <Card className="sp-p-5">
               <View className="flex-row items-center justify-between">
-                <View className="flex-1 pr-4">
-                  <Text className="text-base font-bold text-white">Two-Factor Auth (2FA)</Text>
-                  <Text className="text-xs text-zinc-400 mt-1">
+                <View className="flex-1 sp-pr-4">
+                  <Text className="type-base weight-title text-foreground">Two-Factor Auth (2FA)</Text>
+                  <Text className="type-xs text-muted-foreground mt-1">
                     Require TOTP code on every sign-in
                   </Text>
                 </View>
                 <Switch
                   value={twoFactorEnabled}
                   onValueChange={setTwoFactorEnabled}
-                  trackColor={{ false: "#27272a", true: "#10b981" }}
+                  trackColor={{ false: palette.muted, true: palette.success }}
                 />
               </View>
             </Card>
 
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
-              <Text className="text-base font-bold text-white">Active Device Sessions</Text>
-              <Text className="text-xs text-zinc-400 mt-1">
+            <Card className="sp-p-5">
+              <Text className="type-base weight-title text-foreground">Active Device Sessions</Text>
+              <Text className="type-xs text-muted-foreground mt-1">
                 Devices authorized with persistent tokens
               </Text>
-              <Separator className="my-4 bg-zinc-800" />
+              <Separator className="my-4 bg-muted" />
 
-              <View className="gap-3">
+              <View className="sp-gap-3">
                 {sessions.map((sess) => (
                   <View
                     key={sess.id}
-                    className="flex-row items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-950/60 p-3"
+                    className="flex-row items-center justify-between rounded-control border border-border/60 bg-background/60 sp-p-3"
                   >
                     <View>
-                      <View className="flex-row items-center gap-2">
-                        <Text className="text-sm font-semibold text-white">{sess.device}</Text>
+                      <View className="flex-row items-center sp-gap-2">
+                        <Text className="type-sm weight-label text-foreground">{sess.device}</Text>
                         {sess.isCurrent && (
                           <Badge variant="outline" label="This Device" />
                         )}
                       </View>
-                      <Text className="text-xs text-zinc-400 mt-0.5">{sess.location} • {sess.active}</Text>
+                      <Text className="type-xs text-muted-foreground mt-0.5">{sess.location} • {sess.active}</Text>
                     </View>
                     {!sess.isCurrent && (
-                      <TouchableOpacity className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1">
-                        <Text className="text-xs font-semibold text-rose-400">Revoke</Text>
+                      <TouchableOpacity className="rounded-control border border-destructive/30 bg-destructive/10 sp-px-2.5 sp-py-1">
+                        <Text className="type-xs weight-label text-destructive">Revoke</Text>
                       </TouchableOpacity>
                     )}
                   </View>
                 ))}
               </View>
 
-              <TouchableOpacity className="mt-4 items-center rounded-xl border border-rose-500/40 bg-rose-500/10 py-3">
-                <Text className="text-xs font-bold text-rose-400">Sign Out All Other Sessions</Text>
+              <TouchableOpacity className="mt-4 items-center rounded-control border border-destructive/40 bg-destructive/10 sp-py-3">
+                <Text className="type-xs weight-title text-destructive">Sign Out All Other Sessions</Text>
               </TouchableOpacity>
             </Card>
           </View>
@@ -272,48 +274,48 @@ export function AccountSettingsFlow() {
 
         {/* TAB 4: BILLING */}
         {activeTab === "billing" && (
-          <View className="gap-4">
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
+          <View className="sp-gap-4">
+            <Card className="sp-p-5">
               <View className="flex-row items-center justify-between">
                 <View>
-                  <Text className="text-xs font-medium uppercase tracking-wider text-zinc-400">Current Plan</Text>
-                  <Text className="text-2xl font-black text-white mt-1">Enterprise Tier</Text>
+                  <Text className="type-xs font-medium uppercase tracking-wider text-muted-foreground">Current Plan</Text>
+                  <Text className="type-2xl weight-heading text-foreground mt-1">Enterprise Tier</Text>
                 </View>
                 <Badge variant="default" label="Active" />
               </View>
-              <Text className="text-base font-bold text-white mt-2">$499.00 / month</Text>
-              <Text className="text-xs text-zinc-400 mt-1">Next invoice scheduled for Dec 1, 2026</Text>
-              <Separator className="my-4 bg-zinc-800" />
+              <Text className="type-base weight-title text-foreground mt-2">$499.00 / month</Text>
+              <Text className="type-xs text-muted-foreground mt-1">Next invoice scheduled for Dec 1, 2026</Text>
+              <Separator className="my-4 bg-muted" />
 
-              <Text className="text-xs font-medium text-zinc-400 mb-2">Payment Method</Text>
-              <View className="flex-row items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 p-3">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-7 w-10 items-center justify-center rounded bg-zinc-800">
-                    <Text className="text-[10px] font-bold text-white">VISA</Text>
+              <Text className="type-xs font-medium text-muted-foreground mb-2">Payment Method</Text>
+              <View className="flex-row items-center justify-between rounded-control border border-border bg-background sp-p-3">
+                <View className="flex-row items-center sp-gap-3">
+                  <View className="h-7 w-10 items-center justify-center rounded-small bg-muted">
+                    <Text className="type-2xs weight-title text-foreground">VISA</Text>
                   </View>
                   <View>
-                    <Text className="text-xs font-bold text-white">•••• 4242</Text>
-                    <Text className="text-[10px] text-zinc-400">Expires 09/28</Text>
+                    <Text className="type-xs weight-title text-foreground">•••• 4242</Text>
+                    <Text className="type-2xs text-muted-foreground">Expires 09/28</Text>
                   </View>
                 </View>
                 <Badge variant="outline" label="Default" />
               </View>
             </Card>
 
-            <Card className="border-zinc-800 bg-zinc-900/90 p-5">
-              <Text className="text-base font-bold text-white mb-3">Invoice History</Text>
-              <View className="gap-2.5">
+            <Card className="sp-p-5">
+              <Text className="type-base weight-title text-foreground mb-3">Invoice History</Text>
+              <View className="sp-gap-2.5">
                 {invoices.map((inv) => (
                   <View
                     key={inv.id}
-                    className="flex-row items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-950/60 p-3"
+                    className="flex-row items-center justify-between rounded-control border border-border/60 bg-background/60 sp-p-3"
                   >
                     <View>
-                      <Text className="text-xs font-semibold text-white">{inv.id}</Text>
-                      <Text className="text-[10px] text-zinc-400">{inv.date}</Text>
+                      <Text className="type-xs weight-label text-foreground">{inv.id}</Text>
+                      <Text className="type-2xs text-muted-foreground">{inv.date}</Text>
                     </View>
-                    <View className="flex-row items-center gap-3">
-                      <Text className="text-xs font-bold text-white">{inv.amount}</Text>
+                    <View className="flex-row items-center sp-gap-3">
+                      <Text className="type-xs weight-title text-foreground">{inv.amount}</Text>
                       <Badge variant="secondary" label={inv.status} />
                     </View>
                   </View>

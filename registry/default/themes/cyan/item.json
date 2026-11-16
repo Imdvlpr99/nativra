@@ -1,0 +1,25 @@
+{
+  "id": "cyan",
+  "name": "Cyan",
+  "description": "The cyan theme token set (light and dark).",
+  "type": "theme",
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
+  "platforms": {
+    "android": true,
+    "ios": true
+  },
+  "files": [
+    {
+      "path": "theme.ts"
+    }
+  ],
+  "tags": [
+    "theme",
+    "cyan",
+    "tokens"
+  ]
+}

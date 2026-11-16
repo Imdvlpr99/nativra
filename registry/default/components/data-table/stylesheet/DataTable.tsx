@@ -16,6 +16,7 @@ import {
   StyleSheet,
   type ViewProps,
 } from "react-native";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -46,6 +47,8 @@ export function DataTable<T extends Record<string, any>>({
   style,
   ...props
 }: DataTableProps<T>) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const getAlignStyle = (align?: "left" | "center" | "right") => {
     switch (align) {
       case "center":
@@ -97,7 +100,7 @@ export function DataTable<T extends Record<string, any>>({
               const rowKey = keyExtractor(item, rowIndex);
 
               return (
-                <Pressable
+                <Pressable accessibilityRole={onRowPress ? "button" : undefined}
                   key={rowKey}
                   disabled={!onRowPress}
                   onPress={() => onRowPress?.(item, rowIndex)}
@@ -142,12 +145,10 @@ export function DataTable<T extends Record<string, any>>({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    ...surface(c),
+    borderRadius: themeStyle.radius.card,
     overflow: "hidden",
   },
   contentTable: {
@@ -156,31 +157,31 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
-    backgroundColor: "#202024",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    borderBottomColor: c.border,
+    backgroundColor: c.muted,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(16),
   },
   headerTitle: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#a1a1aa",
+    color: c["muted-foreground"],
   },
   row: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#27272a",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    borderBottomColor: c.border,
+    paddingVertical: sp(14),
+    paddingHorizontal: sp(16),
   },
   stripedRow: {
-    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    backgroundColor: alpha(c.muted, 0.5),
   },
   cellText: {
-    fontSize: 14,
-    color: "#f4f4f5",
+    fontSize: ts(14),
+    color: c.foreground,
   },
   alignLeft: {
     justifyContent: "center",
@@ -204,35 +205,35 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   emptyContainer: {
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingVertical: sp(32),
+    paddingHorizontal: sp(16),
     alignItems: "center",
     justifyContent: "center",
   },
   emptyText: {
-    fontSize: 14,
-    color: "#71717a",
+    fontSize: ts(14),
+    color: c["muted-foreground"],
   },
   footerContainer: {
     borderTopWidth: 1,
-    borderTopColor: "#27272a",
-    backgroundColor: "#202024",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    borderTopColor: c.border,
+    backgroundColor: c.muted,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(10),
   },
   defaultFooter: {
     borderTopWidth: 1,
-    borderTopColor: "#27272a",
-    backgroundColor: "#202024",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    borderTopColor: c.border,
+    backgroundColor: c.muted,
+    paddingHorizontal: sp(16),
+    paddingVertical: sp(8),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   footerText: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: c["muted-foreground"],
   },
 });
 

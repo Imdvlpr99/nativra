@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors, elevation, ts, sp, pressedStyle, themeStyle } from "@/hooks/use-theme-colors";
 
 export type FabVariant = "primary" | "secondary" | "accent";
 export type FabSize = "sm" | "md" | "lg";
@@ -34,6 +35,8 @@ export function Fab({
   onPress,
   ...props
 }: FabProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const isExtended = Boolean(label);
 
   return (
@@ -61,7 +64,7 @@ export function Fab({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     position: "absolute",
     zIndex: 50,
@@ -69,31 +72,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 9999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
+    ...elevation("raised"),
   },
   sm: { width: 40, height: 40 },
   md: { width: 56, height: 56 },
   lg: { width: 64, height: 64 },
-  extended: { width: "auto", paddingHorizontal: 20, gap: 8 },
-  primary: { backgroundColor: "#0284C7" },
-  secondary: { backgroundColor: "#18181B" },
-  accent: { backgroundColor: "#10B981" },
+  extended: { width: "auto", paddingHorizontal: sp(20), gap: sp(8) },
+  primary: { backgroundColor: c.primary },
+  secondary: { backgroundColor: c.foreground },
+  accent: { backgroundColor: c.success },
   "bottom-right": { bottom: 24, right: 24 },
   "bottom-left": { bottom: 24, left: 24 },
   "bottom-center": { bottom: 24, alignSelf: "center" },
   labelText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 14,
+    color: c["primary-foreground"],
+    fontWeight: themeStyle.fontWeight.title,
+    fontSize: ts(14),
   },
-  pressed: {
-    transform: [{ scale: 0.95 }],
-    opacity: 0.9,
-  },
+  pressed: { ...pressedStyle(true) },
   disabled: {
     opacity: 0.5,
   },

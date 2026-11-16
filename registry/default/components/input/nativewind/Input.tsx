@@ -1,6 +1,7 @@
 /** Nativra — Input (NativeWind). Install: npx nativra-cli add input */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
+import { field, themeStyle, useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -9,22 +10,36 @@ export interface InputProps extends TextInputProps {
   disabled?: boolean;
 }
 
-export function Input({ label, error = false, errorMessage, disabled = false, ...rest }: InputProps) {
+export function Input({ label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest }: InputProps) {
+  const palette = useThemeColors();
+  const [focused, setFocused] = React.useState(false);
+  const filled = themeStyle.field === "filled";
   return (
-    <View className="w-full gap-1.5">
-      {label ? <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{label}</Text> : null}
+    <View className="w-full sp-gap-1.5">
+      {label ? <Text className="type-sm weight-label text-foreground">{label}</Text> : null}
       <TextInput
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
-        className={`rounded-lg border px-3 py-2.5 text-base text-zinc-900 dark:text-zinc-50 ${
-          error ? "border-red-500" : "border-zinc-300 dark:border-zinc-700"
-        } ${disabled ? "opacity-50" : ""}`}
+        placeholderTextColor={palette["muted-foreground"]}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
+        // `field` (outlined or filled, from the style) is the resting look; focus is drawn in JS.
+        className={[
+          "field rounded-control min-h-control sp-px-3.5 sp-py-2.5 type-base text-foreground",
+          error ? (filled ? "border-b-2 border-destructive" : "border-destructive") : "",
+          disabled ? "opacity-50" : "",
+        ].join(" ")}
+        style={[focused && !error ? field(palette, true) : null, style]}
         {...rest}
       />
-      {error && errorMessage ? <Text className="text-xs text-red-500">{errorMessage}</Text> : null}
+      {error && errorMessage ? <Text className="type-xs text-destructive">{errorMessage}</Text> : null}
     </View>
   );
 }
-

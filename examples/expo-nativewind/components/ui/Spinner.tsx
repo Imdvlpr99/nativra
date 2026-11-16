@@ -5,10 +5,11 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add spinner
+ * Install: npx nativra-cli add spinner
  */
 import React from "react";
 import { ActivityIndicator, type ActivityIndicatorProps } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export type SpinnerSize = "sm" | "md" | "lg";
 
@@ -25,15 +26,16 @@ const SIZE_MAP: Record<SpinnerSize, "small" | "large"> = {
 
 export function Spinner({
   size = "md",
-  color = "#18181b",
+  color,
   className = "",
   style,
   ...props
 }: SpinnerProps) {
+  const c = useThemeColors();
   return (
     <ActivityIndicator
       size={SIZE_MAP[size]}
-      color={color}
+      color={color ?? c.foreground}
       className={className}
       style={style}
       accessibilityRole="progressbar"
@@ -41,3 +43,4 @@ export function Spinner({
     />
   );
 }
+

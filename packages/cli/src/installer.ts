@@ -1,12 +1,29 @@
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import chalk from "chalk";
+import { NPM_PACKAGE_REGEX, SEMVER_RANGE_REGEX } from "@nativra/registry-schema";
 import { detectProjectEnvironment } from "./detect.js";
 
 export interface PackageDependency {
   package: string;
   version?: string;
+}
+
+/** A resolved install invocation. `args` are passed to the binary without a shell on POSIX. */
+export interface InstallCommand {
+  bin: string;
+  args: string[];
+}
+
+/**
+ * Re-validates registry-supplied dependencies right before they reach a package manager,
+ * so a registry can never smuggle shell syntax into an install command.
+ */
+export function isSafeDependency(dep: PackageDependency): boolean {
+  if (!NPM_PACKAGE_REGEX.test(dep.package) || dep.package.length > 214) return false;
+  if (dep.version !== undefined && !SEMVER_RANGE_REGEX.test(dep.version)) return false;
+  return true;
 }
 
 export async function getMissingDependencies(
@@ -33,40 +50,61 @@ export async function getMissingDependencies(
 export async function getInstallCommand(
   cwd: string,
   missing: PackageDependency[]
-): Promise<string> {
-  const env = await detectProjectEnvironment(cwd);
-  const pkgList = missing
-    .map((d) => (d.version && env.framework !== "expo" ? `${d.package}@${d.version}` : d.package))
-    .join(" ");
-
-  if (env.framework === "expo") {
-    return `npx expo install ${missing.map((m) => m.package).join(" ")}`;
+): Promise<InstallCommand> {
+  const unsafe = missing.filter((d) => !isSafeDependency(d));
+  if (unsafe.length > 0) {
+    throw new Error(
+      `Refusing to install dependencies with unsafe names or version ranges: ${unsafe
+        .map((d) => JSON.stringify(`${d.package}@${d.version ?? ""}`))
+        .join(", ")}`
+    );
   }
+
+  const env = await detectProjectEnvironment(cwd);
+  if (env.framework === "expo") {
+    // Expo picks SDK-compatible versions itself, so ranges are dropped.
+    return { bin: "npx", args: ["expo", "install", ...missing.map((m) => m.package)] };
+  }
+
+  const specs = missing.map((d) => (d.version ? `${d.package}@${d.version}` : d.package));
   switch (env.packageManager) {
     case "pnpm":
-      return `pnpm add ${pkgList}`;
+      return { bin: "pnpm", args: ["add", ...specs] };
     case "yarn":
-      return `yarn add ${pkgList}`;
+      return { bin: "yarn", args: ["add", ...specs] };
     case "bun":
-      return `bun add ${pkgList}`;
+      return { bin: "bun", args: ["add", ...specs] };
     default:
-      return `npm install ${pkgList}`;
+      return { bin: "npm", args: ["install", ...specs] };
   }
+}
+
+/** Human-readable form of an install command, for display only. */
+export function formatInstallCommand(cmd: InstallCommand): string {
+  return [cmd.bin, ...cmd.args].join(" ");
 }
 
 export async function executeDependencyInstall(
   cwd: string,
-  cmd: string
+  cmd: InstallCommand
 ): Promise<boolean> {
-  try {
-    console.log(chalk.cyan(`\n⚡ Installing dependencies: ${chalk.bold(cmd)}...`));
-    execSync(cmd, { cwd, stdio: "inherit" });
+  const display = formatInstallCommand(cmd);
+  console.log(chalk.cyan(`\n⚡ Installing dependencies: ${chalk.bold(display)}...`));
+
+  // Package managers are .cmd shims on Windows and cannot be spawned without a shell.
+  // Every argument was validated against a strict allow-list above, and is additionally
+  // double-quoted so cmd.exe treats it as a literal.
+  const isWindows = process.platform === "win32";
+  const result = isWindows
+    ? spawnSync(cmd.bin, cmd.args.map((a) => `"${a}"`), { cwd, stdio: "inherit", shell: true })
+    : spawnSync(cmd.bin, cmd.args, { cwd, stdio: "inherit" });
+
+  if (result.status === 0) {
     console.log(chalk.green(`  ✓ Dependencies successfully installed.\n`));
     return true;
-  } catch (err) {
-    console.warn(chalk.yellow(`  ⚠ Auto-install failed: ${(err as Error).message}`));
-    console.log(chalk.gray(`    You can install manually with: ${cmd}\n`));
-    return false;
   }
+  const reason = result.error?.message ?? `exit code ${String(result.status)}`;
+  console.warn(chalk.yellow(`  ⚠ Auto-install failed: ${reason}`));
+  console.log(chalk.gray(`    You can install manually with: ${display}\n`));
+  return false;
 }
-

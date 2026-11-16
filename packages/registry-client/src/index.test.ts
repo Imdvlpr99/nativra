@@ -1,6 +1,8 @@
-import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
-import { createLocalRegistryClient } from "./index.js";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { MAX_RESPONSE_BYTES, RegistryClient, createLocalRegistryClient } from "./index.js";
 
 const REGISTRY = resolve(__dirname, "../../../dist/registry");
 
@@ -31,6 +33,17 @@ describe("RegistryClient (local)", () => {
     expect(item.files[0]?.hash).toBeDefined();
   });
 
+  it("rejects an item whose id differs from the one requested", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "nativra-client-"));
+    try {
+      mkdirSync(join(dir, "items"));
+      copyFileSync(join(REGISTRY, "items", "button.json"), join(dir, "items", "badge.json"));
+      await expect(createLocalRegistryClient(dir).getItem("badge")).rejects.toThrow(/returned item "button"/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("rejects path traversal and malformed item IDs", async () => {
     await expect(client.getItem("../registry")).rejects.toThrow(/Invalid registry item ID/);
     await expect(client.getItem("../../package")).rejects.toThrow(/Invalid registry item ID/);
@@ -39,3 +52,22 @@ describe("RegistryClient (local)", () => {
 });
 
 
+
+describe("RegistryClient (remote)", () => {
+  const remote = () => new RegistryClient([{ kind: "remote", location: "https://registry.test", name: "default" }]);
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("rejects a redirect from https to http", async () => {
+    const res = new Response("{}", { status: 200 });
+    Object.defineProperty(res, "url", { value: "http://evil.test/registry.json" });
+    vi.stubGlobal("fetch", vi.fn(async () => res));
+    await expect(remote().getManifest()).rejects.toThrow(/insecure/);
+  });
+
+  it("rejects oversized responses", async () => {
+    const big = "x".repeat(MAX_RESPONSE_BYTES + 1);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(big, { status: 200 })));
+    await expect(remote().getManifest()).rejects.toThrow(/too large/);
+  });
+});

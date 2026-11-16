@@ -69,52 +69,52 @@ export function EcommerceFlow() {
       : products.filter((p) => p.cat === selectedCat);
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-background">
       <StatusBar barStyle="light-content" />
-      <ScrollView className="flex-1 px-4 py-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 sp-px-4 sp-py-6" showsVerticalScrollIndicator={false}>
         {/* Top Bar */}
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-2xl font-black text-white">Storefront</Text>
-            <Text className="text-xs text-zinc-400 mt-1">Curated Tech Essentials</Text>
+            <Text className="type-2xl weight-heading text-foreground">Storefront</Text>
+            <Text className="type-xs text-muted-foreground mt-1">Curated Tech Essentials</Text>
           </View>
-          <TouchableOpacity className="h-10 px-4 rounded-xl bg-zinc-900 border border-zinc-800 flex-row items-center gap-2 active:opacity-80">
-            <Text className="text-xs font-semibold text-zinc-200">Cart</Text>
+          <TouchableOpacity className="surface min-h-control sp-px-4 rounded-control flex-row items-center sp-gap-2 active:opacity-80">
+            <Text className="type-xs weight-label text-foreground">Cart</Text>
             <Badge size="sm" variant="primary" label={String(cartCount)} />
           </TouchableOpacity>
         </View>
 
         {/* Promo Hero Banner */}
-        <Card elevated padding="lg" className="rounded-3xl bg-sky-600/20 border border-sky-500/30 mb-6 p-5">
+        <Card elevated padding="lg" className="rounded-card bg-primary/20 border border-primary/30 mb-6 sp-p-5">
           <Badge size="sm" variant="secondary" label="Limited Edition" className="self-start mb-2" />
-          <Text className="text-xl font-black text-white leading-tight">
+          <Text className="type-xl weight-heading text-foreground leading-tight">
             Next-Gen Spatial Audio
           </Text>
-          <Text className="text-xs text-zinc-300 mt-1 max-w-[260px]">
+          <Text className="type-xs text-muted-foreground mt-1 max-w-[260px]">
             Immersive 360 sound with active adaptive noise cancellation.
           </Text>
-          <Button variant="primary" className="self-start mt-4 h-9 px-4">
+          <Button variant="primary" className="self-start mt-4 h-9 sp-px-4">
             Shop AeroSound
           </Button>
         </Card>
 
         {/* Category Pills */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2 mb-6">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row sp-gap-2 mb-6">
           {categories.map((c) => {
             const active = c.id === selectedCat;
             return (
               <TouchableOpacity
                 key={c.id}
                 onPress={() => setSelectedCat(c.id)}
-                className={`px-4 py-2 rounded-xl border ${
+                className={`sp-px-4 sp-py-2 rounded-control border ${
                   active
-                    ? "bg-sky-500 border-sky-400"
-                    : "bg-zinc-900 border-zinc-800"
+                    ? "bg-primary border-primary"
+                    : "bg-card border-border"
                 }`}
               >
                 <Text
-                  className={`text-xs font-semibold ${
-                    active ? "text-white" : "text-zinc-300"
+                  className={`type-xs weight-label ${
+                    active ? "text-primary-foreground" : "text-muted-foreground"
                   }`}
                 >
                   {c.name}
@@ -125,33 +125,33 @@ export function EcommerceFlow() {
         </ScrollView>
 
         {/* Product Grid */}
-        <View className="gap-3.5 mb-8">
+        <View className="sp-gap-3.5 mb-8">
           {filtered.map((item) => (
             <Card
               key={item.id}
               elevated
               padding="md"
-              className="rounded-2xl bg-zinc-900/80 border border-zinc-800 p-4"
+              className="rounded-card bg-card/80 border border-border sp-p-4"
             >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1 mr-3">
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-xs text-zinc-400 font-medium">{item.brand}</Text>
+                  <View className="flex-row items-center sp-gap-2">
+                    <Text className="type-xs text-muted-foreground font-medium">{item.brand}</Text>
                     {item.tag && <Badge size="sm" variant="secondary" label={item.tag} />}
                   </View>
-                  <Text className="text-base font-bold text-white mt-1 leading-snug">
+                  <Text className="type-base weight-title text-foreground mt-1 leading-snug">
                     {item.name}
                   </Text>
-                  <Text className="text-xs text-amber-400 font-semibold mt-1">
+                  <Text className="type-xs text-warning weight-label mt-1">
                     ★ {item.rating} Rating
                   </Text>
                 </View>
 
-                <View className="items-end gap-2">
-                  <Text className="text-lg font-black text-white">{item.price}</Text>
+                <View className="items-end sp-gap-2">
+                  <Text className="type-lg weight-heading text-foreground">{item.price}</Text>
                   <Button
                     variant="outline"
-                    className="h-8 px-3 text-xs"
+                    className="h-8 sp-px-3 type-xs"
                     onPress={() => setCartCount((c) => c + 1)}
                   >
                     + Add

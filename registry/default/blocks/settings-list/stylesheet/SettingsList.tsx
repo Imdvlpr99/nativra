@@ -14,6 +14,9 @@ import { Text } from "./Text";
 import { Switch } from "./Switch";
 import { Badge } from "./Badge";
 import { Separator } from "./Separator";
+import { themeStyle, ts, sp } from "@/hooks/use-theme-colors";
+
+const noop = () => {};
 
 export interface SettingsListProps {
   title?: string;
@@ -53,7 +56,7 @@ export function SettingsList({
           <Text variant="p" style={styles.rowTitle}>Push Notifications</Text>
           <Text variant="muted" style={styles.rowDesc}>Receive updates and mentions</Text>
         </View>
-        <Switch value={notifications} onValueChange={onNotificationsChange} />
+        <Switch value={notifications} onValueChange={onNotificationsChange ?? noop} />
       </View>
 
       <Separator />
@@ -64,7 +67,7 @@ export function SettingsList({
           <Text variant="p" style={styles.rowTitle}>Dark Theme</Text>
           <Text variant="muted" style={styles.rowDesc}>Switch to midnight dark palette</Text>
         </View>
-        <Switch value={darkMode} onValueChange={onDarkModeChange} />
+        <Switch value={darkMode} onValueChange={onDarkModeChange ?? noop} />
       </View>
 
       <Separator />
@@ -78,13 +81,13 @@ export function SettingsList({
           </View>
           <Text variant="muted" style={styles.rowDesc}>Require authentication on launch</Text>
         </View>
-        <Switch value={biometrics} onValueChange={onBiometricsChange} />
+        <Switch value={biometrics} onValueChange={onBiometricsChange ?? noop} />
       </View>
 
       <Separator />
 
       {/* Row 4: Account Security */}
-      <Pressable onPress={onAccountPress} style={styles.navRow}>
+      <Pressable accessibilityRole="button" onPress={onAccountPress} style={styles.navRow}>
         <View>
           <Text variant="p" style={styles.rowTitle}>Account & Security</Text>
           <Text variant="muted" style={styles.rowDesc}>Password, 2FA, session tokens</Text>
@@ -99,14 +102,14 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
+    borderRadius: themeStyle.radius.card,
   },
   header: {
-    paddingHorizontal: 4,
+    paddingHorizontal: sp(4),
     marginBottom: 8,
   },
   headerSub: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
   },
   separatorContainer: {
@@ -116,35 +119,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(4),
   },
   rowInfo: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: sp(12),
   },
   rowTitle: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
   },
   rowDesc: {
-    fontSize: 12,
+    fontSize: ts(12),
     marginTop: 2,
   },
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   navRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: sp(12),
+    paddingHorizontal: sp(4),
   },
   chevron: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.label,
   },
 });

@@ -26,15 +26,15 @@ export function ActionTile({
 }: ActionTileProps) {
   const surfaceClasses =
     variant === "primary"
-      ? "bg-sky-600 border-sky-600 dark:bg-sky-500 dark:border-sky-500"
+      ? "bg-primary border-primary"
       : variant === "outline"
-      ? "bg-transparent border-zinc-200 dark:border-zinc-800"
-      : "bg-white border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800";
+      ? "bg-transparent border-border"
+      : "surface";
 
   const iconWrapClasses =
     variant === "primary"
-      ? "bg-white/20"
-      : "bg-sky-50 dark:bg-sky-950/70";
+      ? "bg-primary-foreground/20"
+      : "bg-primary/10";
 
   return (
     <Pressable
@@ -44,18 +44,18 @@ export function ActionTile({
       accessibilityState={{ disabled }}
       accessibilityLabel={label}
       style={style}
-      className={`flex-1 items-center justify-center rounded-2xl border p-3.5 shadow-sm ${surfaceClasses} ${
+      className={`flex-1 items-center justify-center rounded-card border sp-p-3.5 shadow-sm ${surfaceClasses} ${
         disabled ? "opacity-50" : "active:opacity-80"
       } ${className}`}
       {...rest}
     >
-      <View className={`mb-2 h-10 w-10 items-center justify-center rounded-xl ${iconWrapClasses}`}>
-        <Text className="text-base">{icon}</Text>
+      <View className={`mb-2 h-10 w-10 items-center justify-center rounded-control ${iconWrapClasses}`}>
+        <Text className="type-base">{icon}</Text>
       </View>
       <Text
         numberOfLines={1}
-        className={`text-xs font-bold ${
-          variant === "primary" ? "text-white" : "text-zinc-900 dark:text-zinc-50"
+        className={`type-xs weight-title ${
+          variant === "primary" ? "text-primary-foreground" : "text-foreground"
         }`}
       >
         {label}
@@ -63,8 +63,8 @@ export function ActionTile({
       {subtitle ? (
         <Text
           numberOfLines={1}
-          className={`mt-0.5 text-[10px] ${
-            variant === "primary" ? "text-sky-100" : "text-zinc-500 dark:text-zinc-400"
+          className={`mt-0.5 type-2xs ${
+            variant === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"
           }`}
         >
           {subtitle}

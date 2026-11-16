@@ -10,6 +10,7 @@
 import React from "react";
 import { View, Text, type ViewProps } from "react-native";
 import { TrendingUp, TrendingDown } from "lucide-react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface MiniSparklineCardProps extends ViewProps {
   title: string;
@@ -32,37 +33,38 @@ export function MiniSparklineCard({
   style,
   ...props
 }: MiniSparklineCardProps) {
+  const palette = useThemeColors();
   const minVal = Math.min(...data);
   const maxVal = Math.max(...data);
   const range = maxVal - minVal || 1;
 
   return (
     <View
-      className={`rounded-2xl border border-zinc-200 bg-white p-4.5 dark:border-zinc-800 dark:bg-zinc-900 shadow-sm ${className}`.trim()}
+      className={`surface rounded-card sp-p-4.5 shadow-sm ${className}`.trim()}
       style={style}
       {...props}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <Text className="type-xs weight-label uppercase tracking-wider text-muted-foreground">
           {title}
         </Text>
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2 py-0.5 ${
+          className={`flex-row items-center sp-gap-1 rounded-full sp-px-2 sp-py-0.5 ${
             isPositive
-              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+              ? "bg-success/10 text-success"
+              : "bg-destructive/10 text-destructive"
           }`}
         >
           {isPositive ? (
-            <TrendingUp size={12} color="#10b981" />
+            <TrendingUp size={12} color={palette.success} />
           ) : (
-            <TrendingDown size={12} color="#f43f5e" />
+            <TrendingDown size={12} color={palette.destructive} />
           )}
           <Text
-            className={`text-xs font-bold ${
+            className={`type-xs weight-title ${
               isPositive
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-rose-600 dark:text-rose-400"
+                ? "text-success"
+                : "text-destructive"
             }`}
           >
             {change}
@@ -71,14 +73,14 @@ export function MiniSparklineCard({
       </View>
 
       <View className="mt-3 flex-row items-end justify-between">
-        <Text className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">
+        <Text className="type-2xl weight-heading tracking-tight text-foreground">
           {value}
         </Text>
 
         {/* Zero-dependency Micro Sparkline Bar Series */}
         <View
           style={{ height: sparklineHeight }}
-          className="flex-row items-end gap-1.5"
+          className="flex-row items-end sp-gap-1.5"
         >
           {data.map((val, idx) => {
             const normalizedHeight = Math.max(
@@ -97,11 +99,11 @@ export function MiniSparklineCard({
                 className={`rounded-full ${
                   isLast
                     ? isPositive
-                      ? "bg-emerald-500"
-                      : "bg-rose-500"
+                      ? "bg-success"
+                      : "bg-destructive"
                     : isPositive
-                    ? "bg-emerald-500/30 dark:bg-emerald-500/40"
-                    : "bg-rose-500/30 dark:bg-rose-500/40"
+                    ? "bg-success/30"
+                    : "bg-destructive/30"
                 }`}
               />
             );

@@ -10,6 +10,7 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
 import { CheckCircle2, Trash2 } from "lucide-react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface PaymentMethodCardProps extends ViewProps {
   brand?: "visa" | "mastercard" | "amex" | "applepay";
@@ -34,6 +35,8 @@ export function PaymentMethodCard({
   style,
   ...props
 }: PaymentMethodCardProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const brandLabel =
     brand === "mastercard"
       ? "Mastercard"
@@ -84,10 +87,10 @@ export function PaymentMethodCard({
               }}
               style={styles.iconBtn}
             >
-              <Trash2 size={16} color="#71717a" />
+              <Trash2 size={16} color={palette["muted-foreground"]} />
             </Pressable>
           )}
-          {selected && <CheckCircle2 size={20} color="#0284c7" />}
+          {selected && <CheckCircle2 size={20} color={palette.primary} />}
         </View>
       </View>
 
@@ -100,19 +103,18 @@ export function PaymentMethodCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 18,
+    borderRadius: themeStyle.radius.card,
+    borderWidth: themeStyle.borderWidth,
+    padding: sp(18),
   },
   cardUnselected: {
-    borderColor: "#27272a",
-    backgroundColor: "#18181b",
+    ...surface(palette),
   },
   cardSelected: {
-    borderColor: "#0284c7",
-    backgroundColor: "rgba(2, 132, 199, 0.1)",
+    borderColor: palette.primary,
+    backgroundColor: alpha(palette.primary, 0.1),
   },
   topRow: {
     flexDirection: "row",
@@ -122,69 +124,69 @@ const styles = StyleSheet.create({
   leftCol: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: sp(12),
   },
   brandBox: {
     height: 40,
     width: 56,
-    borderRadius: 10,
-    backgroundColor: "#09090b",
-    borderWidth: 1,
-    borderColor: "#27272a",
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: palette.background,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: palette.border,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 6,
+    paddingHorizontal: sp(6),
   },
   brandText: {
-    fontSize: 11,
-    fontWeight: "900",
-    color: "#ffffff",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
     letterSpacing: 0.5,
   },
   panRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   panText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   defaultPill: {
     borderRadius: 9999,
-    backgroundColor: "#27272a",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    backgroundColor: palette.muted,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(2),
   },
   defaultPillText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#d4d4d8",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette["muted-foreground"],
   },
   expiryText: {
-    fontSize: 12,
-    color: "#a1a1aa",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
     marginTop: 2,
   },
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: sp(8),
   },
   iconBtn: {
-    padding: 8,
+    padding: sp(8),
   },
   holderRow: {
     marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(39, 39, 42, 0.8)",
-    paddingTop: 8,
+    borderTopColor: alpha(palette.border, 0.8),
+    paddingTop: sp(8),
   },
   holderText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#a1a1aa",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette["muted-foreground"],
     letterSpacing: 0.5,
   },
 });

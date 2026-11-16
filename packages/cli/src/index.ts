@@ -1,1 +1,1 @@
-export { loadConfig, saveConfig, type NativraConfig } from "./config.js";
+export { loadConfig, saveConfig, NativraConfigSchema, nativraConfigJsonSchema, type NativraConfig } from "./config.js";

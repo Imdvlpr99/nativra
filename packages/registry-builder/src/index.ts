@@ -82,7 +82,7 @@ export interface BuildResult {
 export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
   const registryName = config.registryName ?? "default";
   const registrySourceDir = join(config.sourceDir, registryName);
-  const itemTypes = ["components", "hooks", "utilities", "blocks", "templates", "themes"] as const;
+  const itemTypes = ["components", "hooks", "utilities", "blocks", "templates", "themes", "styles"] as const;
 
   const items: RegistryItem[] = [];
   const errors: string[] = [];
@@ -131,6 +131,21 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           }
         }
 
+        // Hydrate Markdown documentation
+        const docsPath = def["docsPath"];
+        if (typeof docsPath === "string") {
+          const docsSource = resolve(itemDir, docsPath);
+          if (!isSafeRelativePath(docsPath) || !docsSource.startsWith(resolve(itemDir) + sep)) {
+            errors.push(`[${entry}] Unsafe docsPath rejected: ${docsPath}`);
+          } else {
+            try {
+              def["docs"] = await readFile(docsSource, "utf8");
+            } catch {
+              errors.push(`[${entry}] Could not read docs file: ${docsPath}`);
+            }
+          }
+        }
+
         // Set updatedAt to now if not present
         if (!def["updatedAt"]) {
           def["updatedAt"] = new Date().toISOString();
@@ -146,9 +161,32 @@ export async function buildRegistry(config: BuildConfig): Promise<BuildResult> {
           continue;
         }
 
+        if (parsed.data.id !== entry) {
+          errors.push(`[${entry}] Item id "${parsed.data.id}" must match its directory name`);
+          continue;
+        }
+        for (const file of parsed.data.files) {
+          if (file.target && !parsed.data.stylingTargets.includes(file.target)) {
+            errors.push(`[${entry}] File "${file.path}" targets "${file.target}", which is not listed in stylingTargets`);
+          }
+        }
         items.push(parsed.data);
       } catch (err) {
         errors.push(`[${entry}] Failed to process item: ${String(err)}`);
+      }
+    }
+  }
+
+  // Cross-item validation: unique ids and resolvable same-registry dependencies
+  const seen = new Set<string>();
+  for (const item of items) {
+    if (seen.has(item.id)) errors.push(`[${item.id}] Duplicate item id`);
+    seen.add(item.id);
+  }
+  for (const item of items) {
+    for (const dep of item.registryDependencies ?? []) {
+      if ((dep.registry ?? "default") === registryName && !seen.has(dep.id)) {
+        errors.push(`[${item.id}] Unknown registry dependency "${dep.id}"`);
       }
     }
   }

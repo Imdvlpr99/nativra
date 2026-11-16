@@ -1,6 +1,7 @@
 /** Nativra — Textarea (StyleSheet). Install: npx nativra-cli add textarea */
 import React from "react";
 import { StyleSheet, Text, TextInput, View, useColorScheme, type TextInputProps } from "react-native";
+import { type ThemeColors, field, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface TextareaProps extends TextInputProps {
   label?: string;
@@ -19,8 +20,10 @@ export function Textarea({
   style,
   ...rest
 }: TextareaProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const dark = useColorScheme() === "dark";
-  const fg = dark ? "#fafafa" : "#18181b";
+  const fg = c.foreground;
 
   return (
     <View style={styles.wrap}>
@@ -32,10 +35,14 @@ export function Textarea({
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
+        placeholderTextColor={c["muted-foreground"]}
         style={[
           styles.textarea,
-          { color: fg, borderColor: error ? "#ef4444" : dark ? "#3f3f46" : "#d4d4d8" },
+          field(c),
+          { color: fg },
+          error && (themeStyle.field === "filled"
+            ? { borderBottomWidth: 2, borderBottomColor: c.destructive }
+            : { borderColor: c.destructive }),
           disabled && styles.disabled,
           style,
         ]}
@@ -46,11 +53,11 @@ export function Textarea({
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500" },
-  textarea: { minHeight: 96, borderWidth: 1, borderRadius: 12, padding: 12, fontSize: 16 },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  wrap: { width: "100%", gap: sp(6) },
+  label: { fontSize: ts(14), fontWeight: "500" },
+  textarea: { minHeight: sp(96), borderWidth: themeStyle.borderWidth, borderRadius: themeStyle.radius.control, padding: sp(12), fontSize: ts(16) },
   disabled: { opacity: 0.5 },
-  error: { fontSize: 12, color: "#ef4444" },
+  error: { fontSize: ts(12), color: c.destructive },
 });
 

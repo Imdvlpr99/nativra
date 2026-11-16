@@ -48,7 +48,7 @@ export function UserProfile({
   className = "",
 }: UserProfileProps) {
   return (
-    <Card elevated padding="lg" className={`w-full max-w-sm rounded-3xl ${className}`.trim()}>
+    <Card elevated padding="lg" className={`w-full max-w-sm rounded-card ${className}`.trim()}>
       <View className="flex-row items-center justify-between">
         <Avatar size="lg" fallback={avatarFallback} />
         {verified && <Badge variant="primary" size="sm" label="Verified Pro" />}
@@ -56,8 +56,8 @@ export function UserProfile({
 
       <View className="mt-4">
         <Text variant="h3">{name}</Text>
-        <Text variant="muted" className="text-xs">{handle}</Text>
-        <Text variant="p" className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+        <Text variant="muted" className="type-xs">{handle}</Text>
+        <Text variant="p" className="mt-2 type-xs leading-relaxed text-muted-foreground">
           {bio}
         </Text>
       </View>
@@ -66,24 +66,24 @@ export function UserProfile({
         <Separator />
       </View>
 
-      <View className="flex-row items-center justify-around py-1 text-center">
+      <View className="flex-row items-center justify-around sp-py-1 text-center">
         <View className="items-center">
           <Text variant="h4">{stats.followers ?? "0"}</Text>
-          <Text variant="muted" className="text-[10px]">Followers</Text>
+          <Text variant="muted" className="type-2xs">Followers</Text>
         </View>
         <Separator orientation="vertical" />
         <View className="items-center">
           <Text variant="h4">{stats.following ?? "0"}</Text>
-          <Text variant="muted" className="text-[10px]">Following</Text>
+          <Text variant="muted" className="type-2xs">Following</Text>
         </View>
         <Separator orientation="vertical" />
         <View className="items-center">
           <Text variant="h4">{stats.projects ?? "0"}</Text>
-          <Text variant="muted" className="text-[10px]">Projects</Text>
+          <Text variant="muted" className="type-2xs">Projects</Text>
         </View>
       </View>
 
-      <View className="mt-5 flex-row gap-2">
+      <View className="mt-5 flex-row sp-gap-2">
         <Button
           variant={isFollowing ? "outline" : "default"}
           size="sm"

@@ -1,11 +1,14 @@
 {
   "id": "pagination-dots",
-  "name": "PaginationDots",
+  "name": "Pagination Dots",
   "description": "Step and carousel pagination dot indicator with active pill expansion and interactive dot press.",
   "type": "component",
   "status": "stable",
-  "version": "0.2.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.3.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -13,13 +16,29 @@
     "expoGo": true
   },
   "files": [
-    { "path": "nativewind/PaginationDots.tsx", "target": "nativewind" },
-    { "path": "stylesheet/PaginationDots.tsx", "target": "stylesheet" }
+    {
+      "path": "nativewind/PaginationDots.tsx",
+      "target": "nativewind"
+    },
+    {
+      "path": "stylesheet/PaginationDots.tsx",
+      "target": "stylesheet"
+    }
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
+  ],
   "npmDependencies": [],
-  "tags": ["pagination-dots", "dots", "carousel", "onboarding", "stepper"],
+  "tags": [
+    "pagination-dots",
+    "dots",
+    "carousel",
+    "onboarding",
+    "stepper"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2026-11-09T00:00:00.000Z"
 }
-

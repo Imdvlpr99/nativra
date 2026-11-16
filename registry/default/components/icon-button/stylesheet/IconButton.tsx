@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors, themeStyle, pressedStyle } from "@/hooks/use-theme-colors";
 
 export type IconButtonVariant = "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost";
 export type IconButtonSize = "sm" | "md" | "lg";
@@ -35,6 +36,8 @@ export function IconButton({
   onPress,
   ...props
 }: IconButtonProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   return (
     <Pressable
       accessibilityRole="button"
@@ -58,7 +61,7 @@ export function IconButton({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "outline" || variant === "ghost" ? "#71717A" : "#FFFFFF"}
+          color={variant === "outline" || variant === "ghost" ? c["muted-foreground"] : variant === "default" ? c.background : variant === "destructive" ? c["destructive-foreground"] : c["primary-foreground"]}
         />
       ) : (
         children
@@ -67,7 +70,7 @@ export function IconButton({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   base: {
     alignItems: "center",
     justifyContent: "center",
@@ -75,47 +78,44 @@ const styles = StyleSheet.create({
   sm: {
     width: 36,
     height: 36,
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.button,
   },
   md: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: themeStyle.radius.button,
   },
   lg: {
     width: 52,
     height: 52,
-    borderRadius: 16,
+    borderRadius: themeStyle.radius.button,
   },
   full: {
     borderRadius: 9999,
   },
   default: {
-    backgroundColor: "#18181B",
+    backgroundColor: c.foreground,
   },
   primary: {
-    backgroundColor: "#0284C7",
+    backgroundColor: c.primary,
   },
   secondary: {
-    backgroundColor: "#F4F4F5",
-    borderWidth: 1,
-    borderColor: "#E4E4E7",
+    backgroundColor: c.muted,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: c.border,
   },
   destructive: {
-    backgroundColor: "#DC2626",
+    backgroundColor: c.destructive,
   },
   outline: {
     backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#D4D4D8",
+    borderWidth: themeStyle.borderWidth,
+    borderColor: c.input,
   },
   ghost: {
     backgroundColor: "transparent",
   },
-  pressed: {
-    transform: [{ scale: 0.96 }],
-    opacity: 0.85,
-  },
+  pressed: { ...pressedStyle(true) },
   disabled: {
     opacity: 0.5,
   },

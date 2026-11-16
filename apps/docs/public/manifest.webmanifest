@@ -1,0 +1,13 @@
+{
+  "name": "Nativra: source-first UI for React Native and Expo",
+  "short_name": "Nativra",
+  "description": "A registry and CLI that copies React Native and Expo UI source into your project.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0b0f",
+  "theme_color": "#0a0b0f",
+  "icons": [
+    { "src": "/icon.png", "sizes": "1024x682", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "1024x682", "type": "image/png" }
+  ]
+}

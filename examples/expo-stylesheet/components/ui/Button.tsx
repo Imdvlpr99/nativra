@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add button
+ * Install: npx nativra-cli add button
  */
 import React from "react";
 import {
@@ -13,11 +13,11 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  useColorScheme,
   type PressableProps,
   type ViewStyle,
   type TextStyle,
 } from "react-native";
+import { type ThemeColors, useThemeColors, themeStyle, elevation, pressedStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,45 +51,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 8,
+    borderRadius: themeStyle.radius.button,
   },
   disabled: { opacity: 0.5 },
-  // Size presets
-  xs:  { paddingHorizontal: 10, paddingVertical: 4,  gap: 4 },
-  sm:  { paddingHorizontal: 12, paddingVertical: 6,  gap: 6 },
-  md:  { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
-  lg:  { paddingHorizontal: 20, paddingVertical: 12, gap: 8 },
-  xl:  { paddingHorizontal: 24, paddingVertical: 14, gap: 10 },
-  // Text sizes
-  textXs:  { fontSize: 12 },
-  textSm:  { fontSize: 14 },
-  textMd:  { fontSize: 14, fontWeight: "600" },
-  textLg:  { fontSize: 16, fontWeight: "600" },
-  textXl:  { fontSize: 16, fontWeight: "700" },
+  // Size presets: md is the style's control height, the others step around it
+  xs:  { minHeight: themeStyle.control.height - 16, paddingHorizontal: sp(12), gap: sp(4) },
+  sm:  { minHeight: themeStyle.control.height - 8, paddingHorizontal: sp(16), gap: sp(6) },
+  md:  { minHeight: themeStyle.control.height, paddingHorizontal: themeStyle.control.paddingX, gap: sp(8) },
+  lg:  { minHeight: themeStyle.control.height + 6, paddingHorizontal: sp(24), gap: sp(8) },
+  xl:  { minHeight: themeStyle.control.height + 12, paddingHorizontal: sp(28), gap: sp(10) },
+  // Text sizes (weight comes from the theme's label weight)
+  textXs:  { fontSize: ts(12), fontWeight: themeStyle.fontWeight.label },
+  textSm:  { fontSize: ts(14), fontWeight: themeStyle.fontWeight.label },
+  textMd:  { fontSize: ts(15), fontWeight: themeStyle.fontWeight.label },
+  textLg:  { fontSize: ts(16), fontWeight: themeStyle.fontWeight.label },
+  textXl:  { fontSize: ts(17), fontWeight: themeStyle.fontWeight.title },
 });
 
-function getVariantStyle(variant: ButtonVariant, dark: boolean): ViewStyle {
+function getVariantStyle(variant: ButtonVariant, c: ThemeColors): ViewStyle {
   const map: Record<ButtonVariant, ViewStyle> = {
-    default:     { backgroundColor: dark ? "#fafafa" : "#171717" },
-    primary:     { backgroundColor: dark ? "#0ea5e9" : "#0284c7" },
-    secondary:   { backgroundColor: dark ? "#27272a" : "#f4f4f5" },
-    destructive: { backgroundColor: dark ? "#7f1d1d" : "#ef4444" },
-    outline:     { borderWidth: 1, borderColor: dark ? "#3f3f46" : "#d4d4d8", backgroundColor: "transparent" },
+    default:     { backgroundColor: c.foreground },
+    primary:     { backgroundColor: c.primary },
+    secondary:   { backgroundColor: c.muted },
+    destructive: { backgroundColor: c.destructive },
+    outline:     { borderWidth: themeStyle.borderWidth, borderColor: c.input, backgroundColor: "transparent" },
     ghost:       { backgroundColor: "transparent" },
     link:        { backgroundColor: "transparent" },
   };
   return map[variant];
 }
 
-function getTextStyle(variant: ButtonVariant, dark: boolean): TextStyle {
+function getTextStyle(variant: ButtonVariant, c: ThemeColors): TextStyle {
   const map: Record<ButtonVariant, TextStyle> = {
-    default:     { color: dark ? "#171717" : "#ffffff" },
-    primary:     { color: "#ffffff" },
-    secondary:   { color: dark ? "#fafafa" : "#171717" },
-    destructive: { color: "#ffffff" },
-    outline:     { color: dark ? "#fafafa" : "#171717" },
-    ghost:       { color: dark ? "#fafafa" : "#171717" },
-    link:        { color: dark ? "#38bdf8" : "#0284c7", textDecorationLine: "underline" },
+    default:     { color: c.background },
+    primary:     { color: c["primary-foreground"] },
+    secondary:   { color: c.foreground },
+    destructive: { color: c["destructive-foreground"] },
+    outline:     { color: c.foreground },
+    ghost:       { color: c.foreground },
+    link:        { color: c.primary, textDecorationLine: "underline" },
   };
   return map[variant];
 }
@@ -123,24 +123,29 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
-  const colorScheme = useColorScheme();
-  const dark = colorScheme === "dark";
+  const c = useThemeColors();
   const isDisabled = disabled || loading;
+  // Solid buttons get the theme's soft resting shadow.
+  const solid = variant === "default" || variant === "primary" || variant === "destructive";
 
   const loaderColor =
-    variant === "default" || variant === "primary" || variant === "destructive"
-      ? "#fff"
-      : dark
-      ? "#fafafa"
-      : "#171717";
+    variant === "default"
+      ? c.background
+      : variant === "primary"
+      ? c["primary-foreground"]
+      : variant === "destructive"
+      ? c["destructive-foreground"]
+      : c.foreground;
 
   return (
     <Pressable
-      style={[
+      style={({ pressed }) => [
         styles.base,
-        getVariantStyle(variant, dark),
+        getVariantStyle(variant, c),
         SIZE_STYLES[size],
+        solid && !isDisabled && elevation("card"),
         isDisabled && styles.disabled,
+        pressedStyle(pressed && !isDisabled),
         style as ViewStyle,
       ]}
       disabled={isDisabled}
@@ -149,7 +154,7 @@ export function Button({
       {...rest}
     >
       {loading && <ActivityIndicator size="small" color={loaderColor} />}
-      <Text style={[getTextStyle(variant, dark), TEXT_SIZE_STYLES[size]]}>{children}</Text>
+      <Text style={[getTextStyle(variant, c), TEXT_SIZE_STYLES[size]]}>{children}</Text>
     </Pressable>
   );
 }

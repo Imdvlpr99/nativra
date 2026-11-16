@@ -4,8 +4,11 @@
   "description": "A multi-step walkthrough walkthrough template with slides, pagination indicators, next/skip controls, and completion actions.",
   "type": "template",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,12 +26,28 @@
     }
   ],
   "registryDependencies": [
-    { "id": "cn", "registry": "default" },
-    { "id": "button", "registry": "default" }
+    {
+      "id": "cn",
+      "registry": "default"
+    },
+    {
+      "id": "button",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["template", "onboarding", "walkthrough", "slides", "carousel", "intro"],
+  "tags": [
+    "template",
+    "onboarding",
+    "walkthrough",
+    "slides",
+    "carousel",
+    "intro"
+  ],
   "docsPath": "docs.mdx",
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

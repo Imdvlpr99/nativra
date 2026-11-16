@@ -5,7 +5,7 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add skeleton
+ * Install: npx nativra-cli add skeleton
  */
 import React, { useEffect, useRef } from "react";
 import { Animated, type ViewProps } from "react-native";
@@ -57,7 +57,7 @@ export function Skeleton({
   return (
     <Animated.View
       accessibilityRole="none"
-      className={`bg-zinc-200 dark:bg-zinc-800 ${RADIUS_MAP[radius]} ${className}`.trim()}
+      className={`bg-muted ${RADIUS_MAP[radius]} ${className}`.trim()}
       style={[
         {
           width: width as any,
@@ -70,3 +70,4 @@ export function Skeleton({
     />
   );
 }
+

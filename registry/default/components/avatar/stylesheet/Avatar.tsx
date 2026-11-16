@@ -13,9 +13,9 @@ import {
   Text,
   Image,
   StyleSheet,
-  useColorScheme,
   type ViewProps,
 } from "react-native";
+import { useThemeColors, themeStyle } from "@/hooks/use-theme-colors";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -48,13 +48,13 @@ export function Avatar({
   accessibilityLabel,
   ...props
 }: AvatarProps) {
+  const c = useThemeColors();
   const [hasError, setHasError] = useState(false);
-  const isDark = useColorScheme() === "dark";
   const dimension = SIZE_PX[size];
   const fontSize = FONT_PX[size];
 
-  const bg = isDark ? "#27272a" : "#e4e4e7";
-  const fg = isDark ? "#e4e4e7" : "#3f3f46";
+  const bg = c.muted;
+  const fg = c.foreground;
 
   return (
     <View
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   fallback: {
-    fontWeight: "600",
+    fontWeight: themeStyle.fontWeight.label,
   },
 });
 

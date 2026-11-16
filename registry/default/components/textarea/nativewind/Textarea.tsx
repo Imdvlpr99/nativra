@@ -1,6 +1,7 @@
 /** Nativra — Textarea (NativeWind). Install: npx nativra-cli add textarea */
 import React from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface TextareaProps extends TextInputProps {
   label?: string;
@@ -18,10 +19,11 @@ export function Textarea({
   rows = 4,
   ...rest
 }: TextareaProps) {
+  const palette = useThemeColors();
   return (
-    <View className="w-full gap-1.5">
+    <View className="w-full sp-gap-1.5">
       {label ? (
-        <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{label}</Text>
+        <Text className="type-sm font-medium text-foreground">{label}</Text>
       ) : null}
       <TextInput
         multiline
@@ -30,13 +32,13 @@ export function Textarea({
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
-        placeholderTextColor="#a1a1aa"
-        className={`min-h-[96px] rounded-xl border p-3 text-base text-zinc-900 dark:text-zinc-50 ${
-          error ? "border-red-500" : "border-zinc-300 dark:border-zinc-700"
+        placeholderTextColor={palette["muted-foreground"]}
+        className={`field min-h-[96px] rounded-control sp-p-3 type-base text-foreground ${
+          error ? "border-destructive" : "border-input"
         } ${disabled ? "opacity-50" : ""}`}
         {...rest}
       />
-      {error && errorMessage ? <Text className="text-xs text-red-500">{errorMessage}</Text> : null}
+      {error && errorMessage ? <Text className="type-xs text-destructive">{errorMessage}</Text> : null}
     </View>
   );
 }

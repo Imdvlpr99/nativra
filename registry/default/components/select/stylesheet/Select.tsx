@@ -1,6 +1,7 @@
 /** Nativra — Select (StyleSheet). Install: npx nativra-cli add select */
 import React, { useState } from "react";
-import { FlatList, Modal, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { type ThemeColors, alpha, field, scrim, useThemeColors, themeStyle, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface SelectOption {
   label: string;
@@ -24,9 +25,10 @@ export function Select({
   onValueChange,
   disabled = false,
 }: SelectProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const [open, setOpen] = useState(false);
-  const dark = useColorScheme() === "dark";
-  const fg = dark ? "#fafafa" : "#18181b";
+  const fg = c.foreground;
   const selectedOption = options.find((o) => o.value === value);
 
   return (
@@ -40,28 +42,25 @@ export function Select({
         disabled={disabled}
         style={[
           styles.trigger,
-          {
-            backgroundColor: dark ? "#18181b" : "#ffffff",
-            borderColor: dark ? "#3f3f46" : "#d4d4d8",
-          },
+          field(c, open),
           disabled && styles.disabled,
         ]}
       >
-        <Text style={[styles.triggerText, { color: selectedOption ? fg : "#a1a1aa" }]}>
+        <Text style={[styles.triggerText, { color: selectedOption ? fg : c["muted-foreground"] }]}>
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
         <Text style={styles.arrow}>▼</Text>
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View style={styles.backdrop}>
-          <Pressable style={styles.flex1} onPress={() => setOpen(false)} />
-          <View style={[styles.sheet, { backgroundColor: dark ? "#18181b" : "#ffffff" }]}>
+        <View style={styles.backdrop} accessibilityViewIsModal>
+          <Pressable accessible={false} importantForAccessibility="no" style={styles.flex1} onPress={() => setOpen(false)} />
+          <View style={[styles.sheet, { backgroundColor: c.background }]}>
             <View style={styles.sheetHeader}>
               <Text style={[styles.sheetTitle, { color: fg }]}>
                 {label ?? "Select an option"}
               </Text>
-              <Pressable onPress={() => setOpen(false)}>
+              <Pressable accessibilityRole="button" onPress={() => setOpen(false)}>
                 <Text style={styles.doneBtn}>Done</Text>
               </Pressable>
             </View>
@@ -72,20 +71,20 @@ export function Select({
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
                 return (
-                  <Pressable
+                  <Pressable accessibilityRole="button" accessibilityState={{ selected: isSelected }}
                     onPress={() => {
                       onValueChange(item.value);
                       setOpen(false);
                     }}
                     style={[
                       styles.row,
-                      isSelected && { backgroundColor: dark ? "#082f49" : "#f0f9ff" },
+                      isSelected && { backgroundColor: alpha(c.primary, 0.08) },
                     ]}
                   >
                     <Text
                       style={[
                         styles.rowText,
-                        { color: isSelected ? "#0284c7" : fg, fontWeight: isSelected ? "700" : "500" },
+                        { color: isSelected ? c.primary : fg, fontWeight: isSelected ? "700" : "500" },
                       ]}
                     >
                       {item.label}
@@ -102,21 +101,21 @@ export function Select({
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500" },
-  trigger: { height: 44, borderRadius: 12, borderWidth: 1, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  triggerText: { fontSize: 16 },
-  arrow: { fontSize: 10, color: "#a1a1aa" },
+const createStyles = (c: ThemeColors) => StyleSheet.create({
+  wrap: { width: "100%", gap: sp(6) },
+  label: { fontSize: ts(14), fontWeight: "500" },
+  trigger: { minHeight: themeStyle.control.height, borderRadius: themeStyle.radius.control, paddingHorizontal: sp(14), flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  triggerText: { fontSize: ts(16) },
+  arrow: { fontSize: ts(10), color: c["muted-foreground"] },
   disabled: { opacity: 0.5 },
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" },
+  backdrop: { flex: 1, backgroundColor: scrim(), justifyContent: "flex-end" },
   flex1: { flex: 1 },
-  sheet: { maxHeight: "60%", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20 },
-  sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: "#27272a", marginBottom: 8 },
-  sheetTitle: { fontSize: 16, fontWeight: "700" },
-  doneBtn: { fontSize: 15, fontWeight: "600", color: "#0284c7" },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12 },
-  rowText: { fontSize: 16 },
-  check: { fontSize: 14, fontWeight: "700", color: "#0284c7" },
+  sheet: { maxHeight: "60%", borderTopLeftRadius: themeStyle.radius.surface, borderTopRightRadius: themeStyle.radius.surface, padding: sp(20) },
+  sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: sp(14), borderBottomWidth: 1, borderBottomColor: c.border, marginBottom: 8 },
+  sheetTitle: { fontSize: ts(16), fontWeight: themeStyle.fontWeight.title },
+  doneBtn: { fontSize: ts(15), fontWeight: themeStyle.fontWeight.label, color: c.primary },
+  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: sp(14), paddingHorizontal: sp(12), borderRadius: themeStyle.radius.control },
+  rowText: { fontSize: ts(16) },
+  check: { fontSize: ts(14), fontWeight: themeStyle.fontWeight.title, color: c.primary },
 });
 

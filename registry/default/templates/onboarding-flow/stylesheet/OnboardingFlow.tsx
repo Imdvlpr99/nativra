@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface OnboardingSlide {
   id: string;
@@ -53,6 +54,8 @@ export function OnboardingFlow({
   onSkip,
   style,
 }: OnboardingFlowProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const currentSlide = slides[currentIndex] ?? slides[0];
   const isLast = currentIndex === slides.length - 1;
@@ -75,7 +78,7 @@ export function OnboardingFlow({
         </View>
 
         {!isLast && (
-          <Pressable onPress={onSkip} style={styles.skipBtn}>
+          <Pressable accessibilityRole="button" onPress={onSkip} style={styles.skipBtn}>
             <Text style={styles.skipText}>Skip</Text>
           </Pressable>
         )}
@@ -97,7 +100,7 @@ export function OnboardingFlow({
       <View style={styles.footer}>
         <View style={styles.dotsRow}>
           {slides.map((_, idx) => (
-            <Pressable
+            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
               key={idx}
               onPress={() => setCurrentIndex(idx)}
               style={[
@@ -108,7 +111,7 @@ export function OnboardingFlow({
           ))}
         </View>
 
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={handleNext}
           style={({ pressed }) => [styles.actionBtn, pressed && styles.btnPressed]}
         >
@@ -121,12 +124,12 @@ export function OnboardingFlow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
-    padding: 32,
-    backgroundColor: "#09090B",
+    padding: sp(32),
+    backgroundColor: palette.background,
   },
   header: {
     flexDirection: "row",
@@ -136,100 +139,95 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   badgeDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
-    backgroundColor: "#38BDF8",
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: palette.primary,
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#A1A1AA",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette["muted-foreground"],
     textTransform: "uppercase",
     fontFamily: "monospace",
   },
   skipBtn: {
-    padding: 8,
+    padding: sp(8),
   },
   skipText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#71717A",
+    fontSize: ts(13),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette["muted-foreground"],
   },
   body: {
     alignItems: "center",
-    gap: 24,
+    gap: sp(24),
     marginVertical: "auto",
   },
   artBox: {
+    ...surface(palette),
     width: 120,
     height: 120,
-    borderRadius: 28,
-    backgroundColor: "#18181B",
-    borderWidth: 1,
-    borderColor: "#27272A",
+    borderRadius: themeStyle.radius.surface,
     alignItems: "center",
     justifyContent: "center",
   },
   emojiText: {
-    fontSize: 54,
+    fontSize: ts(54),
   },
   textWrap: {
-    gap: 12,
-    paddingHorizontal: 16,
+    gap: sp(12),
+    paddingHorizontal: sp(16),
   },
   titleText: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: "#FFFFFF",
+    fontSize: ts(24),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
     textAlign: "center",
   },
   descText: {
-    fontSize: 14,
-    color: "#A1A1AA",
+    fontSize: ts(14),
+    color: palette["muted-foreground"],
     textAlign: "center",
-    lineHeight: 20,
+    lineHeight: ts(20),
   },
   footer: {
-    gap: 24,
+    gap: sp(24),
   },
   dotsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: sp(8),
   },
   dot: {
     height: 8,
-    borderRadius: 4,
+    borderRadius: themeStyle.radius.small,
   },
   activeDot: {
     width: 32,
-    backgroundColor: "#38BDF8",
+    backgroundColor: palette.primary,
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "#27272A",
+    backgroundColor: palette.muted,
   },
   actionBtn: {
     width: "100%",
-    borderRadius: 16,
-    backgroundColor: "#0284C7",
-    paddingVertical: 15,
+    borderRadius: themeStyle.radius.card,
+    backgroundColor: palette.primary,
+    paddingVertical: sp(15),
     alignItems: "center",
     justifyContent: "center",
   },
-  btnPressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.9,
-  },
+  btnPressed: { ...pressedStyle(true) },
   actionBtnText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 15,
+    color: palette["primary-foreground"],
+    fontWeight: themeStyle.fontWeight.title,
+    fontSize: ts(15),
   },
 });
 

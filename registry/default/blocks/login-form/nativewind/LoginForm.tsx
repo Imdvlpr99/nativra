@@ -47,7 +47,7 @@ export function LoginForm({
         </Text>
       </View>
 
-      <View className="gap-4">
+      <View className="sp-gap-4">
         <View>
           <Label required>Email</Label>
           <Input
@@ -96,7 +96,7 @@ export function LoginForm({
       </View>
 
       {onSignUp && (
-        <View className="flex-row items-center justify-center gap-1">
+        <View className="flex-row items-center justify-center sp-gap-1">
           <Text variant="muted">Don't have an account?</Text>
           <Button variant="link" size="sm" onPress={onSignUp}>
             Sign up

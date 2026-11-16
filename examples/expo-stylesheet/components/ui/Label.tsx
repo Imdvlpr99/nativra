@@ -5,16 +5,16 @@
  * @platforms android, ios
  *
  * Copy this file into your project. You own this code.
- * Install: npx nativra add label
+ * Install: npx nativra-cli add label
  */
 import React from "react";
 import {
   Text,
   View,
   StyleSheet,
-  useColorScheme,
   type TextProps,
 } from "react-native";
+import { type ThemeColors, useThemeColors, ts, themeStyle } from "@/hooks/use-theme-colors";
 
 export interface LabelProps extends TextProps {
   children: string;
@@ -29,8 +29,9 @@ export function Label({
   style,
   ...props
 }: LabelProps) {
-  const isDark = useColorScheme() === "dark";
-  const textColor = isDark ? "#f4f4f5" : "#18181b";
+  const c = useThemeColors();
+  const styles = createStyles(c);
+  const textColor = c.foreground;
 
   return (
     <View style={styles.container}>
@@ -55,14 +56,14 @@ export function Label({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 6,
   },
   label: {
-    fontSize: 14,
+    fontSize: ts(14),
     fontWeight: "500",
     letterSpacing: -0.1,
   },
@@ -70,9 +71,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   required: {
-    color: "#ef4444",
+    color: c.destructive,
     marginLeft: 4,
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
+

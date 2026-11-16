@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet, type ViewProps } from "react-native";
+import { type ThemeColors, alpha, useThemeColors, themeStyle, elevation, ts, sp } from "@/hooks/use-theme-colors";
 
 export interface TabItem {
   value: string;
@@ -31,6 +32,8 @@ export function Tabs({
   style,
   ...props
 }: TabsProps) {
+  const c = useThemeColors();
+  const styles = createStyles(c);
   const isPill = variant === "pill";
 
   return (
@@ -90,75 +93,71 @@ export function Tabs({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
   },
   pillContainer: {
-    padding: 4,
-    borderRadius: 16,
-    backgroundColor: "#f4f4f5",
-    borderWidth: 1,
-    borderColor: "#e4e4e7",
+    padding: sp(4),
+    borderRadius: themeStyle.radius.control,
+    backgroundColor: c.muted,
+    borderWidth: themeStyle.borderWidth,
+    borderColor: c.border,
   },
   underlineContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: "#e4e4e7",
+    borderBottomColor: c.border,
   },
   tab: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    gap: 6,
+    paddingVertical: sp(8),
+    paddingHorizontal: sp(12),
+    borderRadius: themeStyle.radius.small,
+    gap: sp(6),
   },
   tabPillSelected: {
-    backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: c.background,
+    ...elevation("card"),
   },
   tabUnderlineSelected: {
     borderBottomWidth: 2,
-    borderBottomColor: "#0ea5e9",
+    borderBottomColor: c.primary,
     marginBottom: -1,
   },
   tabLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#71717a",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
+    color: c["muted-foreground"],
   },
   tabLabelSelected: {
-    color: "#09090b",
-    fontWeight: "700",
+    color: c.foreground,
+    fontWeight: themeStyle.fontWeight.title,
   },
   badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
     borderRadius: 9999,
   },
   badgeDefault: {
-    backgroundColor: "#e4e4e7",
+    backgroundColor: c.muted,
   },
   badgeSelected: {
-    backgroundColor: "#e0f2fe",
+    backgroundColor: alpha(c.primary, 0.12),
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
   },
   badgeTextDefault: {
-    color: "#71717a",
+    color: c["muted-foreground"],
   },
   badgeTextSelected: {
-    color: "#0284c7",
+    color: c.primary,
   },
 });
 

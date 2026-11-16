@@ -4,8 +4,11 @@
   "description": "Interactive mobile notification card with user avatar, timestamp, unread indicator dot, and action buttons.",
   "type": "block",
   "status": "stable",
-  "version": "0.1.0",
-  "stylingTargets": ["nativewind", "stylesheet"],
+  "version": "0.2.0",
+  "stylingTargets": [
+    "nativewind",
+    "stylesheet"
+  ],
   "platforms": {
     "android": true,
     "ios": true,
@@ -23,13 +26,35 @@
     }
   ],
   "registryDependencies": [
-    { "id": "avatar", "registry": "default" },
-    { "id": "badge", "registry": "default" },
-    { "id": "button", "registry": "default" },
-    { "id": "text", "registry": "default" }
+    {
+      "id": "avatar",
+      "registry": "default"
+    },
+    {
+      "id": "badge",
+      "registry": "default"
+    },
+    {
+      "id": "button",
+      "registry": "default"
+    },
+    {
+      "id": "text",
+      "registry": "default"
+    },
+    {
+      "id": "use-theme-colors",
+      "registry": "default"
+    }
   ],
   "npmDependencies": [],
-  "tags": ["block", "notification", "inbox", "activity", "alert", "feed"],
+  "tags": [
+    "block",
+    "notification",
+    "inbox",
+    "activity",
+    "alert",
+    "feed"
+  ],
   "addedAt": "2024-01-01T00:00:00.000Z"
 }
-

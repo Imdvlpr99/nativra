@@ -40,30 +40,30 @@ export function NotificationItem({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className={`w-full max-w-sm p-4 rounded-2xl border transition-all active:scale-[0.98] ${
+      className={`w-full max-w-sm sp-p-4 rounded-card border transition-all active:scale-[0.98] ${
         unread
-          ? "bg-sky-50/50 border-sky-200 dark:bg-sky-950/20 dark:border-sky-800/40"
-          : "bg-white border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800"
+          ? "bg-primary/50 border-primary/30"
+          : "surface"
       } ${className}`.trim()}
     >
-      <View className="flex-row items-start gap-3">
+      <View className="flex-row items-start sp-gap-3">
         <View className="relative">
           <Avatar fallback={avatarFallback} size="md" />
           {unread && (
-            <View className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-sky-500 border-2 border-white dark:border-zinc-900" />
+            <View className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-primary-foreground/20" />
           )}
         </View>
 
         <View className="flex-1 space-y-1">
           <View className="flex-row items-center justify-between">
             <Badge variant={unread ? "primary" : "secondary"} size="sm" label={category} />
-            <Text variant="muted" className="text-[11px] font-mono">{timeAgo}</Text>
+            <Text variant="muted" className="type-2xs font-mono">{timeAgo}</Text>
           </View>
 
-          <Text className="text-xs leading-relaxed text-zinc-800 dark:text-zinc-200">
-            <Text className="font-bold text-zinc-900 dark:text-zinc-50">{senderName} </Text>
+          <Text className="type-xs leading-relaxed text-foreground">
+            <Text className="weight-title text-foreground">{senderName} </Text>
             {actionText}{" "}
-            <Text className="font-semibold text-sky-600 dark:text-sky-400">{targetResource}</Text>
+            <Text className="weight-label text-primary">{targetResource}</Text>
           </Text>
         </View>
       </View>

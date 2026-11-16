@@ -9,6 +9,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, elevation, ts, sp, surface } from "@/hooks/use-theme-colors";
 
 export interface OrderItem {
   id: string;
@@ -45,6 +46,8 @@ export function OrderSummary({
   buttonLabel = "Proceed to Payment",
   onCheckout,
 }: OrderSummaryProps) {
+  const palette = useThemeColors();
+  const styles = React.useMemo(() => createStyles(palette), [palette]);
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -107,52 +110,45 @@ export function OrderSummary({
         <Text style={styles.totalValue}>{total}</Text>
       </View>
 
-      <Pressable style={styles.checkoutBtn} onPress={onCheckout}>
+      <Pressable accessibilityRole="button" style={styles.checkoutBtn} onPress={onCheckout}>
         <Text style={styles.btnText}>{buttonLabel}</Text>
       </Pressable>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ThemeColors) => StyleSheet.create({
   card: {
+    ...surface(palette),
     width: "100%",
     maxWidth: 360,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#e4e4e7",
-    backgroundColor: "#ffffff",
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
+    borderRadius: themeStyle.radius.card,
+    padding: sp(24),
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "between",
+    justifyContent: "space-between",
   },
   title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#09090b",
+    fontSize: ts(18),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: sp(8),
+    paddingVertical: sp(3),
     borderRadius: 9999,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
   },
   badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#71717a",
+    fontSize: ts(11),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette["muted-foreground"],
   },
   itemList: {
     marginTop: 16,
-    gap: 10,
+    gap: sp(10),
   },
   row: {
     flexDirection: "row",
@@ -160,57 +156,57 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   itemText: {
-    fontSize: 12,
-    color: "#71717a",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
     flex: 1,
     marginRight: 8,
   },
   qtyText: {
-    fontWeight: "700",
-    color: "#09090b",
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   itemPrice: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#09090b",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.label,
+    color: palette.foreground,
   },
   separator: {
     height: 1,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: palette.muted,
     marginVertical: 16,
   },
   breakdown: {
-    gap: 8,
+    gap: sp(8),
   },
   label: {
-    fontSize: 12,
-    color: "#71717a",
+    fontSize: ts(12),
+    color: palette["muted-foreground"],
   },
   value: {
-    fontSize: 12,
+    fontSize: ts(12),
     fontWeight: "500",
-    color: "#18181b",
+    color: palette.foreground,
   },
   voucherContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: sp(6),
   },
   voucherBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: 6,
-    backgroundColor: "#e0f2fe",
+    paddingHorizontal: sp(6),
+    paddingVertical: sp(1),
+    borderRadius: themeStyle.radius.small,
+    backgroundColor: alpha(palette.primary, 0.15),
   },
   voucherText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#0284c7",
+    fontSize: ts(10),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.primary,
   },
   discountText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#16a34a",
+    fontSize: ts(12),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.success,
   },
   totalRow: {
     flexDirection: "row",
@@ -219,26 +215,26 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   totalLabel: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#09090b",
+    fontSize: ts(16),
+    fontWeight: themeStyle.fontWeight.title,
+    color: palette.foreground,
   },
   totalValue: {
-    fontSize: 22,
-    fontWeight: "900",
-    color: "#09090b",
+    fontSize: ts(22),
+    fontWeight: themeStyle.fontWeight.heading,
+    color: palette.foreground,
   },
   checkoutBtn: {
-    borderRadius: 14,
-    backgroundColor: "#0ea5e9",
-    paddingVertical: 14,
+    borderRadius: themeStyle.radius.button,
+    backgroundColor: palette.primary,
+    paddingVertical: sp(14),
     alignItems: "center",
     justifyContent: "center",
   },
   btnText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
+    color: palette["primary-foreground"],
+    fontSize: ts(14),
+    fontWeight: themeStyle.fontWeight.title,
   },
 });
 

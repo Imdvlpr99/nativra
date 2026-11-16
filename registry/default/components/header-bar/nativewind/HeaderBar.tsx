@@ -27,7 +27,7 @@ export function HeaderBar({
     <View
       accessibilityRole="header"
       style={style}
-      className={`flex-row items-center justify-between border-b border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900 ${
+      className={`flex-row items-center justify-between border-b border-border bg-card sp-px-4 sp-py-3 ${
         elevated ? "shadow-sm" : ""
       } ${className}`}
       {...rest}
@@ -39,23 +39,23 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            className="flex-row items-center gap-1 rounded-lg py-1 pr-2 active:opacity-70"
+            className="flex-row items-center sp-gap-1 rounded-button sp-py-1 sp-pr-2 active:opacity-70"
           >
-            <Text className="text-base font-bold text-sky-600 dark:text-sky-400">‹</Text>
-            <Text className="text-xs font-semibold text-sky-600 dark:text-sky-400">Back</Text>
+            <Text className="type-base weight-title text-primary">‹</Text>
+            <Text className="type-xs weight-label text-primary">Back</Text>
           </Pressable>
         ) : null}
       </View>
 
-      <View className="flex-1 items-center px-2">
+      <View className="flex-1 items-center sp-px-2">
         <Text
           numberOfLines={1}
-          className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
+          className="type-sm weight-title tracking-tight text-foreground"
         >
           {title}
         </Text>
         {subtitle ? (
-          <Text numberOfLines={1} className="text-[11px] text-zinc-500 dark:text-zinc-400">
+          <Text numberOfLines={1} className="type-2xs text-muted-foreground">
             {subtitle}
           </Text>
         ) : null}
@@ -68,9 +68,9 @@ export function HeaderBar({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={rightLabel}
-            className="rounded-lg bg-sky-50 px-2.5 py-1 active:opacity-75 dark:bg-sky-950/60"
+            className="rounded-button bg-primary/10 sp-px-2.5 sp-py-1 active:opacity-75"
           >
-            <Text className="text-xs font-semibold text-sky-600 dark:text-sky-400">
+            <Text className="type-xs weight-label text-primary">
               {rightLabel}
             </Text>
           </Pressable>

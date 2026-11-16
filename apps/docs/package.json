@@ -4,35 +4,55 @@
   "private": true,
   "description": "Nativra public documentation site and component catalog",
   "scripts": {
-    "dev": "next dev --port 3000",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "vite --port 3000",
+    "predev": "node ../../scripts/build-docs-deps.mjs && node ../../scripts/build-registry.mjs &&node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs && node scripts/build-preview.mjs --if-missing",
+    "build": "vite build && vite build --ssr src/entry-server.tsx --outDir dist-server && node scripts/prerender.mjs",
+    "prebuild": "node ../../scripts/build-docs-deps.mjs && node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs && node scripts/build-preview.mjs",
+    "preview": "vite preview --port 3000",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .next out",
-    "prebuild": "node ../../scripts/build-registry.mjs",
-    "predev": "node ../../scripts/build-registry.mjs"
+    "pretypecheck": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs",
+    "clean": "rimraf dist dist-server",
+    "preview:build": "node scripts/build-preview.mjs",
+    "test": "vitest run",
+    "pretest": "node ../../scripts/build-registry.mjs --out .test-registry"
   },
   "dependencies": {
+    "@codemirror/lang-css": "6.3.0",
+    "@codemirror/lang-javascript": "6.2.2",
+    "@codemirror/lang-json": "6.0.1",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/theme-one-dark": "6.1.2",
+    "@codemirror/view": "6.43.15",
+    "@nativra/preview-runtime": "workspace:*",
     "@nativra/registry-schema": "workspace:*",
     "@nativra/theme-engine": "workspace:*",
-    "lucide-react": "^1.72.0",
-    "next": "^15.1.0",
+    "codemirror": "6.0.1",
+    "lucide-react": "^1.70.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "react-router": "^7.6.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
+    "@nativra/native-preview": "workspace:*",
     "@nativra/registry-builder": "workspace:*",
     "@types/node": "^22.10.1",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
+    "@vitejs/plugin-react": "~6.1.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.16.0",
-    "eslint-config-next": "^15.1.0",
+    "nativra-cli": "workspace:*",
     "postcss": "^8.5.32",
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
-  }
+    "typescript": "^5.7.2",
+    "vite": "^8.3.7",
+    "vitest": "^5.1.0"
+  },
+  "type": "module"
 }

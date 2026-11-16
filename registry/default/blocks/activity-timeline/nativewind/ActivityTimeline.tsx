@@ -63,32 +63,32 @@ export function ActivityTimeline({
         const isLast = event.isLast ?? idx === events.length - 1;
         const dotBg =
           event.status === "success"
-            ? "bg-emerald-500 border-emerald-400"
+            ? "bg-success border-success"
             : event.status === "warning"
-            ? "bg-amber-500 border-amber-400"
+            ? "bg-warning border-warning"
             : event.status === "error"
-            ? "bg-rose-500 border-rose-400"
-            : "bg-sky-500 border-sky-400";
+            ? "bg-destructive border-destructive"
+            : "bg-primary border-primary";
 
         return (
           <View key={event.id} className="flex-row">
             {/* Timeline Line & Node */}
             <View className="items-center mr-4 w-5">
               <View className={`w-3.5 h-3.5 rounded-full border-2 ${dotBg} z-10`} />
-              {!isLast && <View className="w-0.5 flex-1 bg-zinc-800 my-1" />}
+              {!isLast && <View className="w-0.5 flex-1 bg-muted my-1" />}
             </View>
 
             {/* Content Card */}
-            <View className={`flex-1 ${!isLast ? "pb-6" : ""}`}>
-              <View className="flex-row items-center justify-between gap-2">
-                <Text className="font-semibold text-zinc-100 text-sm">
+            <View className={`flex-1 ${!isLast ? "sp-pb-6" : ""}`}>
+              <View className="flex-row items-center justify-between sp-gap-2">
+                <Text className="weight-label text-foreground type-sm">
                   {event.title}
                 </Text>
-                <Text className="text-xs text-zinc-500">{event.timestamp}</Text>
+                <Text className="type-xs text-muted-foreground">{event.timestamp}</Text>
               </View>
 
               {event.description && (
-                <Text className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                <Text className="type-xs text-muted-foreground mt-1 leading-relaxed">
                   {event.description}
                 </Text>
               )}
