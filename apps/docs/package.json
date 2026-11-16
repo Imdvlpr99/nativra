@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
+    "@nativra/native-preview": "workspace:*",
     "@nativra/registry-builder": "workspace:*",
     "@types/node": "^22.10.1",
     "@types/react": "19.0.10",
