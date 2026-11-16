@@ -116,7 +116,7 @@ export function SettingsFlow({
       <View className="sp-pt-2">
         <Pressable accessibilityRole="button"
           onPress={onLogout}
-          className="w-full items-center justify-center rounded-card border border-destructive/30 bg-destructive/70 sp-p-3.5 active:bg-destructive/15"
+          className="w-full items-center justify-center rounded-card border border-destructive/30 bg-destructive/10 sp-p-3.5 active:bg-destructive/15"
         >
           <Text className="type-xs weight-title text-destructive">
             Sign Out of Account
