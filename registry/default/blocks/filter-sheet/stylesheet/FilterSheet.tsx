@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add filter-sheet
  */
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, ScrollView, Text as RNText } from "react-native";
+import { Pressable, StyleSheet, View, ScrollView, Text as RNText } from "react-native";
 import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { Slider } from "./Slider";
@@ -73,15 +73,17 @@ export function FilterSheet({
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Filter Results</Text>
-          <TouchableOpacity
+          <Pressable
+            accessibilityRole="button"
             onPress={() => {
               setCurrentCategory("all");
               setCurrentPrice(maxPrice / 2);
               onReset?.();
             }}
+            style={({ pressed }) => (pressed ? { opacity: 0.2 } : null)}
           >
             <RNText style={styles.resetBtn}>Reset</RNText>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Categories Chips */}
@@ -91,16 +93,16 @@ export function FilterSheet({
             {categories.map((c) => {
               const active = c.id === currentCategory;
               return (
-                <TouchableOpacity
+                <Pressable
+                  accessibilityRole="button"
                   key={c.id}
-                  activeOpacity={0.7}
                   onPress={() => handleCategoryPress(c.id)}
-                  style={[styles.chip, active ? styles.chipActive : styles.chipInactive]}
+                  style={({ pressed }) => [styles.chip, active ? styles.chipActive : styles.chipInactive, pressed && { opacity: 0.7 }]}
                 >
                   <RNText style={[styles.chipText, active ? styles.chipTextActive : styles.chipTextInactive]}>
                     {c.label}
                   </RNText>
-                </TouchableOpacity>
+                </Pressable>
               );
             })}
           </ScrollView>

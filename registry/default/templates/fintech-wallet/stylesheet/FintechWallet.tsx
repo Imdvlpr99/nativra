@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Text as RNText,
@@ -52,14 +52,15 @@ export function FintechWallet() {
             <RNText style={styles.title}>Wallet</RNText>
             <RNText style={styles.subtitle}>Multi-Chain Vault</RNText>
           </View>
-          <TouchableOpacity
+          <Pressable
+            accessibilityRole="button"
             onPress={() => setHideBalance((h) => !h)}
-            style={styles.hideBtn}
+            style={({ pressed }) => [styles.hideBtn, pressed && { opacity: 0.2 }]}
           >
             <RNText style={styles.hideText}>
               {hideBalance ? "Reveal" : "Hide Balance"}
             </RNText>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Total Net Worth Card */}

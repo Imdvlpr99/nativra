@@ -4,7 +4,7 @@
   "description": "Enterprise collapsible application navigation sidebar with grouped navigation items, active route indicators, user profile card, and footer actions.",
   "type": "block",
   "status": "stable",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

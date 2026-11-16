@@ -63,6 +63,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - PaginationDots: with `onDotPress`, screen readers change the page with a swipe up or down.
 - BottomSheet keeps VoiceOver inside the open sheet (`accessibilityViewIsModal`), like Dialog and Select.
 - The registry build fails an `adjustable` element that doesn't handle `onAccessibilityAction`.
+- Blocks and templates use `Pressable` everywhere: 46 `TouchableOpacity` elements across AppHeader, AppSidebar, FilterSheet, TransactionRow and five templates are converted, keeping their press dimming. Every pressable now has an accessibility role, and ChatFlow's icon-only buttons (back, more options, attach, send) have labels. The registry build now rejects `TouchableOpacity`/`TouchableHighlight` and a `Pressable` with neither a role nor a label.
 - Slider calls a caller's `onLayout` instead of being replaced by it (which stopped dragging), and drags the right way in right-to-left layouts.
 - Input forwards its ref to the `TextInput` (React 18 and 19), so forms can move focus between fields.
 - LoginForm: password managers and autofill fill it (`autoComplete`, `textContentType`), screen readers read "Email" and "Password" instead of the placeholders, Next on the email field moves to the password, Go signs in, and it can't submit twice while loading.
@@ -81,6 +82,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - CI checks that every registry npm range accepts the version the preview app tests with (`scripts/check-registry-deps.mjs`) and that the example apps are current with the registry (`scripts/check-examples.mjs`, `--fix` to refresh them). The examples are refreshed.
 - The preview type-checks fixture props against the components (`fixture-check.ts`); the LoginForm and EmptyState fixtures used props that don't exist and are fixed.
 - The docs' Yarn tab runs `npx`, since `yarn dlx` doesn't exist in Yarn 1.
+- The CLI README, the repo README and the Updating guide cover `list --installed`, `update --check`, `diff --exit-code` and the backup `init --force` keeps. The home page's Styles card names the styles for screen readers, like the Themes card.
 - The compatibility matrix lists Expo SDK 58, React Native 0.88.1, React 19.3, TypeScript 6.0 and NativeWind 4.2 as tested.
 
 ## [v0.3.0] - 2026-11-16

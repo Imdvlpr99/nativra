@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { Pressable, View, Text, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
@@ -42,15 +42,14 @@ export function AppHeader({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center sp-gap-3 flex-1 mr-2">
           {showBack && (
-            <TouchableOpacity
+            <Pressable
               onPress={onBack}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Go back"
-              className="surface h-9 w-9 rounded-control items-center justify-center active:bg-muted"
+              className="surface h-9 w-9 rounded-control items-center justify-center active:bg-muted active:opacity-70"
             >
               <ChevronLeft size={20} color={palette.foreground} />
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           <View className="flex-1">
@@ -70,12 +69,11 @@ export function AppHeader({
           {rightAction}
 
           {onNotificationsPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onNotificationsPress}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Notifications"
-              className="surface relative h-9 w-9 rounded-control items-center justify-center"
+              className="surface relative h-9 w-9 rounded-control items-center justify-center active:opacity-70"
             >
               <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
@@ -85,21 +83,20 @@ export function AppHeader({
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           {onAvatarPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onAvatarPress}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="User profile"
-              className="h-9 w-9 rounded-full bg-primary/20 border border-primary/40 items-center justify-center ml-1"
+              className="h-9 w-9 rounded-full bg-primary/20 border border-primary/40 items-center justify-center ml-1 active:opacity-70"
             >
               <Text className="type-xs weight-title text-primary font-mono">
                 {avatarFallback}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </View>
@@ -117,13 +114,14 @@ export function AppHeader({
             autoCapitalize="none"
           />
           {searchValue.length > 0 && onSearchChange && (
-            <TouchableOpacity
+            <Pressable
               onPress={() => onSearchChange("")}
               accessibilityRole="button"
               accessibilityLabel="Clear search"
+              className="active:opacity-20"
             >
               <X size={14} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       )}

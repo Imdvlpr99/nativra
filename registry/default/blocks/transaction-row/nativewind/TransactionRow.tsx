@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add transaction-row
  */
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { Pressable, View } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
 
@@ -45,10 +45,10 @@ export function TransactionRow({
       : "destructive";
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
+      accessibilityRole="button"
       onPress={onPress}
-      className={`flex-row items-center justify-between sp-py-3.5 sp-px-4 rounded-card bg-card/60 border border-border/80 active:bg-muted/50 ${className}`.trim()}
+      className={`${`flex-row items-center justify-between sp-py-3.5 sp-px-4 rounded-card bg-card/60 border border-border/80 active:bg-muted/50 ${className}`.trim()} active:opacity-80`}
     >
       <View className="flex-row items-center sp-gap-3 flex-1 mr-3">
         {/* Avatar / Icon Chip */}
@@ -86,7 +86,7 @@ export function TransactionRow({
           label={status}
         />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

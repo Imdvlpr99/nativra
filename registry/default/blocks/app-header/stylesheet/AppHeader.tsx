@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, TextInput } from "react-native";
+import { Pressable, StyleSheet, View, Text, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
 import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
 
@@ -43,15 +43,14 @@ export function AppHeader({
       <View style={styles.topBar}>
         <View style={styles.leftSection}>
           {showBack && (
-            <TouchableOpacity
+            <Pressable
               onPress={onBack}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Go back"
-              style={styles.iconBtn}
+              style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.7 }]}
             >
               <ChevronLeft size={20} color={palette.foreground} />
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           <View style={styles.titleSection}>
@@ -71,12 +70,11 @@ export function AppHeader({
           {rightAction}
 
           {onNotificationsPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onNotificationsPress}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Notifications"
-              style={styles.iconBtn}
+              style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.7 }]}
             >
               <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
@@ -86,21 +84,20 @@ export function AppHeader({
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           {onAvatarPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onAvatarPress}
-              activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="User profile"
-              style={styles.avatarBtn}
+              style={({ pressed }) => [styles.avatarBtn, pressed && { opacity: 0.7 }]}
             >
               <Text style={styles.avatarText}>
                 {avatarFallback}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </View>
@@ -118,13 +115,14 @@ export function AppHeader({
             autoCapitalize="none"
           />
           {searchValue.length > 0 && onSearchChange && (
-            <TouchableOpacity
+            <Pressable
               onPress={() => onSearchChange("")}
               accessibilityRole="button"
               accessibilityLabel="Clear search"
+              style={({ pressed }) => (pressed ? { opacity: 0.2 } : null)}
             >
               <X size={14} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       )}

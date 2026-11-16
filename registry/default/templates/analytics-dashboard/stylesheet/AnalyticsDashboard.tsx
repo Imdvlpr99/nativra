@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Text as RNText,
@@ -64,15 +64,16 @@ export function AnalyticsDashboard() {
           ].map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.filterTab, active && styles.filterTabActive]}
+                style={({ pressed }) => [styles.filterTab, active && styles.filterTabActive, pressed && { opacity: 0.2 }]}
               >
                 <RNText style={[styles.filterTabText, active && styles.filterTabTextActive]}>
                   {tab.label}
                 </RNText>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>

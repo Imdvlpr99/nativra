@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { Pressable, StyleSheet, View, Text, ScrollView } from "react-native";
 import {
   LayoutDashboard,
   Users,
@@ -111,13 +111,12 @@ export function AppSidebar({
             {group.items.map((item) => {
               const isActive = item.id === activeId;
               return (
-                <TouchableOpacity
+                <Pressable
                   key={item.id}
                   onPress={() => onSelect?.(item.id)}
-                  activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  style={[styles.navItem, isActive && styles.navItemActive]}
+                  style={({ pressed }) => [styles.navItem, isActive && styles.navItemActive, pressed && { opacity: 0.7 }]}
                 >
                   <View style={styles.navItemLeft}>
                     {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
@@ -148,7 +147,7 @@ export function AppSidebar({
                     )}
                     {isActive && <ChevronRight size={14} color={palette.primary} />}
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               );
             })}
           </View>
@@ -157,10 +156,10 @@ export function AppSidebar({
 
       {/* User Profile & Actions Footer */}
       <View style={styles.footerContainer}>
-        <TouchableOpacity
+        <Pressable
+          accessibilityRole="button"
           onPress={onProfilePress}
-          activeOpacity={0.7}
-          style={styles.profileCard}
+          style={({ pressed }) => [styles.profileCard, pressed && { opacity: 0.7 }]}
         >
           <View style={styles.profileLeft}>
             <View style={styles.avatar}>
@@ -177,16 +176,16 @@ export function AppSidebar({
           </View>
 
           {onLogoutPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onLogoutPress}
               accessibilityRole="button"
               accessibilityLabel="Log out"
-              style={styles.logoutBtn}
+              style={({ pressed }) => [styles.logoutBtn, pressed && { opacity: 0.2 }]}
             >
               <LogOut size={14} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add ecommerce-flow
  */
 import React, { useState } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";
+import { Pressable, View, ScrollView, SafeAreaView, StatusBar } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -78,10 +78,10 @@ export function EcommerceFlow() {
             <Text className="type-2xl weight-heading text-foreground">Storefront</Text>
             <Text className="type-xs text-muted-foreground mt-1">Curated Tech Essentials</Text>
           </View>
-          <TouchableOpacity className="surface min-h-control sp-px-4 rounded-control flex-row items-center sp-gap-2 active:opacity-80">
+          <Pressable accessibilityRole="button" className="surface min-h-control sp-px-4 rounded-control flex-row items-center sp-gap-2 active:opacity-80 active:opacity-20">
             <Text className="type-xs weight-label text-foreground">Cart</Text>
             <Badge size="sm" variant="primary" label={String(cartCount)} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Promo Hero Banner */}
@@ -103,14 +103,15 @@ export function EcommerceFlow() {
           {categories.map((c) => {
             const active = c.id === selectedCat;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={c.id}
                 onPress={() => setSelectedCat(c.id)}
-                className={`sp-px-4 sp-py-2 rounded-control border ${
+                className={`${`sp-px-4 sp-py-2 rounded-control border ${
                   active
                     ? "bg-primary border-primary"
                     : "bg-card border-border"
-                }`}
+                }`} active:opacity-20`}
               >
                 <Text
                   className={`type-xs weight-label ${
@@ -119,7 +120,7 @@ export function EcommerceFlow() {
                 >
                   {c.name}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </ScrollView>

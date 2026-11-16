@@ -42,7 +42,7 @@ export default function Updating() {
           <p>
             When the CLI writes a file it stores the file&apos;s SHA-256 hash in <code>nativra.lock.json</code>. Later, it hashes the
             file on disk again. Same hash: you haven&apos;t touched it. Different hash: it has local changes and is treated as
-            yours.
+            yours. Line endings don&apos;t count, so a Windows checkout that turns LF into CRLF isn&apos;t an edit.
           </p>
         </P>
         <Defs
@@ -56,6 +56,15 @@ export default function Updating() {
 
       <Section id="workflow" title="The update workflow">
         <Steps>
+          <Step title="Find items with updates">
+            <P>
+              <p>
+                <code>list --installed</code> shows every installed item with its version and the registry&apos;s, and says which
+                have updates. <code>info &lt;item&gt;</code> shows the same for one item.
+              </p>
+            </P>
+            <CommandLine command="npx nativra-cli list --installed" switcher />
+          </Step>
           <Step title="See what changed">
             <P>
               <p>
@@ -89,7 +98,8 @@ export default function Updating() {
           <p>
             In CI, <code>update --check</code> reports like <code>--dry-run</code> and exits with code 1 while anything is out
             of date, including registry changes your local edits are holding back. An edited file whose registry source
-            hasn&apos;t changed doesn&apos;t count.
+            hasn&apos;t changed doesn&apos;t count. <code>diff &lt;item&gt; --exit-code</code> does the same for one item&apos;s
+            files.
           </p>
         </P>
         <CommandLine command="npx nativra-cli update --check" />

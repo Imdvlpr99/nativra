@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   SafeAreaView,
   StatusBar,
@@ -127,12 +127,14 @@ export function ChatFlow() {
           {/* Thread Header */}
           <View style={styles.threadHeader}>
             <View style={styles.headerLeft}>
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 onPress={() => setActiveThreadId(null)}
-                style={styles.backButton}
+              accessibilityLabel="Back to conversations"
+                style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.2 }]}
               >
                 <ChevronLeft size={22} color={palette.foreground} />
-              </TouchableOpacity>
+              </Pressable>
 
               <View style={styles.avatarWrapper}>
                 <View style={styles.agentAvatar}>
@@ -147,9 +149,9 @@ export function ChatFlow() {
               </View>
             </View>
 
-            <TouchableOpacity style={styles.moreButton}>
+            <Pressable accessibilityRole="button" accessibilityLabel="More options" style={({ pressed }) => [styles.moreButton, pressed && { opacity: 0.2 }]}>
               <MoreVertical size={18} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Messages Scroll View */}
@@ -194,9 +196,9 @@ export function ChatFlow() {
 
           {/* Message Input Bar */}
           <View style={styles.inputBar}>
-            <TouchableOpacity style={styles.attachBtn}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Attach file" style={({ pressed }) => [styles.attachBtn, pressed && { opacity: 0.2 }]}>
               <Paperclip size={18} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
 
             <TextInput
               value={inputText}
@@ -206,12 +208,15 @@ export function ChatFlow() {
               style={styles.textInput}
             />
 
-            <TouchableOpacity
+            <Pressable
+              accessibilityRole="button"
               onPress={handleSendMessage}
-              style={[styles.sendBtn, inputText.trim() ? styles.sendBtnActive : styles.sendBtnInactive]}
+              accessibilityLabel="Send message"
+              accessibilityState={{ disabled: !inputText.trim() }}
+              style={({ pressed }) => [styles.sendBtn, inputText.trim() ? styles.sendBtnActive : styles.sendBtnInactive, pressed && { opacity: 0.2 }]}
             >
               <Send size={18} color={inputText.trim() ? palette.foreground : palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       ) : (
@@ -237,10 +242,11 @@ export function ChatFlow() {
           {/* Filter Pills */}
           <View style={styles.filterRow}>
             {(["all", "support", "direct"] as const).map((tab) => (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab}
                 onPress={() => setFilterTab(tab)}
-                style={[styles.filterPill, filterTab === tab ? styles.filterPillActive : styles.filterPillInactive]}
+                style={({ pressed }) => [styles.filterPill, filterTab === tab ? styles.filterPillActive : styles.filterPillInactive, pressed && { opacity: 0.2 }]}
               >
                 <Text
                   style={[
@@ -250,7 +256,7 @@ export function ChatFlow() {
                 >
                   {tab}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
 
@@ -258,10 +264,11 @@ export function ChatFlow() {
           <ScrollView style={styles.threadScroll} showsVerticalScrollIndicator={false}>
             <View style={styles.threadList}>
               {filteredThreads.map((thread) => (
-                <TouchableOpacity
+                <Pressable
+                  accessibilityRole="button"
                   key={thread.id}
                   onPress={() => setActiveThreadId(thread.id)}
-                  style={styles.threadItem}
+                  style={({ pressed }) => [styles.threadItem, pressed && { opacity: 0.2 }]}
                 >
                   <View style={styles.threadItemLeft}>
                     <View style={styles.avatarWrapper}>
@@ -289,7 +296,7 @@ export function ChatFlow() {
                       </View>
                     )}
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           </ScrollView>

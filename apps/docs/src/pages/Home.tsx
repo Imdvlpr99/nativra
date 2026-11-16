@@ -267,6 +267,7 @@ function RegistryOverview({ themes }: { themes: readonly NativraThemeTokens[] })
               <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand" />
             </span>
             <span className="mt-1 text-sm text-muted-foreground">Shape, type and spacing, switched with one command.</span>
+            <span className="sr-only">: {styles.map((s) => s.name).join(", ")}</span>
             <span aria-hidden className="mt-5 flex flex-wrap gap-2">
               {styles.map((s) => (
                 <span

@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Text as RNText,
@@ -88,10 +88,10 @@ export function EcommerceFlow() {
             <RNText style={styles.title}>Storefront</RNText>
             <RNText style={styles.subtitle}>Curated Tech Essentials</RNText>
           </View>
-          <TouchableOpacity style={styles.cartBtn} activeOpacity={0.8}>
+          <Pressable accessibilityRole="button" style={({ pressed }) => [styles.cartBtn, pressed && { opacity: 0.8 }]}>
             <RNText style={styles.cartText}>Cart</RNText>
             <Badge size="sm" variant="primary" label={String(cartCount)} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Promo Hero Banner */}
@@ -113,15 +113,16 @@ export function EcommerceFlow() {
           {categories.map((c) => {
             const active = c.id === selectedCat;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={c.id}
                 onPress={() => setSelectedCat(c.id)}
-                style={[styles.catPill, active ? styles.catPillActive : styles.catPillInactive]}
+                style={({ pressed }) => [styles.catPill, active ? styles.catPillActive : styles.catPillInactive, pressed && { opacity: 0.2 }]}
               >
                 <RNText style={[styles.catText, active ? styles.catTextActive : styles.catTextInactive]}>
                   {c.name}
                 </RNText>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </ScrollView>

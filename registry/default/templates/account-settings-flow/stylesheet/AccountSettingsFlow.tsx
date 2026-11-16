@@ -9,9 +9,9 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Switch,
@@ -82,15 +82,16 @@ export function AccountSettingsFlow() {
           ).map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.navTab, active && styles.navTabActive]}
+                style={({ pressed }) => [styles.navTab, active && styles.navTabActive, pressed && { opacity: 0.2 }]}
               >
                 <Text style={[styles.navTabText, active ? styles.navTabTextActive : styles.navTabTextInactive]}>
                   {tab.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
@@ -240,17 +241,17 @@ export function AccountSettingsFlow() {
                       <Text style={styles.memberEmail}>{sess.location} • {sess.active}</Text>
                     </View>
                     {!sess.isCurrent && (
-                      <TouchableOpacity style={styles.revokeBtn}>
+                      <Pressable accessibilityRole="button" style={({ pressed }) => [styles.revokeBtn, pressed && { opacity: 0.2 }]}>
                         <Text style={styles.revokeBtnText}>Revoke</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     )}
                   </View>
                 ))}
               </View>
 
-              <TouchableOpacity style={styles.signOutAllBtn}>
+              <Pressable accessibilityRole="button" style={({ pressed }) => [styles.signOutAllBtn, pressed && { opacity: 0.2 }]}>
                 <Text style={styles.signOutAllText}>Sign Out All Other Sessions</Text>
-              </TouchableOpacity>
+              </Pressable>
             </Card>
           </View>
         )}

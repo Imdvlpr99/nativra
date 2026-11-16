@@ -115,9 +115,12 @@ Every installed component picks up the change; you don't edit any component code
 When a component in the registry changes, update your copy:
 
 ```bash
+npx nativra-cli list --installed   # what you installed, and which items have updates
 npx nativra-cli update --dry-run   # see what would change
 npx nativra-cli update             # update everything you installed
 ```
+
+In CI, `update --check` and `diff <item> --exit-code` exit with code 1 while something is out of date.
 
 If you edited a component, `update` skips it and says so. To see the differences first, run `npx nativra-cli diff button`. To replace your version anyway, run `update --force`.
 

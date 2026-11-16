@@ -4,7 +4,7 @@
   "description": "Enterprise slide-up filter sheet with multi-select category chips, price range slider, status toggles, and CTA controls.",
   "type": "block",
   "status": "stable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"
