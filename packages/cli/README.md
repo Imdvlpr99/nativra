@@ -6,6 +6,9 @@
 
 # nativra-cli
 
+[![npm version](https://img.shields.io/npm/v/nativra-cli?style=flat-square&logo=npm)](https://www.npmjs.com/package/nativra-cli)
+[![Total npm downloads](https://img.shields.io/npm/dt/nativra-cli?style=flat-square&logo=npm&label=downloads)](https://www.npmjs.com/package/nativra-cli)
+
 Copies [Nativra](https://nativra.vercel.app) UI components into your React Native or Expo project as TypeScript source you own. Every component comes in a NativeWind version and a StyleSheet version.
 
 Want to try it first? The [playground](https://nativra.vercel.app/playground) runs this CLI in your browser against a real React Native project, with a live preview.
