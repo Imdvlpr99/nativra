@@ -82,7 +82,8 @@ type Theme = { themeColors: typeof ${ident("zinc")}.themeColors };
 const PRESETS: Record<string, Theme> = {
 ${themeIds.map((id) => `  "${id}": ${ident(id)} as unknown as Theme,`).join("\n")}
 };
-const active = PRESETS[PREVIEW_THEME ?? ""] ?? PRESETS["zinc"]!;
+// Own keys only: ?theme= comes from the URL.
+const active = (PREVIEW_THEME && Object.prototype.hasOwnProperty.call(PRESETS, PREVIEW_THEME) ? PRESETS[PREVIEW_THEME] : undefined) ?? PRESETS["zinc"]!;
 
 export const themeColors = active.themeColors;
 export const THEME_IDS = ${JSON.stringify(themeIds)} as const;
@@ -105,7 +106,8 @@ const PRESETS: Record<string, Style> = {
 ${styleIds.map((id) => `  "${id}": ${sident(id)} as unknown as Style,`).join("\n")}
 };
 
-export const themeStyle = (PRESETS[PREVIEW_STYLE ?? ""] ?? PRESETS["soft"]!).themeStyle;
+// Own keys only: ?style= comes from the URL.
+export const themeStyle = ((PREVIEW_STYLE && Object.prototype.hasOwnProperty.call(PRESETS, PREVIEW_STYLE) ? PRESETS[PREVIEW_STYLE] : undefined) ?? PRESETS["soft"]!).themeStyle;
 export const STYLE_IDS = ${JSON.stringify(styleIds)} as const;
 `
 );

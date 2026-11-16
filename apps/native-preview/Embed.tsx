@@ -37,12 +37,19 @@ class Boundary extends React.Component<{ children: React.ReactNode }, { error: E
   }
 }
 
+/**
+ * `?item=` comes from the URL, so only an object's own keys count: "toString" or "constructor"
+ * must not reach Object.prototype methods.
+ */
+const own = <T,>(map: Record<string, T>, key: string): T | undefined =>
+  Object.prototype.hasOwnProperty.call(map, key) ? map[key] : undefined;
+
 function ItemDemo() {
-  const fixtures = PREVIEW_FIXTURES[itemId] ?? [{ name: "Default", props: {} }];
+  const fixtures = own(PREVIEW_FIXTURES, itemId) ?? [{ name: "Default", props: {} }];
   const props = (fixtures[fixtureIndex] ?? fixtures[0])?.props ?? {};
-  const renderer = RENDERERS[itemId];
+  const renderer = own(RENDERERS, itemId);
   if (renderer) return renderer(props);
-  const entry = ITEMS[itemId];
+  const entry = own(ITEMS, itemId);
   if (!entry) return <Text style={styles.message}>No preview for “{itemId}”.</Text>;
   const { Component } = entry;
   return <Component {...props} />;

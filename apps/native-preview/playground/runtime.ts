@@ -37,7 +37,7 @@ const dirname = (path: string) => path.split("/").slice(0, -1).join("/");
 function resolveFile(files: ProjectFiles, spec: string, from: string): string | null {
   const base = spec.startsWith("@/") ? normalize(spec.slice(2)) : normalize(`${dirname(from)}/${spec}`);
   for (const ext of EXTENSIONS) {
-    if (files[base + ext] !== undefined) return base + ext;
+    if (Object.prototype.hasOwnProperty.call(files, base + ext)) return base + ext;
   }
   return null;
 }
