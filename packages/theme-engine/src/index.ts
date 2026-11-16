@@ -351,13 +351,21 @@ export const iosStyle: ThemeStyle = {
 };
 
 /** Every style preset by id. A style is independent of the color theme. */
-export const STYLE_PRESETS: Record<string, ThemeStyle> = {
+/**
+ * Lookup tables keyed by ids that come from nativra.json, lockfiles and registries, so they have no
+ * prototype: an id such as "constructor" must find nothing rather than an Object.prototype member.
+ */
+function presetTable<T>(entries: Record<string, T>): Record<string, T> {
+  return Object.assign(Object.create(null) as Record<string, T>, entries);
+}
+
+export const STYLE_PRESETS: Record<string, ThemeStyle> = presetTable({
   soft: softStyle,
   crisp: crispStyle,
   tailwind: tailwindStyle,
   material: materialStyle,
   ios: iosStyle,
-};
+});
 
 /** Style preset by id, falling back to "soft". */
 export function getStylePreset(id: string | undefined): ThemeStyle {
@@ -929,7 +937,7 @@ export const darkSlateTheme: NativraThemeTokens = {
   style: softStyle,
 };
 
-export const THEME_PRESETS: Record<string, NativraThemeTokens> = {
+export const THEME_PRESETS: Record<string, NativraThemeTokens> = presetTable({
   zinc: zincTheme,
   slate: slateTheme,
   "dark-slate": darkSlateTheme,
@@ -940,7 +948,7 @@ export const THEME_PRESETS: Record<string, NativraThemeTokens> = {
   amber: amberTheme,
   orange: orangeTheme,
   cyan: cyanTheme,
-};
+});
 
 export function getThemePreset(id: string): NativraThemeTokens {
   return THEME_PRESETS[id.toLowerCase()] ?? zincTheme;

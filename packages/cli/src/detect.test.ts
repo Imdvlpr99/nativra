@@ -54,6 +54,18 @@ describe("detectPackageManager", () => {
     await writeFile(join(root, "pnpm-lock.yaml"), "");
     expect(await detectPackageManager(app)).toBe("pnpm");
   });
+
+  it("stops at the git root, ignoring lockfiles in folders above the repository", async () => {
+    const outside = await tempDir();
+    const repo = join(outside, "my-app");
+    await mkdir(join(repo, ".git"), { recursive: true });
+    await writeFile(join(outside, "yarn.lock"), "");
+    expect(await detectPackageManager(repo)).toBe("npm");
+    // A monorepo's lockfile at the git root is still found from a nested app.
+    await writeFile(join(repo, "pnpm-lock.yaml"), "");
+    await mkdir(join(repo, "apps", "mobile"), { recursive: true });
+    expect(await detectPackageManager(join(repo, "apps", "mobile"))).toBe("pnpm");
+  });
 });
 
 describe("tsconfig parsing", () => {

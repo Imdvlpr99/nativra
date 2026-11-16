@@ -37,7 +37,13 @@ export default function DoctorAudit() {
             environment and a missing <code>tailwind.config.js</code>. An invalid <code>nativra.json</code> is reported, never
             overwritten.
           </p>
+          <p>
+            <code>doctor --json</code> prints <code>{"{ ok, checks: [{ name, status, detail }] }"}</code>, with each status{" "}
+            <code>pass</code>, <code>warn</code> or <code>fail</code>. Like the plain output, it exits with code 1 when a check
+            fails.
+          </p>
         </P>
+        <CommandLine command="npx nativra-cli doctor --json > doctor-report.json" />
       </Section>
 
       <Section id="audit" title="audit">

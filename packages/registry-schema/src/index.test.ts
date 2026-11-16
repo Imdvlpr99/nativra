@@ -26,6 +26,18 @@ describe("RegistryItemSchema", () => {
     expect(RegistryItemSchema.safeParse({ ...valid, id: "Bad Id" }).success).toBe(false);
   });
 
+  it("rejects file paths with control characters", () => {
+    const escape = { ...valid, files: [{ path: "nativewind/\u001b[2JButton.tsx", target: "nativewind" }] };
+    expect(RegistryItemSchema.safeParse(escape).success).toBe(false);
+  });
+
+  it("rejects malformed registry names in dependencies", () => {
+    const bad = { ...valid, registryDependencies: [{ id: "card", registry: "\u001b]52;c;x" }] };
+    expect(RegistryItemSchema.safeParse(bad).success).toBe(false);
+    const ok = { ...valid, registryDependencies: [{ id: "card", registry: "acme" }] };
+    expect(RegistryItemSchema.safeParse(ok).success).toBe(true);
+  });
+
   it("requires at least one file", () => {
     expect(RegistryItemSchema.safeParse({ ...valid, files: [] }).success).toBe(false);
   });
@@ -86,5 +98,13 @@ describe("checkProjectCompatibility", () => {
     expect(checkProjectCompatibility({ reactNative: "0.100.0" }).warnings).toHaveLength(0);
     expect(checkProjectCompatibility({ reactNative: "^0.76.3" }).warnings).toHaveLength(0);
     expect(checkProjectCompatibility({ reactNative: "0.73.6" }).warnings).toHaveLength(1);
+  });
+
+  it("warns about an unsupported NativeWind major and a Tailwind major NativeWind 4 can't use", () => {
+    expect(checkProjectCompatibility({ nativewind: "^4.2.7", tailwindcss: "^3.4.17" }).warnings).toEqual([]);
+    expect(checkProjectCompatibility({ nativewind: "^5.0.0" }).warnings[0]).toMatch(/NativeWind \^5\.0\.0 isn't supported/);
+    expect(checkProjectCompatibility({ nativewind: "~4.1.0", tailwindcss: "^4.1.0" }).warnings).toEqual([
+      "NativeWind 4 needs Tailwind CSS 3, but the project has tailwindcss ^4.1.0.",
+    ]);
   });
 });

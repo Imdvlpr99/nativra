@@ -85,6 +85,14 @@ export default function Updating() {
             <CommandLine command="npx nativra-cli update login-form --force" switcher />
           </Step>
         </Steps>
+        <P>
+          <p>
+            In CI, <code>update --check</code> reports like <code>--dry-run</code> and exits with code 1 while anything is out
+            of date, including registry changes your local edits are holding back. An edited file whose registry source
+            hasn&apos;t changed doesn&apos;t count.
+          </p>
+        </P>
+        <CommandLine command="npx nativra-cli update --check" />
       </Section>
 
       <Section id="rollback" title="Rollback">

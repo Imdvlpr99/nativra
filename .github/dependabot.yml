@@ -29,6 +29,23 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-native-web"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Versioned per Expo SDK (e.g. @expo/metro-runtime 4 -> 58 is SDK 52 -> 58).
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@expo/*"
+        update-types: ["version-update:semver-major"]
+      # Native modules pinned by the SDK's bundledNativeModules; their minors can need a newer RN.
+      - dependency-name: "react-native-svg"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native-reanimated"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native-safe-area-context"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # React 19 types arrive with the SDK upgrade (the docs app already has its own).
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
     groups:
       production-dependencies:
         dependency-type: "production"

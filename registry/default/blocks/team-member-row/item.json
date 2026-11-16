@@ -4,7 +4,7 @@
   "description": "Enterprise team member row with avatar, identity details, role selector pill, and action menu.",
   "type": "block",
   "status": "stable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"
@@ -42,7 +42,7 @@
   "npmDependencies": [
     {
       "package": "lucide-react-native",
-      "version": "^0.460.0"
+      "version": "^1.73.0"
     },
     {
       "package": "react-native-svg",

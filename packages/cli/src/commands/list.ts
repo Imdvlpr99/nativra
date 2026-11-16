@@ -1,10 +1,47 @@
 import type { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
-import { RegistryItemTypeSchema } from "@nativra/registry-schema";
-import { createClient } from "../client.js";
+import { RegistryItemTypeSchema, compareVersions, parseVersion } from "@nativra/registry-schema";
+import { createClient, formatItemRef } from "../client.js";
 import { loadConfigOrDefault } from "../config.js";
-import { listAllItems, printable, type ListedItem } from "./shared.js";
+import { listAllItemsWithFailures, printable, readLockOrExit, type ListedItem } from "./shared.js";
+
+type InstalledStatus = "up-to-date" | "update-available" | "not-in-registry" | "registry-unavailable";
+
+interface InstalledRow {
+  ref: string;
+  type: string;
+  installed: string;
+  latest: string | null;
+  status: InstalledStatus;
+}
+
+/** Each lockfile entry next to its registry's current version. */
+function installedRows(
+  lock: Awaited<ReturnType<typeof readLockOrExit>>,
+  items: ListedItem[],
+  unavailable: ReadonlySet<string>,
+  override: boolean
+): InstalledRow[] {
+  return Object.entries(lock.items)
+    .map(([id, entry]) => {
+      // --registry replaces every source with one "default" source.
+      const registry = override ? "default" : (entry.registry ?? "default");
+      const latest = items.find((i) => i.id === id && i.registry === registry)?.version ?? null;
+      const a = parseVersion(entry.version);
+      const b = latest ? parseVersion(latest) : null;
+      // A registry that couldn't be read says nothing about whether the item is still in it.
+      const status: InstalledStatus = unavailable.has(registry)
+        ? "registry-unavailable"
+        : !latest
+          ? "not-in-registry"
+          : a && b && compareVersions(a, b) < 0
+            ? "update-available"
+            : "up-to-date";
+      return { ref: formatItemRef(id, entry.registry), type: entry.type ?? "item", installed: entry.version, latest, status };
+    })
+    .sort((x, y) => x.ref.localeCompare(y.ref));
+}
 
 export function registerListCommand(program: Command) {
   program
@@ -14,7 +51,8 @@ export function registerListCommand(program: Command) {
     .option("--type <type>", `Filter by type: ${RegistryItemTypeSchema.options.join(", ")}`)
     .option("--registry <url>", "Override registry URL")
     .option("--json", "Print the items as JSON")
-    .action(async (options: { cwd: string; type?: string; registry?: string; json?: boolean }) => {
+    .option("--installed", "List what this project has installed, with the registry's current version")
+    .action(async (options: { cwd: string; type?: string; registry?: string; json?: boolean; installed?: boolean }) => {
       const config = await loadConfigOrDefault(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -32,13 +70,42 @@ export function registerListCommand(program: Command) {
       const client = createClient(config, options.registry, options.cwd);
       const spinner = options.json ? null : ora("Fetching registry...").start();
       let items: ListedItem[];
+      let unavailable: Set<string>;
       try {
-        items = await listAllItems(client);
+        ({ items, unavailable } = await listAllItemsWithFailures(client));
         spinner?.succeed(`Fetched ${items.length} items`);
       } catch (err) {
         if (spinner) spinner.fail(chalk.red(`Failed: ${printable((err as Error).message)}`));
         else console.error(printable((err as Error).message));
         process.exit(1);
+      }
+
+      if (options.installed) {
+        const lock = await readLockOrExit(options.cwd);
+        const rows = installedRows(lock, items, unavailable, Boolean(options.registry)).filter((r) => !targetType || r.type === targetType);
+        if (options.json) {
+          console.log(JSON.stringify(rows, null, 2));
+          return;
+        }
+        if (rows.length === 0) {
+          console.log(chalk.yellow("\nNothing installed yet.\n"));
+          return;
+        }
+        console.log();
+        for (const r of rows) {
+          const state =
+            r.status === "update-available"
+              ? chalk.yellow(`update available: v${printable(r.latest)}`)
+              : r.status === "not-in-registry"
+                ? chalk.gray("not in the registry")
+                : r.status === "registry-unavailable"
+                  ? chalk.yellow("registry unavailable")
+                  : chalk.green("up to date");
+          console.log(`  ${chalk.cyan(printable(r.ref).padEnd(28))} ${chalk.gray(`v${printable(r.installed)}`.padEnd(10))} ${state}`);
+        }
+        const outdated = rows.filter((r) => r.status === "update-available").length;
+        console.log(outdated > 0 ? chalk.yellow(`\n  ${outdated} update(s) available: nativra update\n`) : "");
+        return;
       }
 
       const filtered = targetType ? items.filter((i) => i.type === targetType) : items;

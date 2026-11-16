@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 export const RUNNERS = {
   npm: { exec: "npx", install: "npm install" },
   pnpm: { exec: "pnpm dlx", install: "pnpm add" },
-  yarn: { exec: "yarn dlx", install: "yarn add" },
+  // `yarn dlx` only exists in Yarn 2+; npx ships with Node, so it works for Yarn 1 projects too.
+  yarn: { exec: "npx", install: "yarn add" },
   bun: { exec: "bunx", install: "bun add" },
 } as const;
 export type Runner = keyof typeof RUNNERS;

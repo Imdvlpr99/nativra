@@ -4,7 +4,16 @@ import { join, relative } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
 import { loadConfig } from "../config.js";
-import { assertSafeWriteTarget, createBackup, readLock } from "../install.js";
+import {
+  assertSafeWriteTarget,
+  contentHash,
+  createBackup,
+  lockOwnerOf,
+  readLock,
+  toLockKey,
+  writeLock,
+  type LockFile,
+} from "../install.js";
 
 export interface AuditFinding {
   file: string;
@@ -247,10 +256,40 @@ export async function applyLegacyTouchableFix(cwd: string, plan: FixResult): Pro
     "audit-fix",
     plan.changed.map((c) => ({ destPath: c.file, exists: true }))
   );
+  const previousHashes = new Map<string, string>();
+  for (const { file } of plan.changed) previousHashes.set(file, contentHash(await readFile(file, "utf8")));
   for (const { file, content } of plan.changed) {
     await writeFile(file, content, "utf8");
   }
+  await refreshFixedLockHashes(cwd, plan, previousHashes);
   return plan.changed.length;
+}
+
+/**
+ * The migration is Nativra's own change, not a local edit: a tracked file that matched its recorded
+ * hash before the fix gets the fixed content's hash, so `update` keeps updating it. A file the user
+ * had already edited keeps its old hash and stays "modified".
+ */
+async function refreshFixedLockHashes(cwd: string, plan: FixResult, previousHashes: Map<string, string>): Promise<void> {
+  let lock: LockFile;
+  try {
+    lock = await readLock(cwd);
+  } catch (err) {
+    // An unreadable lockfile is never rewritten (readLock explains how to restore it).
+    console.warn(chalk.yellow(`  ⚠ Lockfile hashes not refreshed: ${(err as Error).message}`));
+    return;
+  }
+  let changed = false;
+  for (const { file, content } of plan.changed) {
+    const key = toLockKey(cwd, file);
+    const owner = lockOwnerOf(lock, key);
+    const entry = owner ? lock.items[owner] : undefined;
+    if (entry && entry.files[key] === previousHashes.get(file)) {
+      entry.files[key] = contentHash(content);
+      changed = true;
+    }
+  }
+  if (changed) await writeLock(cwd, lock);
 }
 
 export async function runProjectAudit(cwd: string): Promise<AuditReport> {

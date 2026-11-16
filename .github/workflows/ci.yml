@@ -56,8 +56,35 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Examples are current with the registry
+        run: node scripts/check-examples.mjs
+
       - name: Security audit
         run: pnpm audit --audit-level=high
+
+  # The CLI supports Node >= 20 and has Windows-specific code (package-manager shims run through a
+  # shell, path separators), so it is tested on both platforms and every supported Node line.
+  cli-matrix:
+    name: CLI (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - run: pnpm install --frozen-lockfile
+      - name: Build CLI, its packages and the registry
+        run: |
+          pnpm --filter "@nativra/registry-builder..." --filter "nativra-cli..." build
+          node scripts/build-registry.mjs
+      - name: Test CLI
+        run: pnpm --filter nativra-cli test
 
   validate-registry:
     name: Validate Registry
@@ -73,6 +100,8 @@ jobs:
         run: pnpm --filter @nativra/registry-builder... --filter @nativra/theme-engine build
       - name: Check registry themes match theme-engine
         run: node scripts/generate-themes.mjs --check
+      - name: Check registry npm ranges accept the versions the preview app tests with
+        run: node scripts/check-registry-deps.mjs
       - name: Build registry
         run: node scripts/build-registry.mjs
 

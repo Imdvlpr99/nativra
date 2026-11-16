@@ -84,6 +84,20 @@ export function formatInstallCommand(cmd: InstallCommand): string {
   return [cmd.bin, ...cmd.args].join(" ");
 }
 
+/**
+ * The single command line run through cmd.exe on Windows, where package managers are .cmd shims
+ * that can't be spawned without a shell. It is one string because Node 24 deprecates passing an
+ * argument array together with `shell: true` (DEP0190). Each argument is re-checked against the
+ * allow-list and double-quoted, so cmd.exe treats `^`, `<`, `>` and `|` in a range as literals.
+ */
+export function windowsShellCommand(cmd: InstallCommand): string {
+  if (!/^(npm|npx|pnpm|yarn|bun)$/.test(cmd.bin)) throw new Error(`Unexpected package manager "${cmd.bin}"`);
+  for (const arg of cmd.args) {
+    if (!/^[a-z0-9@/._~^>=<*+-]+$/i.test(arg)) throw new Error(`Refusing unsafe install argument ${JSON.stringify(arg)}`);
+  }
+  return [cmd.bin, ...cmd.args.map((a) => `"${a}"`)].join(" ");
+}
+
 export async function executeDependencyInstall(
   cwd: string,
   cmd: InstallCommand
@@ -91,13 +105,10 @@ export async function executeDependencyInstall(
   const display = formatInstallCommand(cmd);
   console.log(chalk.cyan(`\n⚡ Installing dependencies: ${chalk.bold(display)}...`));
 
-  // Package managers are .cmd shims on Windows and cannot be spawned without a shell.
-  // Every argument was validated against a strict allow-list above, and is additionally
-  // double-quoted so cmd.exe treats it as a literal.
-  const isWindows = process.platform === "win32";
-  const result = isWindows
-    ? spawnSync(cmd.bin, cmd.args.map((a) => `"${a}"`), { cwd, stdio: "inherit", shell: true })
-    : spawnSync(cmd.bin, cmd.args, { cwd, stdio: "inherit" });
+  const result =
+    process.platform === "win32"
+      ? spawnSync(windowsShellCommand(cmd), { cwd, stdio: "inherit", shell: true })
+      : spawnSync(cmd.bin, cmd.args, { cwd, stdio: "inherit" });
 
   if (result.status === 0) {
     console.log(chalk.green(`  ✓ Dependencies successfully installed.\n`));

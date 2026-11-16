@@ -52,7 +52,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 /** Function component so the fallback can read theme colors (class components can't use hooks). */
 function ErrorFallback({ title, message, onReset }: { title: string; message: string; onReset: () => void }) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <View accessibilityRole="alert" style={styles.container}>
       <View style={styles.header}>

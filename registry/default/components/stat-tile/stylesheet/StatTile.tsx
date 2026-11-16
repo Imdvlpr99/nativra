@@ -22,7 +22,7 @@ export function StatTile({
   ...rest
 }: StatTileProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <View accessibilityRole="summary" style={[styles.container, style]} {...rest}>
       <View style={styles.topRow}>

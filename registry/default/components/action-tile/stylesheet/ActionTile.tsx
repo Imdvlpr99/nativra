@@ -24,7 +24,7 @@ export function ActionTile({
   ...rest
 }: ActionTileProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const isPrimary = variant === "primary";
 
   return (

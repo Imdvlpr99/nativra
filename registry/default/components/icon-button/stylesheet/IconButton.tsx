@@ -37,7 +37,7 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <Pressable
       accessibilityRole="button"

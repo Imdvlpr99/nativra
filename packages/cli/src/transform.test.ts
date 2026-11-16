@@ -37,6 +37,26 @@ import { AppHeader } from "@/blocks/AppHeader";
     expect(result).toContain('from "~/src/components/ui/AppHeader"');
   });
 
+  it("rewrites side-effect, dynamic, require and re-export specifiers too", () => {
+    const config = NativraConfigSchema.parse({ componentsDir: "src/components/ui", aliasPrefix: "~/" });
+    const input = [
+      'import "@/components/ui/polyfill";',
+      'const Lazy = React.lazy(() => import("@/components/ui/Sheet"));',
+      'const { Card } = require("@/components/ui/Card");',
+      'export { Badge } from "@/components/ui/Badge";',
+      'const note = "@/components/ui is only text";',
+    ].join("\n");
+    const result = transformFileImports(input, config, { Avatar: "~/src/components/ui/Avatar" });
+    expect(result).toContain('import "~/src/components/ui/polyfill"');
+    expect(result).toContain('import("~/src/components/ui/Sheet")');
+    expect(result).toContain('require("~/src/components/ui/Card")');
+    expect(result).toContain('from "~/src/components/ui/Badge"');
+    expect(result).toContain('"@/components/ui is only text"');
+    expect(transformFileImports('const A = require("./Avatar");', config, { Avatar: "~/x/Avatar" })).toBe(
+      'const A = require("~/x/Avatar");'
+    );
+  });
+
   it("respects explicit aliases object", () => {
     const config = NativraConfigSchema.parse({
       aliases: {

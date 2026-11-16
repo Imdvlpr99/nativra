@@ -7,7 +7,7 @@
  * Install: npx nativra-cli add badge
  */
 import React from "react";
-import { View, Text, StyleSheet, type ViewStyle, type TextStyle } from "react-native";
+import { View, Text, StyleSheet, type StyleProp, type ViewStyle, type TextStyle } from "react-native";
 import { type ThemeColors, alpha, useThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
 
 type BadgeVariant = "default" | "primary" | "secondary" | "destructive" | "outline";
@@ -17,6 +17,8 @@ export interface BadgeProps {
   label: string;
   variant?: BadgeVariant;
   size?: BadgeSize;
+  /** Extra styles for the container */
+  style?: StyleProp<ViewStyle>;
 }
 
 const styles = StyleSheet.create({
@@ -51,13 +53,13 @@ function getLabelStyle(variant: BadgeVariant, c: ThemeColors): TextStyle {
   return map[variant];
 }
 
-export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
+export function Badge({ label, variant = "default", size = "md", style }: BadgeProps) {
   const c = useThemeColors();
   const sizeStyle = size === "sm" ? styles.sm : size === "lg" ? styles.lg : styles.md;
   const textSizeStyle = size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : styles.textMd;
 
   return (
-    <View style={[styles.base, getContainerStyle(variant, c), sizeStyle]}>
+    <View style={[styles.base, getContainerStyle(variant, c), sizeStyle, style]}>
       <Text style={[getLabelStyle(variant, c), textSizeStyle]}>{label}</Text>
     </View>
   );

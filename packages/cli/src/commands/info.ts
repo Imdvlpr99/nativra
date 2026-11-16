@@ -1,9 +1,10 @@
 import type { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
-import type { RegistryItem } from "@nativra/registry-schema";
+import { compareVersions, parseVersion, type RegistryItem } from "@nativra/registry-schema";
 import { createClient, formatItemRef, parseItemRef } from "../client.js";
 import { loadConfigOrDefault } from "../config.js";
+import { readLock } from "../install.js";
 import { printable } from "./shared.js";
 
 export function registerInfoCommand(program: Command) {
@@ -32,10 +33,23 @@ export function registerInfoCommand(program: Command) {
         process.exit(1);
       }
 
+      // The installed version, when this project has the item from the same registry. A lockfile
+      // that can't be read just means "not known": info only reads.
+      const installed = await readLock(options.cwd)
+        .then((lock) => {
+          const entry = lock.items[item.id];
+          return entry && (entry.registry ?? "default") === registry ? entry.version : undefined;
+        })
+        .catch(() => undefined);
+      const installedV = installed ? parseVersion(installed) : null;
+      const latestV = parseVersion(item.version);
+      const updateAvailable = Boolean(installedV && latestV && compareVersions(installedV, latestV) < 0);
+
       if (options.json) {
         // Metadata only: file contents and docs can be hundreds of KB.
         const meta: Record<string, unknown> = { ...item, files: item.files.map((f) => ({ path: f.path, target: f.target, hash: f.hash })) };
         delete meta["docs"];
+        if (installed) Object.assign(meta, { installedVersion: installed, updateAvailable });
         console.log(JSON.stringify(meta, null, 2));
         return;
       }
@@ -47,6 +61,12 @@ export function registerInfoCommand(program: Command) {
         console.log(chalk.yellow(`\n  ⚠ Deprecated${item.deprecationMessage ? `: ${printable(item.deprecationMessage)}` : ""}`));
       }
       console.log();
+      if (installed) {
+        console.log(
+          `  ${chalk.bold("Installed:")}      v${printable(installed)}` +
+            (updateAvailable ? chalk.yellow(` (update available: nativra update ${formatItemRef(item.id, registry)})`) : chalk.gray(" (up to date)"))
+        );
+      }
       console.log(`  ${chalk.bold("Type:")}           ${item.type}`);
       console.log(`  ${chalk.bold("Status:")}         ${item.status}`);
       console.log(`  ${chalk.bold("Styling targets:")} ${item.stylingTargets.join(", ")}`);

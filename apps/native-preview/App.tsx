@@ -687,7 +687,7 @@ function InteractiveProgress(p: PreviewProps) {
 // Renderers Registry
 // ---------------------------------------------------------------------------
 
-export const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> = {
+export const RENDERERS = {
   accordion: (p) => (
     <Accordion
       items={(p.items as any) ?? [
@@ -816,7 +816,10 @@ export const RENDERERS: Record<string, (p: PreviewProps) => React.ReactElement> 
   text: ({ children, ...p }) => <NText {...(p as object)}>{String(children ?? "Typography Preview Sample")}</NText>,
   textarea: (p) => <InteractiveTextarea {...p} />,
   toast: (p) => <InteractiveToast {...p} />,
-};
+} satisfies Record<string, (p: PreviewProps) => React.ReactElement>;
+
+/** String lookups go through a Map: ids like "constructor" never reach Object.prototype. */
+const RENDERER_LOOKUP = new Map<string, (p: PreviewProps) => React.ReactElement>(Object.entries(RENDERERS));
 
 // ---------------------------------------------------------------------------
 // Error Boundary
@@ -870,7 +873,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState<"phone" | "grid">(Platform.OS === "web" ? "phone" : "phone");
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
 
   // Theme Palette Tokens
   const theme = useMemo(() => {
@@ -1183,7 +1186,7 @@ export default function App() {
                   ]}
                 >
                   <ErrorBoundary fallbackTitle={`${meta.title} (${currentFixture.name})`}>
-                    {RENDERERS[id]?.(currentFixture.props)}
+                    {RENDERER_LOOKUP.get(id)?.(currentFixture.props)}
                   </ErrorBoundary>
                 </View>
 

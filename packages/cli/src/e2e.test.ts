@@ -7,6 +7,11 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 const CLI = resolve(__dirname, "../dist/cli.js");
 const REGISTRY = resolve(__dirname, "../../../dist/registry");
 
+/**
+ * These tests share one project and run in order (`init` first, then add, update, remove…), so
+ * `vitest -t "<name>"` can't run one alone. Self-contained cases belong in regressions.test.ts,
+ * where each test builds its own project.
+ */
 let cwd: string;
 const run = (...args: string[]) =>
   execFileSync("node", [CLI, ...args, "--cwd", cwd], { encoding: "utf8" });
@@ -62,7 +67,8 @@ describe("nativra CLI (local registry)", () => {
   it("update skips locally modified files, --force overwrites", () => {
     const file = join(cwd, "components/ui/Button.tsx");
     writeFileSync(file, "// mine");
-    expect(runReg("update", "button")).toContain("local changes");
+    // The registry hasn't changed since install, so the edit is reported but nothing is pending.
+    expect(runReg("update", "button")).toContain("your edits; no registry changes");
     expect(readFileSync(file, "utf8")).toBe("// mine");
     runReg("update", "button", "--force");
     expect(readFileSync(file, "utf8")).toContain("className");

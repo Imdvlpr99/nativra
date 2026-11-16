@@ -1,9 +1,34 @@
 import { access, lstat, mkdir, readFile, readdir, writeFile, rename, rm } from "node:fs/promises";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import type { RegistryItem, SourceFile } from "@nativra/registry-schema";
 import { sha256 } from "@nativra/utils";
 import type { NativraConfig } from "./config.js";
-import { importBaseForType, importTargets, transformFileImports } from "./transform.js";
+import { filesForTarget, siblingImportMap, transformFileImports } from "./transform.js";
+
+/**
+ * Line endings never count as an edit. Git for Windows checks files out with CRLF by default
+ * (core.autocrlf), so a file Nativra wrote with LF comes back as CRLF after a commit and checkout.
+ * Every hash recorded in the lockfile and every "is this file changed?" check goes through these.
+ */
+export function normalizeEol(text: string): string {
+  return text.replace(/\r\n/g, "\n");
+}
+
+/** The lockfile hash of a file's content: SHA-256 of the text with LF line endings. */
+export function contentHash(text: string): string {
+  return sha256(normalizeEol(text));
+}
+
+/** Same text apart from line endings. */
+export function sameContent(a: string, b: string): boolean {
+  return a === b || normalizeEol(a) === normalizeEol(b);
+}
+
+/** True when `child` is strictly inside `parent` (both absolute). Also correct when `parent` is a filesystem root. */
+export function isStrictlyInside(parent: string, child: string): boolean {
+  const rel = relative(parent, child);
+  return rel !== "" && !isAbsolute(rel) && rel !== ".." && !rel.startsWith(`..${sep}`);
+}
 
 /**
  * Ensures targetPath resolves strictly inside rootDir (at least one level below rootDir).
@@ -11,7 +36,7 @@ import { importBaseForType, importTargets, transformFileImports } from "./transf
 export function assertChildOfRoot(rootDir: string, targetPath: string, label = "path"): string {
   const normalizedRoot = resolve(rootDir);
   const resolvedTarget = resolve(normalizedRoot, targetPath);
-  if (!resolvedTarget.startsWith(normalizedRoot + sep)) {
+  if (!isStrictlyInside(normalizedRoot, resolvedTarget)) {
     throw new Error(`Unsafe ${label} rejected (escapes project root): "${targetPath}"`);
   }
   return resolvedTarget;
@@ -81,9 +106,7 @@ export function resolveDestDir(cwd: string, item: RegistryItem, config: NativraC
   return assertChildOfRoot(cwd, rawDir, "destination directory");
 }
 
-export function filesForTarget(item: RegistryItem, config: NativraConfig): SourceFile[] {
-  return item.files.filter((f) => !f.target || f.target === config.stylingTarget);
-}
+export { filesForTarget };
 
 /**
  * Sibling imports (`./Card`) from `item` to files of `related` items that get installed in a
@@ -95,21 +118,7 @@ export function crossDirectoryImports(
   related: RegistryItem[],
   config: NativraConfig
 ): Record<string, string> {
-  const ownDir = resolveDestDir(cwd, item, config);
-  const targets = importTargets(config);
-  const baseName = (path: string) => (path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
-  // An item's own sibling files always resolve next to it, even if a dependency shares the name.
-  const own = new Set(filesForTarget(item, config).map((f) => baseName(f.path)));
-  const map: Record<string, string> = {};
-  for (const other of related) {
-    if (other.id === item.id || resolveDestDir(cwd, other, config) === ownDir) continue;
-    const base = importBaseForType(other.type, targets);
-    for (const file of filesForTarget(other, config)) {
-      const name = baseName(file.path);
-      if (name && !own.has(name)) map[name] = `${base}/${name}`;
-    }
-  }
-  return map;
+  return siblingImportMap(item, related, config, (i) => resolveDestDir(cwd, i, config));
 }
 
 /** Absolute destination -> registry hash of the source, for recordLockEntry's `upstream`. */
@@ -141,8 +150,7 @@ export function destPathFor(cwd: string, item: RegistryItem, file: SourceFile, c
   const target = resolve(destDir, fileName);
 
   // Security containment check (Plan Section 2.6): both inside destDir and inside cwd
-  const normalizedDestDir = resolve(destDir);
-  if (!target.startsWith(normalizedDestDir + sep)) {
+  if (!isStrictlyInside(resolve(destDir), target)) {
     throw new Error(`Unsafe destination path resolved for ${file.path}`);
   }
   return assertChildOfRoot(cwd, target, "destination file path");
@@ -204,6 +212,32 @@ export function findDependents(lock: LockFile, id: string): string[] {
 }
 
 /**
+ * Why `resolved` can't be installed alongside what's in the lockfile, if it can't. The lockfile,
+ * backups and rollback are keyed by item id alone, so one id from two registries would overwrite
+ * each other's tracking: refuse an id that already comes from another registry, either installed
+ * or elsewhere in the same set.
+ */
+export function registryClash(
+  resolved: ReadonlyArray<{ item: RegistryItem; registry: string }>,
+  lock: LockFile
+): string | undefined {
+  const seen = new Map<string, string>();
+  for (const { item, registry } of resolved) {
+    const installed = lock.items[item.id];
+    const installedFrom = installed ? (installed.registry ?? "default") : undefined;
+    const other = seen.get(item.id) ?? installedFrom;
+    if (other !== undefined && other !== registry) {
+      return (
+        `"${item.id}" from registry "${registry}" clashes with "${item.id}" from registry "${other}"` +
+        (installedFrom === other ? `, which is installed. Remove it first: nativra remove ${item.id}` : ".")
+      );
+    }
+    seen.set(item.id, registry);
+  }
+  return undefined;
+}
+
+/**
  * Records freshly written file hashes for an item and refreshes its version/dependencies.
  * Legacy absolute-path keys are migrated to project-relative keys.
  */
@@ -252,7 +286,7 @@ export async function readLock(cwd: string): Promise<LockFile> {
   try {
     raw = await readFile(path, "utf8");
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") return { items: {} };
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return emptyLock();
     throw err;
   }
   let parsed: unknown;
@@ -268,13 +302,34 @@ export async function readLock(cwd: string): Promise<LockFile> {
   if (!items || typeof items !== "object" || Array.isArray(items)) {
     throw new Error(`${LOCK_FILENAME} has no "items" object. Restore it from git; Nativra will not overwrite it.`);
   }
-  return { items: items as Record<string, LockEntry> };
+  for (const [id, entry] of Object.entries(items as Record<string, unknown>)) {
+    const files = (entry as { files?: unknown } | null)?.files;
+    const valid =
+      typeof (entry as { version?: unknown } | null)?.version === "string" &&
+      !!files &&
+      typeof files === "object" &&
+      !Array.isArray(files) &&
+      Object.values(files).every((hash) => typeof hash === "string");
+    if (!valid) {
+      throw new Error(
+        `${LOCK_FILENAME} entry "${id}" is malformed (needs a "version" string and a "files" map of hashes). ` +
+          `Restore it from git; Nativra will not overwrite it.`
+      );
+    }
+  }
+  // Null prototype: ids such as "constructor" or "toString" must not find Object.prototype members.
+  return { items: Object.assign(Object.create(null) as Record<string, LockEntry>, items) };
+}
+
+/** A lockfile with no items. Its `items` has no prototype, like the one readLock returns. */
+export function emptyLock(): LockFile {
+  return { items: Object.create(null) as Record<string, LockEntry> };
 }
 
 /** Atomic lockfile writer using temporary file and atomic rename (Plan Section 3.6) */
 export async function writeLock(cwd: string, lock: LockFile): Promise<void> {
-  const targetPath = join(cwd, LOCK_FILENAME);
-  const tmpPath = join(cwd, `.${LOCK_FILENAME}.${Date.now()}.tmp`);
+  const targetPath = await assertSafeWriteTarget(cwd, LOCK_FILENAME);
+  const tmpPath = await assertSafeWriteTarget(cwd, `.${LOCK_FILENAME}.${Date.now()}.tmp`);
   await writeFile(tmpPath, JSON.stringify(lock, null, 2), "utf8");
   try {
     await rename(tmpPath, targetPath);
@@ -288,7 +343,7 @@ export async function writeLock(cwd: string, lock: LockFile): Promise<void> {
 export async function writeInstalledFile(destPath: string, content: string): Promise<string> {
   await mkdir(dirname(destPath), { recursive: true });
   await writeFile(destPath, content, "utf8");
-  return sha256(content);
+  return contentHash(content);
 }
 
 // ---------------------------------------------------------------------------
@@ -337,7 +392,8 @@ export async function createBackup(
 ): Promise<string> {
   const componentDir = backupDirFor(cwd, componentId);
   const snapshot = `${Date.now()}-${Math.random().toString(36).slice(2, 8).padEnd(6, "0")}`;
-  const backupDir = join(componentDir, snapshot);
+  // `.nativra/` sits in the project, so a symlink there could send backups anywhere.
+  const backupDir = await assertSafeWriteTarget(cwd, join(componentDir, snapshot));
   await mkdir(backupDir, { recursive: true });
 
   const entries: BackupFileEntry[] = [];
@@ -392,7 +448,9 @@ export async function discardBackup(cwd: string, backupId: string): Promise<void
  * Also recognises the pre-0.3 layout where `manifest.json` sat directly in the component dir.
  */
 export async function findLatestBackup(cwd: string, componentId: string): Promise<string | null> {
+  // Rollback deletes the snapshot it restores, so it must never follow a symlink out of the project.
   const componentDir = backupDirFor(cwd, componentId);
+  await assertSafeWriteTarget(cwd, componentDir);
   let entries: string[];
   try {
     entries = await readdir(componentDir);

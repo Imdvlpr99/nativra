@@ -23,6 +23,9 @@ jobs:
         include:
           - language: javascript-typescript
             build-mode: none
+          # The workflows themselves: expression injection, untrusted checkout, excessive permissions.
+          - language: actions
+            build-mode: none
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

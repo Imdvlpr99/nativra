@@ -25,7 +25,7 @@ export function BottomTabBar({
   ...rest
 }: BottomTabBarProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   return (
     <View accessibilityRole="tablist" style={[styles.container, style]} {...rest}>
       {tabs.map((tab) => {

@@ -4,14 +4,13 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    // The workspace also has React 19 types (apps/docs). Pin "react" to this app's React 18 types
-    // so dependencies without their own @types/react (lucide-react-native) don't pick up the
-    // hoisted React 19 copy.
+    // Pin "react" to this app's own @types/react, so dependencies without their own copy
+    // (lucide-react-native) can't pick up a different hoisted version (apps/docs pins its own).
     "paths": {
       "react": ["./node_modules/@types/react/index.d.ts"],
       "react/*": ["./node_modules/@types/react/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".nativewind-check"]
 }

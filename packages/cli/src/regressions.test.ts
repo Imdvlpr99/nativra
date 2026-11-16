@@ -1,12 +1,13 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { RegistryItem } from "@nativra/registry-schema";
 import { NativraConfigSchema, nativraConfigJsonSchema } from "./config.js";
-import { backupDirFor, createBackup, crossDirectoryImports, discardBackup, findLatestBackup } from "./install.js";
+import { backupDirFor, createBackup, crossDirectoryImports, discardBackup, findLatestBackup, isStrictlyInside, registryClash } from "./install.js";
+import { windowsShellCommand } from "./installer.js";
 
 /**
  * Regression tests for the 2026-11 project review. Each test builds its own project in a temp
@@ -83,12 +84,38 @@ describe("lockfile safety", () => {
     expect(readFileSync(join(cwd, "nativra.lock.json"), "utf8")).toBe(broken);
   });
 
+  it("reports a malformed lock entry instead of crashing", () => {
+    const cwd = project();
+    const broken = JSON.stringify({ items: { button: { version: "1.0.0" } } });
+    writeFileSync(join(cwd, "nativra.lock.json"), broken);
+    const r = reg(cwd, "add", "card", "--yes", "--no-install");
+    expect(r.status).not.toBe(0);
+    expect(r.out).toContain('entry "button" is malformed');
+    expect(r.out).not.toContain("TypeError");
+    expect(readFileSync(join(cwd, "nativra.lock.json"), "utf8")).toBe(broken);
+  });
+
   it("records components installed before a later one fails", () => {
     const cwd = project();
-    // card shares dependencies with button, so with --on-conflict error it stops after button.
+    // A file of the user's where card goes: with --on-conflict error it stops after button.
+    mkdirSync(join(cwd, "components/ui"), { recursive: true });
+    writeFileSync(join(cwd, "components/ui/Card.tsx"), "// mine\n");
     const r = reg(cwd, "add", "button", "card", "--yes", "--no-install", "--on-conflict", "error");
     expect(r.status).not.toBe(0);
     expect(lockOf(cwd).items.button).toBeDefined();
+  });
+
+  it("files identical to what add would write are not conflicts, and become tracked", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const content = readFileSync(join(cwd, "components/ui/Badge.tsx"), "utf8");
+    rmSync(join(cwd, "nativra.lock.json"));
+    const r = reg(cwd, "add", "badge", "--yes", "--no-install", "--on-conflict", "error");
+    expect(r.status).toBe(0);
+    expect(r.out).toContain("Already up to date");
+    expect(readFileSync(join(cwd, "components/ui/Badge.tsx"), "utf8")).toBe(content);
+    expect(lockOf(cwd).items.badge).toBeDefined();
+    expect(existsSync(join(cwd, ".nativra/backups/badge"))).toBe(false);
   });
 });
 
@@ -281,8 +308,13 @@ describe("2026-11 second review", () => {
     expect(r.status).toBe(1);
     expect(r.out).toContain("--force");
     expect(readFileSync(join(cwd, "nativra.json"), "utf8")).toBe(custom);
-    expect(cli(cwd, "init", "--yes", "--force").status).toBe(0);
+    const forced = cli(cwd, "init", "--yes", "--force");
+    expect(forced.status).toBe(0);
+    expect(forced.out).toContain("nativra rollback nativra-config");
     expect(readFileSync(join(cwd, "nativra.json"), "utf8")).not.toContain("acme");
+    // The replaced config is a normal backup snapshot.
+    expect(cli(cwd, "rollback", "nativra-config").status).toBe(0);
+    expect(readFileSync(join(cwd, "nativra.json"), "utf8")).toBe(custom);
   });
 
   it("update doesn't write a theme into global.css when none is installed", () => {
@@ -405,9 +437,15 @@ describe("2026-11 third review", () => {
   it("update warns when the registry changes a file without bumping the version", () => {
     const cwd = project();
     expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
-    const lock = lockOf(cwd) as { items: Record<string, { upstream?: Record<string, string> }> };
-    const upstream = lock.items["badge"]!.upstream!;
-    for (const key of Object.keys(upstream)) upstream[key] = "a".repeat(64);
+    const lock = lockOf(cwd) as { items: Record<string, { files: Record<string, string>; upstream?: Record<string, string> }> };
+    const entry = lock.items["badge"]!;
+    // An unedited install of an older source: the file differs from today's registry.
+    const old = "export const Badge = () => null;\n";
+    for (const key of Object.keys(entry.upstream!)) {
+      entry.upstream![key] = "a".repeat(64);
+      writeFileSync(join(cwd, key), old);
+      entry.files[key] = createHash("sha256").update(old).digest("hex");
+    }
     writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
     expect(reg(cwd, "update", "badge").out).toContain("without bumping");
   });
@@ -587,6 +625,74 @@ describe("0.3.0 review fixes", () => {
     expect(reg(cwd, "update", "--dry-run").status).toBe(0);
   });
 
+  it("refuses an id that is already installed from another registry", () => {
+    const cwd = project();
+    const config = JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")) as Record<string, unknown>;
+    writeFileSync(
+      join(cwd, "nativra.json"),
+      JSON.stringify({ ...config, registries: [{ name: "default", url: REGISTRY }, { name: "acme", url: REGISTRY }] })
+    );
+    expect(cli(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const r = cli(cwd, "add", "acme/badge", "--yes", "--no-install");
+    expect(r.status).not.toBe(0);
+    expect(r.out).toContain("clashes");
+    expect(lockItems(cwd)["badge"]?.registry).toBeUndefined();
+    expect(cli(cwd, "update", "acme/badge").status).not.toBe(0);
+  });
+
+  it("remove keeps the configured install folders even when they end up empty", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const installed = Object.keys(lockItems(cwd));
+    expect(cli(cwd, "remove", ...installed, "--yes", "--force").status).toBe(0);
+    expect(Object.keys(lockItems(cwd))).toHaveLength(0);
+    expect(existsSync(join(cwd, "components/ui"))).toBe(true);
+  });
+
+  it("doctor --json prints a parseable report and sets the exit code", () => {
+    const cwd = project();
+    const ok = cli(cwd, "doctor", "--json");
+    const report = JSON.parse(ok.out) as { ok: boolean; checks: Array<{ name: string; status: string; detail?: string }> };
+    expect(report.checks.length).toBeGreaterThan(0);
+    expect(ok.status).toBe(report.ok ? 0 : 1);
+    expect(ok.out).not.toMatch(/\u001b\[/);
+
+    rmSync(join(cwd, "app.json"));
+    const bad = cli(cwd, "doctor", "--json");
+    expect(bad.status).toBe(1);
+    expect((JSON.parse(bad.out) as { ok: boolean }).ok).toBe(false);
+  });
+
+  it("update --check fails only while something is out of date", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(reg(cwd, "update", "--check").status).toBe(0);
+
+    // A local edit with no registry change is not an available update.
+    const file = join(cwd, "components/ui/Badge.tsx");
+    writeFileSync(file, `${readFileSync(file, "utf8")}\n// my tweak\n`);
+    expect(reg(cwd, "update", "--check").status).toBe(0);
+
+    // A file that doesn't match the registry and isn't what was installed: the recorded hash is stale.
+    const lock = lockOf(cwd) as { items: Record<string, { files: Record<string, string> }> };
+    lock.items["badge"]!.files["components/ui/Badge.tsx"] = "0".repeat(64);
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+    expect(reg(cwd, "update", "--check").status).toBe(1);
+    expect(readFileSync(file, "utf8")).toContain("// my tweak");
+  });
+
+  it("registryClash allows one registry per id", () => {
+    const item = (id: string) => ({ id }) as unknown as RegistryItem;
+    const lock = { items: { badge: { version: "1.0.0", files: {} } } };
+    expect(registryClash([{ item: item("badge"), registry: "default" }], lock)).toBeUndefined();
+    expect(registryClash([{ item: item("badge"), registry: "acme" }], lock)).toMatch(/nativra remove badge/);
+    const twice = [
+      { item: item("card"), registry: "default" },
+      { item: item("card"), registry: "acme" },
+    ];
+    expect(registryClash(twice, { items: {} })).toMatch(/clashes/);
+  });
+
   it("an item's own sibling file isn't rewritten to a dependency with the same name", () => {
     const cfg = NativraConfigSchema.parse({ blocksDir: "blocks" });
     const file = (path: string) => ({ path, content: "" });
@@ -598,3 +704,198 @@ describe("0.3.0 review fixes", () => {
     expect(map["Badge"]).toBe("@/components/ui/Badge");
   });
 });
+
+describe("2026-11 full review", () => {
+  const sha = (s: string) => createHash("sha256").update(s).digest("hex");
+  type Lock = { items: Record<string, { version: string; files: Record<string, string>; upstream?: Record<string, string> }> };
+
+  it("ids that name Object.prototype members are just unknown items", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    for (const id of ["constructor", "toString", "__proto__"]) {
+      const r = cli(cwd, "remove", id, "--yes");
+      expect(r.status).not.toBe(0);
+      expect(r.out).toContain("not registered");
+      expect(r.out).not.toContain("Cannot convert");
+    }
+    expect(cli(cwd, "rollback", "constructor").out).toContain("No backups");
+  });
+
+  it("rollback verifies every backup file before restoring any of them", async () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "button", "--yes", "--no-install").status).toBe(0);
+    const badge = join(cwd, "components/ui/Badge.tsx");
+    const button = join(cwd, "components/ui/Button.tsx");
+    const current = readFileSync(badge, "utf8");
+    writeFileSync(badge, "// old badge");
+    await createBackup(cwd, "badge", [
+      { destPath: badge, exists: true },
+      { destPath: button, exists: true },
+    ]);
+    writeFileSync(badge, current);
+    const snapshot = (await findLatestBackup(cwd, "badge"))!;
+    const second = readdirSync(snapshot).find((f) => f.startsWith("1-"))!;
+    writeFileSync(join(snapshot, second), "// tampered");
+
+    const r = cli(cwd, "rollback", "badge", "--force");
+    expect(r.status).not.toBe(0);
+    expect(r.out).toContain("Nothing was changed");
+    expect(readFileSync(badge, "utf8")).toBe(current);
+  });
+
+  it("update removes files a new version dropped, keeps edited ones, and rollback brings them back", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as Lock;
+    const stale = "export const Old = 1;\n";
+    writeFileSync(join(cwd, "components/ui/BadgeOld.tsx"), stale);
+    writeFileSync(join(cwd, "components/ui/BadgeEdited.tsx"), "// my edits");
+    lock.items["badge"]!.files["components/ui/BadgeOld.tsx"] = sha(stale);
+    lock.items["badge"]!.files["components/ui/BadgeEdited.tsx"] = sha("// as installed");
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    const dry = reg(cwd, "update", "badge", "--check");
+    expect(dry.status).toBe(1);
+    expect(dry.out).toContain("would remove");
+    expect(existsSync(join(cwd, "components/ui/BadgeOld.tsx"))).toBe(true);
+
+    expect(reg(cwd, "update", "badge").status).toBe(0);
+    expect(existsSync(join(cwd, "components/ui/BadgeOld.tsx"))).toBe(false);
+    expect(readFileSync(join(cwd, "components/ui/BadgeEdited.tsx"), "utf8")).toBe("// my edits");
+    const files = (lockOf(cwd) as Lock).items["badge"]!.files;
+    expect(Object.keys(files)).toEqual(["components/ui/Badge.tsx"]);
+
+    expect(cli(cwd, "rollback", "badge").status).toBe(0);
+    expect(readFileSync(join(cwd, "components/ui/BadgeOld.tsx"), "utf8")).toBe(stale);
+    expect((lockOf(cwd) as Lock).items["badge"]!.files["components/ui/BadgeOld.tsx"]).toBe(sha(stale));
+  });
+
+  it("diff --exit-code fails while installed files differ", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(reg(cwd, "diff", "badge", "--exit-code").status).toBe(0);
+    writeFileSync(join(cwd, "components/ui/Badge.tsx"), "// changed");
+    expect(reg(cwd, "diff", "badge").status).toBe(0);
+    expect(reg(cwd, "diff", "badge", "--exit-code").status).toBe(1);
+  });
+
+  it("add --dry-run strips control characters from registry item names", () => {
+    const cwd = project();
+    const registry = mkdtempSync(join(tmpdir(), "nativra-reg-registry-"));
+    dirs.push(registry);
+    cpSync(REGISTRY, registry, { recursive: true });
+    const itemPath = join(registry, "items", "badge.json");
+    const item = JSON.parse(readFileSync(itemPath, "utf8")) as { name: string; npmDependencies?: unknown[] };
+    item.name = "Badge\u001b]52;c;ZXZpbA==\u0007";
+    item.npmDependencies = [{ package: "clsx", version: "^2.0.0" }];
+    writeFileSync(itemPath, JSON.stringify(item));
+    const r = cli(cwd, "add", "badge", "--dry-run", "--registry", registry);
+    expect(r.out).toContain("Badge]52;c;ZXZpbA==");
+    expect(r.out).not.toContain("\u001b]52");
+  });
+
+  it("path containment works when the root is a filesystem root", () => {
+    const root = resolve("/");
+    expect(isStrictlyInside(root, join(root, "project"))).toBe(true);
+    expect(isStrictlyInside(root, root)).toBe(false);
+    const p = resolve("/srv/app");
+    expect(isStrictlyInside(p, join(p, "a", "b"))).toBe(true);
+    expect(isStrictlyInside(p, resolve("/srv/app-evil/x"))).toBe(false);
+    expect(isStrictlyInside(p, resolve("/srv"))).toBe(false);
+  });
+
+  it("windowsShellCommand quotes every argument and refuses anything outside the allow-list", () => {
+    expect(windowsShellCommand({ bin: "npm", args: ["install", "clsx@^2.1.0", "react@>=18<20"] })).toBe(
+      'npm "install" "clsx@^2.1.0" "react@>=18<20"'
+    );
+    expect(() => windowsShellCommand({ bin: "cmd", args: [] })).toThrow(/Unexpected package manager/);
+    expect(() => windowsShellCommand({ bin: "npm", args: ["install", "a&calc"] })).toThrow(/unsafe/);
+    expect(() => windowsShellCommand({ bin: "npm", args: ['a"b'] })).toThrow(/unsafe/);
+  });
+});
+
+describe("2026-11 third review", () => {
+  it("info shows the installed version and whether an update is available", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(reg(cwd, "info", "badge").out).toContain("(up to date)");
+
+    const lock = lockOf(cwd) as { items: Record<string, { version: string }> };
+    lock.items["badge"]!.version = "0.0.1";
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+    expect(reg(cwd, "info", "badge").out).toMatch(/Installed:\s+v0\.0\.1 \(update available: nativra update badge\)/);
+    const json = JSON.parse(reg(cwd, "info", "badge", "--json").out) as { installedVersion?: string; updateAvailable?: boolean };
+    expect(json).toMatchObject({ installedVersion: "0.0.1", updateAvailable: true });
+
+    expect(reg(cwd, "info", "card").out).not.toContain("Installed:");
+  });
+
+  it("a CRLF checkout of installed files (Git for Windows' core.autocrlf) is not an edit", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const file = join(cwd, "components/ui/Badge.tsx");
+    const crlf = () => writeFileSync(file, readFileSync(file, "utf8").replace(/\r?\n/g, "\r\n"));
+    crlf();
+
+    const check = reg(cwd, "update", "--check");
+    expect(check.status).toBe(0);
+    expect(check.out).not.toContain("local changes");
+    expect(reg(cwd, "diff", "badge", "--exit-code").status).toBe(0);
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install", "--on-conflict", "error").status).toBe(0);
+
+    crlf();
+    const removed = cli(cwd, "remove", "badge", "--yes");
+    expect(removed.status).toBe(0);
+    expect(removed.out).not.toContain("Local modifications");
+  });
+
+  it("update doesn't warn about a version bump when the file already matches the registry", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as { items: Record<string, { upstream?: Record<string, string> }> };
+    for (const key of Object.keys(lock.items["badge"]!.upstream!)) lock.items["badge"]!.upstream![key] = "a".repeat(64);
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+    const r = reg(cwd, "update", "badge", "--dry-run");
+    expect(r.out).toContain("(up to date)");
+    expect(r.out).not.toContain("without bumping");
+  });
+
+  it("list --installed shows installed items next to the registry's version", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as { items: Record<string, { version: string }> };
+    lock.items["badge"]!.version = "0.0.1";
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    const out = reg(cwd, "list", "--installed").out;
+    expect(out).toContain("badge");
+    expect(out).toContain("update available");
+    expect(out).toContain("nativra update");
+
+    const rows = JSON.parse(reg(cwd, "list", "--installed", "--json").out) as Array<{ ref: string; status: string; installed: string }>;
+    expect(rows.find((r) => r.ref === "badge")).toMatchObject({ installed: "0.0.1", status: "update-available" });
+    expect(rows.find((r) => r.ref === "use-theme-colors")).toMatchObject({ status: "up-to-date" });
+  });
+
+  it("list --installed says a registry is unavailable rather than that the item is gone", () => {
+    const cwd = project();
+    const config = JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")) as Record<string, unknown>;
+    const missing = join(cwd, "no-such-registry");
+    writeFileSync(
+      join(cwd, "nativra.json"),
+      JSON.stringify({ ...config, registries: [{ name: "default", url: REGISTRY }, { name: "acme", url: missing }] })
+    );
+    expect(cli(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as { items: Record<string, { registry?: string }> };
+    lock.items["badge"]!.registry = "acme";
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    // Output is stdout then stderr (the "Skipped registry" warning): keep just the JSON array.
+    const out = cli(cwd, "list", "--installed", "--json").out;
+    expect(out).toContain("Skipped registry acme");
+    const rows = JSON.parse(out.slice(out.indexOf("["), out.lastIndexOf("]") + 1)) as Array<{ ref: string; status: string }>;
+    expect(rows.find((r) => r.ref === "acme/badge")?.status).toBe("registry-unavailable");
+    expect(rows.find((r) => r.ref === "use-theme-colors")?.status).toBe("up-to-date");
+  });
+});
+

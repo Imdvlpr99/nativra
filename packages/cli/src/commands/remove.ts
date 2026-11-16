@@ -1,26 +1,32 @@
 import type { Command } from "commander";
 import { rm, readFile, readdir } from "node:fs/promises";
-import { dirname, resolve, sep } from "node:path";
+import { dirname, resolve } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
-import { sha256 } from "@nativra/utils";
-import { loadConfig } from "../config.js";
-import { assertSafeWriteTarget, createBackup, fileExists, findDependents, resolveLockFilePath, writeLock } from "../install.js";
+import { loadConfig, type NativraConfig } from "../config.js";
+import { assertSafeWriteTarget, contentHash, createBackup, fileExists, findDependents, isStrictlyInside, resolveLockFilePath, writeLock } from "../install.js";
 import { themeSlotDependents } from "../theme-css.js";
 import { markFailed, readLockOrExit } from "./shared.js";
 
-async function pruneEmptyDir(dir: string, stopAt: string): Promise<void> {
+/** The install folders nativra.json names: emptied by a remove, but never deleted. */
+function configuredDirs(cwd: string, config: NativraConfig): Set<string> {
+  const dirs = [config.componentsDir, config.blocksDir, config.hooksDir, config.utilsDir.replace(/\.(ts|js|tsx)$/, ""), config.themesDir];
+  return new Set(dirs.filter((d): d is string => !!d).map((d) => resolve(cwd, d)));
+}
+
+async function pruneEmptyDir(dir: string, stopAt: string, keep: ReadonlySet<string>): Promise<void> {
   try {
     const resolvedDir = resolve(dir);
     const resolvedStop = resolve(stopAt);
-    if (resolvedDir === resolvedStop || !resolvedDir.startsWith(resolvedStop + sep)) return;
+    if (resolvedDir === resolvedStop || keep.has(resolvedDir) || !isStrictlyInside(resolvedStop, resolvedDir)) return;
     const entries = await readdir(resolvedDir);
     if (entries.length === 0) {
-      await rm(resolvedDir, { recursive: true, force: true }).catch(() => {});
-      await pruneEmptyDir(dirname(resolvedDir), resolvedStop);
+      await rm(resolvedDir, { recursive: true, force: true });
+      await pruneEmptyDir(dirname(resolvedDir), resolvedStop, keep);
     }
-  } catch {
-    // Ignore cleanup errors
+  } catch (err) {
+    // Cleanup only: the files are already removed, so a folder that can't go stays.
+    console.warn(chalk.gray(`  • Left folder ${dir} in place: ${(err as Error).message}`));
   }
 }
 
@@ -40,10 +46,11 @@ export function registerRemoveCommand(program: Command) {
           force?: boolean;
         }
       ) => {
-        await loadConfig(options.cwd).catch((err) => {
+        const config = await loadConfig(options.cwd).catch((err) => {
           console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
           process.exit(1);
         });
+        const keepDirs = configuredDirs(options.cwd, config);
 
         const lock = await readLockOrExit(options.cwd);
 
@@ -120,7 +127,7 @@ export function registerRemoveCommand(program: Command) {
             if (await fileExists(filePath)) {
               try {
                 const currentContent = await readFile(filePath, "utf8");
-                const currentHash = sha256(currentContent);
+                const currentHash = contentHash(currentContent);
                 if (currentHash !== expectedHash) {
                   modifiedFiles.push(filePath);
                 }
@@ -194,7 +201,7 @@ export function registerRemoveCommand(program: Command) {
               await assertSafeWriteTarget(options.cwd, filePath);
               await rm(filePath, { force: true });
               console.log(chalk.red(`  - Deleted: ${filePath}`));
-              await pruneEmptyDir(dirname(filePath), options.cwd);
+              await pruneEmptyDir(dirname(filePath), options.cwd, keepDirs);
             } else {
               console.log(chalk.gray(`  • Already absent: ${filePath}`));
             }

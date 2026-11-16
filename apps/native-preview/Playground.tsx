@@ -29,7 +29,32 @@ function post(message: Outgoing) {
   if (typeof window !== "undefined" && window.parent !== window) window.parent.postMessage(message, "*");
 }
 
-// Forward the app's console output to the playground terminal.
+// Forward the app's console output to the playground terminal, batched: code that logs on every
+// render would otherwise post thousands of messages a second and freeze the editor page. At most
+// FLUSH_LIMIT entries go out per tick; past QUEUE_LIMIT the rest are counted and summarized.
+const FLUSH_MS = 100;
+const FLUSH_LIMIT = 100;
+const QUEUE_LIMIT = 500;
+const logQueue: Array<{ level: "log" | "warn" | "error"; text: string }> = [];
+let droppedLogs = 0;
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+
+function flushLogs() {
+  flushTimer = null;
+  for (const entry of logQueue.splice(0, FLUSH_LIMIT)) post({ type: "nativra-playground:log", ...entry });
+  if (logQueue.length === 0 && droppedLogs > 0) {
+    post({ type: "nativra-playground:log", level: "warn", text: `… ${droppedLogs} more console messages were dropped` });
+    droppedLogs = 0;
+  }
+  if (logQueue.length > 0 || droppedLogs > 0) flushTimer = setTimeout(flushLogs, FLUSH_MS);
+}
+
+function queueLog(level: "log" | "warn" | "error", text: string) {
+  if (logQueue.length >= QUEUE_LIMIT) droppedLogs++;
+  else logQueue.push({ level, text });
+  flushTimer ??= setTimeout(flushLogs, FLUSH_MS);
+}
+
 for (const level of ["log", "warn", "error"] as const) {
   const original = console[level].bind(console);
   console[level] = (...args: unknown[]) => {
@@ -44,7 +69,7 @@ for (const level of ["log", "warn", "error"] as const) {
         }
       })
       .join(" ");
-    post({ type: "nativra-playground:log", level, text: text.slice(0, 2000) });
+    queueLog(level, text.slice(0, 2000));
   };
 }
 

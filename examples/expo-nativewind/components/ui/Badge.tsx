@@ -16,6 +16,8 @@ export interface BadgeProps {
   label: string;
   variant?: BadgeVariant;
   size?: BadgeSize;
+  /** Extra classes for the container, e.g. "self-start mb-2" */
+  className?: string;
 }
 
 const CONTAINER: Record<BadgeVariant, string> = {
@@ -46,9 +48,9 @@ const TEXT_SIZE: Record<BadgeSize, string> = {
   lg: "type-sm font-medium",
 };
 
-export function Badge({ label, variant = "default", size = "md" }: BadgeProps) {
+export function Badge({ label, variant = "default", size = "md", className }: BadgeProps) {
   return (
-    <View className={`flex-row items-center rounded-chip ${CONTAINER[variant]} ${SIZE[size]}`}>
+    <View className={`flex-row items-center rounded-chip ${CONTAINER[variant]} ${SIZE[size]}${className ? ` ${className}` : ""}`}>
       <Text className={`${LABEL[variant]} ${TEXT_SIZE[size]}`}>{label}</Text>
     </View>
   );

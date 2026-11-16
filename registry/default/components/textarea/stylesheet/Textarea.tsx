@@ -21,7 +21,7 @@ export function Textarea({
   ...rest
 }: TextareaProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const dark = useColorScheme() === "dark";
   const fg = c.foreground;
 

@@ -1,6 +1,5 @@
 /**
  * Nativra — Skeleton (React Native StyleSheet)
- * @version 0.1.0
  * @target stylesheet
  * @platforms android, ios
  *
@@ -11,21 +10,24 @@ import React, { useEffect, useRef } from "react";
 import {
   Animated,
   StyleSheet,
+  type DimensionValue,
   type ViewProps,
 } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export interface SkeletonProps extends ViewProps {
-  width?: number | string;
-  height?: number | string;
+  width?: DimensionValue;
+  height?: DimensionValue;
+  /** sm, md and lg follow the style's small, control and card radii; full is a circle or pill. */
   radius?: "none" | "sm" | "md" | "lg" | "full";
 }
 
-const RADIUS_PX = {
+const RADIUS = {
   none: 0,
-  sm: 4,
-  md: 8,
-  lg: 12,
+  sm: themeStyle.radius.small,
+  md: themeStyle.radius.control,
+  lg: themeStyle.radius.card,
   full: 9999,
 } as const;
 
@@ -37,10 +39,15 @@ export function Skeleton({
   ...props
 }: SkeletonProps) {
   const c = useThemeColors();
-  const bg = c.muted;
+  const reduceMotion = useReducedMotion();
   const opacity = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
+    // With Reduce Motion on, the placeholder holds still instead of pulsing.
+    if (reduceMotion) {
+      opacity.setValue(0.7);
+      return;
+    }
     const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
@@ -57,7 +64,7 @@ export function Skeleton({
     );
     animation.start();
     return () => animation.stop();
-  }, [opacity]);
+  }, [opacity, reduceMotion]);
 
   return (
     <Animated.View
@@ -65,10 +72,10 @@ export function Skeleton({
       style={[
         styles.base,
         {
-          width: width as any,
-          height: height as any,
-          borderRadius: RADIUS_PX[radius],
-          backgroundColor: bg,
+          width,
+          height,
+          borderRadius: RADIUS[radius],
+          backgroundColor: c.muted,
           opacity,
         },
         style,
@@ -83,4 +90,3 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
 });
-

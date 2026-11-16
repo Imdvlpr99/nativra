@@ -70,12 +70,17 @@ export function Seo(props: HeadData) {
   const collector = useContext(HeadContext);
   if (collector) collector.data = props;
 
-  const { title, description, path } = props;
+  const { title, description, path, noindex } = props;
   useEffect(() => {
     document.title = fullTitle(title);
     setMeta('meta[name="description"]', "name", "description", description);
     setMeta('meta[property="og:title"]', "property", "og:title", fullTitle(title));
     setMeta('meta[property="og:description"]', "property", "og:description", description);
+    setMeta('meta[property="og:url"]', "property", "og:url", `${SITE.url}${path}`);
+    // A 404's noindex must not stick to the page navigated to next.
+    const robots = document.head.querySelector('meta[name="robots"]');
+    if (noindex) setMeta('meta[name="robots"]', "name", "robots", "noindex");
+    else robots?.remove();
     let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement("link");
@@ -83,7 +88,7 @@ export function Seo(props: HeadData) {
       document.head.appendChild(canonical);
     }
     canonical.href = `${SITE.url}${path}`;
-  }, [title, description, path]);
+  }, [title, description, path, noindex]);
 
   return null;
 }

@@ -93,7 +93,8 @@ export function Dialog({
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: scrim(), alignItems: "center", justifyContent: "center", padding: sp(24) },
-  dismissOverlay: { ...StyleSheet.absoluteFillObject },
+  // Spelled out: RN 0.88 types dropped StyleSheet.absoluteFillObject.
+  dismissOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0 },
   card: { width: "100%", maxWidth: 360, borderRadius: themeStyle.radius.surface, borderWidth: themeStyle.borderWidth, padding: sp(24), zIndex: 10 },
   title: { fontSize: ts(18), fontWeight: themeStyle.fontWeight.title },
   description: { fontSize: ts(14), marginTop: 8, lineHeight: ts(20) },

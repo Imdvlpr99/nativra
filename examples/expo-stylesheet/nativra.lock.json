@@ -14,15 +14,15 @@
       "type": "component"
     },
     "badge": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": {
-        "components/ui/Badge.tsx": "2a845777069f593df1ecb23a8fc0a009718acbcae346573380abe19f141e0a90"
+        "components/ui/Badge.tsx": "960c9666a360bed9e5654dce178e07d580fecda08bef7a36c080273581b22ed7"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Badge.tsx": "2a845777069f593df1ecb23a8fc0a009718acbcae346573380abe19f141e0a90"
+        "components/ui/Badge.tsx": "960c9666a360bed9e5654dce178e07d580fecda08bef7a36c080273581b22ed7"
       },
       "type": "component"
     },
@@ -66,28 +66,28 @@
       "type": "component"
     },
     "input": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": {
-        "components/ui/Input.tsx": "25e0960c67ff58215450f84b008f1e73eb4ba52b3de8b89d3389767aae97cd48"
+        "components/ui/Input.tsx": "423135f0f753cb005031121ace26a24d0e6efaa1cfa75f12c5c0d4f28ee28c3b"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Input.tsx": "25e0960c67ff58215450f84b008f1e73eb4ba52b3de8b89d3389767aae97cd48"
+        "components/ui/Input.tsx": "423135f0f753cb005031121ace26a24d0e6efaa1cfa75f12c5c0d4f28ee28c3b"
       },
       "type": "component"
     },
     "label": {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "files": {
-        "components/ui/Label.tsx": "692bb344f6e0c1c39555a91909a53f572900ff96ba4d930726da94dca82a452f"
+        "components/ui/Label.tsx": "bc6930c52e517ba03e357ab83f3e2a5bd29421d77f6e86f2ca4505571f050777"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Label.tsx": "692bb344f6e0c1c39555a91909a53f572900ff96ba4d930726da94dca82a452f"
+        "components/ui/Label.tsx": "bc6930c52e517ba03e357ab83f3e2a5bd29421d77f6e86f2ca4505571f050777"
       },
       "type": "component"
     },
@@ -105,15 +105,16 @@
       "type": "component"
     },
     "skeleton": {
-      "version": "0.1.0",
+      "version": "0.2.0",
       "files": {
-        "components/ui/Skeleton.tsx": "f061e7578d9d98875dea25f1dd3fcd0d439cbeaa9858eba5e2c73e2e85a11c39"
+        "components/ui/Skeleton.tsx": "d1a5a9c0701aa2de7fecb5c0eb6ec9f91ab8760d0833aa3e5e0899d26a344f22"
       },
       "dependencies": [
-        "use-theme-colors"
+        "use-theme-colors",
+        "use-reduced-motion"
       ],
       "upstream": {
-        "components/ui/Skeleton.tsx": "f061e7578d9d98875dea25f1dd3fcd0d439cbeaa9858eba5e2c73e2e85a11c39"
+        "components/ui/Skeleton.tsx": "d1a5a9c0701aa2de7fecb5c0eb6ec9f91ab8760d0833aa3e5e0899d26a344f22"
       },
       "type": "component"
     },
@@ -189,6 +190,16 @@
         "lib/themes/style.ts": "770f1ca4ad40c3992e0e878469a7691f3183003338527d6cbc3ba095b79181d3"
       },
       "type": "style"
+    },
+    "use-reduced-motion": {
+      "version": "0.2.0",
+      "files": {
+        "hooks/use-reduced-motion.ts": "280d52384183525b39301d61ccb25c938847c50435bb31410f1b49d75b5b7ad3"
+      },
+      "upstream": {
+        "hooks/use-reduced-motion.ts": "280d52384183525b39301d61ccb25c938847c50435bb31410f1b49d75b5b7ad3"
+      },
+      "type": "hook"
     }
   }
 }

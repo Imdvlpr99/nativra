@@ -18,25 +18,16 @@ if (!fs.existsSync(changelogPath)) {
 
 const content = fs.readFileSync(changelogPath, "utf8");
 
-// Regex to match version headers like:
-// ## [v0.2.3] - 2026-11-10 or ## [0.2.3] or ## v0.2.3
-const versionPattern = cleanTag.replace(/^v/, "");
-const headerRegex = new RegExp(
-  `##\\s*\\[?(?:v)?${versionPattern.replace(/\./g, "\\.")}\\]?(?:\\s*[-–—]\\s*[^\\n]*)?`,
-  "i"
-);
+// Matches the version's own header: "## [v0.2.3] - 2026-11-10", "## [0.2.3]" or "## v0.2.3".
+// The version is escaped and must end there, so v0.3.1 never matches "## [v0.3.10]".
+const versionPattern = cleanTag.replace(/^v/, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const headerRegex = new RegExp(`^##\\s*\\[?v?${versionPattern}(?=\\]|\\s|$)\\]?(?:[ \\t]*[-–—][^\\n]*)?`, "im");
 
 const match = headerRegex.exec(content);
 if (!match) {
-  console.error(`Version section for ${cleanTag} not found in CHANGELOG.md`);
-  // Fallback default
-  const fallback = `## Release ${cleanTag}\n\nSee full changelog at https://github.com/Imdvlpr99/nativra/blob/main/CHANGELOG.md`;
-  if (process.argv[3]) {
-    fs.writeFileSync(process.argv[3], fallback, "utf8");
-  } else {
-    process.stdout.write(fallback);
-  }
-  process.exit(0);
+  // A tag without notes is a release mistake: fail so the workflow doesn't publish empty notes.
+  console.error(`Version section for ${cleanTag} not found in CHANGELOG.md. Add a "## [${cleanTag}]" section before tagging.`);
+  process.exit(1);
 }
 
 const startIndex = match.index + match[0].length;

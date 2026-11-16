@@ -2,6 +2,7 @@ import type { Command } from "commander";
 import { join } from "node:path";
 import chalk from "chalk";
 import prompts from "prompts";
+import { REGISTRY_NAME_REGEX } from "@nativra/registry-schema";
 import { createClient, parseItemRef, toSource } from "../client.js";
 import { loadConfig, loadConfigOrDefault, saveConfig } from "../config.js";
 import {
@@ -13,12 +14,12 @@ import {
   filesForTarget,
   lockOwnerOf,
   recordLockEntry,
+  renderFile,
   toLockKey,
   upstreamHashes,
   writeInstalledFile,
   writeLock,
 } from "../install.js";
-import { transformFileImports } from "../transform.js";
 import { applyThemeCss, installedStyleId, installedThemeId } from "../theme-css.js";
 import { listAllItems, printable, readLockOrExit } from "./shared.js";
 
@@ -119,7 +120,7 @@ export function registerThemeCommand(program: Command) {
             console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
             process.exit(1);
           }
-          writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
+          writes[dest] = await writeInstalledFile(dest, renderFile(options.cwd, item, file, [item], config));
           console.log(chalk.green(`  ✓ Written: ${dest}`));
         }
         const upstream: Record<string, string> = {};
@@ -201,7 +202,7 @@ export function registerStyleCommand(program: Command) {
           console.error(chalk.red(`\n✗ ${(err as Error).message}. Nothing was written.\n`));
           process.exit(1);
         }
-        writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
+        writes[dest] = await writeInstalledFile(dest, renderFile(options.cwd, item, file, [item], config));
         console.log(chalk.green(`  ✓ Written: ${dest}`));
       }
       recordLockEntry(lock, options.cwd, item, writes, { registry, upstream: upstreamHashes(options.cwd, item, config) });
@@ -241,7 +242,7 @@ export function registerRegistryCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .action(async (name: string, url: string, options: { cwd: string }) => {
       const config = await requireConfig(options.cwd);
-      if (!/^[a-z0-9][a-z0-9-]*$/.test(name)) {
+      if (!REGISTRY_NAME_REGEX.test(name)) {
         console.error(chalk.red(`\n✗ Invalid registry name "${name}". Use lowercase letters, numbers and "-".\n`));
         process.exit(1);
       }

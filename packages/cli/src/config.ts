@@ -1,7 +1,9 @@
 import { access, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
+import { REGISTRY_NAME_REGEX } from "@nativra/registry-schema";
 import { aliasForDir, type ImportAlias } from "./detect.js";
+import { assertSafeWriteTarget } from "./install.js";
 
 /** Location of the Nativra config file within a consumer project */
 export const CONFIG_FILENAME = "nativra.json";
@@ -37,10 +39,16 @@ export const NativraConfigSchema = z.object({
   registries: z
     .array(
       z.object({
-        name: z.string().default("default"),
-        url: z.string(),
+        name: z
+          .string()
+          .regex(REGISTRY_NAME_REGEX, 'Registry names use lowercase letters, numbers and "-"')
+          .default("default"),
+        url: z.string().min(1),
       })
     )
+    .refine((list) => new Set(list.map((r) => r.name)).size === list.length, {
+      message: "Registry names must be unique",
+    })
     .default([{ name: "default", url: "https://nativra.vercel.app" }]),
   /** Where installed components are written, relative to project root */
   componentsDir: SafeRelativeDirSchema.default("components/ui"),
@@ -277,11 +285,12 @@ export async function ensureGitignored(projectRoot: string, entry = ".nativra/")
   const lines = current.split(/\r?\n/).map((l) => l.trim());
   if (lines.includes(entry) || lines.includes(entry.replace(/\/$/, ""))) return false;
   const prefix = current.length > 0 && !current.endsWith("\n") ? "\n" : "";
+  await assertSafeWriteTarget(projectRoot, path);
   await writeFile(path, `${current}${prefix}\n# Nativra backups\n${entry}\n`, "utf8");
   return true;
 }
 
 export async function saveConfig(projectRoot: string, config: NativraConfig): Promise<void> {
-  const configPath = join(projectRoot, CONFIG_FILENAME);
+  const configPath = await assertSafeWriteTarget(projectRoot, CONFIG_FILENAME);
   await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
 }

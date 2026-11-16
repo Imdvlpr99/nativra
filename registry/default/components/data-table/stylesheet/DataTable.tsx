@@ -48,7 +48,7 @@ export function DataTable<T extends Record<string, any>>({
   ...props
 }: DataTableProps<T>) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const getAlignStyle = (align?: "left" | "center" | "right") => {
     switch (align) {
       case "center":

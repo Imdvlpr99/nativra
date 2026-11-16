@@ -14,15 +14,15 @@
       "type": "component"
     },
     "badge": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": {
-        "components/ui/Badge.tsx": "2cfe1ceb550ebd570d65431185a4572fadc753f23a01ea5279de5c1ab8b038f3"
+        "components/ui/Badge.tsx": "9bc54142e0ca220a04df0c861209c8d2dc6dda80b3bb8d2da37e41ae55630527"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Badge.tsx": "2cfe1ceb550ebd570d65431185a4572fadc753f23a01ea5279de5c1ab8b038f3"
+        "components/ui/Badge.tsx": "9bc54142e0ca220a04df0c861209c8d2dc6dda80b3bb8d2da37e41ae55630527"
       },
       "type": "component"
     },
@@ -66,20 +66,20 @@
       "type": "component"
     },
     "input": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": {
-        "components/ui/Input.tsx": "2e805634fed25ea22ed7b5f60d7bec929ed905af18cb209c6e3717f38943e54f"
+        "components/ui/Input.tsx": "a7f444d7607ed966f39763526c9f589559885456ce13b168f0fd339ffabcffe5"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Input.tsx": "2e805634fed25ea22ed7b5f60d7bec929ed905af18cb209c6e3717f38943e54f"
+        "components/ui/Input.tsx": "a7f444d7607ed966f39763526c9f589559885456ce13b168f0fd339ffabcffe5"
       },
       "type": "component"
     },
     "label": {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "files": {
         "components/ui/Label.tsx": "9dbd070c6e6eb01e579090046830d65adf0f4543170095f467cd947f9162d313"
       },
@@ -105,15 +105,16 @@
       "type": "component"
     },
     "skeleton": {
-      "version": "0.1.0",
+      "version": "0.2.0",
       "files": {
-        "components/ui/Skeleton.tsx": "a76a3c74f86aab5e3f8489ef7f5b078a20a70cd7082d9b308fda9e0ae06ab362"
+        "components/ui/Skeleton.tsx": "8bc497080469a3824d48a8bb4dd9637bc042de5f57808c92cdb054ae9ecccb58"
       },
       "dependencies": [
-        "use-theme-colors"
+        "use-theme-colors",
+        "use-reduced-motion"
       ],
       "upstream": {
-        "components/ui/Skeleton.tsx": "a76a3c74f86aab5e3f8489ef7f5b078a20a70cd7082d9b308fda9e0ae06ab362"
+        "components/ui/Skeleton.tsx": "8bc497080469a3824d48a8bb4dd9637bc042de5f57808c92cdb054ae9ecccb58"
       },
       "type": "component"
     },
@@ -189,6 +190,16 @@
         "lib/themes/style.ts": "770f1ca4ad40c3992e0e878469a7691f3183003338527d6cbc3ba095b79181d3"
       },
       "type": "style"
+    },
+    "use-reduced-motion": {
+      "version": "0.2.0",
+      "files": {
+        "hooks/use-reduced-motion.ts": "280d52384183525b39301d61ccb25c938847c50435bb31410f1b49d75b5b7ad3"
+      },
+      "upstream": {
+        "hooks/use-reduced-motion.ts": "280d52384183525b39301d61ccb25c938847c50435bb31410f1b49d75b5b7ad3"
+      },
+      "type": "hook"
     }
   }
 }

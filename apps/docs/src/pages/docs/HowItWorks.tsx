@@ -121,7 +121,8 @@ export default function HowItWorks() {
           <p>
             Registry source always imports through canonical aliases: <C>@/components/ui</C>, <C>@/lib/utils</C>, <C>@/hooks</C>{" "}
             and <C>@/blocks</C>. When the CLI writes a file, it rewrites them to match your directories and the path alias from{" "}
-            <C>tsconfig.json</C>. <C>add</C>, <C>update</C> and <C>diff</C> share one renderer, so <C>diff</C> never reports a
+            <C>tsconfig.json</C>. That covers <C>import … from</C>, <C>export … from</C>, side-effect <C>import &quot;…&quot;</C>,{" "}
+            <C>import()</C> and <C>require()</C>. <C>add</C>, <C>update</C> and <C>diff</C> share one renderer, so <C>diff</C> never reports a
             change that is only an import path.
           </p>
         </P>

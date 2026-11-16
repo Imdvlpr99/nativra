@@ -1,8 +1,22 @@
 import React, { Suspense, use, useId, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Boxes, FileCode2, GitCompareArrows, Palette, ShieldCheck, Stethoscope } from "lucide-react";
-import { THEME_PRESETS } from "@nativra/theme-engine";
-import { CLI_VERSION, EXPO_MIN, RN_MIN, countOfType, itemsOfType, type StylingTarget } from "@/lib/data";
+import {
+  ArrowRight,
+  Boxes,
+  Component,
+  FileCode2,
+  GitCompareArrows,
+  LayoutGrid,
+  Palette,
+  ShieldCheck,
+  Smartphone,
+  Stethoscope,
+  Webhook,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import { STYLE_PRESETS, THEME_PRESETS, type NativraThemeTokens } from "@nativra/theme-engine";
+import { CLI_VERSION, EXPO_MIN, RN_MIN, countOfType, itemsOfType, type ItemType, type StylingTarget } from "@/lib/data";
 import { ITEM_TYPE_ORDER, TYPE_META, catalogHref, itemHref } from "@/lib/item-types";
 import { installPlan } from "@/lib/install-plan";
 import { loadItem } from "@/lib/load-item";
@@ -175,8 +189,108 @@ function Editor() {
   );
 }
 
+/** Theme and style get their own cards below; every other type with items gets a count card. */
+const TYPE_CARDS: Partial<Record<ItemType, { icon: LucideIcon; line: string }>> = {
+  component: { icon: Component, line: "Accessible primitives for every screen" },
+  block: { icon: LayoutGrid, line: "Composed sections built from the primitives" },
+  template: { icon: Smartphone, line: "Full screens, ready for your navigator" },
+  hook: { icon: Webhook, line: "Behaviour helpers for theming and accessibility" },
+  utility: { icon: Wrench, line: "Shared helpers the components build on" },
+};
+
+/** Counts come from the registry, so each card matches the catalog it links to. */
+function RegistryOverview({ themes }: { themes: readonly NativraThemeTokens[] }) {
+  const total = ITEM_TYPE_ORDER.reduce((sum, t) => sum + countOfType(t), 0);
+  const cardTypes = ITEM_TYPE_ORDER.filter((t) => t !== "theme" && t !== "style" && countOfType(t) > 0);
+  const styles = itemsOfType("style").flatMap((s) => {
+    const preset = STYLE_PRESETS[s.id];
+    return preset ? [preset] : [];
+  });
+  const card =
+    "group flex h-full flex-col rounded-xl border border-border bg-background p-4 transition-colors sm:p-5 duration-150 hover:border-brand focus-visible:border-brand";
+
+  return (
+    <section aria-labelledby="catalog-heading" className="border-y border-border bg-surface">
+      <div className="container-docs py-20">
+        <p className="eyebrow">The registry</p>
+        <h2 id="catalog-heading" className="mt-2 text-3xl font-bold sm:text-4xl">
+          {total} items, all source you own.
+        </h2>
+
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+          {cardTypes.map((type) => {
+            const count = countOfType(type);
+            const { icon: Icon, line } = TYPE_CARDS[type] ?? { icon: Boxes, line: TYPE_META[type].blurb };
+            return (
+              <Link key={type} to={catalogHref(type)} className={card}>
+                <span className="flex items-center justify-between text-muted-foreground">
+                  <Icon aria-hidden className="h-5 w-5 group-hover:text-brand" />
+                  <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand" />
+                </span>
+                <span className="mt-4 text-3xl font-bold tabular-nums tracking-tight sm:mt-6 sm:text-4xl">{count}</span>
+                <span className="mt-1 font-semibold">{count === 1 ? TYPE_META[type].label : TYPE_META[type].plural}</span>
+                <span className="mt-2 text-sm text-muted-foreground">{line}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <Link to={catalogHref("theme")} className={card}>
+            <span className="flex items-baseline justify-between gap-4">
+              <span>
+                <span className="text-2xl font-bold tabular-nums">{themes.length}</span>{" "}
+                <span className="font-semibold">Themes</span>
+              </span>
+              <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand" />
+            </span>
+            <span className="mt-1 text-sm text-muted-foreground">Color palettes, each with a light and a dark mode.</span>
+            <span className="sr-only">: {themes.map((t) => t.name).join(", ")}</span>
+            <span aria-hidden className="mt-5 flex flex-wrap gap-2">
+              {themes.map((t) => (
+                <span
+                  key={t.id}
+                  title={t.name}
+                  className="h-8 w-8 rounded-full border border-border"
+                  style={{ background: `linear-gradient(135deg, ${t.light.primary} 50%, ${t.dark.background} 50%)` }}
+                />
+              ))}
+            </span>
+          </Link>
+
+          <Link to={catalogHref("style")} className={card}>
+            <span className="flex items-baseline justify-between gap-4">
+              <span>
+                <span className="text-2xl font-bold tabular-nums">{styles.length}</span>{" "}
+                <span className="font-semibold">Styles</span>
+              </span>
+              <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand" />
+            </span>
+            <span className="mt-1 text-sm text-muted-foreground">Shape, type and spacing, switched with one command.</span>
+            <span aria-hidden className="mt-5 flex flex-wrap gap-2">
+              {styles.map((s) => (
+                <span
+                  key={s.id}
+                  className="border border-border bg-surface px-4 py-2.5 text-sm font-medium"
+                  style={{ borderRadius: Math.min(s.radius.button, 999) }}
+                >
+                  {s.name}
+                </span>
+              ))}
+            </span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const themes = itemsOfType("theme").filter((t) => THEME_PRESETS[t.id]);
+  const themeSwatches = themes.flatMap((t) => {
+    const preset = THEME_PRESETS[t.id];
+    return preset ? [preset] : [];
+  });
 
   return (
     <main id="main-content" tabIndex={-1} className="outline-none">
@@ -252,23 +366,7 @@ export default function Home() {
       </section>
 
       {/* Registry contents */}
-      <section aria-labelledby="catalog-heading" className="border-y border-border bg-surface">
-        <h2 id="catalog-heading" className="sr-only">
-          What&apos;s in the registry
-        </h2>
-        <ul className="container-docs grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6">
-          {ITEM_TYPE_ORDER.filter((t) => countOfType(t) > 0).map((t) => (
-            <li key={t}>
-              <Link to={catalogHref(t)} className="group block px-2 py-8 text-center transition-colors">
-                <span className="block text-3xl font-bold tabular-nums tracking-tight">{countOfType(t)}</span>
-                <span className="mt-1 block text-sm text-muted-foreground group-hover:text-brand">
-                  {countOfType(t) === 1 ? TYPE_META[t].label : TYPE_META[t].plural}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <RegistryOverview themes={themeSwatches} />
 
       {/* Workflow */}
       <section aria-labelledby="workflow-heading" className="container-docs py-24">
@@ -287,7 +385,7 @@ export default function Home() {
         </div>
         <ol className="mt-14 grid gap-4 lg:grid-cols-3">
           {STEPS.map((s, i) => (
-            <li key={s.cmd} className="panel flex flex-col gap-3 p-6">
+            <li key={s.cmd} className="panel flex min-w-0 flex-col gap-3 p-6">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-sm font-semibold" aria-hidden="true">
                 {i + 1}
               </span>

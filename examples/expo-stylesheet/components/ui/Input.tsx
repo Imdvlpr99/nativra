@@ -10,14 +10,19 @@ export interface InputProps extends TextInputProps {
   disabled?: boolean;
 }
 
-export function Input({ label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest }: InputProps) {
+/** Forwards its ref to the TextInput, so forms can focus the next field (React 18 and 19). */
+export const Input = React.forwardRef<React.ComponentRef<typeof TextInput>, InputProps>(function Input(
+  { label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest },
+  ref
+) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const [focused, setFocused] = React.useState(false);
   return (
     <View style={styles.wrap}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
+        ref={ref}
         editable={!disabled}
         accessibilityLabel={rest.accessibilityLabel ?? label}
         accessibilityState={{ disabled }}
@@ -42,7 +47,7 @@ export function Input({ label, error = false, errorMessage, disabled = false, st
       {error && errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
     </View>
   );
-}
+});
 
 /** Error state on the field's edge: the whole outline, or a filled field's bottom edge. */
 function errorEdge(c: ThemeColors) {

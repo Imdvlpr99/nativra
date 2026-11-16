@@ -26,7 +26,7 @@ export function Select({
   disabled = false,
 }: SelectProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const [open, setOpen] = useState(false);
   const fg = c.foreground;
   const selectedOption = options.find((o) => o.value === value);

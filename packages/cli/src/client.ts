@@ -1,9 +1,7 @@
 import { isAbsolute, resolve } from "node:path";
 import { RegistryClient, type RegistrySource } from "@nativra/registry-client";
-import { ITEM_ID_REGEX } from "@nativra/registry-schema";
+import { ITEM_ID_REGEX, REGISTRY_NAME_REGEX } from "@nativra/registry-schema";
 import type { NativraConfig } from "./config.js";
-
-const REGISTRY_NAME_REGEX = /^[a-z0-9][a-z0-9-]*$/;
 
 /**
  * A registry location is remote if it starts with http(s)://, otherwise a local directory.

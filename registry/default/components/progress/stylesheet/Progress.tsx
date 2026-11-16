@@ -41,7 +41,7 @@ export function Progress({
   ...props
 }: ProgressProps) {
   const c = useThemeColors();
-  const styles = createStyles(c);
+  const styles = React.useMemo(() => createStyles(c), [c]);
   const clamped = Math.min(100, Math.max(0, value));
 
   return (
