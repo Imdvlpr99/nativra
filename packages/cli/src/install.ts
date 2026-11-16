@@ -97,13 +97,16 @@ export function crossDirectoryImports(
 ): Record<string, string> {
   const ownDir = resolveDestDir(cwd, item, config);
   const targets = importTargets(config);
+  const baseName = (path: string) => (path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
+  // An item's own sibling files always resolve next to it, even if a dependency shares the name.
+  const own = new Set(filesForTarget(item, config).map((f) => baseName(f.path)));
   const map: Record<string, string> = {};
   for (const other of related) {
     if (other.id === item.id || resolveDestDir(cwd, other, config) === ownDir) continue;
     const base = importBaseForType(other.type, targets);
     for (const file of filesForTarget(other, config)) {
-      const name = (file.path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
-      if (name) map[name] = `${base}/${name}`;
+      const name = baseName(file.path);
+      if (name && !own.has(name)) map[name] = `${base}/${name}`;
     }
   }
   return map;
@@ -186,6 +189,11 @@ export interface LockRecordMeta {
 
 export interface LockFile {
   items: Record<string, LockEntry>;
+}
+
+/** The installed item (other than `except`) whose lock entry tracks this project-relative file. */
+export function lockOwnerOf(lock: LockFile, key: string, except?: string): string | undefined {
+  return Object.entries(lock.items).find(([id, entry]) => id !== except && key in entry.files)?.[0];
 }
 
 /** Ids of installed items whose recorded dependencies include `id`. */

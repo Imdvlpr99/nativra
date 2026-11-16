@@ -12,6 +12,7 @@ import {
   BACKUP_ID_REGEX,
   fileExists,
   findLatestBackup,
+  lockOwnerOf,
   writeLock,
   type BackupManifest,
 } from "../install.js";
@@ -68,7 +69,11 @@ export function registerRollbackCommand(program: Command) {
           await assertSafeWriteTarget(options.cwd, targetPath);
           targets.push({ entry, targetPath });
 
-          const recorded = lock.items[id]?.files[entry.projectRelativePath];
+          // Compare against whoever tracks the file now: this item, or one that took it over since
+          // (e.g. a newer theme in theme.ts after `remove zinc` + `theme add rose`).
+          const key = entry.projectRelativePath;
+          const owner = lock.items[id]?.files[key] !== undefined ? id : lockOwnerOf(lock, key, id);
+          const recorded = owner ? lock.items[owner]?.files[key] : undefined;
           if (recorded && (await fileExists(targetPath))) {
             const current = sha256(await readFile(targetPath, "utf8"));
             if (current !== recorded) editedSince.push(entry.projectRelativePath);
@@ -97,7 +102,13 @@ export function registerRollbackCommand(program: Command) {
             }
             await mkdir(dirname(targetPath), { recursive: true });
             await writeFile(targetPath, backupContent, "utf8");
-            if (lockEntry) lockEntry.files[entry.projectRelativePath] = hash;
+            // A file Nativra didn't track before the operation (the user's own, replaced by
+            // `add --overwrite`) goes back to untracked, so `update` won't overwrite it unasked.
+            const wasTracked = manifest.lockEntry ? entry.projectRelativePath in manifest.lockEntry.files : false;
+            if (lockEntry) {
+              if (wasTracked) lockEntry.files[entry.projectRelativePath] = hash;
+              else delete lockEntry.files[entry.projectRelativePath];
+            }
             console.log(chalk.green(`  ✓ Restored ${entry.projectRelativePath}`));
           } else {
             await rm(targetPath, { force: true });
@@ -112,9 +123,18 @@ export function registerRollbackCommand(program: Command) {
 
       // Restored content is now the tracked baseline, so `update` treats it as unmodified.
       if (lockEntry) {
-        lock.items[id] = lockEntry;
+        // A file belongs to one item: take restored files back from whoever claimed them since.
+        for (const key of Object.keys(lockEntry.files)) {
+          for (const [otherId, other] of Object.entries(lock.items)) {
+            if (otherId === id || !(key in other.files)) continue;
+            delete other.files[key];
+            if (Object.keys(other.files).length === 0) delete lock.items[otherId];
+          }
+        }
+        if (Object.keys(lockEntry.files).length > 0) lock.items[id] = lockEntry;
+        else delete lock.items[id];
         await writeLock(options.cwd, lock);
-        if (restoringEntry) console.log(chalk.green(`  ✓ "${id}" is tracked in nativra.lock.json again`));
+        if (restoringEntry && lock.items[id]) console.log(chalk.green(`  ✓ "${id}" is tracked in nativra.lock.json again`));
       }
 
       // Consume the snapshot so the next rollback steps further back.

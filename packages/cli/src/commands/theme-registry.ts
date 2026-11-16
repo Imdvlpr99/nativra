@@ -11,7 +11,10 @@ import {
   resolveDestDir,
   fileExists,
   filesForTarget,
+  lockOwnerOf,
   recordLockEntry,
+  toLockKey,
+  upstreamHashes,
   writeInstalledFile,
   writeLock,
 } from "../install.js";
@@ -79,6 +82,7 @@ export function registerThemeCommand(program: Command) {
 
         const lock = await readLockOrExit(options.cwd);
         const writes: Record<string, string> = {};
+        const undoHints = new Set<string>();
         for (const file of filesForTarget(item, config)) {
           const dest = customName
             ? join(resolveDestDir(options.cwd, item, config), `${customName}.ts`)
@@ -98,12 +102,16 @@ export function registerThemeCommand(program: Command) {
               console.log(chalk.yellow(`  → Skipped (existing file): ${dest}. Use --overwrite or --as <name>.`));
               continue;
             }
+            // Back the file up under the item that owns it now (e.g. "zinc" when switching to
+            // "rose"), so `nativra rollback zinc` restores both the file and its tracking.
+            const owner = lockOwnerOf(lock, toLockKey(options.cwd, dest)) ?? id;
             try {
-              await createBackup(options.cwd, id, [{ destPath: dest, exists: true }], lock.items[id]);
+              await createBackup(options.cwd, owner, [{ destPath: dest, exists: true }], lock.items[owner]);
             } catch (err) {
               console.error(chalk.red(`\n✗ Could not back up ${dest}: ${(err as Error).message}. Nothing was written.\n`));
               process.exit(1);
             }
+            undoHints.add(owner);
           }
           try {
             await assertSafeWriteTarget(options.cwd, dest);
@@ -123,6 +131,7 @@ export function registerThemeCommand(program: Command) {
         }
         recordLockEntry(lock, options.cwd, item, writes, { registry, upstream });
         await writeLock(options.cwd, lock);
+        for (const owner of undoHints) console.log(chalk.gray(`  Undo with: nativra rollback ${owner}`));
 
         // global.css must describe the theme in theme.ts. A theme saved under --as, or one that
         // wasn't written, isn't the active one, so its CSS would put the two out of sync.
@@ -177,24 +186,25 @@ export function registerStyleCommand(program: Command) {
 
       const lock = await readLockOrExit(options.cwd);
       const writes: Record<string, string> = {};
-      const upstream: Record<string, string> = {};
+      let previous: string | undefined;
       for (const file of filesForTarget(item, config)) {
         const dest = destPathFor(options.cwd, item, file, config);
         try {
           await assertSafeWriteTarget(options.cwd, dest);
           if (await fileExists(dest)) {
             // Switching styles is the point of this command, so the old file is backed up, not kept.
-            await createBackup(options.cwd, id, [{ destPath: dest, exists: true }], lock.items[id]);
+            // The backup belongs to the style being replaced: `rollback <it>` restores it.
+            previous = lockOwnerOf(lock, toLockKey(options.cwd, dest)) ?? id;
+            await createBackup(options.cwd, previous, [{ destPath: dest, exists: true }], lock.items[previous]);
           }
         } catch (err) {
           console.error(chalk.red(`\n✗ ${(err as Error).message}. Nothing was written.\n`));
           process.exit(1);
         }
         writes[dest] = await writeInstalledFile(dest, transformFileImports(file.content ?? "", config));
-        if (file.hash) upstream[dest] = file.hash;
         console.log(chalk.green(`  ✓ Written: ${dest}`));
       }
-      recordLockEntry(lock, options.cwd, item, writes, { registry, upstream });
+      recordLockEntry(lock, options.cwd, item, writes, { registry, upstream: upstreamHashes(options.cwd, item, config) });
       await writeLock(options.cwd, lock);
 
       // Remember the choice so components added later bring this style, not the default.
@@ -205,7 +215,11 @@ export function registerStyleCommand(program: Command) {
       // NativeWind components read the style through the classes in global.css.
       const theme = installedThemeId(lock);
       if (config.stylingTarget === "nativewind" && theme) await applyThemeCss(options.cwd, theme, id);
-      console.log(chalk.bold.green(`\n✅ Style "${id}" installed. Undo with: nativra rollback ${id}\n`));
+      console.log(
+        chalk.bold.green(`\n✅ Style "${id}" installed.`) +
+          (previous ? chalk.gray(` Undo with: nativra rollback ${previous}`) : "") +
+          "\n"
+      );
     });
 }
 

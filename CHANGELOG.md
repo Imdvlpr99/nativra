@@ -58,6 +58,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`add --overwrite`:** when the write fails and is undone, the backup taken for it is discarded, so the next `rollback` isn't spent on a no-op. `update` now does the same.
 - **Installed theme kept:** a theme that only arrives as a dependency (components depend on `zinc`) no longer replaces the installed `theme.ts`, even with `--overwrite`, and no longer fails `--on-conflict error`. A file is tracked by the item that wrote it last, so `remove` of a replaced theme can't delete the new one.
 - **Errors:** unexpected failures (for example an `http://` registry URL) print one line and exit 1 instead of a stack trace. An invalid `nativra.json` is named in the error.
+- **Undoing a theme or style switch:** `theme add`, `style add` and `add --overwrite` back up a replaced file under the item that owned it, so `nativra rollback zinc` after switching to `rose` restores both `theme.ts` and its lock entry. Rollback also refuses to replace a file another item now owns if it was edited, and takes restored files back from that item.
+- **Rollback accuracy:** files an `update` created are removed again, and a file that was the user's own (replaced by `add --overwrite`) goes back to untracked, so a later `update` won't overwrite it unasked.
+- **`add <theme> --overwrite`:** rewrites the NativeWind theme block in `global.css` for the new theme.
+- **`--registry` with `diff` and `update`:** the override is used even for items installed from another registry. `diff` reports an unreadable lockfile instead of ignoring it.
+- **`add --install`:** a failed package install now fails the run (exit code 1).
+- **Imports:** an item's own sibling file (for example a block's `./Card`) is never rewritten to a dependency's file of the same name.
 - **`init`:** refuses to replace an existing `nativra.json` without confirmation (`--force` in scripts), and Ctrl+C at a prompt writes nothing.
 - **`audit --fix`:** migrated `TouchableOpacity` keeps its press dimming as a `Pressable` style function. `TouchableHighlight` and touchables that spread props are left for manual migration.
 - **`update`:** no longer writes a theme into `global.css` when none is installed.

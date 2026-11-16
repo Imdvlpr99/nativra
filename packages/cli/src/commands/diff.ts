@@ -23,8 +23,17 @@ export function registerDiffCommand(program: Command) {
 
       const client = createClient(config, options.registry, options.cwd);
       const ref = parseItemRef(id);
-      // An installed item is compared against the registry it was installed from.
-      const registry = id.includes("/") ? ref.registry : ((await readLock(options.cwd).catch(() => null))?.items[ref.id]?.registry ?? "default");
+      // --registry replaces every configured source with one "default" source. Otherwise an
+      // installed item is compared against the registry it was installed from.
+      let registry = ref.registry;
+      if (options.registry) registry = "default";
+      else if (!id.includes("/")) {
+        const lock = await readLock(options.cwd).catch((err: Error) => {
+          console.error(chalk.yellow(`  ⚠ ${err.message} Comparing against the default registry.`));
+          return null;
+        });
+        registry = lock?.items[ref.id]?.registry ?? "default";
+      }
 
       const spinner = ora(`Fetching registry version of "${printable(id)}"...`).start();
       let item: RegistryItem;

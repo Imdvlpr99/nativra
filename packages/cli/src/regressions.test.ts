@@ -4,8 +4,9 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { nativraConfigJsonSchema } from "./config.js";
-import { backupDirFor, createBackup, discardBackup, findLatestBackup } from "./install.js";
+import type { RegistryItem } from "@nativra/registry-schema";
+import { NativraConfigSchema, nativraConfigJsonSchema } from "./config.js";
+import { backupDirFor, createBackup, crossDirectoryImports, discardBackup, findLatestBackup } from "./install.js";
 
 /**
  * Regression tests for the 2026-11 project review. Each test builds its own project in a temp
@@ -507,5 +508,93 @@ describe("styles", () => {
 
     expect(reg(cwd, "update").status).toBe(0);
     expect(styleFile(cwd)).toContain('id: "soft"');
+  });
+});
+
+describe("0.3.0 review fixes", () => {
+  const lockItems = (cwd: string) => lockOf(cwd).items as Record<string, { files: Record<string, string>; registry?: string }>;
+
+  it("add <theme> --overwrite rewrites the NativeWind CSS block for the new theme", () => {
+    const cwd = project();
+    writeFileSync(join(cwd, "global.css"), "@tailwind base;\n");
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    expect(readFileSync(join(cwd, "global.css"), "utf8")).toContain("NATIVRA THEME START: zinc");
+    expect(reg(cwd, "add", "rose", "--yes", "--overwrite", "--no-install").status).toBe(0);
+    const css = readFileSync(join(cwd, "global.css"), "utf8");
+    expect(css).toContain("NATIVRA THEME START: rose");
+    expect(css).not.toContain("NATIVRA THEME START: zinc");
+  });
+
+  it("rolling back the previous theme undoes a theme switch, file and tracking", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const zinc = readFileSync(join(cwd, "lib/themes/theme.ts"), "utf8");
+    const r = reg(cwd, "theme", "add", "rose", "--overwrite");
+    expect(r.out).toContain("Undo with: nativra rollback zinc");
+    expect(Object.keys(lockItems(cwd))).toContain("rose");
+
+    expect(cli(cwd, "rollback", "zinc").status).toBe(0);
+    expect(readFileSync(join(cwd, "lib/themes/theme.ts"), "utf8")).toBe(zinc);
+    const items = Object.keys(lockItems(cwd));
+    expect(items).toContain("zinc");
+    expect(items).not.toContain("rose");
+  });
+
+  it("rollback refuses to replace a file another item now owns and was edited", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "zinc", "--yes", "--no-install").status).toBe(0);
+    expect(cli(cwd, "remove", "zinc", "--yes").status).toBe(0);
+    expect(reg(cwd, "theme", "add", "rose").status).toBe(0);
+    writeFileSync(join(cwd, "lib/themes/theme.ts"), "// my edits to rose\n");
+    const r = cli(cwd, "rollback", "zinc");
+    expect(r.status).toBe(1);
+    expect(r.out).toContain("changed after the operation");
+    expect(readFileSync(join(cwd, "lib/themes/theme.ts"), "utf8")).toBe("// my edits to rose\n");
+  });
+
+  it("rollback removes files an update created", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    rmSync(join(cwd, "components/ui/Badge.tsx"));
+    expect(reg(cwd, "update", "badge").status).toBe(0);
+    expect(existsSync(join(cwd, "components/ui/Badge.tsx"))).toBe(true);
+    expect(cli(cwd, "rollback", "badge").status).toBe(0);
+    expect(existsSync(join(cwd, "components/ui/Badge.tsx"))).toBe(false);
+  });
+
+  it("a restored file the user owned stays untracked, so update won't overwrite it", () => {
+    const cwd = project();
+    mkdirSync(join(cwd, "components/ui"), { recursive: true });
+    writeFileSync(join(cwd, "components/ui/Badge.tsx"), "// my own badge\n");
+    expect(reg(cwd, "add", "badge", "--yes", "--overwrite", "--no-install").status).toBe(0);
+    expect(cli(cwd, "rollback", "badge").status).toBe(0);
+    expect(readFileSync(join(cwd, "components/ui/Badge.tsx"), "utf8")).toBe("// my own badge\n");
+
+    reg(cwd, "update", "badge");
+    expect(readFileSync(join(cwd, "components/ui/Badge.tsx"), "utf8")).toBe("// my own badge\n");
+  });
+
+  it("diff and update with --registry ignore the registry recorded in the lockfile", () => {
+    const cwd = project();
+    const config = JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")) as Record<string, unknown>;
+    writeFileSync(
+      join(cwd, "nativra.json"),
+      JSON.stringify({ ...config, registries: [{ name: "default", url: REGISTRY }, { name: "acme", url: REGISTRY }] })
+    );
+    expect(cli(cwd, "add", "acme/badge", "--yes", "--no-install").status).toBe(0);
+    expect(lockItems(cwd)["badge"]?.registry).toBe("acme");
+    expect(reg(cwd, "diff", "badge").status).toBe(0);
+    expect(reg(cwd, "update", "--dry-run").status).toBe(0);
+  });
+
+  it("an item's own sibling file isn't rewritten to a dependency with the same name", () => {
+    const cfg = NativraConfigSchema.parse({ blocksDir: "blocks" });
+    const file = (path: string) => ({ path, content: "" });
+    const base = { name: "x", description: "x", status: "stable", version: "0.1.0", stylingTargets: ["stylesheet"], platforms: { android: true, ios: true } };
+    const block = { ...base, id: "my-block", type: "block", files: [file("MyBlock.tsx"), file("Card.tsx")] } as unknown as RegistryItem;
+    const card = { ...base, id: "card", type: "component", files: [file("Card.tsx"), file("Badge.tsx")] } as unknown as RegistryItem;
+    const map = crossDirectoryImports("/p", block, [card, block], cfg);
+    expect(map["Card"]).toBeUndefined();
+    expect(map["Badge"]).toBe("@/components/ui/Badge");
   });
 });

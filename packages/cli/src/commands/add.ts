@@ -18,6 +18,8 @@ import {
   recordLockEntry,
   executeInstallTransaction,
   renderFile,
+  lockOwnerOf,
+  toLockKey,
   type PlannedInstallFile,
 } from "../install.js";
 import {
@@ -27,7 +29,7 @@ import {
   executeDependencyInstall,
   type PackageDependency,
 } from "../installer.js";
-import { ensureNativeWindTheme, installedStyleId, installedThemeId } from "../theme-css.js";
+import { applyThemeCss, ensureNativeWindTheme, installedStyleId, installedThemeId } from "../theme-css.js";
 import { listAllItems, markFailed, printable, readLockOrExit, type ListedItem } from "./shared.js";
 
 /**
@@ -138,6 +140,8 @@ export function registerAddCommand(program: Command) {
         const keptThemeIds = new Set<string>();
         /** A style was written to style.ts, so the CSS block's style classes must follow it. */
         let styleWritten = false;
+        /** A theme the user asked for by name (`add rose`), so global.css must switch to it. */
+        let requestedTheme: string | undefined;
 
         for (const componentId of components) {
           console.log(chalk.bold(`\n📦 Resolving ${chalk.cyan(componentId)}...`));
@@ -259,9 +263,11 @@ export function registerAddCommand(program: Command) {
           // `nativra rollback <id>` can restore them.
           const overwritesByItem = new Map<string, Array<{ destPath: string; exists: boolean }>>();
           for (const p of plan.filter((p) => p.action === "overwrite")) {
-            const list = overwritesByItem.get(p.componentId) ?? [];
+            // Grouped by the item that owns the file now, so rolling it back restores its tracking.
+            const owner = lockOwnerOf(lock, toLockKey(options.cwd, p.destPath)) ?? p.componentId;
+            const list = overwritesByItem.get(owner) ?? [];
             list.push({ destPath: p.destPath, exists: true });
-            overwritesByItem.set(p.componentId, list);
+            overwritesByItem.set(owner, list);
           }
           // Snapshots of an operation that never happened would make the next rollback a no-op.
           const backupIds: string[] = [];
@@ -312,6 +318,7 @@ export function registerAddCommand(program: Command) {
               upstream: upstreamHashes(options.cwd, item, config),
             });
             if (item.type === "theme") (Object.keys(itemWrites).length > 0 ? themeIds : keptThemeIds).add(item.id);
+            if (item.type === "theme" && item.id === requestedId && Object.keys(itemWrites).length > 0) requestedTheme = item.id;
             if (item.type === "style" && Object.keys(itemWrites).length > 0) styleWritten = true;
 
             if (item.npmDependencies && item.npmDependencies.length > 0) {
@@ -330,6 +337,9 @@ export function registerAddCommand(program: Command) {
             [...themeIds][0] ??
             (keptThemeIds.size > 0 || styleWritten ? installedThemeId(lock) ?? [...keptThemeIds][0] : undefined);
           if (config.stylingTarget === "nativewind" && cssTheme) {
+            // A theme just written to theme.ts (e.g. `add rose --overwrite`) must replace the CSS
+            // block even when that block is current, or global.css would keep the old colors.
+            if (requestedTheme) await applyThemeCss(options.cwd, requestedTheme, installedStyleId(lock));
             await ensureNativeWindTheme(options.cwd, cssTheme, installedStyleId(lock));
           }
 
@@ -354,7 +364,7 @@ export function registerAddCommand(program: Command) {
               const installCmd = formatInstallCommand(install);
 
               if (options.install === true) {
-                await executeDependencyInstall(options.cwd, install);
+                if (!(await executeDependencyInstall(options.cwd, install))) markFailed();
               } else if (options.install === false) {
                 console.log(chalk.yellow(`\n  ⚠ Install required dependencies:\n`) + chalk.cyan(`    ${installCmd}\n`));
               } else if (!options.yes && process.stdin.isTTY) {
@@ -365,7 +375,7 @@ export function registerAddCommand(program: Command) {
                   initial: true,
                 });
                 if (doInstall) {
-                  await executeDependencyInstall(options.cwd, install);
+                  if (!(await executeDependencyInstall(options.cwd, install))) markFailed();
                 } else {
                   console.log(chalk.yellow(`\n  ⚠ Install dependencies manually:\n`) + chalk.cyan(`    ${installCmd}\n`));
                 }

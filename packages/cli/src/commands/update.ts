@@ -44,7 +44,7 @@ export function registerUpdateCommand(program: Command) {
       const client = createClient(config, options.registry, options.cwd);
       const lock = await readLockOrExit(options.cwd);
       // Installed items are looked up in the registry they came from.
-      const targets = ids.length > 0 ? ids : Object.entries(lock.items).map(([id, e]) => formatItemRef(id, e.registry));
+      const targets = ids.length > 0 ? ids : Object.entries(lock.items).map(([id, e]) => (options.registry ? id : formatItemRef(id, e.registry)));
 
       if (targets.length === 0) {
         console.log(chalk.yellow("\nNothing installed yet (no nativra.lock.json entries).\n"));
@@ -62,7 +62,12 @@ export function registerUpdateCommand(program: Command) {
         try {
           const ref = parseItemRef(target);
           id = ref.id;
-          const registry = ids.length > 0 && !target.includes("/") ? (lock.items[id]?.registry ?? "default") : ref.registry;
+          // --registry replaces every configured source with one "default" source.
+          const registry = options.registry
+            ? "default"
+            : ids.length > 0 && !target.includes("/")
+              ? (lock.items[id]?.registry ?? "default")
+              : ref.registry;
           const resolved = await client.resolveWithSources(id, registry);
           items = resolved.map((r) => r.item);
           for (const r of resolved) registryOf.set(r.item.id, r.registry);
@@ -134,7 +139,8 @@ export function registerUpdateCommand(program: Command) {
               console.log(chalk.yellow(`  ! ${dest} has local changes — skipped (use --force, or 'nativra diff ${item.id}')`));
               continue;
             }
-            if (local !== null) toBackup.push({ destPath: dest, exists: true });
+            // Created files are recorded too (as absent before), so rollback removes them.
+            toBackup.push({ destPath: dest, exists: local !== null });
             plan.push({ componentId: item.id, destPath: dest, content: next, action: local === null ? "create" : "overwrite" });
           }
 
