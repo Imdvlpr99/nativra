@@ -49,7 +49,7 @@ function ItemDemo() {
   const fixtures = FIXTURE_MAP.get(itemId) ?? [{ name: "Default", props: {} }];
   const props = (fixtures[fixtureIndex] ?? fixtures[0])?.props ?? {};
   const renderer = RENDERER_MAP.get(itemId);
-  if (renderer) return renderer(props);
+  if (typeof renderer === "function") return renderer(props);
   const entry = ITEM_MAP.get(itemId);
   if (!entry) return <Text style={styles.message}>No preview for “{itemId}”.</Text>;
   const { Component } = entry;
