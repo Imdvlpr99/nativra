@@ -51,7 +51,8 @@ export function RootLayout() {
             </Suspense>
           </ErrorBoundary>
         </div>
-        <Footer />
+        {/* The playground is a full-height app; a footer under it would only scroll the workspace away. */}
+        {pathname !== "/playground" && <Footer />}
       </div>
     </>
   );

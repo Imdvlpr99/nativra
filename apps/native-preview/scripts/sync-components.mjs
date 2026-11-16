@@ -12,7 +12,8 @@
  *   style.ts        the active style, chosen from ?style= (default: soft)
  *   items.ts        registry id -> component, for every component, block and template
  */
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -149,6 +150,13 @@ ${items.map(([id, type, name]) => `  "${id}": { type: "${type.replace(/s$/, "")}
 };
 `
 );
+// The playground's NativeWind target compiles classes with Tailwind's browser build, served from
+// public/ (Expo's web export publishes it next to the app).
+const appRequire = createRequire(join(here, "../package.json"));
+const tailwindBrowser = appRequire.resolve("@tailwindcss/browser");
+await mkdir(resolve(here, "../public"), { recursive: true });
+await copyFile(tailwindBrowser, resolve(here, "../public/playground-tailwind.js"));
+
 console.log(
   `Synced ${componentNames.length} components, ${items.length - componentNames.length} blocks/templates, ${themeIds.length} themes, ${styleIds.length} styles`
 );

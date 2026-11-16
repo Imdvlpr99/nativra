@@ -2,6 +2,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { ExternalLink, Moon, Sun } from "lucide-react";
 import { PREVIEW_FIXTURES } from "@nativra/preview-runtime";
 import { itemsOfType, type ItemType } from "@/lib/data";
+import { PhoneMockup } from "@/components/PhoneMockup";
 
 const THEMES = itemsOfType("theme").map((t) => ({ id: t.id, name: t.name }));
 const STYLES = itemsOfType("style").map((s) => ({ id: s.id, name: s.name.replace(/ style$/, "") }));
@@ -154,28 +155,40 @@ export function PreviewFrame({ id, type, fixedStyle }: { id: string; type: ItemT
         </div>
       </div>
 
-      <div className={`relative ${isScreen ? "flex justify-center bg-muted/40 px-4 py-8" : ""}`}>
-        {!loaded && (
-          <div
-            className={`absolute inset-0 animate-pulse bg-muted/60 ${isScreen ? "m-8 mx-auto w-[min(390px,100%-2rem)] rounded-[2.25rem]" : ""}`}
-            aria-hidden="true"
+      {isScreen ? (
+        // Templates and overlays render inside a phone, as they would on a device.
+        <div className="flex justify-center bg-muted/40 px-4 py-8">
+          <div className="h-[780px] w-full">
+            <PhoneMockup scheme={scheme}>
+              {!loaded && <div className="absolute inset-0 animate-pulse bg-muted/40 motion-reduce:animate-none" aria-hidden="true" />}
+              <iframe
+                ref={frameRef}
+                key={src}
+                src={src}
+                title={`Live preview of ${id}`}
+                loading="lazy"
+                onLoad={() => setLoaded(true)}
+                className="absolute inset-x-0 top-0 h-[calc(100%+1px)] w-full border-0"
+                style={{ opacity: loaded ? 1 : 0, transition: "opacity 150ms" }}
+              />
+            </PhoneMockup>
+          </div>
+        </div>
+      ) : (
+        <div className="relative">
+          {!loaded && <div className="absolute inset-0 animate-pulse bg-muted/60 motion-reduce:animate-none" aria-hidden="true" />}
+          <iframe
+            ref={frameRef}
+            key={src}
+            src={src}
+            title={`Live preview of ${id}`}
+            loading="lazy"
+            onLoad={() => setLoaded(true)}
+            className="block w-full"
+            style={{ height, opacity: loaded ? 1 : 0, transition: "opacity 150ms" }}
           />
-        )}
-        <iframe
-          ref={frameRef}
-          key={src}
-          src={src}
-          title={`Live preview of ${id}`}
-          loading="lazy"
-          onLoad={() => setLoaded(true)}
-          className={
-            isScreen
-              ? "block w-full max-w-[390px] rounded-[2.25rem] border-[6px] border-foreground/90 bg-background shadow-2xl"
-              : "block w-full"
-          }
-          style={{ height, opacity: loaded ? 1 : 0, transition: "opacity 150ms" }}
-        />
-      </div>
+        </div>
+      )}
       <p className="border-t border-border px-4 py-2 text-xs text-muted-foreground">
         Live render of the StyleSheet source with react-native-web. The NativeWind version looks the same.
       </p>

@@ -23,3 +23,6 @@ apps/docs/public/preview/
 
 apps/docs/dist-server/
 apps/docs/src/generated/
+
+# Copied from @tailwindcss/browser by apps/native-preview/scripts/sync-components.mjs
+apps/native-preview/public/playground-tailwind.js

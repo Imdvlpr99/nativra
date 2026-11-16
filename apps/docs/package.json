@@ -13,19 +13,28 @@
     "typecheck": "tsc --noEmit",
     "pretypecheck": "node ../../scripts/build-registry.mjs && node ../../scripts/build-cli-docs.mjs && node ../../scripts/build-config-schema.mjs && node scripts/generate-data.mjs",
     "clean": "rimraf dist dist-server",
-    "preview:build": "node scripts/build-preview.mjs"
+    "preview:build": "node scripts/build-preview.mjs",
+    "test": "vitest run",
+    "pretest": "node ../../scripts/build-registry.mjs"
   },
   "dependencies": {
+    "@codemirror/lang-css": "6.3.0",
+    "@codemirror/lang-javascript": "6.2.2",
+    "@codemirror/lang-json": "6.0.1",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/theme-one-dark": "6.1.2",
+    "@codemirror/view": "6.43.15",
+    "@nativra/preview-runtime": "workspace:*",
     "@nativra/registry-schema": "workspace:*",
     "@nativra/theme-engine": "workspace:*",
+    "codemirror": "6.0.1",
     "lucide-react": "^1.70.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
     "react-router": "^7.6.0",
     "remark-gfm": "^4.0.1",
-    "shiki": "^3.13.0",
-    "@nativra/preview-runtime": "workspace:*"
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
     "@nativra/config": "workspace:*",
@@ -41,7 +50,8 @@
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vite": "^8.3.7"
+    "vite": "^8.3.7",
+    "vitest": "^5.1.0"
   },
   "type": "module"
 }

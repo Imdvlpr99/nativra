@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { name: "Templates", href: "/docs/templates" },
   { name: "Themes", href: "/docs/themes" },
   { name: "CLI", href: "/docs/cli" },
+  { name: "Playground", href: "/playground" },
 ];
 const SECTION_HREFS = NAV_LINKS.slice(1).map((l) => l.href);
 

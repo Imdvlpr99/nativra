@@ -23,6 +23,7 @@ import Contributing from "@/pages/docs/Contributing";
 // Heavier pages load on demand: item pages carry the live preview, the changelog carries Markdown.
 const ItemPage = lazy(() => import("@/pages/ItemPage"));
 const Changelog = lazy(() => import("@/pages/docs/Changelog"));
+const Playground = lazy(() => import("@/pages/Playground"));
 
 /** Hand-written guide routes, relative to /docs. */
 export const GUIDE_ROUTES: Array<{ path: string; element: React.ReactElement }> = [
@@ -47,6 +48,7 @@ export function App() {
     <Routes>
       <Route element={<RootLayout />}>
         <Route index element={<Home />} />
+        <Route path="playground" element={<Playground />} />
         <Route path="docs" element={<DocsLayout />}>
           <Route index element={<Introduction />} />
           {GUIDE_ROUTES.map((r) => (

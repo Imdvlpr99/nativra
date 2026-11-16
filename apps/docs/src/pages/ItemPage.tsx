@@ -171,6 +171,15 @@ export default function ItemPage({ type }: { type: ItemType }) {
 
       <Block id="installation" title="Installation">
         <InstallTabs item={item} />
+        {(type === "component" || type === "block" || type === "template" || type === "hook") && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Want to try it first?{" "}
+            <Link to={`/playground?add=${item.id}`} className="font-medium text-foreground underline underline-offset-4 hover:text-brand">
+              Open it in the playground
+            </Link>
+            : a real React Native project in your browser, with this item installed by the CLI.
+          </p>
+        )}
       </Block>
 
       {item.hasDocs && (

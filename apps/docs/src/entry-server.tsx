@@ -9,6 +9,7 @@ import { App, GUIDE_ROUTES } from "./App";
 /** Every URL the site prerenders, in sitemap order. */
 export const ROUTES: string[] = [
   "/",
+  "/playground",
   "/docs",
   ...GUIDE_ROUTES.map((r) => `/docs/${r.path}`),
   ...ITEM_TYPE_ORDER.flatMap((t) => (ITEMS.some((i) => i.type === t) ? [`/docs/${TYPE_META[t].segment}`] : [])),
