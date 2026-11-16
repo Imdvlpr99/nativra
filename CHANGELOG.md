@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-11-16
+
+### 🧪 Playground: try Nativra in the browser
+- **`/playground` on the docs site**: a real React Native project running in the browser, laid out like an IDE: an explorer, a registry browser with one-click installs, a tabbed code editor (CodeMirror), a live preview (react-native-web, phone frame or full panel, light or dark), and a Terminal / Console panel. Panes resize by drag or keyboard and collapse; the layout is remembered. Theme and Style pickers in the toolbar run the matching CLI commands. Phones get one pane at a time with a bottom tab bar. No install and no separate deployment: it ships with the docs.
+- **Errors**: a compile error keeps the last working app on screen (like fast refresh) with a card that opens the failing file; the app's own `console` output has its own tab with grouped repeats and an error count.
+- **A real CLI in the terminal**: `npx nativra-cli add | remove | list | search | info | theme | style | init` run a browser build of the CLI against the docs' own registry, using the same import rewriting and NativeWind CSS generation as the published CLI. Shell basics (`ls`, `tree`, `cat`, `touch`, `rm`, `clear`, `reset`, `help`), history and Tab completion included.
+- **Both styling targets**: StyleSheet runs exactly as on a device; NativeWind compiles classes in the browser with Tailwind's browser build and the project's own `global.css` theme block.
+- **Live editing**: TypeScript and JSX compile in the browser (Sucrase) as you type, errors show in the preview and the terminal, and the app's `console` output appears in the terminal. The project is saved in the browser; Reset starts over.
+- **Isolated**: the preview runs in a sandboxed iframe with an opaque origin, so project code can't reach the docs site's storage or cookies.
+- Item pages link to the playground with the item preinstalled (`/playground?add=<id>`).
+- Fixed the NativeWind `settings-flow` sign-out button, whose text was nearly invisible on its own background.
+
 ### 🎭 Styles: five complete looks, independent of color
 - **New item type `style`**: the UI's character (radii by role, type scale, density, how cards and inputs are drawn, shadows, press feedback, dialog backdrop) now lives in `lib/themes/style.ts`, separate from the colors in `theme.ts`. Any of the 10 themes works with any style.
 - **Five presets:** `soft` (the previous look and still the default), `crisp` (shadcn/ui-like: small radii, hairline borders, compact), `tailwind` (Tailwind UI-like: rings with layered shadows, roomy), `material` (Material 3-like: tonal surfaces, filled fields, lighter headings) and `ios` (iOS-like: grey grouped surfaces, larger type, dimming press feedback).
