@@ -35,6 +35,12 @@
         "build"
       ]
     },
+    "@nativra/mcp#test": {
+      "dependsOn": [
+        "^build",
+        "build"
+      ]
+    },
     "dev": {
       "dependsOn": [
         "^build"
