@@ -17,6 +17,7 @@ export function Textarea({
   errorMessage,
   disabled = false,
   rows = 4,
+  className = "",
   ...rest
 }: TextareaProps) {
   const palette = useThemeColors();
@@ -35,7 +36,7 @@ export function Textarea({
         placeholderTextColor={palette["muted-foreground"]}
         className={`field min-h-[96px] rounded-control sp-p-3 type-base text-foreground ${
           error ? "border-destructive" : "border-input"
-        } ${disabled ? "opacity-50" : ""}`}
+        } ${disabled ? "opacity-50" : ""} ${className}`}
         {...rest}
       />
       {error && errorMessage ? <Text className="type-xs text-destructive">{errorMessage}</Text> : null}

@@ -12,7 +12,7 @@ export interface InputProps extends TextInputProps {
 
 /** Forwards its ref to the TextInput, so forms can focus the next field (React 18 and 19). */
 export const Input = React.forwardRef<React.ComponentRef<typeof TextInput>, InputProps>(function Input(
-  { label, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest },
+  { label, error = false, errorMessage, disabled = false, style, className = "", onFocus, onBlur, ...rest },
   ref
 ) {
   const palette = useThemeColors();
@@ -40,6 +40,8 @@ export const Input = React.forwardRef<React.ComponentRef<typeof TextInput>, Inpu
           "field rounded-control min-h-control sp-px-3.5 sp-py-2.5 type-base text-foreground",
           error ? (filled ? "border-b-2 border-destructive" : "border-destructive") : "",
           disabled ? "opacity-50" : "",
+          // Added to the field's classes, never replacing them.
+          className,
         ].join(" ")}
         style={[focused && !error ? field(palette, true) : null, style]}
         {...rest}

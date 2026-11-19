@@ -38,6 +38,8 @@ export interface ButtonProps extends Omit<PressableProps, "children"> {
   leftIcon?: ButtonIcon;
   /** Shown after the label. */
   rightIcon?: ButtonIcon;
+  /** Extra classes, added after the variant and size classes. */
+  className?: string;
   /**
    * The label. Text and numbers are wrapped in a themed <Text>; any other node renders as is
    * (give an icon-only button an `accessibilityLabel`).
@@ -112,6 +114,7 @@ export function Button({
   rightIcon,
   children,
   style,
+  className,
   ...rest
 }: ButtonProps) {
   const c = useThemeColors();
@@ -119,7 +122,8 @@ export function Button({
   // Solid buttons get the theme's soft resting shadow.
   const solid = variant === "default" || variant === "primary" || variant === "destructive";
 
-  const containerClass = [BASE, VARIANTS[variant], SIZES[size], isDisabled && "opacity-50"]
+  // A caller's className is added to the button's own classes, never replaces them.
+  const containerClass = [BASE, VARIANTS[variant], SIZES[size], isDisabled && "opacity-50", className]
     .filter(Boolean)
     .join(" ");
 
