@@ -18,7 +18,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `pnpm audit` no longer ignores the two `image-size` advisories: Expo SDK 58's Metro doesn't use `image-size` at all. The unused `deepmerge` override is gone.
 - CodeQL also scans the GitHub Actions workflows (`actions` language).
 
+### ✨ MCP server
+- New `@nativra/mcp` package: an MCP server with `nativra_search`, `nativra_list`, `nativra_info`, `nativra_init`, `nativra_add`, `nativra_diff`, `nativra_update` and `nativra_doctor`, so AI agents can find and install components. It runs the bundled CLI with argument arrays and never prompts. It can't force-overwrite edited files or remove items.
+
+### ✨ Registry
+- New components: `search-bar`, `form-field`, `list-item`, `swipeable-row` (no gesture-handler needed; actions are also screen-reader actions) and `time-picker`. New `register-form` block, and new `use-form` and `use-infinite-scroll` hooks. All are beta.
+- Button takes any node as its label, `leftIcon` / `rightIcon` (a node, or a function given the label color), and a function `style`; the loading spinner scales with the size.
+
 ### ✨ CLI
+- `nativra diff --summary` prints one line per file and a count instead of the patch.
+- `nativra list --outdated` lists only items with an update and exits 1 when there are any.
+- `nativra search` marks beta, experimental and deprecated items.
+- `nativra info --json --docs` includes the item's usage docs.
 - `nativra update --check`: like `--dry-run`, but exits with code 1 while anything is out of date. An edited file whose registry source hasn't changed is reported as your edit and doesn't count.
 - `nativra doctor --json` prints the checks as JSON for CI.
 - `add` no longer treats a file that already matches what it would write as a conflict, and starts tracking it.
@@ -32,6 +43,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `nativra list --installed` lists what the project has installed, each with the registry's current version and whether an update is available (`--json` too).
 
 ### 🐛 Fixes
+- `update` keeps tracking a file it could not remove, instead of forgetting it while it stays on disk; `update --check` no longer fails over a dropped file that is already gone.
+- `rollback nativra-config` refuses to discard edits made to `nativra.json` after `init`, unless `--force`.
+- `add` keeps the CRLF line endings of a file that is already up to date.
+- `init` only warns when it can't add `.nativra/` to a symlinked `.gitignore`, instead of reporting that `nativra.json` failed.
+- Sibling imports named after `Object.prototype` members (`./toString`, `./constructor`) are no longer rewritten.
+- Slider: a vertical scroll that starts on the slider scrolls the page instead of changing the value; accessibility actions at the limits no longer fire `onSlidingComplete`.
+- NativeWind Button, Input and Textarea add a caller's `className` to their own classes instead of replacing them.
+- Blocks and templates use the style's press feedback (`pressedStyle`) instead of a fixed opacity.
 - Installing an item whose id is already installed from another registry (`acme/button` after `button`) is refused instead of overwriting the other's lockfile entry and backups.
 - `audit --fix` refreshes lockfile hashes of the files it migrates that were unedited before, so `update` keeps updating them; `rollback audit-fix` moves them back.
 - A lockfile entry without a `version` or `files` map gets the "restore it from git" error instead of a crash.
