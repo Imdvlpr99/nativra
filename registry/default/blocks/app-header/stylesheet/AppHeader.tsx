@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, View, Text, TextInput } from "react-native";
 import { ChevronLeft, Search, Bell, X } from "lucide-react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface AppHeaderProps {
   title: string;
@@ -47,7 +47,7 @@ export function AppHeader({
               onPress={onBack}
               accessibilityRole="button"
               accessibilityLabel="Go back"
-              style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.7 }]}
+              style={({ pressed }) => [styles.iconBtn, pressedStyle(pressed)]}
             >
               <ChevronLeft size={20} color={palette.foreground} />
             </Pressable>
@@ -74,7 +74,7 @@ export function AppHeader({
               onPress={onNotificationsPress}
               accessibilityRole="button"
               accessibilityLabel="Notifications"
-              style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.7 }]}
+              style={({ pressed }) => [styles.iconBtn, pressedStyle(pressed)]}
             >
               <Bell size={18} color={palette["muted-foreground"]} />
               {unreadNotificationsCount > 0 && (
@@ -92,7 +92,7 @@ export function AppHeader({
               onPress={onAvatarPress}
               accessibilityRole="button"
               accessibilityLabel="User profile"
-              style={({ pressed }) => [styles.avatarBtn, pressed && { opacity: 0.7 }]}
+              style={({ pressed }) => [styles.avatarBtn, pressedStyle(pressed)]}
             >
               <Text style={styles.avatarText}>
                 {avatarFallback}
@@ -119,7 +119,7 @@ export function AppHeader({
               onPress={() => onSearchChange("")}
               accessibilityRole="button"
               accessibilityLabel="Clear search"
-              style={({ pressed }) => (pressed ? { opacity: 0.2 } : null)}
+              style={({ pressed }) => pressedStyle(pressed)}
             >
               <X size={14} color={palette["muted-foreground"]} />
             </Pressable>

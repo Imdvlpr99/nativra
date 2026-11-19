@@ -21,7 +21,7 @@ import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function AnalyticsDashboard() {
   const palette = useThemeColors();
@@ -68,7 +68,7 @@ export function AnalyticsDashboard() {
                 accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={({ pressed }) => [styles.filterTab, active && styles.filterTabActive, pressed && { opacity: 0.2 }]}
+                style={({ pressed }) => [styles.filterTab, active && styles.filterTabActive, pressedStyle(pressed)]}
               >
                 <RNText style={[styles.filterTabText, active && styles.filterTabTextActive]}>
                   {tab.label}

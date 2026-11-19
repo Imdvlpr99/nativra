@@ -1,6 +1,6 @@
 /**
  * Nativra — Button (React Native StyleSheet)
- * @version 0.1.0
+ * @version 0.3.0
  * @target stylesheet
  * @platforms android, ios
  *
@@ -34,12 +34,23 @@ type ButtonVariant =
 
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
+/** An icon node, or a function that receives the label color so the icon matches the variant. */
+export type ButtonIcon = React.ReactNode | ((color: string) => React.ReactNode);
+
 export interface ButtonProps extends Omit<PressableProps, "children"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
-  children: string;
+  /** Shown before the label (replaced by the spinner while loading). */
+  leftIcon?: ButtonIcon;
+  /** Shown after the label. */
+  rightIcon?: ButtonIcon;
+  /**
+   * The label. Text and numbers are wrapped in a themed <Text>; any other node renders as is
+   * (give an icon-only button an `accessibilityLabel`).
+   */
+  children?: React.ReactNode;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +121,17 @@ const TEXT_SIZE_STYLES: Record<ButtonSize, TextStyle> = {
   xl: styles.textXl,
 };
 
+// ActivityIndicator only takes a numeric size on Android, so the "small" spinner is scaled to
+// follow the button size on every platform.
+const SPINNER_SCALE: Record<ButtonSize, number> = { xs: 0.7, sm: 0.8, md: 0.9, lg: 1, xl: 1.1 };
+
+/** True when every child is text or a number, so the whole label can sit in one <Text>. */
+function isTextLabel(children: React.ReactNode): boolean {
+  return React.Children.toArray(children).every((child) => typeof child === "string" || typeof child === "number");
+}
+
+const renderIcon = (icon: ButtonIcon | undefined, color: string) => (typeof icon === "function" ? icon(color) : icon);
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -119,6 +141,8 @@ export function Button({
   size = "md",
   disabled = false,
   loading = false,
+  leftIcon,
+  rightIcon,
   children,
   style,
   ...rest
@@ -139,22 +163,31 @@ export function Button({
 
   return (
     <Pressable
-      style={({ pressed }) => [
+      style={(state) => [
         styles.base,
         getVariantStyle(variant, c),
         SIZE_STYLES[size],
         solid && !isDisabled && elevation("card"),
         isDisabled && styles.disabled,
-        pressedStyle(pressed && !isDisabled),
-        style as ViewStyle,
+        pressedStyle(state.pressed && !isDisabled),
+        typeof style === "function" ? style(state) : style,
       ]}
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       {...rest}
     >
-      {loading && <ActivityIndicator size="small" color={loaderColor} />}
-      <Text style={[getTextStyle(variant, c), TEXT_SIZE_STYLES[size]]}>{children}</Text>
+      {loading ? (
+        <ActivityIndicator size="small" color={loaderColor} style={{ transform: [{ scale: SPINNER_SCALE[size] }] }} />
+      ) : (
+        renderIcon(leftIcon, loaderColor)
+      )}
+      {children == null || children === false ? null : isTextLabel(children) ? (
+        <Text style={[getTextStyle(variant, c), TEXT_SIZE_STYLES[size]]}>{children}</Text>
+      ) : (
+        children
+      )}
+      {renderIcon(rightIcon, loaderColor)}
     </Pressable>
   );
 }

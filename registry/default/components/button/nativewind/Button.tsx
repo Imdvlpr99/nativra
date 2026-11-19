@@ -1,6 +1,6 @@
 /**
  * Nativra — Button (NativeWind)
- * @version 0.1.0
+ * @version 0.3.0
  * @target nativewind
  * @platforms android, ios
  *
@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add button
  */
 import React from "react";
-import { Pressable, Text, ActivityIndicator, type PressableProps, type ViewStyle } from "react-native";
+import { Pressable, Text, ActivityIndicator, type PressableProps } from "react-native";
 import { elevation, useThemeColors } from "@/hooks/use-theme-colors";
 
 // ---------------------------------------------------------------------------
@@ -26,12 +26,23 @@ type ButtonVariant =
 
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
+/** An icon node, or a function that receives the label color so the icon matches the variant. */
+export type ButtonIcon = React.ReactNode | ((color: string) => React.ReactNode);
+
 export interface ButtonProps extends Omit<PressableProps, "children"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
-  children: string;
+  /** Shown before the label (replaced by the spinner while loading). */
+  leftIcon?: ButtonIcon;
+  /** Shown after the label. */
+  rightIcon?: ButtonIcon;
+  /**
+   * The label. Text and numbers are wrapped in a themed <Text>; any other node renders as is
+   * (give an icon-only button an `accessibilityLabel`).
+   */
+  children?: React.ReactNode;
 }
 
 // ---------------------------------------------------------------------------
@@ -77,6 +88,17 @@ const TEXT_SIZES: Record<ButtonSize, string> = {
   xl: "type-base weight-label",
 };
 
+// ActivityIndicator only takes a numeric size on Android, so the "small" spinner is scaled to
+// follow the button size on every platform.
+const SPINNER_SCALE: Record<ButtonSize, number> = { xs: 0.7, sm: 0.8, md: 0.9, lg: 1, xl: 1.1 };
+
+/** True when every child is text or a number, so the whole label can sit in one <Text>. */
+function isTextLabel(children: React.ReactNode): boolean {
+  return React.Children.toArray(children).every((child) => typeof child === "string" || typeof child === "number");
+}
+
+const renderIcon = (icon: ButtonIcon | undefined, color: string) => (typeof icon === "function" ? icon(color) : icon);
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -86,6 +108,8 @@ export function Button({
   size = "md",
   disabled = false,
   loading = false,
+  leftIcon,
+  rightIcon,
   children,
   style,
   ...rest
@@ -100,6 +124,8 @@ export function Button({
     .join(" ");
 
   const textClass = [TEXT_VARIANTS[variant], TEXT_SIZES[size]].join(" ");
+  const contentColor =
+    variant === "default" ? c.background : variant === "primary" ? c["primary-foreground"] : variant === "destructive" ? c["destructive-foreground"] : c.foreground;
 
   return (
     <Pressable
@@ -107,16 +133,16 @@ export function Button({
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
-      style={[solid && !isDisabled ? elevation("card") : undefined, style as ViewStyle]}
+      style={(state) => [solid && !isDisabled ? elevation("card") : undefined, typeof style === "function" ? style(state) : style]}
       {...rest}
     >
-      {loading && (
-        <ActivityIndicator
-          size="small"
-          color={variant === "default" ? c.background : variant === "primary" ? c["primary-foreground"] : variant === "destructive" ? c["destructive-foreground"] : c.foreground}
-        />
+      {loading ? (
+        <ActivityIndicator size="small" color={contentColor} style={{ transform: [{ scale: SPINNER_SCALE[size] }] }} />
+      ) : (
+        renderIcon(leftIcon, contentColor)
       )}
-      <Text className={textClass}>{children}</Text>
+      {children == null || children === false ? null : isTextLabel(children) ? <Text className={textClass}>{children}</Text> : children}
+      {renderIcon(rightIcon, contentColor)}
     </Pressable>
   );
 }

@@ -21,7 +21,7 @@ import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function EcommerceFlow() {
   const palette = useThemeColors();
@@ -88,7 +88,7 @@ export function EcommerceFlow() {
             <RNText style={styles.title}>Storefront</RNText>
             <RNText style={styles.subtitle}>Curated Tech Essentials</RNText>
           </View>
-          <Pressable accessibilityRole="button" style={({ pressed }) => [styles.cartBtn, pressed && { opacity: 0.8 }]}>
+          <Pressable accessibilityRole="button" style={({ pressed }) => [styles.cartBtn, pressedStyle(pressed)]}>
             <RNText style={styles.cartText}>Cart</RNText>
             <Badge size="sm" variant="primary" label={String(cartCount)} />
           </Pressable>
@@ -117,7 +117,7 @@ export function EcommerceFlow() {
                 accessibilityRole="button"
                 key={c.id}
                 onPress={() => setSelectedCat(c.id)}
-                style={({ pressed }) => [styles.catPill, active ? styles.catPillActive : styles.catPillInactive, pressed && { opacity: 0.2 }]}
+                style={({ pressed }) => [styles.catPill, active ? styles.catPillActive : styles.catPillInactive, pressedStyle(pressed)]}
               >
                 <RNText style={[styles.catText, active ? styles.catTextActive : styles.catTextInactive]}>
                   {c.name}

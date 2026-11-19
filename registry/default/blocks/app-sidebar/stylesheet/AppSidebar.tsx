@@ -10,7 +10,7 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react-native";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface NavItem {
   id: string;
@@ -116,7 +116,7 @@ export function AppSidebar({
                   onPress={() => onSelect?.(item.id)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  style={({ pressed }) => [styles.navItem, isActive && styles.navItemActive, pressed && { opacity: 0.7 }]}
+                  style={({ pressed }) => [styles.navItem, isActive && styles.navItemActive, pressedStyle(pressed)]}
                 >
                   <View style={styles.navItemLeft}>
                     {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
@@ -159,7 +159,7 @@ export function AppSidebar({
         <Pressable
           accessibilityRole="button"
           onPress={onProfilePress}
-          style={({ pressed }) => [styles.profileCard, pressed && { opacity: 0.7 }]}
+          style={({ pressed }) => [styles.profileCard, pressedStyle(pressed)]}
         >
           <View style={styles.profileLeft}>
             <View style={styles.avatar}>
@@ -180,7 +180,7 @@ export function AppSidebar({
               onPress={onLogoutPress}
               accessibilityRole="button"
               accessibilityLabel="Log out"
-              style={({ pressed }) => [styles.logoutBtn, pressed && { opacity: 0.2 }]}
+              style={({ pressed }) => [styles.logoutBtn, pressedStyle(pressed)]}
             >
               <LogOut size={14} color={palette["muted-foreground"]} />
             </Pressable>

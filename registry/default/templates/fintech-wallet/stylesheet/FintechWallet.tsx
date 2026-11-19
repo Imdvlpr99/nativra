@@ -22,7 +22,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function FintechWallet() {
   const palette = useThemeColors();
@@ -55,7 +55,7 @@ export function FintechWallet() {
           <Pressable
             accessibilityRole="button"
             onPress={() => setHideBalance((h) => !h)}
-            style={({ pressed }) => [styles.hideBtn, pressed && { opacity: 0.2 }]}
+            style={({ pressed }) => [styles.hideBtn, pressedStyle(pressed)]}
           >
             <RNText style={styles.hideText}>
               {hideBalance ? "Reveal" : "Hide Balance"}

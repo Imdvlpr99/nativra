@@ -63,6 +63,8 @@ export function Slider({
   const latest = useRef({ current, min, max, step, disabled, width: 0, onValueChange, onSlidingComplete, controlled: value !== undefined });
   latest.current = { ...latest.current, current, min, max, step, disabled, onValueChange, onSlidingComplete, controlled: value !== undefined };
   const startX = useRef(0);
+  /** True once the touch has moved horizontally; until then a parent ScrollView may take it. */
+  const dragging = useRef(false);
 
   const commit = (next: number) => {
     const l = latest.current;
@@ -84,18 +86,35 @@ export function Slider({
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => !latest.current.disabled,
-        onMoveShouldSetPanResponder: () => !latest.current.disabled,
-        // Keep the drag when a parent ScrollView would like to take over.
-        onPanResponderTerminationRequest: () => false,
+        onMoveShouldSetPanResponder: (_e, g) => !latest.current.disabled && Math.abs(g.dx) > Math.abs(g.dy),
+        // A parent ScrollView may take a touch that hasn't started dragging the thumb (a vertical
+        // scroll that began on the slider); once the user drags horizontally, the slider keeps it.
+        onPanResponderTerminationRequest: () => !dragging.current,
         // Children don't receive touches (pointerEvents="none"), so locationX is measured from
         // the slider itself rather than from the track or thumb under the finger.
+        // Nothing is committed on touch-down, so a scroll that takes over leaves the value alone.
         onPanResponderGrant: (e: GestureResponderEvent) => {
           startX.current = e.nativeEvent.locationX;
-          commit(valueAt(startX.current));
+          dragging.current = false;
         },
-        onPanResponderMove: (_e, gesture) => commit(valueAt(startX.current + gesture.dx)),
-        onPanResponderRelease: () => latest.current.onSlidingComplete?.(latest.current.current),
-        onPanResponderTerminate: () => latest.current.onSlidingComplete?.(latest.current.current),
+        onPanResponderMove: (_e, gesture) => {
+          if (!dragging.current) {
+            if (Math.abs(gesture.dx) < 4 || Math.abs(gesture.dx) < Math.abs(gesture.dy)) return;
+            dragging.current = true;
+          }
+          commit(valueAt(startX.current + gesture.dx));
+        },
+        onPanResponderRelease: (_e, gesture) => {
+          // A tap (or a drag that never passed the threshold) jumps to where the finger went down.
+          if (!dragging.current) commit(valueAt(startX.current + gesture.dx));
+          dragging.current = false;
+          latest.current.onSlidingComplete?.(latest.current.current);
+        },
+        onPanResponderTerminate: () => {
+          const wasDragging = dragging.current;
+          dragging.current = false;
+          if (wasDragging) latest.current.onSlidingComplete?.(latest.current.current);
+        },
       }),
     // Created once on purpose: every handler reads props and layout through `latest`.
     []
@@ -104,9 +123,13 @@ export function Slider({
   const onAccessibilityAction = (e: AccessibilityActionEvent) => {
     if (disabled) return;
     const s = step > 0 ? step : 1;
-    const next = e.nativeEvent.actionName === "increment" ? current + s : e.nativeEvent.actionName === "decrement" ? current - s : current;
-    commit(snapValue(next, min, max, step));
-    latest.current.onSlidingComplete?.(latest.current.current);
+    const action = e.nativeEvent.actionName;
+    if (action !== "increment" && action !== "decrement") return;
+    const next = snapValue(action === "increment" ? current + s : current - s, min, max, step);
+    // Already at the limit: nothing changed, so no completion event either.
+    if (next === current) return;
+    commit(next);
+    latest.current.onSlidingComplete?.(next);
   };
 
   return (

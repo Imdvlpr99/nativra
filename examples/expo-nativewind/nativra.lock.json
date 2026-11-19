@@ -27,15 +27,15 @@
       "type": "component"
     },
     "button": {
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": {
-        "components/ui/Button.tsx": "5fd7301969771cec4bf2a86a73d5e0f1350fd6e1e2ce9a7d20f226ad447109f5"
+        "components/ui/Button.tsx": "69dcfb350535e3aca12ffbb107c625d0e479b608bd58b9fe3cf5b779532d7e7a"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Button.tsx": "5fd7301969771cec4bf2a86a73d5e0f1350fd6e1e2ce9a7d20f226ad447109f5"
+        "components/ui/Button.tsx": "69dcfb350535e3aca12ffbb107c625d0e479b608bd58b9fe3cf5b779532d7e7a"
       },
       "type": "component"
     },

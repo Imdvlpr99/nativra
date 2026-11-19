@@ -11,7 +11,7 @@ import React from "react";
 import { Pressable, StyleSheet, View, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface TransactionRowProps {
   title: string;
@@ -51,7 +51,7 @@ export function TransactionRow({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.container, style, pressed && { opacity: 0.8 }]}
+      style={({ pressed }) => [styles.container, style, pressedStyle(pressed)]}
     >
       <View style={styles.leftCol}>
         <View style={styles.avatar}>

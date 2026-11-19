@@ -13,7 +13,7 @@ import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { Slider } from "./Slider";
 import { Text } from "./Text";
-import { useThemeColors, alpha, type ThemeColors, ts, sp, themeStyle } from "@/hooks/use-theme-colors";
+import { useThemeColors, alpha, type ThemeColors, ts, sp, themeStyle, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface FilterOption {
   id: string;
@@ -80,7 +80,7 @@ export function FilterSheet({
               setCurrentPrice(maxPrice / 2);
               onReset?.();
             }}
-            style={({ pressed }) => (pressed ? { opacity: 0.2 } : null)}
+            style={({ pressed }) => pressedStyle(pressed)}
           >
             <RNText style={styles.resetBtn}>Reset</RNText>
           </Pressable>
@@ -97,7 +97,7 @@ export function FilterSheet({
                   accessibilityRole="button"
                   key={c.id}
                   onPress={() => handleCategoryPress(c.id)}
-                  style={({ pressed }) => [styles.chip, active ? styles.chipActive : styles.chipInactive, pressed && { opacity: 0.7 }]}
+                  style={({ pressed }) => [styles.chip, active ? styles.chipActive : styles.chipInactive, pressedStyle(pressed)]}
                 >
                   <RNText style={[styles.chipText, active ? styles.chipTextActive : styles.chipTextInactive]}>
                     {c.label}

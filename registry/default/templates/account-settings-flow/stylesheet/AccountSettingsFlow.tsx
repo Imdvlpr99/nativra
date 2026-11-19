@@ -22,7 +22,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function AccountSettingsFlow() {
   const palette = useThemeColors();
@@ -86,7 +86,7 @@ export function AccountSettingsFlow() {
                 accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={({ pressed }) => [styles.navTab, active && styles.navTabActive, pressed && { opacity: 0.2 }]}
+                style={({ pressed }) => [styles.navTab, active && styles.navTabActive, pressedStyle(pressed)]}
               >
                 <Text style={[styles.navTabText, active ? styles.navTabTextActive : styles.navTabTextInactive]}>
                   {tab.label}
@@ -241,7 +241,7 @@ export function AccountSettingsFlow() {
                       <Text style={styles.memberEmail}>{sess.location} • {sess.active}</Text>
                     </View>
                     {!sess.isCurrent && (
-                      <Pressable accessibilityRole="button" style={({ pressed }) => [styles.revokeBtn, pressed && { opacity: 0.2 }]}>
+                      <Pressable accessibilityRole="button" style={({ pressed }) => [styles.revokeBtn, pressedStyle(pressed)]}>
                         <Text style={styles.revokeBtnText}>Revoke</Text>
                       </Pressable>
                     )}
@@ -249,7 +249,7 @@ export function AccountSettingsFlow() {
                 ))}
               </View>
 
-              <Pressable accessibilityRole="button" style={({ pressed }) => [styles.signOutAllBtn, pressed && { opacity: 0.2 }]}>
+              <Pressable accessibilityRole="button" style={({ pressed }) => [styles.signOutAllBtn, pressedStyle(pressed)]}>
                 <Text style={styles.signOutAllText}>Sign Out All Other Sessions</Text>
               </Pressable>
             </Card>

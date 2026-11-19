@@ -28,7 +28,7 @@ import {
   CheckCheck,
   MoreVertical,
 } from "lucide-react-native";
-import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 interface Message {
   id: string;
@@ -131,7 +131,7 @@ export function ChatFlow() {
                 accessibilityRole="button"
                 onPress={() => setActiveThreadId(null)}
               accessibilityLabel="Back to conversations"
-                style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.2 }]}
+                style={({ pressed }) => [styles.backButton, pressedStyle(pressed)]}
               >
                 <ChevronLeft size={22} color={palette.foreground} />
               </Pressable>
@@ -149,7 +149,7 @@ export function ChatFlow() {
               </View>
             </View>
 
-            <Pressable accessibilityRole="button" accessibilityLabel="More options" style={({ pressed }) => [styles.moreButton, pressed && { opacity: 0.2 }]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="More options" style={({ pressed }) => [styles.moreButton, pressedStyle(pressed)]}>
               <MoreVertical size={18} color={palette["muted-foreground"]} />
             </Pressable>
           </View>
@@ -196,7 +196,7 @@ export function ChatFlow() {
 
           {/* Message Input Bar */}
           <View style={styles.inputBar}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Attach file" style={({ pressed }) => [styles.attachBtn, pressed && { opacity: 0.2 }]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Attach file" style={({ pressed }) => [styles.attachBtn, pressedStyle(pressed)]}>
               <Paperclip size={18} color={palette["muted-foreground"]} />
             </Pressable>
 
@@ -213,7 +213,7 @@ export function ChatFlow() {
               onPress={handleSendMessage}
               accessibilityLabel="Send message"
               accessibilityState={{ disabled: !inputText.trim() }}
-              style={({ pressed }) => [styles.sendBtn, inputText.trim() ? styles.sendBtnActive : styles.sendBtnInactive, pressed && { opacity: 0.2 }]}
+              style={({ pressed }) => [styles.sendBtn, inputText.trim() ? styles.sendBtnActive : styles.sendBtnInactive, pressedStyle(pressed)]}
             >
               <Send size={18} color={inputText.trim() ? palette.foreground : palette["muted-foreground"]} />
             </Pressable>
@@ -246,7 +246,7 @@ export function ChatFlow() {
                 accessibilityRole="button"
                 key={tab}
                 onPress={() => setFilterTab(tab)}
-                style={({ pressed }) => [styles.filterPill, filterTab === tab ? styles.filterPillActive : styles.filterPillInactive, pressed && { opacity: 0.2 }]}
+                style={({ pressed }) => [styles.filterPill, filterTab === tab ? styles.filterPillActive : styles.filterPillInactive, pressedStyle(pressed)]}
               >
                 <Text
                   style={[
@@ -268,7 +268,7 @@ export function ChatFlow() {
                   accessibilityRole="button"
                   key={thread.id}
                   onPress={() => setActiveThreadId(thread.id)}
-                  style={({ pressed }) => [styles.threadItem, pressed && { opacity: 0.2 }]}
+                  style={({ pressed }) => [styles.threadItem, pressedStyle(pressed)]}
                 >
                   <View style={styles.threadItemLeft}>
                     <View style={styles.avatarWrapper}>
