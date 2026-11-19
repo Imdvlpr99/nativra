@@ -28,9 +28,11 @@ import {
   DataTable,
   Dialog,
   Fab,
+  FormField,
   IconButton,
   Input,
   Label,
+  ListItem,
   OtpInput,
   Progress,
   RadioGroup,
@@ -43,6 +45,7 @@ import {
   Slider,
   Spinner,
   Stack,
+  SwipeableRow,
   Switch,
   Tabs,
   Text as NText,
@@ -368,6 +371,22 @@ function InteractiveSwitch(p: PreviewProps) {
         {val ? "Active" : "Inactive"}
       </DemoText>
     </View>
+  );
+}
+
+function InteractiveFormField(p: PreviewProps) {
+  const [on, setOn] = useState(false);
+  return (
+    <FormField
+      label={String(p.label ?? "Email me about updates")}
+      description={p.description as string | undefined}
+      required={Boolean(p.required)}
+      error={p.error as string | undefined}
+    >
+      {({ labelId, accessibilityLabel }) => (
+        <Switch value={on} onValueChange={setOn} accessibilityLabelledBy={labelId} accessibilityLabel={accessibilityLabel} />
+      )}
+    </FormField>
   );
 }
 
@@ -810,6 +829,30 @@ export const RENDERERS = {
       <Badge label="Item Beta" variant="primary" />
       <Badge label="Item Gamma" variant="outline" />
     </Stack>
+  ),
+  "form-field": (p) => <InteractiveFormField {...p} />,
+  "list-item": (p) => (
+    <View style={{ width: "100%" }}>
+      <ListItem title={String(p.title ?? "Account")} subtitle={p.subtitle as string | undefined} destructive={Boolean(p.destructive)} onPress={() => {}} divider />
+      <ListItem title="Notifications" subtitle="Push and email" trailing={<Badge label="3" variant="primary" />} onPress={() => {}} divider />
+      <ListItem title="Version" trailing={<DemoText tone="muted">2.4.0</DemoText>} />
+    </View>
+  ),
+  "swipeable-row": () => (
+    <View style={{ width: "100%" }}>
+      <SwipeableRow
+        rightActions={[
+          { label: "Delete", variant: "destructive", onPress: () => {} },
+          { label: "Archive", onPress: () => {} },
+        ]}
+        leftActions={[{ label: "Read", variant: "primary", onPress: () => {} }]}
+      >
+        <ListItem title="Weekly report" subtitle="Swipe left or right to see the actions" divider />
+      </SwipeableRow>
+      <SwipeableRow rightActions={[{ label: "Delete", variant: "destructive", onPress: () => {} }]}>
+        <ListItem title="Invoice #1042" subtitle="Due Friday" />
+      </SwipeableRow>
+    </View>
   ),
   switch: (p) => <InteractiveSwitch {...p} />,
   tabs: (p) => <InteractiveTabs {...p} />,

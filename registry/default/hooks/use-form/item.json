@@ -1,0 +1,14 @@
+{
+  "id": "use-form",
+  "name": "useForm",
+  "description": "Controlled form state with per-field validation, touched tracking and async submit.",
+  "type": "hook",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-form.ts" }],
+  "tags": ["hook", "form", "validation"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "register-form",
+  "name": "Register Form",
+  "description": "Sign-up form with name, email, password and confirm, inline validation, terms consent and autofill hints.",
+  "type": "block",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/RegisterForm.tsx", "target": "nativewind" },
+    { "path": "stylesheet/RegisterForm.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "card", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "input", "registry": "default" },
+    { "id": "checkbox", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "text", "registry": "default" },
+    { "id": "use-form", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "auth", "register", "signup", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

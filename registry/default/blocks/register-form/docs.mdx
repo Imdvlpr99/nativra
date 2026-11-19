@@ -1,0 +1,32 @@
+# Register Form
+
+The sign-up counterpart to [Login Form](/docs/blocks/login-form). It has name, email, password and confirm fields, plus a terms checkbox. Errors appear once a field is left or after a submit attempt. The fields carry autofill hints, so password managers can offer a generated password.
+
+## Usage
+
+```tsx
+import { RegisterForm } from "@/blocks/RegisterForm";
+
+export function SignUpScreen() {
+  return (
+    <RegisterForm
+      onSubmit={async ({ name, email, password }) => {
+        await auth.signUp({ name, email, password });
+      }}
+      onSignIn={() => router.push("/login")}
+    />
+  );
+}
+```
+
+While the promise from `onSubmit` is pending, the button shows a spinner and a second submit is ignored. Validation lives in the block (built on [useForm](/docs/hooks/use-form)); edit the `rules` object to change it.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| onSubmit | (values) => void \| Promise | — | Called with `{ name, email, password }` once everything is valid |
+| onSignIn | () => void | — | Shows the "Already have an account?" footer |
+| termsLabel | string | "I agree to the Terms and Privacy Policy" | Terms checkbox text; pass "" to hide it |
+| minPasswordLength | number | 8 | Password rule |
+| isLoading | boolean | false | Forces the loading state |

@@ -280,6 +280,28 @@ const FIXTURES = {
     { name: "Member", props: { name: "Alex Kim", email: "alex@acme.dev", role: "Admin" } },
     { name: "Current user", props: { name: "Sam Rivera", email: "sam@acme.dev", role: "Owner", isCurrentUser: true } },
   ],
+  "search-bar": [
+    { name: "Empty", props: { placeholder: "Search components" } },
+    { name: "With text", props: { defaultValue: "button", onCancel: noop } },
+    { name: "Loading", props: { defaultValue: "date picker", loading: true } },
+  ],
+  "form-field": [
+    { name: "Default", props: { label: "Email me about updates", description: "At most one email a month" } },
+    { name: "Error", props: { label: "Country", required: true, error: "Choose a country" } },
+  ],
+  "list-item": [
+    { name: "Settings", props: { title: "Account", subtitle: "ana@example.com" } },
+    { name: "Destructive", props: { title: "Sign out", destructive: true } },
+  ],
+  "swipeable-row": [{ name: "Inbox", props: {} }],
+  "time-picker": [
+    { name: "12-hour", props: { label: "Pickup time", defaultValue: "18:30", hourCycle: 12 } },
+    { name: "24-hour, 15 min", props: { label: "Start", defaultValue: "07:45", hourCycle: 24, minuteStep: 15 } },
+  ],
+  "register-form": [
+    { name: "Default", props: { onSubmit: noop, onSignIn: noop } },
+    { name: "Loading", props: { onSubmit: noop, isLoading: true } },
+  ],
 } satisfies Record<string, PreviewFixture[]>;
 
 /** The fixtures' exact types, for compile-time checks against component props. */

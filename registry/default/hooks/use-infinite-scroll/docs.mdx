@@ -1,0 +1,52 @@
+# useInfiniteScroll
+
+Cursor pagination for `FlatList`. It loads the first page on mount and the next page as the list nears its end, and starts over on pull-to-refresh. It never runs two page requests at once, and drops a page that arrives after a refresh started.
+
+## Usage
+
+```tsx
+import { FlatList } from "react-native";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { Spinner } from "@/components/ui/Spinner";
+import { Button } from "@/components/ui/Button";
+
+export function Feed() {
+  const feed = useInfiniteScroll({
+    fetchPage: async (cursor?: string) => {
+      const res = await fetch(`https://api.example.com/posts?after=${cursor ?? ""}`);
+      const json = await res.json();
+      return { items: json.posts, nextCursor: json.next };
+    },
+  });
+
+  return (
+    <FlatList
+      {...feed.listProps}
+      keyExtractor={(post) => post.id}
+      renderItem={({ item }) => <PostCard post={item} />}
+      ListFooterComponent={
+        feed.error ? <Button onPress={feed.retry}>Try again</Button> : feed.loading ? <Spinner /> : null
+      }
+    />
+  );
+}
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| fetchPage | `(cursor) => Promise<{ items, nextCursor? }>` | — | Loads one page; `cursor` is undefined for the first. Return no `nextCursor` on the last page |
+| enabled | boolean | true | Load the first page on mount |
+
+## Return value
+
+| Property | Description |
+|----------|-------------|
+| items | Every item loaded so far |
+| loading | The next page is loading |
+| refreshing | The first page is loading or reloading |
+| error | The last request's error; `loadMore` pauses until `retry` |
+| hasMore | False after the last page |
+| loadMore, refresh, retry | Actions |
+| listProps | `data`, `onEndReached`, `onEndReachedThreshold`, `refreshing` and `onRefresh` for a FlatList |
