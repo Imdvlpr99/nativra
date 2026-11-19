@@ -31,7 +31,9 @@ export function registerSearchCommand(program: Command) {
       }
       console.log();
       for (const i of hits) {
-        console.log(`  ${chalk.cyan(printable(i.ref).padEnd(24))} ${chalk.gray(`[${printable(i.type)}]`)} ${printable(i.description)}`);
+        // Stable is the norm; anything else is worth seeing before installing.
+        const badge = i.status && i.status !== "stable" ? `${(i.status === "deprecated" ? chalk.red : chalk.yellow)(`[${printable(i.status)}]`)} ` : "";
+        console.log(`  ${chalk.cyan(printable(i.ref).padEnd(24))} ${badge}${chalk.gray(`[${printable(i.type)}]`)} ${printable(i.description)}`);
       }
       console.log();
     });
