@@ -1,0 +1,39 @@
+# SectionList
+
+React Native's `SectionList` with themed section headers and footers. The `inset` variant groups each section's rows into a rounded card, the way settings screens do. It pairs with [ListItem](/docs/components/list-item).
+
+## Usage
+
+```tsx
+import { SectionList } from "@/components/ui/SectionList";
+import { ListItem } from "@/components/ui/ListItem";
+
+const sections = [
+  { title: "Account", data: [{ id: "profile", label: "Profile" }, { id: "security", label: "Security" }] },
+  { title: "Notifications", footer: "We never send marketing email.", data: [{ id: "push", label: "Push" }] },
+];
+
+<SectionList
+  variant="inset"
+  sections={sections}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item, index, section }) => (
+    <ListItem title={item.label} onPress={() => open(item.id)} divider={index < section.data.length - 1} />
+  )}
+/>
+```
+
+Each section is `{ title, footer?, data }`. Pass `renderSectionHeader` or `renderSectionFooter` to replace the defaults. Every other `SectionList` prop passes through.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| sections | `{ title, footer?, data }[]` | — | Sections to show |
+| renderItem | SectionListRenderItem | — | Row renderer |
+| variant | "plain" \| "inset" | "plain" | `inset` draws each section as a card |
+| stickySectionHeadersEnabled | boolean | true for plain | Headers stay on top while scrolling |
+
+## Accessibility
+
+- Section titles have `accessibilityRole="header"`, so screen-reader users can jump between sections

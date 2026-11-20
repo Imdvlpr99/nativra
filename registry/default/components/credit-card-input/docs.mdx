@@ -1,0 +1,43 @@
+# CreditCardInput
+
+Card number, expiry and CVC fields with:
+- formatting in brand-specific groups (Amex is 4-6-5)
+- brand detection
+- the Luhn checksum
+- expiry checks
+- focus that moves on as each field fills
+
+Card autofill works on iOS and Android.
+
+> Pass the values to your payment provider's SDK (Stripe, Adyen, Midtrans…) for tokenization. Don't send or store raw card numbers on your own servers; that puts you in PCI DSS scope. Many providers ship their own card field, which you should prefer when it exists.
+
+## Usage
+
+```tsx
+import { CreditCardInput, type CardValue, type CardStatus } from "@/components/ui/CreditCardInput";
+
+export function Checkout() {
+  const [card, setCard] = useState<CardValue>({ number: "", expiry: "", cvc: "" });
+  const [status, setStatus] = useState<CardStatus | null>(null);
+  return (
+    <>
+      <CreditCardInput value={card} onChange={(v, s) => { setCard(v); setStatus(s); }} />
+      <Button disabled={!status?.complete} onPress={() => pay(card)}>Pay</Button>
+    </>
+  );
+}
+```
+
+Each field shows its error after the user leaves it, never while typing.
+
+## Helpers
+
+`card-utils.ts` is installed next to the component: `detectBrand`, `formatCardNumber`, `luhnValid`, `formatExpiry`, `expiryValid` and `cardStatus`.
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| value | `{ number, expiry, cvc }` | Formatted number, "MM/YY", digits |
+| onChange | (value, status) => void | `status` is `{ brand, numberValid, expiryValid, cvcValid, complete }` |
+| disabled | boolean | Disables every field |

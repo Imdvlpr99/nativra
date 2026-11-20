@@ -1,0 +1,48 @@
+# PhoneInput
+
+A phone number field with a country-code button. The button opens the searchable [CountryPicker](/docs/components/country-picker) list with dial codes. When autofill or a paste brings in an international number ("+62 812…"), the field picks that country and keeps only the national part.
+
+## Usage
+
+```tsx
+import { PhoneInput, toE164 } from "@/components/ui/PhoneInput";
+
+export function Example() {
+  const [country, setCountry] = useState("ID");
+  const [phone, setPhone] = useState("");
+  return (
+    <PhoneInput
+      label="Phone"
+      country={country}
+      onCountryChange={(c) => setCountry(c.code)}
+      value={phone}
+      onChangeText={setPhone}
+      placeholder="812 3456 7890"
+    />
+  );
+}
+
+// Send to your API in E.164: "+6281234567890"
+await api.sendOtp(toE164(country, phone));
+```
+
+`toE164` drops a leading trunk `0` ("0812…" becomes "+62812…"). It doesn't check that the number is valid for the country; use a library such as `libphonenumber-js` on your server for that.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Label above the field |
+| value | string | — | National number, digits only |
+| onChangeText | (national) => void | — | Digits only |
+| country | string | — | ISO code, e.g. "ID" |
+| onCountryChange | (country) => void | — | Picked from the list or from an autofilled number |
+| error / errorMessage | boolean / string | — | Error state and message |
+| disabled | boolean | false | Dims and disables the field |
+
+Other `TextInput` props pass through to the number field.
+
+## Accessibility
+
+- The country button reads as "Country code, Indonesia, plus 62" and hints that it opens the list
+- The number field uses the phone keyboard and phone autofill (`autoComplete="tel"`)

@@ -1,0 +1,33 @@
+# ColorSwatch
+
+A row of selectable color circles, for product variants or label colors. Screen readers treat it as a radio group and read each color by its label. The check mark uses whichever theme color, foreground or background, stands out more on that swatch.
+
+## Usage
+
+```tsx
+import { ColorSwatch } from "@/components/ui/ColorSwatch";
+
+const COLORS = [
+  { color: "#1e3a8a", label: "Navy" },
+  { color: "#f5f5f4", label: "Chalk" },
+  { color: "#b91c1c", label: "Brick" },
+  { color: "#166534", label: "Forest", disabled: true },
+];
+
+export function Example() {
+  const [color, setColor] = useState(COLORS[0].color);
+  return <ColorSwatch options={COLORS} value={color} onChange={setColor} accessibilityLabel="Color" />;
+}
+```
+
+Swatch colors are your content (a product's real colors), so they're plain values rather than theme tokens.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| options | `{ color, label, disabled? }[]` | — | Choices; `label` is what screen readers say |
+| value | string | — | The selected option's color |
+| onChange | (color) => void | — | Called with the picked color |
+| size | "sm" \| "md" \| "lg" | "md" | 24, 32 or 40 pt swatches (the touch area is at least 44 pt) |
+| accessibilityLabel | string | "Color" | Group label |

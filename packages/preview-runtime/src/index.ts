@@ -298,6 +298,56 @@ const FIXTURES = {
     { name: "12-hour", props: { label: "Pickup time", defaultValue: "18:30", hourCycle: 12 } },
     { name: "24-hour, 15 min", props: { label: "Start", defaultValue: "07:45", hourCycle: 24, minuteStep: 15 } },
   ],
+  "country-picker": [
+    { name: "Selected", props: { label: "Country", value: "ID" } },
+    { name: "With dial codes", props: { label: "Country", showDialCode: true } },
+  ],
+  "phone-input": [{ name: "Default", props: { label: "Phone" } }],
+  "image-with-fallback": [{ name: "Loaded and failed", props: {} }],
+  "section-list": [
+    { name: "Inset", props: { variant: "inset" } },
+    { name: "Plain", props: { variant: "plain" } },
+  ],
+  "color-swatch": [{ name: "Default", props: {} }],
+  "credit-card-input": [{ name: "Default", props: {} }],
+  "transaction-history": [
+    {
+      name: "With balance",
+      props: {
+        currency: "USD",
+        locale: "en-US",
+        balance: 2480.5,
+        transactions: [
+          { id: "t1", title: "Salary", category: "Income", amount: 3200, timestamp: "2026-11-18T09:00:00Z" },
+          { id: "t2", title: "Grocer", category: "Food", amount: -54.2, timestamp: "2026-11-18T18:30:00Z" },
+          { id: "t3", title: "Metro card", category: "Transport", amount: -30, timestamp: "2026-11-17T08:10:00Z" },
+          { id: "t4", title: "Refund", category: "Shopping", amount: 12, timestamp: "2026-11-17T11:00:00Z", status: "pending" },
+        ],
+      },
+    },
+  ],
+  "product-card": [
+    {
+      name: "Full",
+      props: {
+        name: "Linen overshirt",
+        price: "$49",
+        compareAtPrice: "$69",
+        image: null,
+        rating: 4.5,
+        reviewCount: 128,
+        badge: "-30%",
+        onPress: noop,
+        onAddToCart: noop,
+        onToggleWishlist: noop,
+      },
+    },
+    { name: "Sold out", props: { name: "Canvas tote", price: "$24", image: null, soldOut: true, onAddToCart: noop } },
+  ],
+  "search-results-row": [
+    { name: "Highlighted", props: { title: "Date picker", subtitle: "Pick a date from a month grid", query: "pick", meta: "Component", onPress: noop, onFill: noop } },
+  ],
+  "chat-bubble": [{ name: "Conversation", props: {} }],
   "register-form": [
     { name: "Default", props: { onSubmit: noop, onSignIn: noop } },
     { name: "Loading", props: { onSubmit: noop, isLoading: true } },

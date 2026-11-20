@@ -27,8 +27,14 @@ import {
   Checkbox,
   DataTable,
   Dialog,
+  ColorSwatch,
+  CreditCardInput,
   Fab,
   FormField,
+  ImageWithFallback,
+  PhoneInput,
+  SectionList,
+  toE164,
   IconButton,
   Input,
   Label,
@@ -53,6 +59,7 @@ import {
   Toast,
 } from "./components/nativra";
 import { alpha, useThemeColors } from "./components/nativra/use-theme-colors";
+import { ChatBubble } from "./components/nativra/ChatBubble";
 
 // ---------------------------------------------------------------------------
 // Component Metadata & Categorization
@@ -387,6 +394,54 @@ function InteractiveFormField(p: PreviewProps) {
         <Switch value={on} onValueChange={setOn} accessibilityLabelledBy={labelId} accessibilityLabel={accessibilityLabel} />
       )}
     </FormField>
+  );
+}
+
+function InteractivePhoneInput(p: PreviewProps) {
+  const [country, setCountry] = useState("ID");
+  const [phone, setPhone] = useState("");
+  return (
+    <View style={{ width: "100%", gap: 8 }}>
+      <PhoneInput
+        label={String(p.label ?? "Phone")}
+        country={country}
+        onCountryChange={(c) => setCountry(c.code)}
+        value={phone}
+        onChangeText={setPhone}
+        placeholder="812 3456 7890"
+      />
+      <DemoText tone="muted" style={{ fontSize: 12 }}>E.164: {toE164(country, phone) || "—"}</DemoText>
+    </View>
+  );
+}
+
+function InteractiveColorSwatch() {
+  const options = [
+    { color: "#1e3a8a", label: "Navy" },
+    { color: "#f5f5f4", label: "Chalk" },
+    { color: "#b91c1c", label: "Brick" },
+    { color: "#166534", label: "Forest", disabled: true },
+  ];
+  const [color, setColor] = useState(options[0]!.color);
+  return <ColorSwatch options={options} value={color} onChange={setColor} />;
+}
+
+function InteractiveCreditCard() {
+  const [card, setCard] = useState({ number: "", expiry: "", cvc: "" });
+  const [complete, setComplete] = useState(false);
+  return (
+    <View style={{ width: "100%", gap: 8 }}>
+      <CreditCardInput
+        value={card}
+        onChange={(v, s) => {
+          setCard(v);
+          setComplete(s.complete);
+        }}
+      />
+      <DemoText tone={complete ? "accent" : "muted"} style={{ fontSize: 12 }}>
+        {complete ? "Card complete" : "Try 4242 4242 4242 4242"}
+      </DemoText>
+    </View>
   );
 }
 
@@ -831,6 +886,40 @@ export const RENDERERS = {
     </Stack>
   ),
   "form-field": (p) => <InteractiveFormField {...p} />,
+  "phone-input": (p) => <InteractivePhoneInput {...p} />,
+  "image-with-fallback": () => (
+    <View style={{ flexDirection: "row", gap: 12, width: "100%" }}>
+      <ImageWithFallback source={require("./assets/icon.png")} width={96} aspectRatio={1} radius="lg" accessibilityLabel="App icon" />
+      <ImageWithFallback source={null} width={96} aspectRatio={1} radius="lg" accessibilityLabel="Missing image" />
+      <ImageWithFallback source="" width={96} aspectRatio={1} radius="full" accessibilityLabel="Missing avatar" />
+    </View>
+  ),
+  "section-list": (p) => (
+    <View style={{ width: "100%", height: 360 }}>
+      <SectionList
+        variant={p.variant === "plain" ? "plain" : "inset"}
+        sections={[
+          { title: "Account", data: ["Profile", "Security"] },
+          { title: "Notifications", footer: "We never send marketing email.", data: ["Push", "Email"] },
+        ]}
+        keyExtractor={(item) => item}
+        renderItem={({ item, index, section }) => (
+          <ListItem title={item} onPress={() => {}} divider={index < section.data.length - 1} />
+        )}
+      />
+    </View>
+  ),
+  "color-swatch": () => <InteractiveColorSwatch />,
+  "credit-card-input": () => <InteractiveCreditCard />,
+  "chat-bubble": () => (
+    <View style={{ width: "100%" }}>
+      <ChatBubble from="them" senderName="Maya" text="Are we still on for 6?" time="14:02" position="first" />
+      <ChatBubble from="them" senderName="Maya" text="I booked the table by the window" time="14:02" position="last" />
+      <ChatBubble from="me" text="Yes! See you there" time="14:05" status="read" position="first" />
+      <ChatBubble from="me" text="Running 5 min late" time="17:58" status="delivered" position="last" />
+      <ChatBubble from="me" text="Can you order the starters?" time="18:01" status="failed" onRetry={() => {}} />
+    </View>
+  ),
   "list-item": (p) => (
     <View style={{ width: "100%" }}>
       <ListItem title={String(p.title ?? "Account")} subtitle={p.subtitle as string | undefined} destructive={Boolean(p.destructive)} onPress={() => {}} divider />

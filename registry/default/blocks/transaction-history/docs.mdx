@@ -1,0 +1,35 @@
+# Transaction History
+
+A transaction list grouped by day ("Today", "Yesterday", "Mon, 17 Nov"). Each day's header shows its net total and, when you pass the current balance, the balance at the end of that day. Rows are [Transaction Row](/docs/blocks/transaction-row) blocks. Money and dates follow the device locale, or the `locale` you pass.
+
+## Usage
+
+```tsx
+import { TransactionHistory } from "@/blocks/TransactionHistory";
+
+<TransactionHistory
+  currency="USD"
+  balance={2480.5}
+  transactions={[
+    { id: "t1", title: "Salary", category: "Income", amount: 3200, timestamp: "2026-11-20T09:00:00Z" },
+    { id: "t2", title: "Grocer", category: "Food", amount: -54.2, timestamp: "2026-11-20T18:30:00Z" },
+    { id: "t3", title: "Refund", amount: 12, timestamp: "2026-11-19T11:00:00Z", status: "pending" },
+  ]}
+  onPressTransaction={(t) => router.push(`/tx/${t.id}`)}
+/>
+```
+
+Amounts are signed numbers (positive is money in). Pending and failed transactions are listed but left out of the totals and the balance. For long histories, pair `onEndReached` with [useInfiniteScroll](/docs/hooks/use-infinite-scroll).
+
+`groupByDay(transactions, locale?, balance?)` is exported too, for building your own layout.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| transactions | Transaction[] | — | `{ id, title, category?, amount, timestamp, status?, iconText? }`, any order |
+| currency | string | — | ISO 4217 code, e.g. "USD", "IDR" |
+| locale | string | device | BCP 47 locale for dates and money |
+| balance | number | — | Current balance; adds each day's closing balance |
+| onPressTransaction | (t) => void | — | Makes rows pressable |
+| onEndReached / ListFooterComponent / ListEmptyComponent | — | — | Passed to the list |

@@ -1,0 +1,40 @@
+# CountryPicker
+
+A country field that opens a searchable list in a modal sheet, with flags and optional dial codes. The list covers about 240 countries and territories and has no dependencies; flags are emoji built from the ISO code.
+
+## Usage
+
+```tsx
+import { CountryPicker } from "@/components/ui/CountryPicker";
+
+export function Example() {
+  const [country, setCountry] = useState("ID");
+  return <CountryPicker label="Country" value={country} onChange={(c) => setCountry(c.code)} />;
+}
+```
+
+Search matches a name ("indo"), an ISO code ("id") or a dial code ("+62").
+
+### Custom trigger
+
+`CountryPickerModal` is the list on its own, for a trigger of your own (PhoneInput uses it):
+
+```tsx
+<CountryPickerModal visible={open} onClose={() => setOpen(false)} onSelect={(c) => setDial(c.dial)} showDialCode />
+```
+
+### Data
+
+`countries.ts` is installed next to the component and exports `COUNTRIES`, `countryByCode(code)` and `searchCountries(query)`. Pass `countries={COUNTRIES.filter(...)}` to limit the list.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Label above the field |
+| value | string | — | ISO 3166-1 alpha-2 code |
+| onChange | (country) => void | — | Called with `{ code, name, dial, flag }` |
+| placeholder | string | "Select a country" | Shown with no value |
+| showDialCode | boolean | false | Show "+62" next to names |
+| countries | Country[] | all | Limit the list |
+| disabled | boolean | false | Dims and disables the field |
