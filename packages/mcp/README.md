@@ -1,4 +1,4 @@
-# @nativra/mcp
+# nativra-mcp
 
 An [MCP](https://modelcontextprotocol.io) server that lets AI agents (Claude Code, Cursor, and other MCP clients) search, read and install [Nativra](https://nativra.vercel.app) components in your React Native or Expo project.
 
@@ -13,7 +13,7 @@ Add it to your project's `.mcp.json` (Claude Code) or your client's MCP settings
   "mcpServers": {
     "nativra": {
       "command": "npx",
-      "args": ["-y", "@nativra/mcp"]
+      "args": ["-y", "nativra-mcp"]
     }
   }
 }
