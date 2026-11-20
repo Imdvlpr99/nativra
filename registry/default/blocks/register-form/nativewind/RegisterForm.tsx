@@ -157,6 +157,12 @@ export function RegisterForm({
           </View>
         ) : null}
 
+        {form.submitError ? (
+          <Text accessibilityLiveRegion="polite" className="type-xs text-destructive">
+            {form.submitError.message || "Couldn't create the account. Try again."}
+          </Text>
+        ) : null}
+
         <Button variant="default" size="lg" loading={busy} onPress={submit} className="mt-1">
           Create account
         </Button>

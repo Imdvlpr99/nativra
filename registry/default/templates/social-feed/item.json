@@ -4,7 +4,7 @@
   "description": "Infinite-scroll feed with post cards, optimistic likes, comments and native share, pull to refresh, and error and end states.",
   "type": "template",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

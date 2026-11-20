@@ -1,0 +1,21 @@
+# SwipeableRow: a horizontal swipe reveals the actions, a vertical drag still scrolls the page.
+appId: dev.nativra.preview
+name: SwipeableRow reveals actions without blocking vertical scroll
+---
+- runFlow:
+    file: open-item.yaml
+    env:
+      ITEM: swipeable-row
+- assertVisible: "Weekly report"
+- swipe:
+    from: "Weekly report"
+    direction: LEFT
+- assertVisible: "Delete"
+- assertVisible: "Archive"
+- tapOn: "Archive"
+# Pressing an action closes the row again.
+- assertNotVisible: "Delete"
+- swipe:
+    from: "Weekly report"
+    direction: RIGHT
+- assertVisible: "Read"

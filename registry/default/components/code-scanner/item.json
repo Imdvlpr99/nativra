@@ -4,7 +4,7 @@
   "description": "QR and barcode scanner on expo-camera with a framing guide, torch toggle, duplicate filtering and permission states.",
   "type": "component",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

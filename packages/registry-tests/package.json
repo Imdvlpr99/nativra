@@ -1,0 +1,16 @@
+{
+  "name": "@nativra/registry-tests",
+  "version": "0.4.0",
+  "description": "Unit tests for the pure helpers that registry items ship (card checks, country search, …)",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^5.1.0"
+  }
+}

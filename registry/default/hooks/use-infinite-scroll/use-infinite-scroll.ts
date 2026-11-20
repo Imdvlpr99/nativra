@@ -62,11 +62,12 @@ export function useInfiniteScroll<T, C = string>({ fetchPage, enabled = true }: 
     }
   }, []);
 
-  /** Loads the next page. Does nothing while a page loads, after the last page, or after an error (use retry). */
+  /** Loads the next page. Does nothing while disabled or a page loads, after the last page, or after an error (use retry). */
   const loadMore = useCallback(() => {
-    if (!hasMore || error) return;
+    // FlatList calls onEndReached at once for an empty list: nothing loads until `enabled`.
+    if (!enabled || !hasMore || error) return;
     void load(false);
-  }, [hasMore, error, load]);
+  }, [enabled, hasMore, error, load]);
 
   /** Reloads from the first page, replacing the items once it arrives. */
   const refresh = useCallback(() => void load(true), [load]);

@@ -36,7 +36,7 @@ export function RadioGroup({
           <Pressable
             key={opt.value}
             accessibilityRole="radio"
-            accessibilityState={{ selected: isSelected, disabled: isDisabled }}
+            accessibilityState={{ selected: isSelected, disabled: isDisabled }} aria-checked={isSelected}
             onPress={() => !isDisabled && onValueChange(opt.value)}
             disabled={isDisabled}
             style={[

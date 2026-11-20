@@ -84,6 +84,15 @@ describe("nativra MCP server", () => {
     expect(JSON.parse(outdated.body)).toEqual([]);
   });
 
+  it("reports a CLI failure from list --outdated as an error, not as results", async () => {
+    const cwd = project();
+    expect((await call("nativra_init", { cwd })).isError).toBe(false);
+    // A lockfile with merge-conflict markers: the CLI exits 1 without JSON.
+    writeFileSync(join(cwd, "nativra.lock.json"), '{\n<<<<<<< HEAD\n  "items": {}\n=======\n>>>>>>> theirs\n}');
+    const r = await call("nativra_list", { outdated: true, cwd });
+    expect(r.isError).toBe(true);
+  });
+
   it("rejects item refs that could be read as CLI options", async () => {
     const r = await call("nativra_add", { items: ["--registry=https://evil.example"], cwd: project() });
     expect(r.isError).toBe(true);

@@ -1,0 +1,18 @@
+# Slider: dragging sideways changes the value; a vertical drag that starts on it scrolls instead.
+appId: dev.nativra.preview
+name: Slider changes on horizontal drag and lets vertical scrolls through
+---
+- runFlow:
+    file: open-item.yaml
+    env:
+      ITEM: slider
+- assertVisible: "50%"
+# A vertical drag starting on the track must not move the value.
+- swipe:
+    start: 50%, 45%
+    end: 50%, 25%
+- assertVisible: "50%"
+- swipe:
+    start: 30%, 45%
+    end: 80%, 45%
+- assertNotVisible: "50%"

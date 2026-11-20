@@ -45,6 +45,15 @@ export const detectBrand = (number: string): CardBrand => ruleFor(number).brand;
 /** Most digits the brand allows. */
 export const maxLength = (number: string) => Math.max(...ruleFor(number).lengths);
 
+/**
+ * The length at which focus moves on: 16 for brands that also issue 13- or 19-digit cards (almost
+ * every Visa is 16), else the brand's only length. Longer numbers can still be typed.
+ */
+export const advanceLength = (number: string) => {
+  const { lengths } = ruleFor(number);
+  return lengths.includes(16) ? 16 : Math.max(...lengths);
+};
+
 /** "4242424242424242" -> "4242 4242 4242 4242" (Amex: "3782 822463 10005"). */
 export function formatCardNumber(number: string): string {
   const rule = ruleFor(number);

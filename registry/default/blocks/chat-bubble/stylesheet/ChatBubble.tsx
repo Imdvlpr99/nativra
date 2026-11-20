@@ -35,15 +35,30 @@ export interface ChatBubbleProps {
   onLongPress?: () => void;
   /** Shown on failed messages. */
   onRetry?: () => void;
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<ChatBubbleLabels>;
   style?: StyleProp<ViewStyle>;
 }
 
-const STATUS_LABEL: Record<MessageStatus, string> = {
+export interface ChatBubbleLabels extends Record<MessageStatus, string> {
+  /** Speaker name read for your own messages. */
+  you: string;
+  /** Speaker name read when "them" has no senderName. */
+  them: string;
+  retry: string;
+  longPressHint: string;
+}
+
+const DEFAULT_LABELS: ChatBubbleLabels = {
   sending: "Sending",
   sent: "Sent",
   delivered: "Delivered",
   read: "Read",
   failed: "Not sent",
+  you: "You",
+  them: "Them",
+  retry: "Tap to retry",
+  longPressHint: "Long press for options",
 };
 
 /** One chat message, with grouping, delivery ticks, a failed state with retry, and an avatar for others. */
@@ -57,10 +72,12 @@ export function ChatBubble({
   position = "single",
   onLongPress,
   onRetry,
+  labels: labelOverrides,
   style,
 }: ChatBubbleProps) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const mine = from === "me";
   const showAvatar = !mine && (position === "single" || position === "last");
   const failed = mine && status === "failed";
@@ -76,7 +93,7 @@ export function ChatBubble({
         borderTopLeftRadius: position === "middle" || position === "last" ? tight : r,
         borderBottomLeftRadius: position === "first" || position === "middle" ? tight : r,
       };
-  const meta = [time, mine && status ? STATUS_LABEL[status] : null].filter(Boolean).join(", ");
+  const meta = [time, mine && status ? labels[status] : null].filter(Boolean).join(", ");
   const tickColor = c["primary-foreground"];
   // Read ticks are solid; sent and delivered ones are dimmer.
   const tickOpacity = status === "read" ? 1 : 0.7;
@@ -93,8 +110,8 @@ export function ChatBubble({
           onLongPress={onLongPress}
           disabled={!onLongPress}
           accessibilityRole="text"
-          accessibilityLabel={`${mine ? "You" : (senderName ?? "Them")}: ${text}${meta ? `. ${meta}` : ""}`}
-          accessibilityHint={onLongPress ? "Long press for options" : undefined}
+          accessibilityLabel={`${mine ? labels.you : (senderName ?? labels.them)}: ${text}${meta ? `. ${meta}` : ""}`}
+          accessibilityHint={onLongPress ? labels.longPressHint : undefined}
           style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs, corners, failed && styles.bubbleFailed]}
         >
           <Text style={[styles.text, mine ? styles.textMine : styles.textTheirs]}>{text}</Text>
@@ -110,9 +127,9 @@ export function ChatBubble({
           ) : null}
         </Pressable>
         {failed ? (
-          <Pressable onPress={onRetry} disabled={!onRetry} accessibilityRole="button" accessibilityLabel="Not sent. Tap to retry" style={styles.failedRow}>
+          <Pressable onPress={onRetry} disabled={!onRetry} accessibilityRole="button" accessibilityLabel={onRetry ? `${labels.failed}. ${labels.retry}` : labels.failed} style={styles.failedRow}>
             <AlertCircle size={ts(14)} color={c.destructive} />
-            <Text style={styles.failedText}>{onRetry ? "Not sent · Tap to retry" : "Not sent"}</Text>
+            <Text style={styles.failedText}>{onRetry ? `${labels.failed} · ${labels.retry}` : labels.failed}</Text>
           </Pressable>
         ) : null}
       </View>

@@ -4,7 +4,7 @@
   "description": "Cursor pagination for FlatList: first load, load more at the end, pull to refresh, retry.",
   "type": "hook",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [{ "path": "use-infinite-scroll.ts" }],

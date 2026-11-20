@@ -118,7 +118,7 @@ export function AppSidebar({
                   key={item.id}
                   onPress={() => onSelect?.(item.id)}
                   accessibilityRole="button"
-                  accessibilityState={{ selected: isActive }}
+                  accessibilityState={{ selected: isActive }} aria-selected={isActive}
                   className={`${`flex-row items-center justify-between sp-px-3 sp-py-2.5 rounded-control transition-colors ${
                     isActive
                       ? "bg-primary/15 border border-primary/30 text-foreground weight-label"

@@ -29,6 +29,21 @@
     },
     "experiments": {
       "baseUrl": "/preview"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "The preview uses the camera to demo the code scanner."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The preview opens your photos to demo the image picker.",
+          "cameraPermission": "The preview uses the camera to demo the image picker."
+        }
+      ]
+    ]
   }
 }

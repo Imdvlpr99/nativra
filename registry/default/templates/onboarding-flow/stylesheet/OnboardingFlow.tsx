@@ -100,7 +100,7 @@ export function OnboardingFlow({
       <View style={styles.footer}>
         <View style={styles.dotsRow}>
           {slides.map((_, idx) => (
-            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
+            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }} aria-selected={idx === currentIndex}
               key={idx}
               onPress={() => setCurrentIndex(idx)}
               style={[

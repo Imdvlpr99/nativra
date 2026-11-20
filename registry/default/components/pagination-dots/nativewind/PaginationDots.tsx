@@ -44,7 +44,7 @@ export function PaginationDots({
             hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel={`Go to page ${idx + 1}`}
-            accessibilityState={{ selected: isActive }}
+            accessibilityState={{ selected: isActive }} aria-selected={isActive}
             className={`h-2 rounded-full ${
               isActive
                 ? "w-6 bg-primary"

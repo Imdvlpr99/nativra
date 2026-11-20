@@ -1,0 +1,13 @@
+# CodeScanner: with camera permission granted, the viewfinder, hint and torch show.
+# Point the device at a QR code by hand to check scanning; Maestro can't feed the camera.
+appId: dev.nativra.preview
+name: CodeScanner shows the viewfinder once the camera is allowed
+---
+- runFlow:
+    file: open-item.yaml
+    env:
+      ITEM: code-scanner
+- assertVisible: "Point the camera at a code"
+- tapOn: "Flashlight"
+- tapOn: "Flashlight"
+- assertVisible: "Nothing scanned yet"

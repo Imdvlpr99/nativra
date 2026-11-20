@@ -2,7 +2,7 @@
 import React from "react";
 import { Text, View, type StyleProp, type TextInput, type ViewStyle } from "react-native";
 import { Input } from "@/components/ui/Input";
-import { BRAND_LABEL, cardStatus, formatCardNumber, formatExpiry, maxLength, ruleFor, type CardStatus, type CardValue } from "@/components/ui/card-utils";
+import { BRAND_LABEL, cardStatus, formatCardNumber, advanceLength, formatExpiry, ruleFor, type CardStatus, type CardValue } from "@/components/ui/card-utils";
 
 export type { CardStatus, CardValue } from "@/components/ui/card-utils";
 
@@ -11,16 +11,44 @@ export interface CreditCardInputProps {
   /** Called on every change with the new value and its validation status. */
   onChange: (value: CardValue, status: CardStatus) => void;
   disabled?: boolean;
+  /** Text for another language; anything left out stays English. `{digits}` is filled in. */
+  labels?: Partial<CreditCardInputLabels>;
   style?: StyleProp<ViewStyle>;
   className?: string;
 }
+
+export interface CreditCardInputLabels {
+  cardNumber: string;
+  numberError: string;
+  expiry: string;
+  expiryA11y: string;
+  expiryError: string;
+  cvc: string;
+  /** Amex's 4-digit code. */
+  cid: string;
+  securityCodeA11y: string;
+  digitsError: string;
+}
+
+const DEFAULT_LABELS: CreditCardInputLabels = {
+  cardNumber: "Card number",
+  numberError: "Check the card number",
+  expiry: "Expiry",
+  expiryA11y: "Expiry date, month and year",
+  expiryError: "Check the date",
+  cvc: "CVC",
+  cid: "CID",
+  securityCodeA11y: "Security code, {digits} digits",
+  digitsError: "{digits} digits",
+};
 
 /**
  * Card number, expiry and CVC with formatting, brand detection, checksum validation and focus
  * moving on as each field fills. Use it with your payment provider's tokenization; never store
  * raw card numbers on your own servers.
  */
-export function CreditCardInput({ value, onChange, disabled = false, style, className = "" }: CreditCardInputProps) {
+export function CreditCardInput({ value, onChange, disabled = false, labels: labelOverrides, style, className = "" }: CreditCardInputProps) {
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const expiryRef = React.useRef<React.ComponentRef<typeof TextInput>>(null);
   const cvcRef = React.useRef<React.ComponentRef<typeof TextInput>>(null);
   const [left, setLeft] = React.useState({ number: false, expiry: false, cvc: false });
@@ -34,7 +62,7 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
     <View className={`w-full sp-gap-4 ${className}`} style={style}>
       <View>
         <View className="flex-row justify-between items-baseline mb-1.5">
-          <Text className="type-sm weight-label text-foreground">Card number</Text>
+          <Text className="type-sm weight-label text-foreground">{labels.cardNumber}</Text>
           {status.brand !== "unknown" ? <Text className="type-sm text-muted-foreground">{BRAND_LABEL[status.brand]}</Text> : null}
         </View>
         <Input
@@ -43,16 +71,16 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
             const number = formatCardNumber(text);
             emit({ ...value, number });
             const digits = number.replace(/\D/g, "").length;
-            if (digits === maxLength(number) && cardStatus({ ...value, number }).numberValid) expiryRef.current?.focus();
+            if (digits === advanceLength(number) && cardStatus({ ...value, number }).numberValid) expiryRef.current?.focus();
           }}
           onBlur={() => leave("number")}
           placeholder="1234 5678 9012 3456"
           keyboardType="number-pad"
           autoComplete="cc-number"
           textContentType="creditCardNumber"
-          accessibilityLabel={status.brand !== "unknown" ? `Card number, ${BRAND_LABEL[status.brand]}` : "Card number"}
+          accessibilityLabel={status.brand !== "unknown" ? `${labels.cardNumber}, ${BRAND_LABEL[status.brand]}` : labels.cardNumber}
           error={left.number && value.number.length > 0 && !status.numberValid}
-          errorMessage="Check the card number"
+          errorMessage={labels.numberError}
           disabled={disabled}
           returnKeyType="next"
           submitBehavior="submit"
@@ -63,7 +91,7 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
         <View className="flex-1">
           <Input
             ref={expiryRef}
-            label="Expiry"
+            label={labels.expiry}
             value={value.expiry}
             onChangeText={(text) => {
               const expiry = formatExpiry(text, value.expiry);
@@ -74,9 +102,9 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
             placeholder="MM/YY"
             keyboardType="number-pad"
             autoComplete="cc-exp"
-            accessibilityLabel="Expiry date, month and year"
+            accessibilityLabel={labels.expiryA11y}
             error={left.expiry && value.expiry.length > 0 && !status.expiryValid}
-            errorMessage="Check the date"
+            errorMessage={labels.expiryError}
             disabled={disabled}
             maxLength={5}
             returnKeyType="next"
@@ -87,7 +115,7 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
         <View className="flex-1">
           <Input
             ref={cvcRef}
-            label={rule.cvc === 4 ? "CID" : "CVC"}
+            label={rule.cvc === 4 ? labels.cid : labels.cvc}
             value={value.cvc}
             onChangeText={(text) => emit({ ...value, cvc: text.replace(/\D/g, "").slice(0, rule.cvc) })}
             onBlur={() => leave("cvc")}
@@ -95,9 +123,9 @@ export function CreditCardInput({ value, onChange, disabled = false, style, clas
             keyboardType="number-pad"
             autoComplete="cc-csc"
             secureTextEntry
-            accessibilityLabel={`Security code, ${rule.cvc} digits`}
+            accessibilityLabel={labels.securityCodeA11y.replace("{digits}", String(rule.cvc))}
             error={left.cvc && value.cvc.length > 0 && !status.cvcValid}
-            errorMessage={`${rule.cvc} digits`}
+            errorMessage={labels.digitsError.replace("{digits}", String(rule.cvc))}
             disabled={disabled}
             maxLength={rule.cvc}
           />

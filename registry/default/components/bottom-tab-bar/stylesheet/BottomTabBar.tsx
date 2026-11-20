@@ -35,7 +35,7 @@ export function BottomTabBar({
             key={tab.id}
             onPress={() => onTabChange(tab.id)}
             accessibilityRole="tab"
-            accessibilityState={{ selected: isActive }}
+            accessibilityState={{ selected: isActive }} aria-selected={isActive}
             accessibilityLabel={tab.label}
             style={styles.tabItem}
           >

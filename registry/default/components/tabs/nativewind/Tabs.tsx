@@ -48,7 +48,7 @@ export function Tabs({
           <Pressable
             key={tab.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected: isSelected }}
+            accessibilityState={{ selected: isSelected }} aria-selected={isSelected}
             onPress={() => onValueChange(tab.value)}
             className={`flex-1 sp-py-2 sp-px-3 items-center justify-center rounded-small flex-row sp-gap-1.5 transition-all active:opacity-75 ${
               variant === "pill"

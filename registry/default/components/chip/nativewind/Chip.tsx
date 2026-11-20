@@ -48,7 +48,7 @@ export function Chip({
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ selected, disabled }}
+      accessibilityState={{ selected, disabled }} aria-selected={selected}
       accessibilityLabel={label}
       style={style}
       className={`flex-row items-center rounded-chip border ${sizeClasses} ${surfaceClasses} ${

@@ -55,6 +55,7 @@ export function Example() {
 | setFieldTouched(name) | Mark a field as visited |
 | isValid | No rule fails |
 | isSubmitting | True while `onSubmit`'s promise is pending; another submit is ignored meanwhile |
+| submitError | The error the last `onSubmit` rejected with (a network failure); cleared on the next submit |
 | validate() | Show every error and return whether the form is valid, without submitting |
-| handleSubmit() | Validate, show every error, and submit if valid |
+| handleSubmit() | Validate, show every error, and submit if valid; resolves to true on success. A rejection lands in `submitError` instead of being thrown |
 | reset(values?) | Back to the initial (or given) values, with nothing touched |

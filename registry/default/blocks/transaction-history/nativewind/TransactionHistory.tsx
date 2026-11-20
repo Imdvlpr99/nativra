@@ -37,7 +37,17 @@ export interface TransactionHistoryProps {
   onEndReached?: SectionListProps<Transaction>["onEndReached"];
   ListFooterComponent?: SectionListProps<Transaction>["ListFooterComponent"];
   ListEmptyComponent?: SectionListProps<Transaction>["ListEmptyComponent"];
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<TransactionHistoryLabels>;
 }
+
+export interface TransactionHistoryLabels {
+  today: string;
+  yesterday: string;
+  empty: string;
+}
+
+const DEFAULT_LABELS: TransactionHistoryLabels = { today: "Today", yesterday: "Yesterday", empty: "No transactions yet" };
 
 interface Day extends ListSection<Transaction> {
   net: number;
@@ -46,11 +56,11 @@ interface Day extends ListSection<Transaction> {
 
 const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
-function dayLabel(d: Date, locale: string | undefined, now = new Date()): string {
+function dayLabel(d: Date, locale: string | undefined, labels: TransactionHistoryLabels, now = new Date()): string {
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
-  if (dayKey(d) === dayKey(now)) return "Today";
-  if (dayKey(d) === dayKey(yesterday)) return "Yesterday";
+  if (dayKey(d) === dayKey(now)) return labels.today;
+  if (dayKey(d) === dayKey(yesterday)) return labels.yesterday;
   return d.toLocaleDateString(locale, {
     weekday: "short",
     day: "numeric",
@@ -60,12 +70,17 @@ function dayLabel(d: Date, locale: string | undefined, now = new Date()): string
 }
 
 /** Newest-first days, each with its net total and, given a balance, its closing balance. */
-export function groupByDay(transactions: readonly Transaction[], locale?: string, balance?: number): Day[] {
+export function groupByDay(
+  transactions: readonly Transaction[],
+  locale?: string,
+  balance?: number,
+  labels: TransactionHistoryLabels = DEFAULT_LABELS
+): Day[] {
   const sorted = [...transactions].sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
   const days: Day[] = [];
   for (const t of sorted) {
     const d = new Date(t.timestamp);
-    const title = dayLabel(d, locale);
+    const title = dayLabel(d, locale, labels);
     const last = days[days.length - 1];
     const counts = (t.status ?? "completed") === "completed";
     if (last && last.title === title) {
@@ -95,8 +110,10 @@ export function TransactionHistory({
   onEndReached,
   ListFooterComponent,
   ListEmptyComponent,
+  labels: labelOverrides,
 }: TransactionHistoryProps) {
-  const days = React.useMemo(() => groupByDay(transactions, locale, balance), [transactions, locale, balance]);
+  const labels = React.useMemo(() => ({ ...DEFAULT_LABELS, ...labelOverrides }), [labelOverrides]);
+  const days = React.useMemo(() => groupByDay(transactions, locale, balance, labels), [transactions, locale, balance, labels]);
   const money = React.useMemo(() => new Intl.NumberFormat(locale, { style: "currency", currency }), [locale, currency]);
   const signed = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${money.format(Math.abs(n))}`;
   const time = (iso: string) => new Date(iso).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
@@ -107,7 +124,7 @@ export function TransactionHistory({
       keyExtractor={(t) => t.id}
       onEndReached={onEndReached}
       ListFooterComponent={ListFooterComponent}
-      ListEmptyComponent={ListEmptyComponent ?? <Text className="p-8 text-center type-base text-muted-foreground">No transactions yet</Text>}
+      ListEmptyComponent={ListEmptyComponent ?? <Text className="p-8 text-center type-base text-muted-foreground">{labels.empty}</Text>}
       renderSectionHeader={({ section }) => {
         const day = section as Day;
         return (

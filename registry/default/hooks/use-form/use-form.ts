@@ -40,6 +40,8 @@ export function useForm<V extends Record<string, unknown>>({ initialValues, rule
   const [touched, setTouched] = useState<{ [K in keyof V]?: boolean }>({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
+  /** The error the last onSubmit rejected with; cleared by the next submit or reset. */
+  const [submitError, setSubmitError] = useState<Error | null>(null);
   // Read by handleSubmit, so a submit right after a change validates the newest values.
   const latest = useRef(values);
   latest.current = values;
@@ -80,15 +82,24 @@ export function useForm<V extends Record<string, unknown>>({ initialValues, rule
     return Object.keys(validateAll(latest.current, rules)).length === 0;
   }, [rules]);
 
-  const handleSubmit = useCallback(async () => {
-    if (submitting.current) return;
+  /**
+   * Validates, shows every error, and submits if valid. Resolves to true when onSubmit succeeded.
+   * A rejection is caught into `submitError`, so `onPress={form.handleSubmit}` is safe.
+   */
+  const handleSubmit = useCallback(async (): Promise<boolean> => {
+    if (submitting.current) return false;
     setSubmitted(true);
     const current = latest.current;
-    if (Object.keys(validateAll(current, rules)).length > 0) return;
+    if (Object.keys(validateAll(current, rules)).length > 0) return false;
     submitting.current = true;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       await onSubmit(current);
+      return true;
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err : new Error(String(err)));
+      return false;
     } finally {
       submitting.current = false;
       setSubmitting(false);
@@ -101,9 +112,10 @@ export function useForm<V extends Record<string, unknown>>({ initialValues, rule
       setValues(next);
       setTouched({});
       setSubmitted(false);
+      setSubmitError(null);
     },
     [initialValues]
   );
 
-  return { values, errors, touched, isValid, isSubmitting, setValue, setFieldTouched, errorFor, field, validate, handleSubmit, reset };
+  return { values, errors, touched, isValid, isSubmitting, submitError, setValue, setFieldTouched, errorFor, field, validate, handleSubmit, reset };
 }

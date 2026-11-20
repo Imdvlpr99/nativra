@@ -115,7 +115,7 @@ export function AppSidebar({
                   key={item.id}
                   onPress={() => onSelect?.(item.id)}
                   accessibilityRole="button"
-                  accessibilityState={{ selected: isActive }}
+                  accessibilityState={{ selected: isActive }} aria-selected={isActive}
                   style={({ pressed }) => [styles.navItem, isActive && styles.navItemActive, pressedStyle(pressed)]}
                 >
                   <View style={styles.navItemLeft}>

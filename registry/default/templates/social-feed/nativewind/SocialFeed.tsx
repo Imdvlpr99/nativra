@@ -114,7 +114,7 @@ export function SocialFeed({ fetchPage = demoPage, onToggleLike, onOpenComments,
             onPress={() => void toggleLike(item)}
             accessibilityRole="button"
             accessibilityLabel={`${liked ? "Unlike" : "Like"}, ${likeCount} likes`}
-            accessibilityState={{ selected: liked }}
+            accessibilityState={{ selected: liked }} aria-selected={liked}
             hitSlop={8}
             className="flex-row items-center sp-gap-1.5 py-1 active:opacity-70"
           >

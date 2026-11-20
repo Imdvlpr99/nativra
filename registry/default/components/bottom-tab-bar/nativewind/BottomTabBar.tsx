@@ -38,7 +38,7 @@ export function BottomTabBar({
             key={tab.id}
             onPress={() => onTabChange(tab.id)}
             accessibilityRole="tab"
-            accessibilityState={{ selected: isActive }}
+            accessibilityState={{ selected: isActive }} aria-selected={isActive}
             accessibilityLabel={tab.label}
             className="flex-1 items-center justify-center sp-py-1 active:opacity-75"
           >

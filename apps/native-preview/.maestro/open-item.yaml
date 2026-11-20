@@ -1,0 +1,12 @@
+# Shared steps: launch the preview app and filter the gallery to one item.
+# Run by the other flows with `runFlow: { file: open-item.yaml, env: { ITEM: <id> } }`.
+appId: dev.nativra.preview
+---
+- launchApp:
+    clearState: true
+    permissions:
+      camera: allow
+      photos: allow
+- tapOn: "Search components..."
+- inputText: ${ITEM}
+- hideKeyboard

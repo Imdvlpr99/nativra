@@ -17,24 +17,29 @@ const itemRef = z.string().regex(ITEM_REF, 'An item id like "button", or "<regis
 const text = (body: string, isError = false): CallToolResult => ({ content: [{ type: "text", text: body }], ...(isError ? { isError } : {}) });
 
 /** The CLI's output as a tool result; a non-zero exit is an error result, not a thrown error. */
-function fromCli(r: CliResult, { okOnExit1 = false } = {}): CallToolResult {
+function fromCli(r: CliResult): CallToolResult {
   const out = [r.stdout.trim(), r.stderr.trim()].filter(Boolean).join("\n\n");
-  const ok = r.code === 0 || (okOnExit1 && r.code === 1);
+  const ok = r.code === 0;
   return text(out || (ok ? "Done." : `nativra-cli exited with code ${r.code}.`), !ok);
 }
 
-/** JSON output, parsed and re-printed compactly; falls back to the raw text. */
-function fromJson(r: CliResult, { okOnExit1 = false } = {}): CallToolResult {
-  const ok = r.code === 0 || (okOnExit1 && r.code === 1);
+/**
+ * JSON output, parsed and re-printed compactly; falls back to the raw text as an error.
+ * `findingsExit1`: the command exits 1 to say "found something" (list --outdated, doctor), but
+ * it also exits 1 on real failures. Only exit 1 *with* parseable JSON counts as a result.
+ */
+function fromJson(r: CliResult, { findingsExit1 = false } = {}): CallToolResult {
+  const accepted = r.code === 0 || (findingsExit1 && r.code === 1);
   const start = r.stdout.search(/[[{]/);
-  if (ok && start >= 0) {
+  if (accepted && start >= 0) {
     try {
       return text(JSON.stringify(JSON.parse(r.stdout.slice(start))));
     } catch {
       // not JSON after all: report the text below
     }
   }
-  return fromCli(r, { okOnExit1 });
+  if (r.code === 0) return fromCli(r);
+  return text([r.stdout.trim(), r.stderr.trim()].filter(Boolean).join("\n\n") || `nativra-cli exited with code ${r.code}.`, true);
 }
 
 /** Runs a tool body, turning a thrown error (bad cwd) into an error result. */
@@ -89,7 +94,7 @@ export function createServer(): McpServer {
         if (outdated) args.push("--outdated");
         else if (installed) args.push("--installed");
         // list --outdated exits 1 when it finds updates: that is a result, not a failure.
-        return fromJson(await runCli(args, await resolveProjectRoot(dir)), { okOnExit1: Boolean(outdated) });
+        return fromJson(await runCli(args, await resolveProjectRoot(dir)), { findingsExit1: Boolean(outdated) });
       })
   );
 
@@ -176,7 +181,7 @@ export function createServer(): McpServer {
       inputSchema: { cwd },
       annotations: { readOnlyHint: true },
     },
-    ({ cwd: dir }) => guarded(async () => fromJson(await runCli(["doctor", "--json"], await resolveProjectRoot(dir)), { okOnExit1: true }))
+    ({ cwd: dir }) => guarded(async () => fromJson(await runCli(["doctor", "--json"], await resolveProjectRoot(dir)), { findingsExit1: true }))
   );
 
   return server;

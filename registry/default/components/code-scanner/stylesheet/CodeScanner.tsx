@@ -1,6 +1,6 @@
 /** Nativra — CodeScanner (StyleSheet). Install: npx nativra-cli add code-scanner */
 import React from "react";
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { Linking, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { CameraView, useCameraPermissions, type BarcodeScanningResult, type BarcodeType } from "expo-camera";
 import { Camera, Flashlight, FlashlightOff } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
@@ -23,8 +23,32 @@ export interface CodeScannerProps {
   hint?: string;
   /** Milliseconds before the same code counts again (default 2000). */
   cooldownMs?: number;
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<CodeScannerLabels>;
   style?: StyleProp<ViewStyle>;
 }
+
+export interface CodeScannerLabels {
+  permissionTitle: string;
+  permissionAsk: string;
+  permissionBlocked: string;
+  allow: string;
+  openSettings: string;
+  paused: string;
+  viewfinder: string;
+  flashlight: string;
+}
+
+const DEFAULT_LABELS: CodeScannerLabels = {
+  permissionTitle: "Camera access needed",
+  permissionAsk: "Allow the camera to scan codes.",
+  permissionBlocked: "Camera access is off. Turn it on in Settings to scan codes.",
+  allow: "Allow camera",
+  openSettings: "Open Settings",
+  paused: "Paused",
+  viewfinder: "Camera viewfinder",
+  flashlight: "Flashlight",
+};
 
 const FRAME = 240;
 
@@ -43,9 +67,10 @@ const onScrim = (c: ThemeColors) => (brightness(c.foreground) > brightness(c.bac
  * A camera view that reads QR codes and barcodes, with a framing guide, a torch toggle and the
  * camera-permission states handled. Uses expo-camera's built-in scanner.
  */
-export function CodeScanner({ onScan, barcodeTypes = ["qr"], paused = false, hint = "Point the camera at a code", cooldownMs = 2000, style }: CodeScannerProps) {
+export function CodeScanner({ onScan, barcodeTypes = ["qr"], paused = false, hint = "Point the camera at a code", cooldownMs = 2000, labels: labelOverrides, style }: CodeScannerProps) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [permission, requestPermission] = useCameraPermissions();
   const [torch, setTorch] = React.useState(false);
   const last = React.useRef<{ data: string; at: number } | null>(null);
@@ -67,13 +92,20 @@ export function CodeScanner({ onScan, barcodeTypes = ["qr"], paused = false, hin
     return (
       <View style={[styles.box, styles.permission, style]}>
         <Camera size={ts(32)} color={c["muted-foreground"]} />
-        <Text style={styles.permissionTitle}>Camera access needed</Text>
+        <Text style={styles.permissionTitle}>{labels.permissionTitle}</Text>
         <Text style={styles.permissionText}>
-          {permission.canAskAgain ? "Allow the camera to scan codes." : "Camera access is off. Turn it on in Settings to scan codes."}
+          {permission.canAskAgain ? labels.permissionAsk : labels.permissionBlocked}
         </Text>
-        <Button variant="primary" onPress={() => void requestPermission()} disabled={!permission.canAskAgain}>
-          Allow camera
-        </Button>
+        {/* Once the system won't ask again, only the Settings app can turn the camera back on. */}
+        {permission.canAskAgain ? (
+          <Button variant="primary" onPress={() => void requestPermission()}>
+            {labels.allow}
+          </Button>
+        ) : (
+          <Button variant="primary" onPress={() => void Linking.openSettings()}>
+            {labels.openSettings}
+          </Button>
+        )}
       </View>
     );
   }
@@ -86,7 +118,7 @@ export function CodeScanner({ onScan, barcodeTypes = ["qr"], paused = false, hin
         enableTorch={torch}
         barcodeScannerSettings={{ barcodeTypes }}
         onBarcodeScanned={paused ? undefined : handle}
-        accessibilityLabel="Camera viewfinder"
+        accessibilityLabel={labels.viewfinder}
       />
       {/* Dims everything but the frame, so the target is obvious. */}
       <View style={styles.overlay} pointerEvents="none">
@@ -103,15 +135,15 @@ export function CodeScanner({ onScan, barcodeTypes = ["qr"], paused = false, hin
         </View>
         <View style={[styles.shade, styles.bottom]}>
           <Text style={styles.hint} accessibilityLiveRegion="polite">
-            {paused ? "Paused" : hint}
+            {paused ? labels.paused : hint}
           </Text>
         </View>
       </View>
       <Pressable
         onPress={() => setTorch((t) => !t)}
         accessibilityRole="switch"
-        accessibilityLabel="Flashlight"
-        accessibilityState={{ checked: torch }}
+        accessibilityLabel={labels.flashlight}
+        accessibilityState={{ checked: torch }} aria-checked={torch}
         hitSlop={8}
         style={({ pressed }) => [styles.torch, torch && styles.torchOn, pressedStyle(pressed)]}
       >

@@ -2,7 +2,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from "react-native";
 import { ChevronDown } from "lucide-react-native";
-import { CountryPickerModal } from "@/components/ui/CountryPicker";
+import { CountryPickerModal, type CountryPickerLabels } from "@/components/ui/CountryPicker";
 import { COUNTRIES, countryByCode, type Country } from "@/components/ui/countries";
 import { type ThemeColors, field, sp, themeStyle, ts, useThemeColors } from "@/hooks/use-theme-colors";
 
@@ -17,8 +17,24 @@ export interface PhoneInputProps extends Omit<TextInputProps, "value" | "onChang
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
+  /** Text for another language; anything left out stays English. Also passed to the country list. */
+  labels?: Partial<PhoneInputLabels>;
   style?: StyleProp<ViewStyle>;
 }
+
+export interface PhoneInputLabels extends Partial<CountryPickerLabels> {
+  /** The country button, and the country list's title. */
+  countryCode: string;
+  countryCodeHint: string;
+  /** Number field name read without a `label`. */
+  phone: string;
+}
+
+const DEFAULT_LABELS: PhoneInputLabels = {
+  countryCode: "Country code",
+  countryCodeHint: "Opens the country list",
+  phone: "Phone number",
+};
 
 /** "+6281234567890" from the country and the national number; a leading trunk 0 is dropped. */
 export function toE164(countryCode: string, national: string): string {
@@ -47,11 +63,12 @@ function splitInternational(text: string, current: Country | undefined): { count
 
 /** A phone number field with a country-code picker. Autofilled "+62 ..." numbers pick their country. */
 export const PhoneInput = React.forwardRef<React.ComponentRef<typeof TextInput>, PhoneInputProps>(function PhoneInput(
-  { label, value, onChangeText, country, onCountryChange, error = false, errorMessage, disabled = false, style, onFocus, onBlur, ...rest },
+  { label, value, onChangeText, country, onCountryChange, error = false, errorMessage, disabled = false, labels: labelOverrides, style, onFocus, onBlur, ...rest },
   ref
 ) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [focused, setFocused] = React.useState(false);
   const [picking, setPicking] = React.useState(false);
   const selected = countryByCode(country);
@@ -76,8 +93,8 @@ export const PhoneInput = React.forwardRef<React.ComponentRef<typeof TextInput>,
           onPress={() => setPicking(true)}
           disabled={disabled}
           accessibilityRole="button"
-          accessibilityLabel={`Country code, ${selected ? `${selected.name}, plus ${selected.dial}` : "none"}`}
-          accessibilityHint="Opens the country list"
+          accessibilityLabel={`${labels.countryCode}, ${selected ? `${selected.name}, ${labels.plus ?? "plus"} ${selected.dial}` : (labels.none ?? "none")}`}
+          accessibilityHint={labels.countryCodeHint}
           style={styles.country}
         >
           <Text style={styles.flag}>{selected?.flag ?? "🌐"}</Text>
@@ -94,7 +111,7 @@ export const PhoneInput = React.forwardRef<React.ComponentRef<typeof TextInput>,
           autoComplete="tel"
           textContentType="telephoneNumber"
           placeholderTextColor={c["muted-foreground"]}
-          accessibilityLabel={rest.accessibilityLabel ?? label ?? "Phone number"}
+          accessibilityLabel={rest.accessibilityLabel ?? label ?? labels.phone}
           accessibilityState={{ disabled }}
           onFocus={(e) => {
             setFocused(true);
@@ -114,7 +131,8 @@ export const PhoneInput = React.forwardRef<React.ComponentRef<typeof TextInput>,
         onClose={() => setPicking(false)}
         onSelect={onCountryChange}
         selected={selected?.code}
-        title="Country code"
+        title={labels.countryCode}
+        labels={labels}
         showDialCode
       />
     </View>

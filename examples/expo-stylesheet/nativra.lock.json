@@ -27,15 +27,15 @@
       "type": "component"
     },
     "button": {
-      "version": "0.3.1",
+      "version": "0.3.2",
       "files": {
-        "components/ui/Button.tsx": "40dc4684fabd99283bd527e9fce5a0eb9ef3c641315738b0993fb835a6592715"
+        "components/ui/Button.tsx": "10bbb8070bc63cd11d89ce0a82f92cdbfd5972f9536e84b43a4771aea62e392d"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Button.tsx": "40dc4684fabd99283bd527e9fce5a0eb9ef3c641315738b0993fb835a6592715"
+        "components/ui/Button.tsx": "10bbb8070bc63cd11d89ce0a82f92cdbfd5972f9536e84b43a4771aea62e392d"
       },
       "type": "component"
     },
@@ -53,15 +53,15 @@
       "type": "component"
     },
     "checkbox": {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "files": {
-        "components/ui/Checkbox.tsx": "286a85930f389e5202e7246afd47f100cf83e0549b3561d6766bd15d68bee9e7"
+        "components/ui/Checkbox.tsx": "7ccf4e60f3889577b7bc30a23931d92e2a20fd9c438438ec9c60614f67116e67"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Checkbox.tsx": "286a85930f389e5202e7246afd47f100cf83e0549b3561d6766bd15d68bee9e7"
+        "components/ui/Checkbox.tsx": "7ccf4e60f3889577b7bc30a23931d92e2a20fd9c438438ec9c60614f67116e67"
       },
       "type": "component"
     },

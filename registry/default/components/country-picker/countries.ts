@@ -58,10 +58,14 @@ const RAW =
   "VU|Vanuatu|678;VA|Vatican City|39;VE|Venezuela|58;VN|Vietnam|84;WF|Wallis and Futuna|681;YE|Yemen|967;" +
   "ZM|Zambia|260;ZW|Zimbabwe|263";
 
-export const COUNTRIES: readonly Country[] = RAW.split(";").map((entry) => {
-  const [code = "", name = "", dial = ""] = entry.split("|");
-  return { code, name, dial, flag: flagOf(code) };
-});
+// Sorted here, so the list reads alphabetically ("U.S. Virgin Islands" by its letters) whatever
+// order the data above is in.
+export const COUNTRIES: readonly Country[] = RAW.split(";")
+  .map((entry) => {
+    const [code = "", name = "", dial = ""] = entry.split("|");
+    return { code, name, dial, flag: flagOf(code) };
+  })
+  .sort((a, b) => a.name.localeCompare(b.name, "en"));
 
 const BY_CODE = new Map(COUNTRIES.map((c) => [c.code, c]));
 

@@ -4,7 +4,7 @@
   "description": "Step and carousel pagination dot indicator with active pill expansion and interactive dot press.",
   "type": "component",
   "status": "stable",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

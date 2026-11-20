@@ -4,7 +4,7 @@
   "description": "A row of selectable color choices (product variants, label colors) that screen readers treat as a radio group.",
   "type": "component",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

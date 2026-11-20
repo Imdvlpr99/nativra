@@ -1,0 +1,15 @@
+# TimePicker: tapping an hour and AM/PM selects them (the demo starts at 18:30).
+appId: dev.nativra.preview
+name: TimePicker selects by tap
+---
+- runFlow:
+    file: open-item.yaml
+    env:
+      ITEM: time-picker
+- assertVisible: "Value: 18:30"
+- tapOn:
+    text: "8"
+    index: 0
+- assertVisible: "Value: 20:30"
+- tapOn: "AM"
+- assertVisible: "Value: 08:30"
