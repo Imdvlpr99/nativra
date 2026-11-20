@@ -1,0 +1,32 @@
+{
+  "id": "profile-flow",
+  "name": "Profile Flow",
+  "description": "Profile screen with avatar, bio, stats and grouped settings, plus an edit mode with validation, photo change and async save.",
+  "type": "template",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/ProfileFlow.tsx", "target": "nativewind" },
+    { "path": "stylesheet/ProfileFlow.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "safe-area", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "image-with-fallback", "registry": "default" },
+    { "id": "input", "registry": "default" },
+    { "id": "list-item", "registry": "default" },
+    { "id": "section-list", "registry": "default" },
+    { "id": "textarea", "registry": "default" },
+    { "id": "use-form", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["template", "profile", "settings", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

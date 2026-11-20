@@ -1,0 +1,230 @@
+/**
+ * Nativra — Profile Flow Template (NativeWind)
+ * @version 0.1.0
+ * @target nativewind
+ * @platforms android, ios
+ *
+ * Copy this file into your project. You own this code.
+ * Install: npx nativra-cli add profile-flow
+ */
+import React from "react";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Bell, Camera, Lock, LogOut, User } from "lucide-react-native";
+import { SafeArea } from "./SafeArea";
+import { Button } from "./Button";
+import { ImageWithFallback } from "./ImageWithFallback";
+import { Input } from "./Input";
+import { ListItem } from "./ListItem";
+import { SectionList } from "./SectionList";
+import { Textarea } from "./Textarea";
+import { ts, useThemeColors } from "@/hooks/use-theme-colors";
+import { useForm } from "@/hooks/use-form";
+
+export interface Profile {
+  name: string;
+  handle: string;
+  bio: string;
+  website: string;
+  avatarUrl?: string;
+  stats?: Array<{ label: string; value: string }>;
+}
+
+export interface ProfileFlowProps {
+  profile?: Profile;
+  /** Saves edits; while it runs the button spins, and a rejection shows its message. */
+  onSave?: (profile: Profile) => Promise<void> | void;
+  /** Opens your image picker and resolves to the new avatar URI, or null if cancelled. */
+  onPickAvatar?: () => Promise<string | null>;
+  /** A settings row was pressed: "account", "notifications" or "privacy". */
+  onNavigate?: (id: string) => void;
+  onSignOut?: () => void;
+}
+
+const DEMO: Profile = {
+  name: "Maya Chen",
+  handle: "maya",
+  bio: "Product designer. Building calm software in Jakarta.",
+  website: "maya.design",
+  stats: [
+    { label: "Posts", value: "128" },
+    { label: "Followers", value: "4.2k" },
+    { label: "Following", value: "312" },
+  ],
+};
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+export function ProfileFlow({ profile: initial = DEMO, onSave, onPickAvatar, onNavigate, onSignOut }: ProfileFlowProps) {
+  const palette = useThemeColors();
+  const [profile, setProfile] = React.useState(initial);
+  const [editing, setEditing] = React.useState(false);
+  const [avatar, setAvatar] = React.useState(initial.avatarUrl);
+  const [saveError, setSaveError] = React.useState<string | null>(null);
+
+  const rules = React.useMemo(
+    () => ({
+      name: (v: string) => (v.trim() ? undefined : "Enter your name"),
+      handle: (v: string) => (/^[a-z0-9_.]{2,30}$/.test(v) ? undefined : "2–30 lowercase letters, numbers, _ or ."),
+      bio: (v: string) => (v.length <= 160 ? undefined : `${v.length - 160} characters too long`),
+    }),
+    []
+  );
+  const form = useForm({
+    initialValues: { name: profile.name, handle: profile.handle, bio: profile.bio, website: profile.website },
+    rules,
+    onSubmit: async (values) => {
+      const next: Profile = { ...profile, ...values, name: values.name.trim(), ...(avatar ? { avatarUrl: avatar } : {}) };
+      setSaveError(null);
+      try {
+        await onSave?.(next);
+        setProfile(next);
+        setEditing(false);
+      } catch (err) {
+        setSaveError(err instanceof Error ? err.message : "Couldn't save. Try again.");
+      }
+    },
+  });
+
+  const startEditing = () => {
+    form.reset({ name: profile.name, handle: profile.handle, bio: profile.bio, website: profile.website });
+    setAvatar(profile.avatarUrl);
+    setSaveError(null);
+    setEditing(true);
+  };
+
+  const avatarView = (size: number, uri: string | undefined, name: string) => (
+    <ImageWithFallback
+      source={uri ?? null}
+      width={size}
+      height={size}
+      radius="full"
+      accessibilityLabel={`${name}'s photo`}
+      fallback={
+        <View className="items-center justify-center bg-muted" style={{ width: size, height: size }}>
+          <Text className="text-foreground weight-title" style={{ fontSize: size * 0.36 }}>
+            {initials(name)}
+          </Text>
+        </View>
+      }
+    />
+  );
+
+  if (editing) {
+    return (
+      <SafeArea className="flex-1 bg-background">
+        <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
+          <View className="flex-row items-center justify-between px-2 py-1.5">
+            <Button variant="ghost" size="sm" onPress={() => setEditing(false)}>
+              Cancel
+            </Button>
+            <Text accessibilityRole="header" className="type-base weight-title text-foreground">
+              Edit profile
+            </Text>
+            <Button variant="link" size="sm" loading={form.isSubmitting} onPress={() => void form.handleSubmit()}>
+              Save
+            </Button>
+          </View>
+          <ScrollView contentContainerClassName="p-4 sp-gap-4" keyboardShouldPersistTaps="handled">
+            <Pressable
+              onPress={async () => {
+                const uri = await onPickAvatar?.();
+                if (uri) setAvatar(uri);
+              }}
+              disabled={!onPickAvatar}
+              accessibilityRole="button"
+              accessibilityLabel="Change photo"
+              className="self-center mb-2 active:opacity-80"
+            >
+              {avatarView(96, avatar, form.values.name || profile.name)}
+              {onPickAvatar ? (
+                <View className="absolute right-0 bottom-0 h-8 w-8 rounded-full items-center justify-center bg-primary border-2 border-background">
+                  <Camera size={ts(16)} color={palette["primary-foreground"]} />
+                </View>
+              ) : null}
+            </Pressable>
+            <Input label="Name" {...form.field("name")} autoComplete="name" textContentType="name" />
+            <Input label="Username" {...form.field("handle")} autoCapitalize="none" autoCorrect={false} />
+            <Textarea label={`Bio (${form.values.bio.length}/160)`} {...form.field("bio")} rows={3} />
+            <Input label="Website" {...form.field("website")} keyboardType="url" autoCapitalize="none" autoCorrect={false} textContentType="URL" />
+            {saveError ? (
+              <Text accessibilityLiveRegion="polite" className="type-sm text-destructive">
+                {saveError}
+              </Text>
+            ) : null}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeArea>
+    );
+  }
+
+  const sections = [
+    {
+      title: "Settings",
+      data: [
+        { id: "account", title: "Account", icon: User },
+        { id: "notifications", title: "Notifications", icon: Bell },
+        { id: "privacy", title: "Privacy & security", icon: Lock },
+      ],
+    },
+  ];
+
+  return (
+    <SafeArea className="flex-1 bg-background">
+      <SectionList
+        variant="inset"
+        sections={sections}
+        keyExtractor={(row) => row.id}
+        ListHeaderComponent={
+          <View className="items-center pt-6 pb-2 sp-gap-1">
+            {avatarView(88, profile.avatarUrl, profile.name)}
+            <Text accessibilityRole="header" className="type-xl weight-title text-foreground mt-2">
+              {profile.name}
+            </Text>
+            <Text className="type-sm text-muted-foreground">@{profile.handle}</Text>
+            {profile.bio ? <Text className="type-base text-foreground text-center mt-2 px-4">{profile.bio}</Text> : null}
+            {profile.website ? <Text className="type-sm text-primary">{profile.website}</Text> : null}
+            {profile.stats?.length ? (
+              <View className="surface rounded-card flex-row self-stretch mt-4 py-3">
+                {profile.stats.map((s) => (
+                  <View key={s.label} className="flex-1 items-center" accessible accessibilityLabel={`${s.value} ${s.label}`}>
+                    <Text className="type-lg weight-title text-foreground" style={{ fontVariant: ["tabular-nums"] }}>
+                      {s.value}
+                    </Text>
+                    <Text className="type-xs text-muted-foreground">{s.label}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+            <Button variant="outline" onPress={startEditing} className="self-stretch mt-4">
+              Edit profile
+            </Button>
+          </View>
+        }
+        renderItem={({ item, index, section }) => {
+          const Icon = item.icon;
+          return (
+            <ListItem
+              title={item.title}
+              leading={<Icon size={ts(20)} color={palette.foreground} />}
+              onPress={() => onNavigate?.(item.id)}
+              divider={index < section.data.length - 1}
+            />
+          );
+        }}
+        ListFooterComponent={
+          onSignOut ? (
+            <View className="surface rounded-card overflow-hidden">
+              <ListItem title="Sign out" leading={<LogOut size={ts(20)} color={palette.destructive} />} destructive chevron={false} onPress={onSignOut} />
+            </View>
+          ) : undefined
+        }
+      />
+    </SafeArea>
+  );
+}
