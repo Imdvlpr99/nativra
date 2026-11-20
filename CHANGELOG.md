@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [v0.4.0] - 2026-11-21
+
 ### 🔒 Security
 - Registry file paths may no longer contain control characters, and `add`, `update` and `diff` strip them from every path they print, so a registry can't send terminal escape sequences. Registry names in `registryDependencies` and `nativra.json` must be lowercase letters, numbers and `-`, and names in `nativra.json` must be unique.
 - Remote registries are fetched one redirect at a time: a hop from HTTPS to plain HTTP (or from `http://localhost` to anywhere else) is refused before it is requested, and more than 5 redirects fail.
@@ -27,6 +29,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - New `code-scanner` component (QR and barcodes on `expo-camera`, with a framing guide, torch, duplicate filtering and permission states) and `use-image-picker` hook (library or camera on `expo-image-picker`, with permission handling and a blocked-permission state). Both are beta.
 - New blocks: `transaction-history` (grouped by day, daily totals, running balance), `product-card`, `search-results-row` (query highlighting) and `chat-bubble` (grouping, delivery ticks, retry). New templates: `social-feed`, `booking-flow` and `profile-flow`. All are beta.
 - Button takes any node as its label, `leftIcon` / `rightIcon` (a node, or a function given the label color), and a function `style`; the loading spinner scales with the size.
+- `labels` prop on `chat-bubble`, `product-card`, `transaction-history`, `code-scanner`, `country-picker`, `phone-input`, `time-picker` and `credit-card-input`: every piece of text they show or read to screen readers, for translation. Anything left out stays English.
+- `use-form` catches a rejected `onSubmit` into `submitError` (so `onPress={form.handleSubmit}` is safe) and `handleSubmit` resolves to whether it succeeded. `register-form` shows that error.
+- Selected and checked states are also set as `aria-selected` / `aria-checked`, so they reach screen readers on web too (the docs previews). Radios report "checked".
 
 ### ✨ CLI
 - `nativra diff --summary` prints one line per file and a count instead of the patch.
@@ -46,6 +51,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `nativra list --installed` lists what the project has installed, each with the registry's current version and whether an update is available (`--json` too).
 
 ### 🐛 Fixes
+- `list --outdated` lists items whose registry couldn't be read and exits 1, instead of printing "Everything installed is up to date" and passing a CI check while the registry was down.
+- The MCP server reports a CLI failure from `nativra_list` (outdated) or `nativra_doctor` as an error; exit code 1 counts as results only with JSON output.
+- Slider is version 0.3.1, so projects get its scroll-handoff fix through `update` (it was changed without a version bump).
+- `credit-card-input` moves to the expiry field after 16 digits for Visa, Discover, JCB and UnionPay, not only at their 19-digit maximum.
+- `use-infinite-scroll` with `enabled: false` no longer loads page 1 when an empty FlatList calls `onEndReached`.
+- NativeWind Button passes a plain style array unless the caller passes a style function, so NativeWind's className merge can't drop the shadow.
+- `code-scanner` shows "Open Settings" once camera access is blocked, instead of a disabled button.
+- `time-picker` finds a 24-hour locale through `hour12` or a formatted 13:00 when the engine doesn't report `hourCycle`.
+- `country-picker` sorts its list at load: "U.S. Virgin Islands" was out of order.
 - `update` keeps tracking a file it could not remove, instead of forgetting it while it stays on disk; `update --check` no longer fails over a dropped file that is already gone.
 - `rollback nativra-config` refuses to discard edits made to `nativra.json` after `init`, unless `--force`.
 - `add` keeps the CRLF line endings of a file that is already up to date.
@@ -95,6 +109,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - npm ranges match what the sources are tested with: `lucide-react-native` `^1.73.0` (was `^0.460.0`, which stayed on 0.460.x), `react-native-safe-area-context` `>=4.10.0` and `expo-haptics` `>=13.0.0`, so new installs get the current majors that React Native 0.88 needs.
 
 ### 🧰 Repo
+- `packages/registry-tests` unit-tests the pure helpers registry items ship (card checks, country data), which nothing tested before.
+- Maestro flows in `apps/native-preview/.maestro` cover the gestures and the camera on a device (Slider, SwipeableRow, TimePicker, CodeScanner). CI has no simulator, so they run by hand.
+- The preview sync writes in place instead of deleting the folder, so a running Metro server keeps reloading on Windows.
+- The preview app configures the `expo-camera` and `expo-image-picker` permission texts.
 - The preview app now runs Expo SDK 58 (React Native 0.88, React 19.3, TypeScript 6.0) and copies every hook. Its `typecheck` also type-checks every NativeWind source with NativeWind's `className` types, which nothing compiled before.
 - Every package that runs `tsc` declares its own `typescript` (5.x), so the Expo apps' TypeScript 6 can't be picked up through hoisting.
 - The docs playground uses the CLI's own install logic (`filesForTarget`, the cross-folder import map) instead of a copy, so it can't drift from what `nativra add` writes.

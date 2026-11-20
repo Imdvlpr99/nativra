@@ -1,6 +1,6 @@
 {
   "name": "@nativra/registry-builder",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Builds authored registry source files into deployable registry.json + per-item JSON",
   "type": "module",
   "main": "./dist/index.cjs",
