@@ -20,8 +20,11 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const registry = resolve(here, "../../../registry/default");
 const out = resolve(here, "../components/nativra");
-await rm(out, { recursive: true, force: true });
+// Files are written in place and leftovers removed at the end, rather than deleting the folder
+// first: a running Metro server loses its watch on a deleted folder (on Windows) and stops reloading.
 await mkdir(join(out, "themes"), { recursive: true });
+/** Paths (relative to out) written by this run. */
+const written = new Set();
 
 /** Registry aliases -> sibling files; useColorScheme -> the URL-aware preview version. */
 function rewrite(src) {
@@ -42,7 +45,13 @@ function rewrite(src) {
   return s;
 }
 
-const write = (name, content) => writeFile(join(out, name), content, "utf8");
+const write = async (name, content) => {
+  written.add(name.replace(/\\/g, "/"));
+  const path = join(out, name);
+  // Unchanged files are left alone, so Metro only reloads what actually changed.
+  const current = await readFile(path, "utf8").catch(() => null);
+  if (current !== content) await writeFile(path, content, "utf8");
+};
 const copy = async (from, name) => write(name, rewrite(await readFile(from, "utf8")));
 
 await write(
@@ -171,6 +180,16 @@ const appRequire = createRequire(join(here, "../package.json"));
 const tailwindBrowser = appRequire.resolve("@tailwindcss/browser");
 await mkdir(resolve(here, "../public"), { recursive: true });
 await copyFile(tailwindBrowser, resolve(here, "../public/playground-tailwind.js"));
+
+// Remove what an earlier sync wrote for items that no longer exist.
+async function prune(dir, prefix = "") {
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const rel = `${prefix}${entry.name}`;
+    if (entry.isDirectory()) await prune(join(dir, entry.name), `${rel}/`);
+    else if (!written.has(rel)) await rm(join(dir, entry.name), { force: true });
+  }
+}
+await prune(out);
 
 console.log(
   `Synced ${componentNames.length} components, ${items.length - componentNames.length} blocks/templates, ${themeIds.length} themes, ${styleIds.length} styles`

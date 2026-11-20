@@ -54,6 +54,7 @@ import {
   Stack,
   SwipeableRow,
   Switch,
+  TimePicker,
   Tabs,
   Text as NText,
   Textarea,
@@ -412,6 +413,22 @@ function InteractivePhoneInput(p: PreviewProps) {
         placeholder="812 3456 7890"
       />
       <DemoText tone="muted" style={{ fontSize: 12 }}>E.164: {toE164(country, phone) || "—"}</DemoText>
+    </View>
+  );
+}
+
+function InteractiveTimePicker(p: PreviewProps) {
+  const [time, setTime] = useState(String(p.defaultValue ?? "18:30"));
+  return (
+    <View style={{ width: "100%", gap: 8 }}>
+      <TimePicker
+        label={String(p.label ?? "Pickup time")}
+        value={time}
+        onChange={setTime}
+        hourCycle={p.hourCycle === 24 ? 24 : 12}
+        minuteStep={Number(p.minuteStep ?? 5)}
+      />
+      <DemoText tone="muted" style={{ fontSize: 12 }}>Value: {time}</DemoText>
     </View>
   );
 }
@@ -922,6 +939,7 @@ export const RENDERERS = {
   ),
   "color-swatch": () => <InteractiveColorSwatch />,
   "code-scanner": () => <InteractiveCodeScanner />,
+  "time-picker": (p) => <InteractiveTimePicker {...p} />,
   "credit-card-input": () => <InteractiveCreditCard />,
   "chat-bubble": () => (
     <View style={{ width: "100%" }}>
@@ -1151,7 +1169,7 @@ export default function App() {
           <TextInput
             value={search}
             onChangeText={setSearch}
-            placeholder="Search 31 native components..."
+            placeholder="Search components..."
             placeholderTextColor={theme.textMuted}
             style={[styles.searchInput, { color: theme.textPrimary }]}
           />
