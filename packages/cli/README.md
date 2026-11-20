@@ -132,6 +132,16 @@ npx nativra-cli add acme/data-grid
 
 Only add registries you trust. The CLI checks each file against the hash the registry publishes with it. That catches corrupted downloads, but it doesn't prove who published the registry.
 
+## Use it with AI agents
+
+[`nativra-mcp`](https://www.npmjs.com/package/nativra-mcp) is an MCP server that lets Claude Code, Cursor and other agents search the registry, read an item's docs and install it, with the same checks as the CLI. In Claude Code, run this in your project:
+
+```bash
+claude mcp add nativra -- npx -y nativra-mcp
+```
+
+For other clients, add `{ "mcpServers": { "nativra": { "command": "npx", "args": ["-y", "nativra-mcp"] } } }` to their MCP config. The agent can't remove items or overwrite files you edited. See [Use with AI agents](https://nativra.vercel.app/docs/ai-agents).
+
 ## Troubleshooting
 
 | You see | What to do |

@@ -52,6 +52,7 @@ export const GUIDES: NavSection[] = [
       { title: "Updating & rollback", href: "/docs/updating", description: "diff, update, rollback and remove" },
       { title: "Doctor & audit", href: "/docs/doctor-audit", description: "Check your setup and your UI code" },
       { title: "Custom registries", href: "/docs/registries", description: "Host and install your own items" },
+      { title: "AI agents (MCP)", href: "/docs/ai-agents", description: "Let Claude Code, Cursor and other agents install components" },
     ],
   },
   {
@@ -107,6 +108,7 @@ const PAGE_FILES: Record<string, string> = {
   "/docs/updating": "docs/Updating.tsx",
   "/docs/doctor-audit": "docs/DoctorAudit.tsx",
   "/docs/registries": "docs/Registries.tsx",
+  "/docs/ai-agents": "docs/AiAgents.tsx",
   "/docs/cli": "docs/Cli.tsx",
   "/docs/configuration": "docs/Configuration.tsx",
   "/docs/compatibility": "docs/Compatibility.tsx",

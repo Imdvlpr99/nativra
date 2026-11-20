@@ -132,6 +132,16 @@ npx nativra-cli rollback button
 
 Backups live in `.nativra/` in your project, which `init` adds to `.gitignore`.
 
+## Use it with AI agents
+
+[`nativra-mcp`](https://www.npmjs.com/package/nativra-mcp) is an MCP server that lets Claude Code, Cursor and other agents search the registry, read an item's docs and install it, with the same checks as the CLI. In Claude Code, run this in your project:
+
+```bash
+claude mcp add nativra -- npx -y nativra-mcp
+```
+
+For other clients, add `{ "mcpServers": { "nativra": { "command": "npx", "args": ["-y", "nativra-mcp"] } } }` to their MCP config. The agent can't remove items or overwrite files you edited. See [Use with AI agents](https://nativra.vercel.app/docs/ai-agents).
+
 ## When something goes wrong
 
 | You see | What to do |

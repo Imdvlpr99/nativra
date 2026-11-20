@@ -15,6 +15,7 @@ import StyleSheet from "@/pages/docs/StyleSheet";
 import Updating from "@/pages/docs/Updating";
 import DoctorAudit from "@/pages/docs/DoctorAudit";
 import Registries from "@/pages/docs/Registries";
+import AiAgents from "@/pages/docs/AiAgents";
 import Cli from "@/pages/docs/Cli";
 import Configuration from "@/pages/docs/Configuration";
 import Compatibility from "@/pages/docs/Compatibility";
@@ -36,6 +37,7 @@ export const GUIDE_ROUTES: Array<{ path: string; element: React.ReactElement }> 
   { path: "updating", element: <Updating /> },
   { path: "doctor-audit", element: <DoctorAudit /> },
   { path: "registries", element: <Registries /> },
+  { path: "ai-agents", element: <AiAgents /> },
   { path: "cli", element: <Cli /> },
   { path: "configuration", element: <Configuration /> },
   { path: "compatibility", element: <Compatibility /> },
