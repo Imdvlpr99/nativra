@@ -84,8 +84,12 @@ export function registerListCommand(program: Command) {
 
       if (options.installed) {
         const lock = await readLockOrExit(options.cwd);
+        // --outdated also keeps items whose registry couldn't be read: "up to date" can't be confirmed
+        // for them, and a CI gate must not pass because the registry was down.
         const rows = installedRows(lock, items, unavailable, Boolean(options.registry)).filter(
-          (r) => (!targetType || r.type === targetType) && (!options.outdated || r.status === "update-available")
+          (r) =>
+            (!targetType || r.type === targetType) &&
+            (!options.outdated || r.status === "update-available" || r.status === "registry-unavailable")
         );
         if (options.outdated && rows.length > 0) process.exitCode = 1;
         if (options.json) {
@@ -109,7 +113,10 @@ export function registerListCommand(program: Command) {
           console.log(`  ${chalk.cyan(printable(r.ref).padEnd(28))} ${chalk.gray(`v${printable(r.installed)}`.padEnd(10))} ${state}`);
         }
         const outdated = rows.filter((r) => r.status === "update-available").length;
-        console.log(outdated > 0 ? chalk.yellow(`\n  ${outdated} update(s) available: nativra update\n`) : "");
+        const unchecked = rows.filter((r) => r.status === "registry-unavailable").length;
+        console.log(outdated > 0 ? chalk.yellow(`\n  ${outdated} update(s) available: nativra update`) : "");
+        if (unchecked > 0) console.log(chalk.yellow(`  ${unchecked} item(s) couldn't be checked: their registry is unavailable`));
+        console.log();
         return;
       }
 

@@ -1008,3 +1008,23 @@ describe("2026-11 full review", () => {
     expect(rows.map((row) => row.ref)).toEqual(["badge"]);
   });
 });
+
+describe("2026-11 review round 3", () => {
+  it("list --outdated fails, and doesn't claim everything is current, when a registry is unavailable", () => {
+    const cwd = project();
+    const config = JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")) as Record<string, unknown>;
+    writeFileSync(
+      join(cwd, "nativra.json"),
+      JSON.stringify({ ...config, registries: [{ name: "default", url: REGISTRY }, { name: "acme", url: join(cwd, "no-such-registry") }] })
+    );
+    expect(cli(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as { items: Record<string, { registry?: string }> };
+    lock.items["badge"]!.registry = "acme";
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    const r = cli(cwd, "list", "--outdated");
+    expect(r.status).toBe(1);
+    expect(r.out).not.toContain("up to date");
+    expect(r.out).toContain("couldn't be checked");
+  });
+});
