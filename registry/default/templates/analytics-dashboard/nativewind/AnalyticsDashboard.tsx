@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add analytics-dashboard
  */
 import React, { useState } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";
+import { Pressable, View, ScrollView, SafeAreaView, StatusBar } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -54,12 +54,13 @@ export function AnalyticsDashboard() {
           ].map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                className={`flex-1 sp-py-2 items-center rounded-control ${
+                className={`${`flex-1 sp-py-2 items-center rounded-control ${
                   active ? "bg-muted shadow" : ""
-                }`}
+                }`} active:opacity-20`}
               >
                 <Text
                   className={`type-xs weight-label ${
@@ -68,7 +69,7 @@ export function AnalyticsDashboard() {
                 >
                   {tab.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>

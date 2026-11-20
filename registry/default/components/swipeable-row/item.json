@@ -1,0 +1,22 @@
+{
+  "id": "swipeable-row",
+  "name": "SwipeableRow",
+  "description": "A row that swipes to reveal actions (Delete, Archive), with screen-reader actions and no extra dependencies.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/SwipeableRow.tsx", "target": "nativewind" },
+    { "path": "stylesheet/SwipeableRow.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "use-theme-colors", "registry": "default" },
+    { "id": "use-reduced-motion", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["list", "gesture", "swipe", "actions"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

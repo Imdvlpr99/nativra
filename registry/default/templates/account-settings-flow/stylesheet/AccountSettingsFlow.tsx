@@ -9,9 +9,9 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Switch,
@@ -22,7 +22,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function AccountSettingsFlow() {
   const palette = useThemeColors();
@@ -82,15 +82,16 @@ export function AccountSettingsFlow() {
           ).map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.navTab, active && styles.navTabActive]}
+                style={({ pressed }) => [styles.navTab, active && styles.navTabActive, pressedStyle(pressed)]}
               >
                 <Text style={[styles.navTabText, active ? styles.navTabTextActive : styles.navTabTextInactive]}>
                   {tab.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
@@ -240,17 +241,17 @@ export function AccountSettingsFlow() {
                       <Text style={styles.memberEmail}>{sess.location} • {sess.active}</Text>
                     </View>
                     {!sess.isCurrent && (
-                      <TouchableOpacity style={styles.revokeBtn}>
+                      <Pressable accessibilityRole="button" style={({ pressed }) => [styles.revokeBtn, pressedStyle(pressed)]}>
                         <Text style={styles.revokeBtnText}>Revoke</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     )}
                   </View>
                 ))}
               </View>
 
-              <TouchableOpacity style={styles.signOutAllBtn}>
+              <Pressable accessibilityRole="button" style={({ pressed }) => [styles.signOutAllBtn, pressedStyle(pressed)]}>
                 <Text style={styles.signOutAllText}>Sign Out All Other Sessions</Text>
-              </TouchableOpacity>
+              </Pressable>
             </Card>
           </View>
         )}

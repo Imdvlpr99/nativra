@@ -16,7 +16,8 @@ export function registerDiffCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry URL")
     .option("--exit-code", "Exit with code 1 when the installed files differ from the registry (for CI)")
-    .action(async (id: string, options: { cwd: string; registry?: string; exitCode?: boolean }) => {
+    .option("--summary", "Print one line per file and a count instead of the full diff")
+    .action(async (id: string, options: { cwd: string; registry?: string; exitCode?: boolean; summary?: boolean }) => {
       const config = await loadConfig(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -51,6 +52,7 @@ export function registerDiffCommand(program: Command) {
       const targetFiles = filesForTarget(item, config);
 
       let hasDiff = false;
+      const counts = { differ: 0, match: 0, missing: 0 };
 
       for (const file of targetFiles) {
         // Shared path resolution (Plan Section 3.3)
@@ -60,19 +62,26 @@ export function registerDiffCommand(program: Command) {
         try {
           localContent = await readFile(localPath, "utf8");
         } catch {
-          console.log(chalk.yellow(`\n  Not installed: ${printable(localPath)}`));
+          console.log(chalk.yellow(`${options.summary ? "" : "\n"}  Not installed: ${printable(localPath)}`));
           hasDiff = true;
+          counts.missing++;
           continue;
         }
 
         // Compare against what `add`/`update` would actually write (aliases rewritten)
         const registryContent = renderFile(options.cwd, item, file, related, config);
         if (sameContent(localContent, registryContent)) {
+          counts.match++;
           console.log(chalk.green(`  ✓ Up to date: ${printable(localPath)}`));
           continue;
         }
 
         hasDiff = true;
+        counts.differ++;
+        if (options.summary) {
+          console.log(chalk.yellow(`  ~ Differs: ${printable(localPath)}`));
+          continue;
+        }
         // Compared as LF: a CRLF checkout would otherwise show every line as changed.
         const patch = createPatch(localPath, normalizeEol(localContent), normalizeEol(registryContent), "installed", "registry");
         const lines = patch.split("\n");
@@ -84,6 +93,12 @@ export function registerDiffCommand(program: Command) {
         }
       }
 
+      if (options.summary) {
+        const files = (n: number) => `${n} file${n === 1 ? "" : "s"}`;
+        const parts = [`${files(counts.differ)} differ`, `${files(counts.match)} match`];
+        if (counts.missing > 0) parts.push(`${files(counts.missing)} not installed`);
+        console.log(`\n${parts.join(", ")}`);
+      }
       if (hasDiff && options.exitCode) process.exitCode = 1;
       if (!hasDiff) {
         console.log(chalk.bold.green(`\n✓ "${id}" is up to date.\n`));

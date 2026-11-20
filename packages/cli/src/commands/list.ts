@@ -52,7 +52,9 @@ export function registerListCommand(program: Command) {
     .option("--registry <url>", "Override registry URL")
     .option("--json", "Print the items as JSON")
     .option("--installed", "List what this project has installed, with the registry's current version")
-    .action(async (options: { cwd: string; type?: string; registry?: string; json?: boolean; installed?: boolean }) => {
+    .option("--outdated", "Like --installed, but only items with an update available (exits 1 if any, for CI)")
+    .action(async (options: { cwd: string; type?: string; registry?: string; json?: boolean; installed?: boolean; outdated?: boolean }) => {
+      if (options.outdated) options.installed = true;
       const config = await loadConfigOrDefault(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -82,13 +84,16 @@ export function registerListCommand(program: Command) {
 
       if (options.installed) {
         const lock = await readLockOrExit(options.cwd);
-        const rows = installedRows(lock, items, unavailable, Boolean(options.registry)).filter((r) => !targetType || r.type === targetType);
+        const rows = installedRows(lock, items, unavailable, Boolean(options.registry)).filter(
+          (r) => (!targetType || r.type === targetType) && (!options.outdated || r.status === "update-available")
+        );
+        if (options.outdated && rows.length > 0) process.exitCode = 1;
         if (options.json) {
           console.log(JSON.stringify(rows, null, 2));
           return;
         }
         if (rows.length === 0) {
-          console.log(chalk.yellow("\nNothing installed yet.\n"));
+          console.log(options.outdated ? chalk.green("\n✓ Everything installed is up to date.\n") : chalk.yellow("\nNothing installed yet.\n"));
           return;
         }
         console.log();

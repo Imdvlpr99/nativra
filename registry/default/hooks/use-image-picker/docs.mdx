@@ -1,0 +1,62 @@
+# useImagePicker
+
+Picks photos from the library or the camera with [expo-image-picker](https://docs.expo.dev/versions/latest/sdk/imagepicker/). It asks for permission first, supports cropping and multi-select, and reports a blocked permission so you can send the user to Settings.
+
+## Usage
+
+```tsx
+import { useImagePicker } from "@/hooks/use-image-picker";
+import { Button } from "@/components/ui/Button";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+
+export function AvatarPicker() {
+  const picker = useImagePicker({ allowsEditing: true, aspect: [1, 1] });
+  return (
+    <>
+      <ImageWithFallback source={picker.image?.uri ?? null} width={96} height={96} radius="full" />
+      <Button onPress={() => picker.pick("library")}>Choose photo</Button>
+      <Button variant="outline" onPress={() => picker.pick("camera")}>Take photo</Button>
+      {picker.blocked ? (
+        <Button variant="link" onPress={picker.openSettings}>
+          Allow {picker.blocked === "camera" ? "camera" : "photo"} access in Settings
+        </Button>
+      ) : null}
+    </>
+  );
+}
+```
+
+`pick()` also resolves to the picked images, or to `null` when the user cancels or access is denied. That makes it easy to pass to [Profile Flow](/docs/templates/profile-flow):
+
+```tsx
+<ProfileFlow onPickAvatar={async () => (await picker.pick("library"))?.[0]?.uri ?? null} />
+```
+
+## Setup
+
+Install with `npx expo install expo-image-picker`. For a development or production build, add the plugin to `app.json` to set the permission texts iOS shows:
+
+```json
+{ "plugins": [["expo-image-picker", { "photosPermission": "Choose a profile photo.", "cameraPermission": "Take a profile photo." }]] }
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| allowsEditing | boolean | false | Crop after picking (one image) |
+| aspect | [number, number] | — | Crop ratio, e.g. [1, 1] |
+| quality | number | 0.8 | 0–1 |
+| selectionLimit | number | 1 | Several from the library (not with cropping) |
+
+## Return value
+
+| Property | Description |
+|----------|-------------|
+| images / image | The last picked images, and the first of them |
+| pick(source) | "library" or "camera"; resolves to the images or null |
+| picking | A picker is open; another pick is ignored meanwhile |
+| error | The last failure |
+| blocked | "library" or "camera" when the user blocked access, else null |
+| openSettings() | Opens the app's system settings |
+| clear() | Forget the picked images |

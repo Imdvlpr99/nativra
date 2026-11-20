@@ -1,0 +1,55 @@
+# Product Card
+
+A product tile for grids and carousels. It has an image (with a loading skeleton and a fallback), a badge, a wishlist heart, the name, a rating, the price with a struck-through compare-at price, and an add-to-cart button. Every part except the name and price is optional.
+
+## Usage
+
+```tsx
+import { FlatList } from "react-native";
+import { ProductCard } from "@/blocks/ProductCard";
+
+<FlatList
+  data={products}
+  numColumns={2}
+  columnWrapperStyle={{ gap: 12 }}
+  contentContainerStyle={{ gap: 12, padding: 16 }}
+  keyExtractor={(p) => p.id}
+  renderItem={({ item }) => (
+    <ProductCard
+      style={{ flex: 1 }}
+      name={item.name}
+      price={item.price}
+      compareAtPrice={item.oldPrice}
+      image={item.image}
+      rating={item.rating}
+      reviewCount={item.reviews}
+      badge={item.isNew ? "New" : undefined}
+      onPress={() => router.push(`/p/${item.id}`)}
+      onAddToCart={() => cart.add(item.id)}
+      onToggleWishlist={() => wishlist.toggle(item.id)}
+      wishlisted={wishlist.has(item.id)}
+    />
+  )}
+/>
+```
+
+Prices are strings, so format them however your store does (`Intl.NumberFormat` works well).
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| name, price | string | Required |
+| compareAtPrice | string | Old price, struck through |
+| image | string \| ImageSource \| null | Falls back to a placeholder |
+| rating, reviewCount | number | Stars (0–5) and count |
+| badge | string | Tag over the image |
+| soldOut | boolean | Banner over the image; disables the add button |
+| onPress | () => void | Makes the image and text one button |
+| onAddToCart / addLabel | () => void / string | Shows the add button |
+| onToggleWishlist / wishlisted | () => void / boolean | Shows the heart |
+
+## Accessibility
+
+- The tile reads as one summary: "Linen shirt, $49, was $69, rated 4.5 of 5"
+- The heart and add buttons are separate controls with labels that name the product

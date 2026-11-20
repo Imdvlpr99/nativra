@@ -1,0 +1,45 @@
+# SearchBar
+
+A search field with a search icon, a clear button, a loading spinner and an optional Cancel action.
+
+## Usage
+
+```tsx
+import { SearchBar } from "@/components/ui/SearchBar";
+
+export function Example() {
+  const [query, setQuery] = useState("");
+  return (
+    <SearchBar
+      value={query}
+      onChangeText={setQuery}
+      onSearch={(text) => runSearch(text)}
+      onCancel={() => navigation.goBack()}
+      loading={isFetching}
+    />
+  );
+}
+```
+
+Leave out `value` to let the bar keep its own text (`defaultValue` sets the start). To search as the user types, debounce `onChangeText` in your screen.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| value | string | — | Controlled text |
+| defaultValue | string | "" | Starting text when uncontrolled |
+| onChangeText | (text) => void | — | Every change, including clear and cancel |
+| onSearch | (text) => void | — | The keyboard's search key was pressed |
+| onClear | () => void | — | After the clear button empties the field |
+| onCancel | () => void | — | Shows a Cancel button while focused or non-empty; clears and blurs first |
+| cancelLabel | string | "Cancel" | Cancel button text |
+| loading | boolean | false | Shows a spinner instead of the clear button |
+| placeholder | string | "Search" | Also the accessibility label unless you pass one |
+
+Every other `TextInput` prop is passed through. The ref points at the `TextInput`.
+
+## Accessibility
+
+- The field has `accessibilityRole="search"`
+- The clear button is announced as "Clear search"

@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   SafeAreaView,
   StatusBar,
@@ -126,12 +126,14 @@ export function ChatFlow() {
           {/* Thread Header */}
           <View className="flex-row items-center justify-between border-b border-border bg-card/90 sp-px-4 sp-py-3">
             <View className="flex-row items-center sp-gap-3">
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 onPress={() => setActiveThreadId(null)}
-                className="sp-p-1 -ml-1 rounded-control active:bg-muted"
+              accessibilityLabel="Back to conversations"
+                className="sp-p-1 -ml-1 rounded-control active:bg-muted active:opacity-20"
               >
                 <ChevronLeft size={22} color={palette.foreground} />
-              </TouchableOpacity>
+              </Pressable>
 
               <View className="relative">
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-primary">
@@ -146,9 +148,9 @@ export function ChatFlow() {
               </View>
             </View>
 
-            <TouchableOpacity className="sp-p-1 rounded-control">
+            <Pressable accessibilityRole="button" accessibilityLabel="More options" className="sp-p-1 rounded-control active:opacity-20">
               <MoreVertical size={18} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Messages Scroll View */}
@@ -202,9 +204,9 @@ export function ChatFlow() {
 
           {/* Message Input Bar */}
           <View className="border-t border-border bg-card sp-px-4 sp-py-3 flex-row items-center sp-gap-2">
-            <TouchableOpacity className="sp-p-2 rounded-control bg-muted active:bg-accent">
+            <Pressable accessibilityRole="button" accessibilityLabel="Attach file" className="sp-p-2 rounded-control bg-muted active:bg-accent active:opacity-20">
               <Paperclip size={18} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
 
             <TextInput
               value={inputText}
@@ -214,17 +216,18 @@ export function ChatFlow() {
               className="field flex-1 rounded-control sp-px-4 sp-py-2.5 type-sm text-foreground"
             />
 
-            <TouchableOpacity
+            <Pressable
+              accessibilityRole="button"
               onPress={handleSendMessage}
-              className={`sp-p-2.5 rounded-control ${
-                inputText.trim() ? "bg-primary" : "bg-muted"
-              }`}
+              accessibilityLabel="Send message"
+              accessibilityState={{ disabled: !inputText.trim() }}
+              className={`sp-p-2.5 rounded-control active:opacity-20 ${inputText.trim() ? "bg-primary" : "bg-muted"}`}
             >
               <Send
                 size={18}
                 color={inputText.trim() ? palette.foreground : palette["muted-foreground"]}
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       ) : (
@@ -250,14 +253,15 @@ export function ChatFlow() {
           {/* Filter Pills */}
           <View className="flex-row sp-gap-2 mb-4">
             {(["all", "support", "direct"] as const).map((tab) => (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab}
                 onPress={() => setFilterTab(tab)}
-                className={`rounded-control sp-px-3 sp-py-1.5 capitalize ${
+                className={`${`rounded-control sp-px-3 sp-py-1.5 capitalize ${
                   filterTab === tab
                     ? "bg-foreground"
                     : "surface"
-                }`}
+                }`} active:opacity-20`}
               >
                 <Text
                   className={`type-xs weight-title ${
@@ -266,7 +270,7 @@ export function ChatFlow() {
                 >
                   {tab}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
 
@@ -274,10 +278,11 @@ export function ChatFlow() {
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="sp-gap-2.5">
               {filteredThreads.map((thread) => (
-                <TouchableOpacity
+                <Pressable
+                  accessibilityRole="button"
                   key={thread.id}
                   onPress={() => setActiveThreadId(thread.id)}
-                  className="flex-row items-center justify-between rounded-card border border-border bg-card/80 sp-p-3.5 active:bg-muted"
+                  className="flex-row items-center justify-between rounded-card border border-border bg-card/80 sp-p-3.5 active:bg-muted active:opacity-20"
                 >
                   <View className="flex-row items-center sp-gap-3 flex-1 sp-pr-3">
                     <View className="relative">
@@ -307,7 +312,7 @@ export function ChatFlow() {
                       </View>
                     )}
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           </ScrollView>

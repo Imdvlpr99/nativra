@@ -899,3 +899,112 @@ describe("2026-11 third review", () => {
   });
 });
 
+
+describe("2026-11 full review", () => {
+  type Lock = { items: Record<string, { version: string; files: Record<string, string>; upstream?: Record<string, string> }> };
+  const hashOf = (text: string) => createHash("sha256").update(text.replace(/\r\n/g, "\n")).digest("hex");
+
+  it("update --check ignores a dropped file that is already gone, and update forgets its lock key", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const lock = lockOf(cwd) as Lock;
+    lock.items["badge"]!.files["components/ui/Gone.tsx"] = "b".repeat(64);
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    const check = reg(cwd, "update", "badge", "--check");
+    expect(check.out).not.toContain("would remove");
+    expect(check.status).toBe(0);
+    expect(reg(cwd, "update", "badge").status).toBe(0);
+    expect((lockOf(cwd) as Lock).items["badge"]!.files["components/ui/Gone.tsx"]).toBeUndefined();
+  });
+
+  it("update keeps tracking a dropped file it could not remove", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    // A dropped, unedited file behind a symlinked folder: removal is refused.
+    const outside = mkdtempSync(join(tmpdir(), "nativra-out-"));
+    dirs.push(outside);
+    const old = "export const Old = 1;\n";
+    writeFileSync(join(outside, "Old.tsx"), old);
+    symlinkSync(outside, join(cwd, "linked"), "junction");
+    const lock = lockOf(cwd) as Lock;
+    lock.items["badge"]!.files["linked/Old.tsx"] = hashOf(old);
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+
+    const r = reg(cwd, "update", "badge");
+    expect(r.out).toContain("Could not remove");
+    expect(existsSync(join(outside, "Old.tsx"))).toBe(true);
+    expect((lockOf(cwd) as Lock).items["badge"]!.files["linked/Old.tsx"]).toBe(hashOf(old));
+  });
+
+  it("rollback nativra-config refuses to discard edits made after init, unless --force", () => {
+    const cwd = project();
+    const original = readFileSync(join(cwd, "nativra.json"), "utf8");
+    expect(cli(cwd, "init", "--yes", "--force").status).toBe(0);
+    const edited = JSON.stringify({ ...JSON.parse(readFileSync(join(cwd, "nativra.json"), "utf8")), componentsDir: "src/ui" }, null, 2);
+    writeFileSync(join(cwd, "nativra.json"), edited);
+
+    const refused = cli(cwd, "rollback", "nativra-config");
+    expect(refused.status).toBe(1);
+    expect(refused.out).toContain("nativra.json");
+    expect(readFileSync(join(cwd, "nativra.json"), "utf8")).toBe(edited);
+    expect(cli(cwd, "rollback", "nativra-config", "--force").status).toBe(0);
+    expect(readFileSync(join(cwd, "nativra.json"), "utf8")).toBe(original);
+  });
+
+  it("add keeps CRLF line endings in a file that is already up to date", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const [key] = Object.keys((lockOf(cwd) as Lock).items["badge"]!.files);
+    const path = join(cwd, key!);
+    const crlf = readFileSync(path, "utf8").replace(/\r?\n/g, "\r\n");
+    writeFileSync(path, crlf);
+    const r = reg(cwd, "add", "badge", "--yes", "--no-install");
+    expect(r.out).toContain("Already up to date");
+    expect(readFileSync(path, "utf8")).toBe(crlf);
+  });
+
+  it("init succeeds with a warning when .gitignore is a symlink", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "nativra-reg-"));
+    dirs.push(cwd);
+    writeFileSync(join(cwd, "package.json"), JSON.stringify({ name: "t", dependencies: { expo: "~52.0.0", "react-native": "0.76.0" } }));
+    writeFileSync(join(cwd, "shared.gitignore"), "node_modules\n");
+    try {
+      symlinkSync(join(cwd, "shared.gitignore"), join(cwd, ".gitignore"), "file");
+    } catch {
+      return; // file symlinks need extra privileges on Windows
+    }
+    const r = cli(cwd, "init", "--yes");
+    expect(r.status).toBe(0);
+    expect(r.out).toContain("Could not add .nativra/ to .gitignore");
+    expect(r.out).not.toContain("Failed to write nativra.json");
+    expect(existsSync(join(cwd, "nativra.json"))).toBe(true);
+  });
+
+  it("diff --summary prints a count instead of the patch", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const [key] = Object.keys((lockOf(cwd) as Lock).items["badge"]!.files);
+    writeFileSync(join(cwd, key!), `${readFileSync(join(cwd, key!), "utf8")}\n// local edit\n`);
+    const r = reg(cwd, "diff", "badge", "--summary", "--exit-code");
+    expect(r.status).toBe(1);
+    expect(r.out).toContain("1 file differ, 0 files match");
+    expect(r.out).not.toContain("@@");
+  });
+
+  it("list --outdated shows only items with updates and exits 1 when there are any", () => {
+    const cwd = project();
+    expect(reg(cwd, "add", "badge", "--yes", "--no-install").status).toBe(0);
+    const clean = reg(cwd, "list", "--outdated");
+    expect(clean.status).toBe(0);
+    expect(clean.out).toContain("up to date");
+
+    const lock = lockOf(cwd) as Lock;
+    lock.items["badge"]!.version = "0.0.1";
+    writeFileSync(join(cwd, "nativra.lock.json"), JSON.stringify(lock));
+    const r = reg(cwd, "list", "--outdated", "--json");
+    expect(r.status).toBe(1);
+    const rows = JSON.parse(r.out) as Array<{ ref: string }>;
+    expect(rows.map((row) => row.ref)).toEqual(["badge"]);
+  });
+});

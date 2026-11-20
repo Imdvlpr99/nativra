@@ -1,0 +1,48 @@
+# Chat Bubble
+
+One chat message. Your own messages sit on the right in the primary color, with delivery ticks (sending, sent, delivered, read) and a failed state with retry. Other people's messages sit on the left with an avatar. Consecutive messages from one sender group together: corners tighten between them, and the avatar shows only on the last.
+
+## Usage
+
+```tsx
+import { FlatList } from "react-native";
+import { ChatBubble } from "@/blocks/ChatBubble";
+
+<FlatList
+  inverted
+  data={messages}
+  keyExtractor={(m) => m.id}
+  renderItem={({ item, index }) => (
+    <ChatBubble
+      text={item.text}
+      from={item.userId === me ? "me" : "them"}
+      senderName={item.userName}
+      time={formatTime(item.sentAt)}
+      status={item.status}
+      position={positionInRun(messages, index)}
+      onRetry={() => resend(item.id)}
+      onLongPress={() => openActions(item)}
+    />
+  )}
+/>
+```
+
+`position` is "single", "first", "middle" or "last" within a run from one sender; work it out by comparing each message's sender with its neighbours'.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| text | string | — | Message text |
+| from | "me" \| "them" | — | Side and colors |
+| time | string | — | Display time |
+| status | "sending" \| "sent" \| "delivered" \| "read" \| "failed" | — | Your messages only |
+| senderName / avatarUrl | string | — | Avatar for "them" (initials without a URL) |
+| position | "single" \| "first" \| "middle" \| "last" | "single" | Grouping |
+| onLongPress | () => void | — | Copy, react, delete… |
+| onRetry | () => void | — | Retry link on failed messages |
+
+## Accessibility
+
+- Each bubble reads as one sentence: "You: See you at 6. 14:20, Read"
+- The failed state is a button: "Not sent. Tap to retry"

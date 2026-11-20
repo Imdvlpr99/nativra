@@ -169,7 +169,7 @@ export function registerUpdateCommand(program: Command) {
               );
             }
 
-            if (local !== null && sameContent(local, next)) {
+            if (upToDate) {
               console.log(chalk.gray(`  = ${printable(dest)} (up to date)`));
               unchanged[dest] = contentHash(next);
               continue;
@@ -200,7 +200,9 @@ export function registerUpdateCommand(program: Command) {
 
           if (options.dryRun) {
             for (const p of plan) console.log(chalk.cyan(`  ~ would ${p.action === "create" ? "create" : "update"} ${printable(p.destPath)}`));
-            for (const d of dropped) {
+            // A dropped file that is already gone only leaves a stale lock key; nothing to review.
+            const present = dropped.filter((d) => d.exists);
+            for (const d of present) {
               console.log(
                 chalk.cyan(
                   d.edited
@@ -209,7 +211,7 @@ export function registerUpdateCommand(program: Command) {
                 )
               );
             }
-            pending += plan.length + dropped.length;
+            pending += plan.length + present.length;
             continue;
           }
           // Unedited dropped files are removed after the update, so they are backed up with it.
@@ -255,6 +257,8 @@ export function registerUpdateCommand(program: Command) {
                 console.log(chalk.green(`  - Removed ${printable(d.path)} (no longer part of ${item.id})`));
               } catch (err) {
                 console.error(chalk.yellow(`  ⚠ Could not remove ${printable(d.path)}: ${(err as Error).message}`));
+                // Still on disk: keep tracking it so a later `update` or `remove` can clean it up.
+                continue;
               }
             }
             delete entry?.files[d.key];
@@ -264,6 +268,7 @@ export function registerUpdateCommand(program: Command) {
             registry: registryOf.get(item.id),
             upstream: upstreamHashes(options.cwd, item, config),
           });
+          if (entry && Object.keys(entry.files).length === 0) delete lock.items[item.id];
           // Persist after every item so a later failure can't leave updated files with stale hashes.
           await writeLock(options.cwd, lock);
         }

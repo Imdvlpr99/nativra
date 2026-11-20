@@ -1,0 +1,23 @@
+{
+  "id": "transaction-history",
+  "name": "Transaction History",
+  "description": "Transactions grouped by day with daily net totals, an optional running balance, and locale-aware money and dates.",
+  "type": "block",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/TransactionHistory.tsx", "target": "nativewind" },
+    { "path": "stylesheet/TransactionHistory.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "section-list", "registry": "default" },
+    { "id": "transaction-row", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["block", "finance", "list", "transactions"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

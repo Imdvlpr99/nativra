@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { Pressable, View, Text, ScrollView } from "react-native";
 import {
   LayoutDashboard,
   Users,
@@ -114,17 +114,16 @@ export function AppSidebar({
             {group.items.map((item) => {
               const isActive = item.id === activeId;
               return (
-                <TouchableOpacity
+                <Pressable
                   key={item.id}
                   onPress={() => onSelect?.(item.id)}
-                  activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  className={`flex-row items-center justify-between sp-px-3 sp-py-2.5 rounded-control transition-colors ${
+                  className={`${`flex-row items-center justify-between sp-px-3 sp-py-2.5 rounded-control transition-colors ${
                     isActive
                       ? "bg-primary/15 border border-primary/30 text-foreground weight-label"
                       : "bg-transparent text-muted-foreground active:bg-card"
-                  }`}
+                  }`} active:opacity-70`}
                 >
                   <View className="flex-row items-center sp-gap-2.5">
                     {renderIcon(item.icon, isActive ? palette.primary : palette["muted-foreground"])}
@@ -163,7 +162,7 @@ export function AppSidebar({
                     )}
                     {isActive && <ChevronRight size={14} color={palette.primary} />}
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               );
             })}
           </View>
@@ -172,10 +171,10 @@ export function AppSidebar({
 
       {/* User Profile & Actions Footer */}
       <View className="sp-p-3 border-t border-border/80 bg-card/40">
-        <TouchableOpacity
+        <Pressable
+          accessibilityRole="button"
           onPress={onProfilePress}
-          activeOpacity={0.7}
-          className="flex-row items-center justify-between sp-p-2 rounded-control bg-card/80 border border-border hover:border-border"
+          className="flex-row items-center justify-between sp-p-2 rounded-control bg-card/80 border border-border hover:border-border active:opacity-70"
         >
           <View className="flex-row items-center sp-gap-2.5 flex-1 mr-2">
             <View className="h-9 w-9 rounded-full bg-success/20 border border-success/40 items-center justify-center">
@@ -194,16 +193,16 @@ export function AppSidebar({
           </View>
 
           {onLogoutPress && (
-            <TouchableOpacity
+            <Pressable
               onPress={onLogoutPress}
               accessibilityRole="button"
               accessibilityLabel="Log out"
-              className="h-8 w-8 rounded-control bg-muted/80 items-center justify-center active:bg-destructive/20"
+              className="h-8 w-8 rounded-control bg-muted/80 items-center justify-center active:bg-destructive/20 active:opacity-20"
             >
               <LogOut size={14} color={palette["muted-foreground"]} />
-            </TouchableOpacity>
+            </Pressable>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

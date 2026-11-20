@@ -9,9 +9,9 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Switch,
@@ -81,12 +81,13 @@ export function AccountSettingsFlow() {
           ).map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <TouchableOpacity
+              <Pressable
+                accessibilityRole="button"
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                className={`flex-1 items-center rounded-control sp-py-2 ${
+                className={`${`flex-1 items-center rounded-control sp-py-2 ${
                   active ? "bg-muted shadow" : ""
-                }`}
+                }`} active:opacity-20`}
               >
                 <Text
                   className={`type-xs weight-label ${
@@ -95,7 +96,7 @@ export function AccountSettingsFlow() {
                 >
                   {tab.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
@@ -257,17 +258,17 @@ export function AccountSettingsFlow() {
                       <Text className="type-xs text-muted-foreground mt-0.5">{sess.location} • {sess.active}</Text>
                     </View>
                     {!sess.isCurrent && (
-                      <TouchableOpacity className="rounded-control border border-destructive/30 bg-destructive/10 sp-px-2.5 sp-py-1">
+                      <Pressable accessibilityRole="button" className="rounded-control border border-destructive/30 bg-destructive/10 sp-px-2.5 sp-py-1 active:opacity-20">
                         <Text className="type-xs weight-label text-destructive">Revoke</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     )}
                   </View>
                 ))}
               </View>
 
-              <TouchableOpacity className="mt-4 items-center rounded-control border border-destructive/40 bg-destructive/10 sp-py-3">
+              <Pressable accessibilityRole="button" className="mt-4 items-center rounded-control border border-destructive/40 bg-destructive/10 sp-py-3 active:opacity-20">
                 <Text className="type-xs weight-title text-destructive">Sign Out All Other Sessions</Text>
-              </TouchableOpacity>
+              </Pressable>
             </Card>
           </View>
         )}

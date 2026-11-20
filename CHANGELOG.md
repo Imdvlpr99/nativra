@@ -18,7 +18,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `pnpm audit` no longer ignores the two `image-size` advisories: Expo SDK 58's Metro doesn't use `image-size` at all. The unused `deepmerge` override is gone.
 - CodeQL also scans the GitHub Actions workflows (`actions` language).
 
+### ✨ MCP server
+- New `@nativra/mcp` package: an MCP server with `nativra_search`, `nativra_list`, `nativra_info`, `nativra_init`, `nativra_add`, `nativra_diff`, `nativra_update` and `nativra_doctor`, so AI agents can find and install components. It runs the bundled CLI with argument arrays and never prompts. It can't force-overwrite edited files or remove items.
+
+### ✨ Registry
+- New components: `search-bar`, `form-field`, `list-item`, `swipeable-row` (no gesture-handler needed; actions are also screen-reader actions) and `time-picker`. New `register-form` block, and new `use-form` and `use-infinite-scroll` hooks. All are beta.
+- New components: `country-picker` (searchable, about 240 countries with flags and dial codes), `phone-input` (country code picker; autofilled `+44…` numbers pick their country; `toE164`), `credit-card-input` (brand detection, Luhn, auto-advance), `image-with-fallback`, `section-list` (themed headers, inset-grouped variant) and `color-swatch`. All are beta.
+- New `code-scanner` component (QR and barcodes on `expo-camera`, with a framing guide, torch, duplicate filtering and permission states) and `use-image-picker` hook (library or camera on `expo-image-picker`, with permission handling and a blocked-permission state). Both are beta.
+- New blocks: `transaction-history` (grouped by day, daily totals, running balance), `product-card`, `search-results-row` (query highlighting) and `chat-bubble` (grouping, delivery ticks, retry). New templates: `social-feed`, `booking-flow` and `profile-flow`. All are beta.
+- Button takes any node as its label, `leftIcon` / `rightIcon` (a node, or a function given the label color), and a function `style`; the loading spinner scales with the size.
+
 ### ✨ CLI
+- `nativra diff --summary` prints one line per file and a count instead of the patch.
+- `nativra list --outdated` lists only items with an update and exits 1 when there are any.
+- `nativra search` marks beta, experimental and deprecated items.
+- `nativra info --json --docs` includes the item's usage docs.
 - `nativra update --check`: like `--dry-run`, but exits with code 1 while anything is out of date. An edited file whose registry source hasn't changed is reported as your edit and doesn't count.
 - `nativra doctor --json` prints the checks as JSON for CI.
 - `add` no longer treats a file that already matches what it would write as a conflict, and starts tracking it.
@@ -32,6 +46,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `nativra list --installed` lists what the project has installed, each with the registry's current version and whether an update is available (`--json` too).
 
 ### 🐛 Fixes
+- `update` keeps tracking a file it could not remove, instead of forgetting it while it stays on disk; `update --check` no longer fails over a dropped file that is already gone.
+- `rollback nativra-config` refuses to discard edits made to `nativra.json` after `init`, unless `--force`.
+- `add` keeps the CRLF line endings of a file that is already up to date.
+- `init` only warns when it can't add `.nativra/` to a symlinked `.gitignore`, instead of reporting that `nativra.json` failed.
+- Sibling imports named after `Object.prototype` members (`./toString`, `./constructor`) are no longer rewritten.
+- Slider: a vertical scroll that starts on the slider scrolls the page instead of changing the value; accessibility actions at the limits no longer fire `onSlidingComplete`.
+- NativeWind Button, Input and Textarea add a caller's `className` to their own classes instead of replacing them.
+- Blocks and templates use the style's press feedback (`pressedStyle`) instead of a fixed opacity.
 - Installing an item whose id is already installed from another registry (`acme/button` after `button`) is refused instead of overwriting the other's lockfile entry and backups.
 - `audit --fix` refreshes lockfile hashes of the files it migrates that were unedited before, so `update` keeps updating them; `rollback audit-fix` moves them back.
 - A lockfile entry without a `version` or `files` map gets the "restore it from git" error instead of a crash.
@@ -63,6 +85,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - PaginationDots: with `onDotPress`, screen readers change the page with a swipe up or down.
 - BottomSheet keeps VoiceOver inside the open sheet (`accessibilityViewIsModal`), like Dialog and Select.
 - The registry build fails an `adjustable` element that doesn't handle `onAccessibilityAction`.
+- Blocks and templates use `Pressable` everywhere: 46 `TouchableOpacity` elements across AppHeader, AppSidebar, FilterSheet, TransactionRow and five templates are converted, keeping their press dimming. Every pressable now has an accessibility role, and ChatFlow's icon-only buttons (back, more options, attach, send) have labels. The registry build now rejects `TouchableOpacity`/`TouchableHighlight` and a `Pressable` with neither a role nor a label.
 - Slider calls a caller's `onLayout` instead of being replaced by it (which stopped dragging), and drags the right way in right-to-left layouts.
 - Input forwards its ref to the `TextInput` (React 18 and 19), so forms can move focus between fields.
 - LoginForm: password managers and autofill fill it (`autoComplete`, `textContentType`), screen readers read "Email" and "Password" instead of the placeholders, Next on the email field moves to the password, Go signs in, and it can't submit twice while loading.
@@ -81,6 +104,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - CI checks that every registry npm range accepts the version the preview app tests with (`scripts/check-registry-deps.mjs`) and that the example apps are current with the registry (`scripts/check-examples.mjs`, `--fix` to refresh them). The examples are refreshed.
 - The preview type-checks fixture props against the components (`fixture-check.ts`); the LoginForm and EmptyState fixtures used props that don't exist and are fixed.
 - The docs' Yarn tab runs `npx`, since `yarn dlx` doesn't exist in Yarn 1.
+- The CLI README, the repo README and the Updating guide cover `list --installed`, `update --check`, `diff --exit-code` and the backup `init --force` keeps. The home page's Styles card names the styles for screen readers, like the Themes card.
 - The compatibility matrix lists Expo SDK 58, React Native 0.88.1, React 19.3, TypeScript 6.0 and NativeWind 4.2 as tested.
 
 ## [v0.3.0] - 2026-11-16

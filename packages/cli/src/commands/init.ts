@@ -3,7 +3,7 @@ import chalk from "chalk";
 import prompts from "prompts";
 import ora from "ora";
 import { join } from "node:path";
-import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, saveConfig } from "../config.js";
+import { CONFIG_FILENAME, createProjectConfig, ensureGitignored, saveConfig, serializeConfig } from "../config.js";
 import { detectProjectEnvironment } from "../detect.js";
 import { createBackup, fileExists } from "../install.js";
 import { STYLE_PRESETS } from "@nativra/theme-engine";
@@ -141,7 +141,8 @@ export function registerInitCommand(program: Command) {
       const configPath = join(options.cwd, CONFIG_FILENAME);
       let backedUp = false;
       if (await fileExists(configPath)) {
-        await createBackup(options.cwd, CONFIG_BACKUP_ID, [{ destPath: configPath, exists: true }]);
+        // hashAfter lets `rollback nativra-config` notice hand edits made after this init.
+        await createBackup(options.cwd, CONFIG_BACKUP_ID, [{ destPath: configPath, exists: true, contentAfter: serializeConfig(config) }]);
         backedUp = true;
       }
 
@@ -152,12 +153,17 @@ export function registerInitCommand(program: Command) {
           console.log(chalk.gray(`  The previous ${CONFIG_FILENAME} was backed up. Restore it with: nativra rollback ${CONFIG_BACKUP_ID}`));
         }
         spinner.succeed(chalk.green("nativra.json created!"));
+      } catch (err) {
+        spinner.fail(chalk.red("Failed to write nativra.json"));
+        throw err;
+      }
+      // nativra.json is already saved: a .gitignore we can't touch (e.g. a symlink) is only a warning.
+      try {
         if (await ensureGitignored(options.cwd)) {
           console.log(chalk.gray("  Added .nativra/ (local backups) to .gitignore"));
         }
       } catch (err) {
-        spinner.fail(chalk.red("Failed to write nativra.json"));
-        throw err;
+        console.log(chalk.yellow(`  ⚠ Could not add .nativra/ to .gitignore: ${(err as Error).message}. Add it by hand.`));
       }
 
       console.log(chalk.gray("\nConfiguration saved:"));

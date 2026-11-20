@@ -8,10 +8,10 @@
  * Install: npx nativra-cli add transaction-row
  */
 import React from "react";
-import { StyleSheet, View, TouchableOpacity, Text as RNText } from "react-native";
+import { Pressable, StyleSheet, View, Text as RNText } from "react-native";
 import { Badge } from "./Badge";
 import { Text } from "./Text";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, pressedStyle } from "@/hooks/use-theme-colors";
 
 export interface TransactionRowProps {
   title: string;
@@ -48,10 +48,10 @@ export function TransactionRow({
       : "destructive";
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
+      accessibilityRole="button"
       onPress={onPress}
-      style={[styles.container, style]}
+      style={({ pressed }) => [styles.container, style, pressedStyle(pressed)]}
     >
       <View style={styles.leftCol}>
         <View style={styles.avatar}>
@@ -78,7 +78,7 @@ export function TransactionRow({
         </RNText>
         <Badge size="sm" variant={statusVariant} label={status} />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

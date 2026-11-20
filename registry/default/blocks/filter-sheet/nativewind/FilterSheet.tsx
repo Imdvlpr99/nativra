@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add filter-sheet
  */
 import React, { useState } from "react";
-import { View, TouchableOpacity, ScrollView } from "react-native";
+import { Pressable, View, ScrollView } from "react-native";
 import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
@@ -70,15 +70,17 @@ export function FilterSheet({
         {/* Header */}
         <View className="flex-row items-center justify-between sp-pb-3 border-b border-border">
           <Text className="type-lg weight-title text-foreground">Filter Results</Text>
-          <TouchableOpacity
+          <Pressable
+            accessibilityRole="button"
             onPress={() => {
               setCurrentCategory("all");
               setCurrentPrice(maxPrice / 2);
               onReset?.();
             }}
+            className="active:opacity-20"
           >
             <Text className="type-xs weight-label text-primary">Reset</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Categories Chips */}
@@ -90,15 +92,15 @@ export function FilterSheet({
             {categories.map((c) => {
               const active = c.id === currentCategory;
               return (
-                <TouchableOpacity
+                <Pressable
+                  accessibilityRole="button"
                   key={c.id}
-                  activeOpacity={0.7}
                   onPress={() => handleCategoryPress(c.id)}
-                  className={`sp-px-3.5 sp-py-1.5 rounded-full border ${
+                  className={`${`sp-px-3.5 sp-py-1.5 rounded-full border ${
                     active
                       ? "bg-primary border-primary"
                       : "bg-muted/80 border-border"
-                  }`}
+                  }`} active:opacity-70`}
                 >
                   <Text
                     className={`type-xs weight-label ${
@@ -107,7 +109,7 @@ export function FilterSheet({
                   >
                     {c.label}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               );
             })}
           </ScrollView>

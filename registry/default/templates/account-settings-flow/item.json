@@ -4,7 +4,7 @@
   "description": "Enterprise SaaS account, organization seats, security sessions, and billing management flow.",
   "type": "template",
   "status": "stable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

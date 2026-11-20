@@ -1,0 +1,42 @@
+# Search Results Row
+
+A search hit. The text matching the query is highlighted in its title and subtitle: brighter and heavier, with the rest muted. The row can also show leading media, short trailing meta, and an optional arrow that puts the title into the search field. It pairs with [SearchBar](/docs/components/search-bar).
+
+## Usage
+
+```tsx
+import { FlatList } from "react-native";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { SearchResultsRow } from "@/blocks/SearchResultsRow";
+
+<SearchBar value={query} onChangeText={setQuery} />
+<FlatList
+  data={results}
+  keyboardShouldPersistTaps="handled"
+  keyExtractor={(r) => r.id}
+  renderItem={({ item }) => (
+    <SearchResultsRow
+      title={item.name}
+      subtitle={item.description}
+      meta={item.category}
+      query={query}
+      onPress={() => open(item)}
+      onFill={() => setQuery(item.name)}
+    />
+  )}
+/>
+```
+
+`splitMatches(text, query)` is exported, for highlighting matches elsewhere. It returns `{ text, match }` pieces and treats the query as plain text, never as a regex.
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| title | string | Main text (one line) |
+| subtitle | string | Secondary text (one line) |
+| query | string | Highlighted wherever it appears |
+| leading | ReactNode | Icon, thumbnail or avatar |
+| meta | string | Short trailing text |
+| onPress | () => void | Opens the result |
+| onFill | () => void | Shows the fill-in arrow |

@@ -1,0 +1,60 @@
+# useForm
+
+Controlled form state with per-field validation rules, touched tracking and an async-aware submit. No dependencies.
+
+## Usage
+
+```tsx
+import { useForm } from "@/hooks/use-form";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+
+export function Example() {
+  const form = useForm({
+    initialValues: { email: "", password: "" },
+    rules: {
+      email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? undefined : "Enter a valid email"),
+      password: (v) => (v.length >= 8 ? undefined : "At least 8 characters"),
+    },
+    onSubmit: async (values) => {
+      await api.signIn(values);
+    },
+  });
+
+  return (
+    <>
+      <Input label="Email" {...form.field("email")} />
+      <Input label="Password" secureTextEntry {...form.field("password")} />
+      <Button loading={form.isSubmitting} onPress={form.handleSubmit}>
+        Sign in
+      </Button>
+    </>
+  );
+}
+```
+
+`field(name)` returns `value`, `onChangeText`, `onBlur`, `error` and `errorMessage`, which match the `Input` and `Textarea` props. It accepts only fields whose value is a string. For other controls (Switch, Checkbox, Select), use `values`, `setValue` and `errorFor`.
+
+## Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| initialValues | object | Starting values; their types become the form's types |
+| rules | `{ [field]: (value, values) => string \| undefined }` | Return an error message, or undefined when valid |
+| onSubmit | `(values) => void \| Promise<void>` | Called only when every rule passes |
+
+## Return value
+
+| Property | Description |
+|----------|-------------|
+| values | Current values |
+| errors | Every current rule failure, whether shown yet or not |
+| errorFor(name) | The error to display: shown once the field was left, or after a submit attempt |
+| field(name) | Props for a text input |
+| setValue(name, value) | Set one value |
+| setFieldTouched(name) | Mark a field as visited |
+| isValid | No rule fails |
+| isSubmitting | True while `onSubmit`'s promise is pending; another submit is ignored meanwhile |
+| validate() | Show every error and return whether the form is valid, without submitting |
+| handleSubmit() | Validate, show every error, and submit if valid |
+| reset(values?) | Back to the initial (or given) values, with nothing touched |

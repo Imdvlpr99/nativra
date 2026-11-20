@@ -1,0 +1,42 @@
+# SwipeableRow
+
+A row that slides sideways to reveal action buttons, like Delete and Archive in a mail app. It uses React Native's own `PanResponder` and `Animated`, so it needs no gesture-handler or Reanimated setup. A vertical scroll still scrolls the list; only a mostly-horizontal drag moves the row.
+
+## Usage
+
+```tsx
+import { Archive, Trash2 } from "lucide-react-native";
+import { SwipeableRow } from "@/components/ui/SwipeableRow";
+import { ListItem } from "@/components/ui/ListItem";
+
+<SwipeableRow
+  rightActions={[
+    { label: "Delete", variant: "destructive", icon: <Trash2 size={18} color={palette["destructive-foreground"]} />, onPress: () => remove(id) },
+    { label: "Archive", onPress: () => archive(id) },
+  ]}
+  leftActions={[{ label: "Mark read", variant: "primary", onPress: () => markRead(id) }]}
+>
+  <ListItem title={subject} subtitle={preview} onPress={() => open(id)} divider />
+</SwipeableRow>
+```
+
+To keep only one row open, hold a ref to each row and call `close()` on the previous one in `onOpen`.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| rightActions | SwipeAction[] | [] | Revealed by swiping left; the first sits next to the row |
+| leftActions | SwipeAction[] | [] | Revealed by swiping right |
+| actionWidth | number | 80 | Width of each action |
+| onOpen | (side) => void | — | A side finished opening |
+| onClose | () => void | — | The row slid back |
+| disabled | boolean | false | No swiping and no accessibility actions |
+
+`SwipeAction` is `{ label, onPress, variant?: "destructive" | "primary" | "secondary", icon? }`. Pressing an action closes the row first.
+
+## Accessibility
+
+- Every action is also an accessibility action on the row, by its label: swipe up or down with VoiceOver, or use the actions menu with TalkBack
+- Action buttons are hidden from screen readers while covered
+- With Reduce Motion on, the row snaps instead of springing

@@ -290,7 +290,12 @@ export async function ensureGitignored(projectRoot: string, entry = ".nativra/")
   return true;
 }
 
+/** The exact text saveConfig writes. */
+export function serializeConfig(config: NativraConfig): string {
+  return JSON.stringify(config, null, 2);
+}
+
 export async function saveConfig(projectRoot: string, config: NativraConfig): Promise<void> {
   const configPath = await assertSafeWriteTarget(projectRoot, CONFIG_FILENAME);
-  await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+  await writeFile(configPath, serializeConfig(config), "utf8");
 }

@@ -25,7 +25,8 @@ export function siblingImportMap(
   const baseName = (path: string) => (path.split(/[/\\]/).pop() ?? "").replace(/\.(tsx?|jsx?)$/, "");
   // An item's own sibling files always resolve next to it, even if a dependency shares the name.
   const own = new Set(filesForTarget(item, config).map((f) => baseName(f.path)));
-  const map: Record<string, string> = {};
+  // No prototype: a sibling import named `./toString` or `./constructor` must not hit Object.prototype.
+  const map: Record<string, string> = Object.create(null);
   for (const other of related) {
     if (other.id === item.id || folderOf(other) === ownFolder) continue;
     const base = importBaseForType(other.type, targets);
@@ -142,7 +143,7 @@ export function transformFileImports(
     transformed = transformed.replace(
       spec(String.raw`\.\/([A-Za-z0-9_-]+)(["'])`),
       (match, open: string, name: string, close: string) => {
-        const target = relativeImports[name];
+        const target = Object.hasOwn(relativeImports, name) ? relativeImports[name] : undefined;
         return target ? `${open}${target}${close}` : match;
       }
     );

@@ -1,0 +1,19 @@
+{
+  "id": "time-picker",
+  "name": "TimePicker",
+  "description": "An inline hour and minute picker with snap-scrolling columns, 12/24-hour cycles and minute steps.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/TimePicker.tsx", "target": "nativewind" },
+    { "path": "stylesheet/TimePicker.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [{ "id": "use-theme-colors", "registry": "default" }],
+  "npmDependencies": [],
+  "tags": ["input", "time", "picker", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

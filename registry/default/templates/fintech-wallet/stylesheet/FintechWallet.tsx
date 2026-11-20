@@ -9,10 +9,10 @@
  */
 import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Text as RNText,
@@ -22,7 +22,7 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Separator } from "./Separator";
-import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface } from "@/hooks/use-theme-colors";
+import { themeStyle, useThemeColors, alpha, type ThemeColors, ts, sp, surface, pressedStyle } from "@/hooks/use-theme-colors";
 
 export function FintechWallet() {
   const palette = useThemeColors();
@@ -52,14 +52,15 @@ export function FintechWallet() {
             <RNText style={styles.title}>Wallet</RNText>
             <RNText style={styles.subtitle}>Multi-Chain Vault</RNText>
           </View>
-          <TouchableOpacity
+          <Pressable
+            accessibilityRole="button"
             onPress={() => setHideBalance((h) => !h)}
-            style={styles.hideBtn}
+            style={({ pressed }) => [styles.hideBtn, pressedStyle(pressed)]}
           >
             <RNText style={styles.hideText}>
               {hideBalance ? "Reveal" : "Hide Balance"}
             </RNText>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Total Net Worth Card */}

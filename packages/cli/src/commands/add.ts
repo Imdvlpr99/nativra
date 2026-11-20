@@ -226,9 +226,10 @@ export function registerAddCommand(program: Command) {
           for (const item of items) {
             for (const file of filesForTarget(item, config)) {
               const destPath = destPathFor(options.cwd, item, file, config);
-              const content = renderFile(options.cwd, item, file, items, config);
+              let content = renderFile(options.cwd, item, file, items, config);
               let action: "create" | "overwrite" | "skip" = "create";
 
+              let existing: string;
               if (await fileExists(destPath)) {
                 // Every theme installs the same theme.ts (every style the same style.ts) and
                 // components depend on a default one, so one that only arrives as a dependency must
@@ -236,9 +237,11 @@ export function registerAddCommand(program: Command) {
                 if ((item.type === "theme" || item.type === "style") && item.id !== requestedId) {
                   action = "skip";
                   console.log(chalk.gray(`  → Kept installed ${item.type}: ${printable(destPath)}`));
-                } else if (sameContent(await readFile(destPath, "utf8"), content)) {
+                } else if (sameContent((existing = await readFile(destPath, "utf8")), content)) {
                   // Already exactly what would be written: no conflict to ask about, nothing to back
-                  // up. Writing it again records it in the lockfile if it wasn't tracked.
+                  // up. Writing it again records it in the lockfile if it wasn't tracked. The file's
+                  // own bytes are written back, so CRLF line endings are not converted to LF.
+                  content = existing;
                   action = "overwrite";
                   identical.add(destPath);
                   console.log(chalk.gray(`  = Already up to date: ${printable(destPath)}`));

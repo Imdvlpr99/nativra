@@ -355,6 +355,11 @@ export interface BackupFileEntry {
   backupFileName?: string;
   stateBefore: "present" | "absent";
   sha256?: string;
+  /**
+   * Hash (contentHash) of what the operation wrote, for files no lock entry tracks (nativra.json).
+   * Lets rollback tell whether the file was edited after the operation.
+   */
+  hashAfter?: string;
 }
 
 export interface BackupManifest {
@@ -387,7 +392,7 @@ export function backupDirFor(cwd: string, componentId: string): string {
 export async function createBackup(
   cwd: string,
   componentId: string,
-  filesToModify: Array<{ destPath: string; exists: boolean }>,
+  filesToModify: Array<{ destPath: string; exists: boolean; contentAfter?: string }>,
   lockEntry?: LockEntry
 ): Promise<string> {
   const componentDir = backupDirFor(cwd, componentId);
@@ -397,10 +402,11 @@ export async function createBackup(
   await mkdir(backupDir, { recursive: true });
 
   const entries: BackupFileEntry[] = [];
-  for (const [index, { destPath, exists }] of filesToModify.entries()) {
+  for (const [index, { destPath, exists, contentAfter }] of filesToModify.entries()) {
     const relPath = toLockKey(cwd, destPath);
+    const after = contentAfter !== undefined ? { hashAfter: contentHash(contentAfter) } : {};
     if (!exists) {
-      entries.push({ projectRelativePath: relPath, stateBefore: "absent" });
+      entries.push({ projectRelativePath: relPath, stateBefore: "absent", ...after });
       continue;
     }
 
@@ -413,6 +419,7 @@ export async function createBackup(
       backupFileName,
       stateBefore: "present",
       sha256: sha256(localContent),
+      ...after,
     });
   }
 

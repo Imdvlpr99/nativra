@@ -1,0 +1,22 @@
+{
+  "id": "search-bar",
+  "name": "SearchBar",
+  "description": "A search field with icon, clear button, loading state and an optional Cancel action.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/SearchBar.tsx", "target": "nativewind" },
+    { "path": "stylesheet/SearchBar.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [{ "id": "use-theme-colors", "registry": "default" }],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["input", "search", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

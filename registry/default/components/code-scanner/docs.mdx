@@ -1,0 +1,55 @@
+# CodeScanner
+
+A camera view that reads QR codes and barcodes with [expo-camera](https://docs.expo.dev/versions/latest/sdk/camera/)'s built-in scanner. It has a framing guide, a torch toggle and duplicate filtering. It also handles the permission states: loading, ask, and turned off in Settings.
+
+## Usage
+
+```tsx
+import { CodeScanner } from "@/components/ui/CodeScanner";
+
+export function PayScreen() {
+  const [busy, setBusy] = useState(false);
+  return (
+    <CodeScanner
+      barcodeTypes={["qr"]}
+      paused={busy}
+      hint="Scan the merchant's QR code"
+      onScan={async ({ data }) => {
+        setBusy(true);
+        try {
+          await openPayment(data);
+        } finally {
+          setBusy(false);
+        }
+      }}
+    />
+  );
+}
+```
+
+The same code isn't reported twice within `cooldownMs`. Set `paused` while you handle a code, so a second scan doesn't start a second payment. The camera keeps running, so resuming is instant.
+
+> Treat scanned data as untrusted input: check a URL's host before opening it, and validate payment payloads on your server.
+
+## Setup
+
+Install with `npx expo install expo-camera`. For a development or production build, set the iOS permission text in `app.json`:
+
+```json
+{ "plugins": [["expo-camera", { "cameraPermission": "Scan QR codes to pay and check in." }]] }
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| onScan | `({ type, data }) => void` | — | A code was read |
+| barcodeTypes | BarcodeType[] | ["qr"] | e.g. ["qr", "ean13", "code128"]; fewer is faster |
+| paused | boolean | false | Ignore codes while you handle one |
+| hint | string | "Point the camera at a code" | Text under the frame |
+| cooldownMs | number | 2000 | Before the same code counts again |
+
+## Accessibility
+
+- The torch is a switch named "Flashlight"
+- The hint is a live region, so "Paused" is announced

@@ -14,7 +14,8 @@ export function registerInfoCommand(program: Command) {
     .option("--cwd <dir>", "Project root directory", process.cwd())
     .option("--registry <url>", "Override registry URL")
     .option("--json", "Print the item metadata as JSON (without file contents)")
-    .action(async (ref: string, options: { cwd: string; registry?: string; json?: boolean }) => {
+    .option("--docs", "With --json, include the item's usage docs (Markdown)")
+    .action(async (ref: string, options: { cwd: string; registry?: string; json?: boolean; docs?: boolean }) => {
       const config = await loadConfigOrDefault(options.cwd).catch((err) => {
         console.error(chalk.red(`\n✗ ${(err as Error).message}\n`));
         process.exit(1);
@@ -48,7 +49,7 @@ export function registerInfoCommand(program: Command) {
       if (options.json) {
         // Metadata only: file contents and docs can be hundreds of KB.
         const meta: Record<string, unknown> = { ...item, files: item.files.map((f) => ({ path: f.path, target: f.target, hash: f.hash })) };
-        delete meta["docs"];
+        if (!options.docs) delete meta["docs"];
         if (installed) Object.assign(meta, { installedVersion: installed, updateAvailable });
         console.log(JSON.stringify(meta, null, 2));
         return;

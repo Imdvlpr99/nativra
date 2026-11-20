@@ -104,12 +104,16 @@ export function registerRollbackCommand(program: Command) {
           // (e.g. a newer theme in theme.ts after `remove zinc` + `theme add rose`).
           const key = entry.projectRelativePath;
           const owner = lock.items[id]?.files[key] !== undefined ? id : lockOwnerOf(lock, key, id);
-          const recorded = owner ? lock.items[owner]?.files[key] : undefined;
+          // An untracked file (nativra.json) is compared with what the operation wrote instead.
+          const tracked = owner ? lock.items[owner]?.files[key] : undefined;
+          const recorded = tracked ?? (typeof entry.hashAfter === "string" ? entry.hashAfter : undefined);
           const current = (await fileExists(targetPath)) ? await readFile(targetPath, "utf8") : null;
           let cleanOwner: string | undefined;
           if (recorded && current !== null) {
-            if (contentHash(current) !== recorded) editedSince.push(entry.projectRelativePath);
-            else if (owner !== id) cleanOwner = owner;
+            const now = contentHash(current);
+            // Already back to the backed-up content (the operation failed before writing): nothing to lose.
+            if (now !== recorded && now !== restore?.hash) editedSince.push(entry.projectRelativePath);
+            else if (tracked && owner !== id) cleanOwner = owner;
           }
           targets.push({ entry, targetPath, current, ...(restore ? { restore } : {}), ...(cleanOwner ? { cleanOwner } : {}) });
         }

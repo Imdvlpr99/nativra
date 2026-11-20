@@ -1,0 +1,37 @@
+# Profile Flow
+
+A profile screen with avatar, name, handle, bio, website and stats, and grouped settings rows ([SectionList](/docs/components/section-list) and [ListItem](/docs/components/list-item)). It also has sign out, and an edit mode with field validation ([useForm](/docs/hooks/use-form)), a photo change and an async save.
+
+## Usage
+
+```tsx
+import { ProfileFlow } from "@/components/ui/ProfileFlow";
+import { useImagePicker } from "@/hooks/use-image-picker";
+
+export default function ProfileScreen() {
+  const picker = useImagePicker({ allowsEditing: true, aspect: [1, 1] });
+  return (
+    <ProfileFlow
+      profile={user}
+      onSave={(p) => api.updateProfile(p)}
+      onPickAvatar={async () => (await picker.pick("library"))?.[0]?.uri ?? null}
+      onNavigate={(id) => router.push(`/settings/${id}`)}
+      onSignOut={signOut}
+    />
+  );
+}
+```
+
+The template doesn't depend on an image picker. Pass `onPickAvatar` with whichever one you use; the example uses [useImagePicker](/docs/hooks/use-image-picker). Without it, the photo isn't editable.
+
+While `onSave` runs, Save shows a spinner. If it rejects, the error shows and the edits stay. Cancel discards edits. Rules: the name is required, the username is 2–30 of `a-z 0-9 _ .`, and the bio is at most 160 characters.
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| profile | `{ name, handle, bio, website, avatarUrl?, stats? }` | Demo profile when left out |
+| onSave | `(profile) => Promise<void> \| void` | Persist edits |
+| onPickAvatar | `() => Promise<string \| null>` | Your image picker; resolves to a URI |
+| onNavigate | `(id) => void` | "account", "notifications" or "privacy" |
+| onSignOut | `() => void` | Shows the sign-out row |

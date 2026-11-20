@@ -58,13 +58,13 @@ Browse everything you can add in the [component docs](https://nativra.vercel.app
 
 | Command | What it does |
 |---|---|
-| `init` | Creates `nativra.json`. `--yes` accepts the detected defaults, `--style <id>` picks a style, `--force` replaces an existing file. |
+| `init` | Creates `nativra.json`. `--yes` accepts the detected defaults, `--style <id>` picks a style, `--force` replaces an existing file (the old one is kept: `rollback nativra-config` restores it). |
 | `add <items...>` | Installs items and their dependencies. `--dry-run` shows the plan without writing. |
-| `update [items...]` | Updates installed items. `--dry-run` shows what would change. Skips files you edited unless `--force`. |
-| `diff <item>` | Shows how your copy differs from the registry version. |
+| `update [items...]` | Updates installed items. `--dry-run` shows what would change, `--check` also exits with code 1 when anything is out of date (for CI). Skips files you edited unless `--force`. |
+| `diff <item>` | Shows how your copy differs from the registry version. `--exit-code` exits with code 1 when they differ. |
 | `rollback <item>` | Undoes the last change to an item. |
 | `remove <items...>` | Deletes installed items. Refuses while other installed items still use them. |
-| `list` · `search <query>` · `info <item>` | Browses the registry. `list --type block` filters, `--json` prints JSON. |
+| `list` · `search <query>` · `info <item>` | Browses the registry. `list --type block` filters, `list --installed` shows what you installed and what has updates, `info` shows the installed version, `--json` prints JSON. |
 | `theme list` · `theme add <id>` | Lists or installs a color theme. |
 | `style list` · `style add <id>` | Lists or installs a style. |
 | `registry list` · `registry add <name> <url>` | Lists or adds component registries. |

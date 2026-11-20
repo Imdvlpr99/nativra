@@ -27,15 +27,15 @@
       "type": "component"
     },
     "button": {
-      "version": "0.2.0",
+      "version": "0.3.1",
       "files": {
-        "components/ui/Button.tsx": "e5d59f4718d7ec4397cf13732b34ab7ecd7153b35a1e4506f51ec13a8dc02941"
+        "components/ui/Button.tsx": "40dc4684fabd99283bd527e9fce5a0eb9ef3c641315738b0993fb835a6592715"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Button.tsx": "e5d59f4718d7ec4397cf13732b34ab7ecd7153b35a1e4506f51ec13a8dc02941"
+        "components/ui/Button.tsx": "40dc4684fabd99283bd527e9fce5a0eb9ef3c641315738b0993fb835a6592715"
       },
       "type": "component"
     },
@@ -66,7 +66,7 @@
       "type": "component"
     },
     "input": {
-      "version": "0.3.0",
+      "version": "0.3.1",
       "files": {
         "components/ui/Input.tsx": "423135f0f753cb005031121ace26a24d0e6efaa1cfa75f12c5c0d4f28ee28c3b"
       },

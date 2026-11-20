@@ -183,4 +183,16 @@ describe("checkAccessibility", () => {
     expect(checkAccessibility(withSource('<View accessibilityRole="adjustable" onAccessibilityAction={f} />'))).toEqual([]);
     expect(checkAccessibility(withSource('<View accessibilityRole="button" />'))).toEqual([]);
   });
+
+  it("requires Pressable over Touchable* and a role or label on every Pressable", () => {
+    expect(checkAccessibility(withSource("<TouchableOpacity onPress={f} />"))).toEqual([
+      "nativewind/Thing.tsx:1: use Pressable instead of <TouchableOpacity>",
+    ]);
+    expect(checkAccessibility(withSource("<Pressable onPress={f} style={({ pressed }) => [s, pressed && o]}>"))).toEqual([
+      "nativewind/Thing.tsx:1: <Pressable> needs an accessibilityRole or accessibilityLabel",
+    ]);
+    expect(checkAccessibility(withSource('<Pressable style={({ pressed }) => [s]} accessibilityRole="button">'))).toEqual([]);
+    expect(checkAccessibility(withSource('<Pressable accessibilityLabel="Close" />'))).toEqual([]);
+    expect(checkAccessibility(withSource("<Pressable {...rest} />"))).toEqual([]);
+  });
 });

@@ -95,3 +95,14 @@ import { tokens } from "@/lib/themes/zinc";
     expect(result).toContain('from "@/theme/zinc"');
   });
 });
+
+describe("sibling imports named after Object.prototype members", () => {
+  it("leaves ./toString and ./constructor alone when no item ships them", () => {
+    const config = NativraConfigSchema.parse({});
+    const input = `import a from "./toString";\nimport b from "./constructor";\nimport { Card } from "./Card";\n`;
+    const result = transformFileImports(input, config, { Card: "@/blocks/Card" });
+    expect(result).toContain('from "./toString"');
+    expect(result).toContain('from "./constructor"');
+    expect(result).toContain('from "@/blocks/Card"');
+  });
+});

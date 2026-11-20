@@ -8,7 +8,7 @@
  * Install: npx nativra-cli add fintech-wallet
  */
 import React, { useState } from "react";
-import { View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";
+import { Pressable, View, ScrollView, SafeAreaView, StatusBar } from "react-native";
 import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -41,14 +41,15 @@ export function FintechWallet() {
             <Text className="type-2xl weight-heading text-foreground">Wallet</Text>
             <Text className="type-xs text-muted-foreground mt-1">Multi-Chain Vault</Text>
           </View>
-          <TouchableOpacity
+          <Pressable
+            accessibilityRole="button"
             onPress={() => setHideBalance((h) => !h)}
-            className="surface sp-px-3 sp-py-1.5 rounded-control"
+            className="surface sp-px-3 sp-py-1.5 rounded-control active:opacity-20"
           >
             <Text className="type-xs weight-label text-muted-foreground">
               {hideBalance ? "Reveal" : "Hide Balance"}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Total Net Worth Card */}

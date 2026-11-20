@@ -1,0 +1,25 @@
+{
+  "id": "phone-input",
+  "name": "PhoneInput",
+  "description": "A phone number field with a searchable country-code picker; autofilled international numbers pick their country.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/PhoneInput.tsx", "target": "nativewind" },
+    { "path": "stylesheet/PhoneInput.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "country-picker", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["input", "phone", "form", "auth"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

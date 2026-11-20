@@ -91,8 +91,41 @@ export function checkAccessibility(item: RegistryItem): string[] {
     if (/accessibilityRole=\{?[^}\n]*["']adjustable["']/.test(src) && !/\bonAccessibilityAction\b/.test(src)) {
       errors.push(`${file.path}: accessibilityRole "adjustable" needs onAccessibilityAction (increment/decrement)`);
     }
+    // Pressable is the primitive: Touchable* is what `nativra audit` tells users to migrate away from.
+    for (const m of src.matchAll(/<(TouchableOpacity|TouchableHighlight)\b/g)) {
+      errors.push(`${file.path}:${lineOf(src, m.index ?? 0)}: use Pressable instead of <${m[1]}>`);
+    }
+    // Every pressable tells a screen reader what it is: a role, a label, or props spread from a
+    // caller who supplies them.
+    for (const m of src.matchAll(/<Pressable\b/g)) {
+      const tag = openingTag(src, m.index ?? 0);
+      if (!/\baccessibilityRole=|\baccessibilityLabel=|\baccessible=\{false\}|\{\s*\.\.\./.test(tag)) {
+        errors.push(`${file.path}:${lineOf(src, m.index ?? 0)}: <Pressable> needs an accessibilityRole or accessibilityLabel`);
+      }
+    }
   }
   return errors;
+}
+
+function lineOf(src: string, index: number): number {
+  return src.slice(0, index).split("\n").length;
+}
+
+/** The JSX opening tag starting at `start`, skipping `>` inside braces and strings (`=>`, `a > b`). */
+function openingTag(src: string, start: number): string {
+  let depth = 0;
+  let quote: string | null = null;
+  for (let i = start; i < src.length; i++) {
+    const c = src[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = null;
+    } else if (c === '"' || c === "'" || (c === "`" && depth > 0)) quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (c === ">" && depth === 0) return src.slice(start, i + 1);
+  }
+  return src.slice(start);
 }
 
 /** The install folder an item type shares with others under the CLI's default configuration. */

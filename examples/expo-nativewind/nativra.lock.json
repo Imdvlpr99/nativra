@@ -27,15 +27,15 @@
       "type": "component"
     },
     "button": {
-      "version": "0.2.0",
+      "version": "0.3.1",
       "files": {
-        "components/ui/Button.tsx": "5fd7301969771cec4bf2a86a73d5e0f1350fd6e1e2ce9a7d20f226ad447109f5"
+        "components/ui/Button.tsx": "98e5455d2618a30b16010c665a88ea7a9ca86e43578cfc51a1c38bacecaa61f7"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Button.tsx": "5fd7301969771cec4bf2a86a73d5e0f1350fd6e1e2ce9a7d20f226ad447109f5"
+        "components/ui/Button.tsx": "98e5455d2618a30b16010c665a88ea7a9ca86e43578cfc51a1c38bacecaa61f7"
       },
       "type": "component"
     },
@@ -66,15 +66,15 @@
       "type": "component"
     },
     "input": {
-      "version": "0.3.0",
+      "version": "0.3.1",
       "files": {
-        "components/ui/Input.tsx": "a7f444d7607ed966f39763526c9f589559885456ce13b168f0fd339ffabcffe5"
+        "components/ui/Input.tsx": "691541f8481b0d0e1d71567cf59c0904c23fbbbe7be6ea1974237520c02b064b"
       },
       "dependencies": [
         "use-theme-colors"
       ],
       "upstream": {
-        "components/ui/Input.tsx": "a7f444d7607ed966f39763526c9f589559885456ce13b168f0fd339ffabcffe5"
+        "components/ui/Input.tsx": "691541f8481b0d0e1d71567cf59c0904c23fbbbe7be6ea1974237520c02b064b"
       },
       "type": "component"
     },
