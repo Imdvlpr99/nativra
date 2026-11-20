@@ -141,7 +141,7 @@ export function DatePicker({
                   disabled={!allowed}
                   accessibilityRole="button"
                   accessibilityLabel={`${pick}, ${format(date, { dateStyle: "full" })}`}
-                  accessibilityState={{ selected: isSelected, disabled: !allowed }}
+                  accessibilityState={{ selected: isSelected, disabled: !allowed }} aria-selected={isSelected}
                   className={`rounded-small border sp-px-2.5 sp-py-1.5 ${isSelected ? "border-primary bg-primary" : "border-border bg-muted"} ${
                     allowed ? "" : "opacity-50"
                   }`}
@@ -197,7 +197,7 @@ export function DatePicker({
                     disabled={!allowed}
                     accessibilityRole="button"
                     accessibilityLabel={format(date, { dateStyle: "full" })}
-                    accessibilityState={{ selected: isSelected, disabled: !allowed }}
+                    accessibilityState={{ selected: isSelected, disabled: !allowed }} aria-selected={isSelected}
                     className="aspect-square w-[14.2857%] items-center justify-center"
                   >
                     <View

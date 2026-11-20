@@ -19,7 +19,7 @@ export function SignUpScreen() {
 }
 ```
 
-While the promise from `onSubmit` is pending, the button shows a spinner and a second submit is ignored. Validation lives in the block (built on [useForm](/docs/hooks/use-form)); edit the `rules` object to change it.
+While the promise from `onSubmit` is pending, the button shows a spinner and a second submit is ignored. If it rejects, the error's message shows above the button. Validation lives in the block (built on [useForm](/docs/hooks/use-form)); edit the `rules` object to change it.
 
 ## Props
 

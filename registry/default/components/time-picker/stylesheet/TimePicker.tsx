@@ -24,8 +24,21 @@ export interface TimePickerProps {
   /** 12 shows an AM/PM column; 24 shows 0-23. Default: the device locale's convention. */
   hourCycle?: 12 | 24;
   disabled?: boolean;
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<TimePickerLabels>;
   style?: StyleProp<ViewStyle>;
 }
+
+export interface TimePickerLabels {
+  /** Column names screen readers announce. */
+  hour: string;
+  minute: string;
+  period: string;
+  am: string;
+  pm: string;
+}
+
+const DEFAULT_LABELS: TimePickerLabels = { hour: "Hour", minute: "Minute", period: "AM or PM", am: "AM", pm: "PM" };
 
 interface Option {
   value: number;
@@ -46,10 +59,17 @@ function parse(time: string | undefined): number | null {
 }
 const format = (total: number) => `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
 
+/**
+ * The device locale's clock. Some engines leave `hourCycle` out of resolvedOptions(), so this
+ * falls back to `hour12`, then to how 13:00 is formatted ("13" means a 24-hour clock).
+ */
 function localeHourCycle(): 12 | 24 {
   try {
-    const cycle = new Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions().hourCycle;
-    return cycle === "h23" || cycle === "h24" ? 24 : 12;
+    const format = new Intl.DateTimeFormat(undefined, { hour: "numeric" });
+    const { hourCycle, hour12 } = format.resolvedOptions();
+    if (hourCycle) return hourCycle === "h23" || hourCycle === "h24" ? 24 : 12;
+    if (typeof hour12 === "boolean") return hour12 ? 12 : 24;
+    return /13/.test(format.format(new Date(2000, 0, 1, 13))) ? 24 : 12;
   } catch {
     return 12;
   }
@@ -63,10 +83,12 @@ export function TimePicker({
   minuteStep = 5,
   hourCycle,
   disabled = false,
+  labels: labelOverrides,
   style,
 }: TimePickerProps) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const cycle = React.useMemo(() => hourCycle ?? localeHourCycle(), [hourCycle]);
   const [internal, setInternal] = React.useState(() => parse(defaultValue) ?? 9 * 60);
   const total = parse(value) ?? internal;
@@ -90,8 +112,8 @@ export function TimePicker({
   if (!minuteValues.includes(minute)) minuteValues.push(minute);
   const minutes: Option[] = minuteValues.sort((a, b) => a - b).map((m) => ({ value: m, label: pad(m) }));
   const periods: Option[] = [
-    { value: 0, label: "AM" },
-    { value: 1, label: "PM" },
+    { value: 0, label: labels.am },
+    { value: 1, label: labels.pm },
   ];
 
   const hourShown = cycle === 24 ? h24 : h24 % 12 === 0 ? 12 : h24 % 12;
@@ -102,12 +124,12 @@ export function TimePicker({
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <View style={[styles.card, disabled && styles.disabled]}>
         <View pointerEvents="none" style={styles.highlight} />
-        <Column label="Hour" options={hours} selected={hourShown} onSelect={selectHour} disabled={disabled} styles={styles} />
+        <Column label={labels.hour} options={hours} selected={hourShown} onSelect={selectHour} disabled={disabled} styles={styles} />
         <Text style={styles.colon}>:</Text>
-        <Column label="Minute" options={minutes} selected={minute} onSelect={(m) => set(h24 * 60 + m)} disabled={disabled} styles={styles} />
+        <Column label={labels.minute} options={minutes} selected={minute} onSelect={(m) => set(h24 * 60 + m)} disabled={disabled} styles={styles} />
         {cycle === 12 ? (
           <Column
-            label="AM or PM"
+            label={labels.period}
             options={periods}
             selected={pm ? 1 : 0}
             onSelect={(p) => set(((h24 % 12) + (p ? 12 : 0)) * 60 + minute)}

@@ -4,7 +4,7 @@
   "description": "An accessible group of radio buttons with keyboard and screen reader support.",
   "type": "component",
   "status": "stable",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "stylingTargets": [
     "nativewind",
     "stylesheet"

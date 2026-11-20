@@ -4,7 +4,7 @@
   "description": "A phone number field with a searchable country-code picker; autofilled international numbers pick their country.",
   "type": "component",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

@@ -63,7 +63,7 @@ export function ColorSwatch({ options, value, onChange, size = "md", accessibili
             disabled={o.disabled}
             accessibilityRole="radio"
             accessibilityLabel={o.label}
-            accessibilityState={{ checked: selected, disabled: Boolean(o.disabled) }}
+            accessibilityState={{ checked: selected, disabled: Boolean(o.disabled) }} aria-checked={selected}
             hitSlop={Math.max(0, (44 - d - 8) / 2)}
             className={`items-center justify-center rounded-full border-2 ${selected ? "border-foreground" : "border-transparent"}`}
             style={{ width: d + 8, height: d + 8 }}

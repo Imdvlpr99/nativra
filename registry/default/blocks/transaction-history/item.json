@@ -4,7 +4,7 @@
   "description": "Transactions grouped by day with daily net totals, an optional running balance, and locale-aware money and dates.",
   "type": "block",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

@@ -38,3 +38,13 @@ Search matches a name ("indo"), an ISO code ("id") or a dial code ("+62").
 | showDialCode | boolean | false | Show "+62" next to names |
 | countries | Country[] | all | Limit the list |
 | disabled | boolean | false | Dims and disables the field |
+
+## Labels
+
+Every piece of text the CountryPicker shows or reads to screen readers is in `labels`. Pass only the ones you translate; the rest stay English. Placeholders in braces are filled in.
+
+Keys: title, search, empty ({query}), close, plus, placeholder, field, none.
+
+```tsx
+<CountryPicker labels={{ title: "Pilih negara", search: "Cari negara" }} … />
+```

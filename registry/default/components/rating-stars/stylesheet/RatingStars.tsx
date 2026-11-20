@@ -68,7 +68,7 @@ export function RatingStars({
             key={starValue}
             accessibilityRole="button"
             accessibilityLabel={`Rate ${starValue} of ${maxStars} stars`}
-            accessibilityState={{ selected: isFilled }}
+            accessibilityState={{ selected: isFilled }} aria-selected={isFilled}
             onPress={() => onRatingChange?.(starValue)}
             style={styles.starButton}
             hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}

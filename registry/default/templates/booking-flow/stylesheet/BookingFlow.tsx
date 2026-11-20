@@ -187,7 +187,7 @@ export function BookingFlow({
               ) : (
                 <View style={styles.slots} accessibilityRole="radiogroup" accessibilityLabel="Available times">
                   {slots.map((s) => (
-                    <Chip key={s} label={s} selected={s === time} onPress={() => setTime(s)} accessibilityRole="radio" accessibilityState={{ checked: s === time }} />
+                    <Chip key={s} label={s} selected={s === time} onPress={() => setTime(s)} accessibilityRole="radio" accessibilityState={{ checked: s === time }} aria-checked={s === time} />
                   ))}
                 </View>
               )}

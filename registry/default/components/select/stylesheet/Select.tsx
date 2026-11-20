@@ -71,7 +71,7 @@ export function Select({
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
                 return (
-                  <Pressable accessibilityRole="button" accessibilityState={{ selected: isSelected }}
+                  <Pressable accessibilityRole="button" accessibilityState={{ selected: isSelected }} aria-selected={isSelected}
                     onPress={() => {
                       onValueChange(item.value);
                       setOpen(false);

@@ -1,6 +1,6 @@
 /**
  * Nativra — Button (React Native StyleSheet)
- * @version 0.3.0
+ * @version 0.3.2
  * @target stylesheet
  * @platforms android, ios
  *

@@ -4,7 +4,7 @@
   "description": "Product tile with image, badge, wishlist heart, name, rating, price with compare-at price, and add-to-cart.",
   "type": "block",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

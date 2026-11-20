@@ -140,7 +140,7 @@ export function DatePicker({
                   disabled={!allowed}
                   accessibilityRole="button"
                   accessibilityLabel={`${pick}, ${format(date, { dateStyle: "full" })}`}
-                  accessibilityState={{ selected: isSelected, disabled: !allowed }}
+                  accessibilityState={{ selected: isSelected, disabled: !allowed }} aria-selected={isSelected}
                   style={[styles.presetBtn, isSelected && styles.presetBtnSelected, !allowed && styles.disabled]}
                 >
                   <Text style={[styles.presetText, isSelected && styles.presetTextSelected]}>{pick}</Text>
@@ -182,7 +182,7 @@ export function DatePicker({
                     disabled={!allowed}
                     accessibilityRole="button"
                     accessibilityLabel={format(date, { dateStyle: "full" })}
-                    accessibilityState={{ selected: isSelected, disabled: !allowed }}
+                    accessibilityState={{ selected: isSelected, disabled: !allowed }} aria-selected={isSelected}
                     style={styles.cell}
                   >
                     <View style={[styles.day, iso === todayIso && styles.today, isSelected && styles.daySelected]}>

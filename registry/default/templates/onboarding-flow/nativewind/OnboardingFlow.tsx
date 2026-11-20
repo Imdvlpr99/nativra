@@ -97,7 +97,7 @@ export function OnboardingFlow({
       <View className="space-y-6">
         <View className="flex-row items-center justify-center sp-gap-2">
           {slides.map((_, idx) => (
-            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }}
+            <Pressable accessibilityRole="button" accessibilityLabel={`Go to slide ${idx + 1} of ${slides.length}`} accessibilityState={{ selected: idx === currentIndex }} aria-selected={idx === currentIndex}
               key={idx}
               onPress={() => setCurrentIndex(idx)}
               className={cn(

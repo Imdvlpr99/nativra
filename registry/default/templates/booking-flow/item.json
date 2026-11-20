@@ -4,7 +4,7 @@
   "description": "Appointment booking in three steps: date and free time slots, contact details with phone, a summary to confirm, then a success screen.",
   "type": "template",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

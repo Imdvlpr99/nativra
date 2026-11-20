@@ -1,6 +1,6 @@
 /**
  * Nativra — Button (NativeWind)
- * @version 0.3.0
+ * @version 0.3.2
  * @target nativewind
  * @platforms android, ios
  *
@@ -128,6 +128,7 @@ export function Button({
     .join(" ");
 
   const textClass = [TEXT_VARIANTS[variant], TEXT_SIZES[size]].join(" ");
+  const shadow = solid && !isDisabled ? elevation("card") : undefined;
   const contentColor =
     variant === "default" ? c.background : variant === "primary" ? c["primary-foreground"] : variant === "destructive" ? c["destructive-foreground"] : c.foreground;
 
@@ -137,7 +138,13 @@ export function Button({
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
-      style={(state) => [solid && !isDisabled ? elevation("card") : undefined, typeof style === "function" ? style(state) : style]}
+      // A plain array unless the caller passed a style function: NativeWind merges className styles
+      // with `style`, and a function nested in that merge would be ignored.
+      style={
+        typeof style === "function"
+          ? (state) => [shadow, style(state)]
+          : [shadow, style]
+      }
       {...rest}
     >
       {loading ? (

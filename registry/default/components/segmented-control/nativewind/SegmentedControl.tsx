@@ -123,7 +123,7 @@ export function SegmentedControl({
           <Pressable
             key={option.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected: isSelected, disabled: isItemDisabled }}
+            accessibilityState={{ selected: isSelected, disabled: isItemDisabled }} aria-selected={isSelected}
             accessibilityLabel={option.label}
             disabled={isItemDisabled}
             onPress={() => onValueChange(option.value)}

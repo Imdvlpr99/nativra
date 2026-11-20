@@ -46,3 +46,13 @@ Other `TextInput` props pass through to the number field.
 
 - The country button reads as "Country code, Indonesia, plus 62" and hints that it opens the list
 - The number field uses the phone keyboard and phone autofill (`autoComplete="tel"`)
+
+## Labels
+
+Every piece of text the PhoneInput shows or reads to screen readers is in `labels`. Pass only the ones you translate; the rest stay English. Placeholders in braces are filled in.
+
+Keys: countryCode, countryCodeHint, phone, plus every CountryPicker label (passed on to the list).
+
+```tsx
+<PhoneInput labels={{ countryCode: "Kode negara", search: "Cari negara" }} … />
+```

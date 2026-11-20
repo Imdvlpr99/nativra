@@ -33,7 +33,10 @@ export interface ProductCardProps {
   onPress?: () => void;
   /** Shows the add button. */
   onAddToCart?: () => void;
+  /** @deprecated Use `labels.addToCart`. */
   addLabel?: string;
+  /** Text for another language; anything left out stays English. `{name}`, `{price}` and `{rating}` are filled in. */
+  labels?: Partial<ProductCardLabels>;
   /** Shows the heart; `wishlisted` fills it. */
   onToggleWishlist?: () => void;
   wishlisted?: boolean;
@@ -41,6 +44,28 @@ export interface ProductCardProps {
 }
 
 /** A product tile for grids and carousels: image, badge, wishlist, name, rating, price and add-to-cart. */
+export interface ProductCardLabels {
+  addToCart: string;
+  soldOut: string;
+  /** Read before the compare-at price. */
+  was: string;
+  rating: string;
+  addToWishlist: string;
+  removeFromWishlist: string;
+}
+
+const DEFAULT_LABELS: ProductCardLabels = {
+  addToCart: "Add to cart",
+  soldOut: "Sold out",
+  was: "was {price}",
+  rating: "rated {rating} of 5",
+  addToWishlist: "Add {name} to wishlist",
+  removeFromWishlist: "Remove {name} from wishlist",
+};
+
+/** "Add {name}" + { name: "Tote" } -> "Add Tote". */
+const fill = (text: string, values: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (m, k: string) => (k in values ? String(values[k]) : m));
+
 export function ProductCard({
   name,
   price,
@@ -52,14 +77,22 @@ export function ProductCard({
   soldOut = false,
   onPress,
   onAddToCart,
-  addLabel = "Add to cart",
+  addLabel,
+  labels: labelOverrides,
   onToggleWishlist,
   wishlisted = false,
   style,
 }: ProductCardProps) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
-  const summary = [name, price, compareAtPrice ? `was ${compareAtPrice}` : null, rating !== undefined ? `rated ${rating} of 5` : null, soldOut ? "sold out" : null]
+  const labels = { ...DEFAULT_LABELS, ...(addLabel ? { addToCart: addLabel } : {}), ...labelOverrides };
+  const summary = [
+    name,
+    price,
+    compareAtPrice ? fill(labels.was, { price: compareAtPrice }) : null,
+    rating !== undefined ? fill(labels.rating, { rating }) : null,
+    soldOut ? labels.soldOut : null,
+  ]
     .filter(Boolean)
     .join(", ");
 
@@ -77,7 +110,7 @@ export function ProductCard({
           {badge ? <Badge label={badge} variant="primary" size="sm" style={styles.badge} /> : null}
           {soldOut ? (
             <View style={styles.soldOut}>
-              <Text style={styles.soldOutText}>Sold out</Text>
+              <Text style={styles.soldOutText}>{labels.soldOut}</Text>
             </View>
           ) : null}
         </View>
@@ -101,8 +134,8 @@ export function ProductCard({
         <Pressable
           onPress={onToggleWishlist}
           accessibilityRole="button"
-          accessibilityLabel={wishlisted ? `Remove ${name} from wishlist` : `Add ${name} to wishlist`}
-          accessibilityState={{ selected: wishlisted }}
+          accessibilityLabel={fill(wishlisted ? labels.removeFromWishlist : labels.addToWishlist, { name })}
+          accessibilityState={{ selected: wishlisted }} aria-selected={wishlisted}
           hitSlop={8}
           style={({ pressed }) => [styles.heart, pressedStyle(pressed)]}
         >
@@ -111,8 +144,8 @@ export function ProductCard({
       ) : null}
       {onAddToCart ? (
         <View style={styles.footer}>
-          <Button size="sm" variant="primary" onPress={onAddToCart} disabled={soldOut} accessibilityLabel={`${addLabel}, ${name}`}>
-            {soldOut ? "Sold out" : addLabel}
+          <Button size="sm" variant="primary" onPress={onAddToCart} disabled={soldOut} accessibilityLabel={`${labels.addToCart}, ${name}`}>
+            {soldOut ? labels.soldOut : labels.addToCart}
           </Button>
         </View>
       ) : null}

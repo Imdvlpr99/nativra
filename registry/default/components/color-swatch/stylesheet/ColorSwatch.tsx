@@ -64,7 +64,7 @@ export function ColorSwatch({ options, value, onChange, size = "md", accessibili
             disabled={o.disabled}
             accessibilityRole="radio"
             accessibilityLabel={o.label}
-            accessibilityState={{ checked: selected, disabled: Boolean(o.disabled) }}
+            accessibilityState={{ checked: selected, disabled: Boolean(o.disabled) }} aria-checked={selected}
             hitSlop={Math.max(0, (44 - d - 8) / 2)}
             style={[styles.ring, { width: d + 8, height: d + 8, borderRadius: (d + 8) / 2 }, selected && { borderColor: c.foreground }]}
           >

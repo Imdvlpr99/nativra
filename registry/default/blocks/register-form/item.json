@@ -4,7 +4,7 @@
   "description": "Sign-up form with name, email, password and confirm, inline validation, terms consent and autofill hints.",
   "type": "block",
   "status": "beta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "stylingTargets": ["nativewind", "stylesheet"],
   "platforms": { "android": true, "ios": true, "expoGo": true },
   "files": [

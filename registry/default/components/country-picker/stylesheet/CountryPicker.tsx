@@ -17,7 +17,36 @@ export interface CountryPickerModalProps {
   showDialCode?: boolean;
   /** Limit the list (e.g. the countries you ship to). Defaults to every country. */
   countries?: readonly Country[];
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<CountryPickerLabels>;
 }
+
+export interface CountryPickerLabels {
+  /** Modal title (the `title` prop wins when set). */
+  title: string;
+  search: string;
+  /** `{query}` is filled in. */
+  empty: string;
+  close: string;
+  /** Read before a dial code: "Indonesia, plus 62". */
+  plus: string;
+  /** Field placeholder (the `placeholder` prop wins when set). */
+  placeholder: string;
+  /** Field name read without a `label`. */
+  field: string;
+  none: string;
+}
+
+export const DEFAULT_COUNTRY_PICKER_LABELS: CountryPickerLabels = {
+  title: "Select country",
+  search: "Search by name or code",
+  empty: "No country matches “{query}”",
+  close: "Close",
+  plus: "plus",
+  placeholder: "Select a country",
+  field: "Country",
+  none: "None selected",
+};
 
 /** The searchable country list in a modal sheet, for custom triggers. */
 export function CountryPickerModal({
@@ -25,10 +54,12 @@ export function CountryPickerModal({
   onClose,
   onSelect,
   selected,
-  title = "Select country",
+  title,
   showDialCode = false,
   countries = COUNTRIES,
+  labels: labelOverrides,
 }: CountryPickerModalProps) {
+  const labels = { ...DEFAULT_COUNTRY_PICKER_LABELS, ...labelOverrides };
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
   const [query, setQuery] = React.useState("");
@@ -43,19 +74,19 @@ export function CountryPickerModal({
       <View style={styles.sheet}>
         <View style={styles.header}>
           <Text accessibilityRole="header" style={styles.title}>
-            {title}
+            {title ?? labels.title}
           </Text>
-          <Pressable onPress={close} accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} style={({ pressed }) => pressedStyle(pressed)}>
+          <Pressable onPress={close} accessibilityRole="button" accessibilityLabel={labels.close} hitSlop={8} style={({ pressed }) => pressedStyle(pressed)}>
             <X size={ts(22)} color={c.foreground} />
           </Pressable>
         </View>
-        <SearchBar value={query} onChangeText={setQuery} placeholder="Search by name or code" style={styles.search} />
+        <SearchBar value={query} onChangeText={setQuery} placeholder={labels.search} style={styles.search} />
         <FlatList
           data={results}
           keyExtractor={(item) => item.code}
           keyboardShouldPersistTaps="handled"
           initialNumToRender={20}
-          ListEmptyComponent={<Text style={styles.empty}>No country matches “{query}”</Text>}
+          ListEmptyComponent={<Text style={styles.empty}>{labels.empty.replace("{query}", query)}</Text>}
           renderItem={({ item }) => {
             const active = item.code === selected;
             return (
@@ -65,8 +96,8 @@ export function CountryPickerModal({
                   close();
                 }}
                 accessibilityRole="button"
-                accessibilityLabel={showDialCode ? `${item.name}, plus ${item.dial}` : item.name}
-                accessibilityState={{ selected: active }}
+                accessibilityLabel={showDialCode ? `${item.name}, ${labels.plus} ${item.dial}` : item.name}
+                accessibilityState={{ selected: active }} aria-selected={active}
                 style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
               >
                 <Text style={styles.flag}>{item.flag}</Text>
@@ -93,6 +124,8 @@ export interface CountryPickerProps {
   showDialCode?: boolean;
   countries?: readonly Country[];
   disabled?: boolean;
+  /** Text for another language; anything left out stays English. */
+  labels?: Partial<CountryPickerLabels>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -101,14 +134,16 @@ export function CountryPicker({
   label,
   value,
   onChange,
-  placeholder = "Select a country",
+  placeholder,
   showDialCode = false,
   countries,
   disabled = false,
+  labels: labelOverrides,
   style,
 }: CountryPickerProps) {
   const c = useThemeColors();
   const styles = React.useMemo(() => createStyles(c), [c]);
+  const labels = { ...DEFAULT_COUNTRY_PICKER_LABELS, ...labelOverrides };
   const [open, setOpen] = React.useState(false);
   const selected = countryByCode(value);
 
@@ -119,14 +154,14 @@ export function CountryPicker({
         onPress={() => setOpen(true)}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityLabel={label ?? "Country"}
-        accessibilityValue={{ text: selected?.name ?? "None selected" }}
+        accessibilityLabel={label ?? labels.field}
+        accessibilityValue={{ text: selected?.name ?? labels.none }}
         accessibilityState={{ disabled, expanded: open }}
         style={({ pressed }) => [styles.trigger, field(c, open), disabled && styles.disabled, pressed && styles.rowPressed]}
       >
         {selected ? <Text style={styles.flag}>{selected.flag}</Text> : null}
         <Text style={[styles.value, !selected && styles.placeholder]} numberOfLines={1}>
-          {selected ? (showDialCode ? `${selected.name} (+${selected.dial})` : selected.name) : placeholder}
+          {selected ? (showDialCode ? `${selected.name} (+${selected.dial})` : selected.name) : (placeholder ?? labels.placeholder)}
         </Text>
         <ChevronDown size={ts(18)} color={c["muted-foreground"]} />
       </Pressable>
@@ -136,6 +171,7 @@ export function CountryPicker({
         onSelect={(country) => onChange?.(country)}
         selected={selected?.code}
         showDialCode={showDialCode}
+        labels={labels}
         {...(countries ? { countries } : {})}
       />
     </View>

@@ -52,7 +52,7 @@ export function Tabs({
           <Pressable
             key={tab.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected: isSelected }}
+            accessibilityState={{ selected: isSelected }} aria-selected={isSelected}
             onPress={() => onValueChange(tab.value)}
             style={[
               styles.tab,
