@@ -5,18 +5,16 @@ A profile screen with avatar, name, handle, bio, website and stats, and grouped 
 ## Usage
 
 ```tsx
-import * as ImagePicker from "expo-image-picker";
 import { ProfileFlow } from "@/components/ui/ProfileFlow";
+import { useImagePicker } from "@/hooks/use-image-picker";
 
 export default function ProfileScreen() {
+  const picker = useImagePicker({ allowsEditing: true, aspect: [1, 1] });
   return (
     <ProfileFlow
       profile={user}
       onSave={(p) => api.updateProfile(p)}
-      onPickAvatar={async () => {
-        const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], allowsEditing: true, aspect: [1, 1] });
-        return r.canceled ? null : (r.assets[0]?.uri ?? null);
-      }}
+      onPickAvatar={async () => (await picker.pick("library"))?.[0]?.uri ?? null}
       onNavigate={(id) => router.push(`/settings/${id}`)}
       onSignOut={signOut}
     />
@@ -24,7 +22,7 @@ export default function ProfileScreen() {
 }
 ```
 
-The template doesn't depend on an image picker: pass `onPickAvatar` with whichever one you use (the example uses `expo-image-picker`). Without it, the photo isn't editable.
+The template doesn't depend on an image picker. Pass `onPickAvatar` with whichever one you use; the example uses [useImagePicker](/docs/hooks/use-image-picker). Without it, the photo isn't editable.
 
 While `onSave` runs, Save shows a spinner. If it rejects, the error shows and the edits stay. Cancel discards edits. Rules: the name is required, the username is 2–30 of `a-z 0-9 _ .`, and the bio is at most 160 characters.
 

@@ -27,6 +27,7 @@ import {
   Checkbox,
   DataTable,
   Dialog,
+  CodeScanner,
   ColorSwatch,
   CreditCardInput,
   Fab,
@@ -411,6 +412,16 @@ function InteractivePhoneInput(p: PreviewProps) {
         placeholder="812 3456 7890"
       />
       <DemoText tone="muted" style={{ fontSize: 12 }}>E.164: {toE164(country, phone) || "—"}</DemoText>
+    </View>
+  );
+}
+
+function InteractiveCodeScanner() {
+  const [last, setLast] = useState<string | null>(null);
+  return (
+    <View style={{ width: "100%", gap: 8 }}>
+      <CodeScanner barcodeTypes={["qr", "ean13", "code128"]} onScan={(r) => setLast(`${r.type}: ${r.data}`)} />
+      <DemoText tone="muted" style={{ fontSize: 12 }}>{last ? `Scanned ${last}` : "Nothing scanned yet"}</DemoText>
     </View>
   );
 }
@@ -910,6 +921,7 @@ export const RENDERERS = {
     </View>
   ),
   "color-swatch": () => <InteractiveColorSwatch />,
+  "code-scanner": () => <InteractiveCodeScanner />,
   "credit-card-input": () => <InteractiveCreditCard />,
   "chat-bubble": () => (
     <View style={{ width: "100%" }}>

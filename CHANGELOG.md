@@ -24,6 +24,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### ✨ Registry
 - New components: `search-bar`, `form-field`, `list-item`, `swipeable-row` (no gesture-handler needed; actions are also screen-reader actions) and `time-picker`. New `register-form` block, and new `use-form` and `use-infinite-scroll` hooks. All are beta.
 - New components: `country-picker` (searchable, about 240 countries with flags and dial codes), `phone-input` (country code picker; autofilled `+44…` numbers pick their country; `toE164`), `credit-card-input` (brand detection, Luhn, auto-advance), `image-with-fallback`, `section-list` (themed headers, inset-grouped variant) and `color-swatch`. All are beta.
+- New `code-scanner` component (QR and barcodes on `expo-camera`, with a framing guide, torch, duplicate filtering and permission states) and `use-image-picker` hook (library or camera on `expo-image-picker`, with permission handling and a blocked-permission state). Both are beta.
 - New blocks: `transaction-history` (grouped by day, daily totals, running balance), `product-card`, `search-results-row` (query highlighting) and `chat-bubble` (grouping, delivery ticks, retry). New templates: `social-feed`, `booking-flow` and `profile-flow`. All are beta.
 - Button takes any node as its label, `leftIcon` / `rightIcon` (a node, or a function given the label color), and a function `style`; the loading spinner scales with the size.
 

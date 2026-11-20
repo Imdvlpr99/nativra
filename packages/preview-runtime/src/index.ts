@@ -309,6 +309,7 @@ const FIXTURES = {
     { name: "Plain", props: { variant: "plain" } },
   ],
   "color-swatch": [{ name: "Default", props: {} }],
+  "code-scanner": [{ name: "QR and barcodes", props: {} }],
   "credit-card-input": [{ name: "Default", props: {} }],
   "transaction-history": [
     {

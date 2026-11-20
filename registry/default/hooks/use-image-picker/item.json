@@ -1,0 +1,15 @@
+{
+  "id": "use-image-picker",
+  "name": "useImagePicker",
+  "description": "Pick photos from the library or camera with permission handling, cropping, multi-select and a blocked-permission state.",
+  "type": "hook",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [{ "path": "use-image-picker.ts" }],
+  "npmDependencies": [{ "package": "expo-image-picker", "version": ">=16.0.0", "peer": true }],
+  "tags": ["hook", "image", "camera", "media"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}
