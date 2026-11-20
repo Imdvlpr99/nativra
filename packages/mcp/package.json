@@ -1,5 +1,5 @@
 {
-  "name": "@nativra/mcp",
+  "name": "nativra-mcp",
   "version": "0.4.0",
   "description": "MCP server for Nativra: lets AI agents search, inspect and install React Native components",
   "license": "MIT",

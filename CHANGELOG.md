@@ -21,7 +21,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - CodeQL also scans the GitHub Actions workflows (`actions` language).
 
 ### ✨ MCP server
-- New `@nativra/mcp` package: an MCP server with `nativra_search`, `nativra_list`, `nativra_info`, `nativra_init`, `nativra_add`, `nativra_diff`, `nativra_update` and `nativra_doctor`, so AI agents can find and install components. It runs the bundled CLI with argument arrays and never prompts. It can't force-overwrite edited files or remove items.
+- New `nativra-mcp` package: an MCP server with `nativra_search`, `nativra_list`, `nativra_info`, `nativra_init`, `nativra_add`, `nativra_diff`, `nativra_update` and `nativra_doctor`, so AI agents can find and install components. It runs the bundled CLI with argument arrays and never prompts. It can't force-overwrite edited files or remove items.
 
 ### ✨ Registry
 - New components: `search-bar`, `form-field`, `list-item`, `swipeable-row` (no gesture-handler needed; actions are also screen-reader actions) and `time-picker`. New `register-form` block, and new `use-form` and `use-infinite-scroll` hooks. All are beta.

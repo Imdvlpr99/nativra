@@ -106,7 +106,7 @@ describe("nativra MCP server", () => {
   });
 
   it("runs over stdio from the built bin", async () => {
-    if (!existsSync(SERVER)) throw new Error("Run `pnpm --filter @nativra/mcp build` first.");
+    if (!existsSync(SERVER)) throw new Error("Run `pnpm --filter nativra-mcp build` first.");
     const transport = new StdioClientTransport({
       command: process.execPath,
       args: [SERVER],
