@@ -147,3 +147,46 @@ jobs:
           # pnpm pack rewrites workspace: specifiers; npm publishes the tarball with provenance.
           TGZ=$(pnpm pack --pack-destination "$RUNNER_TEMP" | tail -n 1)
           npm publish "$TGZ" --provenance --access public
+
+  # Publishes @nativra/mcp to npmjs.com with provenance, after nativra-cli: the MCP server depends
+  # on the nativra-cli version released with it. Off until a trusted publisher is configured for
+  # @nativra/mcp on npmjs.com (same repo and workflow) and the repository variable
+  # NPM_MCP_TRUSTED_PUBLISHING is set to "true".
+  publish-mcp-npm:
+    name: Publish @nativra/mcp to npm (provenance)
+    needs: publish-npm
+    if: startsWith(github.ref, 'refs/tags/v') && vars.NPM_MCP_TRUSTED_PUBLISHING == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      # Trusted publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@11.21.1
+      # This job can mint an npm publish token (id-token: write), so no install script may run.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm --filter "@nativra/mcp..." build
+      - name: Publish
+        working-directory: packages/mcp
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$VERSION" != "$TAG" ]; then
+            echo "::error::Tag v$TAG does not match packages/mcp/package.json version $VERSION"
+            exit 1
+          fi
+          if npm view "@nativra/mcp@$VERSION" version >/dev/null 2>&1; then
+            echo "@nativra/mcp@$VERSION is already on npm; skipping."
+            exit 0
+          fi
+          # pnpm pack turns "nativra-cli": "workspace:^" into "^$VERSION".
+          TGZ=$(pnpm pack --pack-destination "$RUNNER_TEMP" | tail -n 1)
+          npm publish "$TGZ" --provenance --access public
