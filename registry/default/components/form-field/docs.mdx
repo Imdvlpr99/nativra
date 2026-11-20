@@ -1,0 +1,49 @@
+# FormField
+
+Wraps any control with a label, optional helper text and an error message. `Input` already has its own label and error, so use FormField for everything else: Switch, Select, Slider, RadioGroup, DatePicker, or a custom control.
+
+## Usage
+
+```tsx
+import { Switch } from "react-native";
+import { FormField } from "@/components/ui/FormField";
+import { Select } from "@/components/ui/Select";
+
+// A plain child
+<FormField label="Country" description="Used for tax and shipping" required error={errors.country}>
+  <Select value={country} onValueChange={setCountry} options={COUNTRIES} />
+</FormField>
+
+// A render function links a control that takes accessibility props to the visible label
+<FormField label="Email me about updates" error={errors.updates}>
+  {({ labelId, accessibilityLabel }) => (
+    <Switch
+      value={updates}
+      onValueChange={setUpdates}
+      accessibilityLabelledBy={labelId}
+      accessibilityLabel={accessibilityLabel}
+    />
+  )}
+</FormField>
+```
+
+With [useForm](/docs/hooks/use-form), pass `error={form.errorFor("country")}`.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Visible label |
+| description | string | — | Helper text under the label |
+| error | string | — | Error under the control; also marks the field invalid |
+| required | boolean | false | Shows the required marker |
+| disabled | boolean | false | Dims the whole field |
+| children | ReactNode \| (control) => ReactNode | — | The control |
+
+The render function receives `labelId`, `accessibilityLabel` (the label plus the error), `invalid` and `disabled`.
+
+## Accessibility
+
+- The label gets a `nativeID`; pass `labelId` to the control's `accessibilityLabelledBy` (Android)
+- `accessibilityLabel` includes the error, so iOS reads it with the control
+- The error text is a polite live region, announced on Android when it appears

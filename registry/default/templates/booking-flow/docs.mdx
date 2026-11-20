@@ -1,0 +1,40 @@
+# Booking Flow
+
+An appointment booking screen in three steps:
+
+1. A date (DatePicker) and a free time slot.
+2. Name, mobile number (PhoneInput) and notes.
+3. A summary to confirm.
+
+A success screen follows. It ships with demo availability, so it runs as soon as it's installed.
+
+## Usage
+
+```tsx
+import { BookingFlow } from "@/components/ui/BookingFlow";
+
+export default function BookScreen() {
+  return (
+    <BookingFlow
+      service={{ name: "Deep tissue massage", duration: 60, price: "$90" }}
+      getSlots={(date) => api.freeSlots(date)}
+      onConfirm={async (booking) => {
+        await api.book(booking);
+      }}
+      onDone={() => router.back()}
+    />
+  );
+}
+```
+
+`getSlots` returns the free `"HH:mm"` times for a `"YYYY-MM-DD"` day, as an array or a promise. Changing the date reloads the slots and clears the chosen time. If `onConfirm` rejects, the error message shows on the summary and the user stays there to retry. The booking's `phone` is in E.164 format ("+14155550100").
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| service | `{ name, duration, price }` | What is being booked (duration in minutes, price formatted) |
+| getSlots | `(date) => string[] \| Promise<string[]>` | Free times; demo slots when left out |
+| onConfirm | `(booking) => Promise<void> \| void` | Save the booking |
+| onDone | `() => void` | The success screen's button |
+| locale | string | Locale for the summary's date and time |

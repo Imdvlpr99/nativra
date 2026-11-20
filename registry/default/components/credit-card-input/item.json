@@ -1,0 +1,23 @@
+{
+  "id": "credit-card-input",
+  "name": "CreditCardInput",
+  "description": "Card number, expiry and CVC fields with formatting, brand detection, Luhn validation and auto-advance.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "card-utils.ts" },
+    { "path": "nativewind/CreditCardInput.tsx", "target": "nativewind" },
+    { "path": "stylesheet/CreditCardInput.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "input", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["input", "payment", "card", "form", "ecommerce"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

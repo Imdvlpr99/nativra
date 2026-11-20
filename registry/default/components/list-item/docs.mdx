@@ -1,0 +1,36 @@
+# ListItem
+
+A themed list row: leading icon or avatar, title, subtitle, a trailing value or control, a chevron, and a divider. It works in a `FlatList`, a `SectionList` or a plain settings screen.
+
+## Usage
+
+```tsx
+import { Bell, LogOut } from "lucide-react-native";
+import { Switch } from "react-native";
+import { ListItem } from "@/components/ui/ListItem";
+
+<ListItem title="Account" subtitle="ana@example.com" onPress={openAccount} divider />
+<ListItem
+  title="Notifications"
+  leading={<Bell size={20} />}
+  trailing={<Switch value={on} onValueChange={setOn} accessibilityLabel="Notifications" />}
+  divider
+/>
+<ListItem title="Sign out" leading={<LogOut size={20} />} destructive onPress={signOut} chevron={false} />
+```
+
+A row with `onPress` is one button, announced with its title and subtitle. A row with an interactive `trailing` control should have no `onPress`, so the control stays reachable on its own.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| title | string | — | Main text (one line) |
+| subtitle | string | — | Secondary text (up to two lines) |
+| leading | ReactNode | — | Icon or avatar |
+| trailing | ReactNode | — | Value, badge or control |
+| chevron | boolean | `!!onPress` | Show a disclosure chevron |
+| onPress | () => void | — | Makes the row pressable |
+| divider | boolean | false | Hairline under the row, aligned with the text |
+| destructive | boolean | false | Title in the destructive color |
+| disabled | boolean | false | Dims and disables the row |

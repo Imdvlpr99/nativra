@@ -43,6 +43,10 @@ for (const kind of ["components", "blocks", "templates"]) {
       continue; // StyleSheet-only item
     }
     for (const f of files) await stage(join(dir, f), f);
+    // Files shared by both targets (country-picker's countries.ts) sit at the item's root.
+    for (const f of await readdir(join(registry, kind, id))) {
+      if (/\.tsx?$/.test(f)) await stage(join(registry, kind, id, f), f);
+    }
     count++;
   }
 }

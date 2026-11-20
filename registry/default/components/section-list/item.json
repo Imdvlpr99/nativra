@@ -1,0 +1,19 @@
+{
+  "id": "section-list",
+  "name": "SectionList",
+  "description": "React Native's SectionList with themed sticky headers, section footers and an inset-grouped (settings) variant.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/SectionList.tsx", "target": "nativewind" },
+    { "path": "stylesheet/SectionList.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [{ "id": "use-theme-colors", "registry": "default" }],
+  "npmDependencies": [],
+  "tags": ["list", "sections", "settings"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

@@ -1,0 +1,37 @@
+# Social Feed
+
+An infinite-scroll feed screen. Each post card has the author, text, an optional photo, likes, comments and native share. It also has pull-to-refresh, loading, error and "all caught up" states. Paging runs on [useInfiniteScroll](/docs/hooks/use-infinite-scroll); it ships with demo data, so it runs as soon as it's installed.
+
+## Usage
+
+```tsx
+import { SocialFeed } from "@/components/ui/SocialFeed";
+
+export default function FeedScreen() {
+  return (
+    <SocialFeed
+      fetchPage={async (cursor) => {
+        const res = await fetch(`https://api.example.com/feed?after=${cursor ?? ""}`);
+        const json = await res.json();
+        return { items: json.posts, nextCursor: json.next };
+      }}
+      onToggleLike={(post, liked) => api.setLike(post.id, liked)}
+      onOpenComments={(post) => router.push(`/post/${post.id}`)}
+      onCompose={() => router.push("/compose")}
+    />
+  );
+}
+```
+
+A like updates the heart at once; if `onToggleLike` rejects, the heart goes back. Return `nextCursor: null` on the last page.
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| fetchPage | `(cursor) => Promise<{ items: Post[], nextCursor? }>` | Your API; demo data when left out |
+| onToggleLike | `(post, liked) => Promise<void> \| void` | Persist a like |
+| onOpenComments | `(post) => void` | Open the thread |
+| onCompose | `() => void` | The header's new-post button |
+
+`Post` is `{ id, author, handle, avatarUrl?, time, text, imageUrl?, likes, comments, liked }`.

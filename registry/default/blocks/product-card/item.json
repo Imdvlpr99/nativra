@@ -1,0 +1,28 @@
+{
+  "id": "product-card",
+  "name": "Product Card",
+  "description": "Product tile with image, badge, wishlist heart, name, rating, price with compare-at price, and add-to-cart.",
+  "type": "block",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/ProductCard.tsx", "target": "nativewind" },
+    { "path": "stylesheet/ProductCard.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "image-with-fallback", "registry": "default" },
+    { "id": "rating-stars", "registry": "default" },
+    { "id": "badge", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["block", "ecommerce", "product", "card"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

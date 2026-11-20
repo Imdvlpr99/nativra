@@ -1,0 +1,22 @@
+{
+  "id": "form-field",
+  "name": "FormField",
+  "description": "Label, description, any control and its error message as one accessible unit.",
+  "type": "component",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/FormField.tsx", "target": "nativewind" },
+    { "path": "stylesheet/FormField.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "label", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [],
+  "tags": ["form", "label", "validation"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

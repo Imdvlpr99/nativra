@@ -1,0 +1,33 @@
+{
+  "id": "booking-flow",
+  "name": "Booking Flow",
+  "description": "Appointment booking in three steps: date and free time slots, contact details with phone, a summary to confirm, then a success screen.",
+  "type": "template",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/BookingFlow.tsx", "target": "nativewind" },
+    { "path": "stylesheet/BookingFlow.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "safe-area", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "card", "registry": "default" },
+    { "id": "chip", "registry": "default" },
+    { "id": "date-picker", "registry": "default" },
+    { "id": "input", "registry": "default" },
+    { "id": "phone-input", "registry": "default" },
+    { "id": "progress", "registry": "default" },
+    { "id": "textarea", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["template", "booking", "appointment", "scheduling", "form"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}

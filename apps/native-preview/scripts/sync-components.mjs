@@ -139,7 +139,8 @@ for (const type of ["components", "blocks", "templates"]) {
       await write(fileName, rewrite(src));
       if (type === "components") componentNames.push(name);
       if (new RegExp(`export (function|const|class) ${name}\\b`).test(src)) items.push([item.id, type, name]);
-      else console.warn(`  ! ${item.id}: no "${name}" export, so it can't be previewed`);
+      // Lower-case files (countries.ts) are data or helpers shipped beside a component, not previews.
+      else if (/^[A-Z]/.test(name)) console.warn(`  ! ${item.id}: no "${name}" export, so it can't be previewed`);
     }
   }
 }

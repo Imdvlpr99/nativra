@@ -1,0 +1,33 @@
+# TimePicker
+
+An inline time picker with snap-scrolling hour and minute columns, plus AM/PM on 12-hour devices. It's the companion to [DatePicker](/docs/components/date-picker), and its value is a plain 24-hour `"HH:mm"` string, so it never shifts through time zones.
+
+## Usage
+
+```tsx
+import { TimePicker } from "@/components/ui/TimePicker";
+
+export function Example() {
+  const [time, setTime] = useState("18:30");
+  return <TimePicker label="Pickup time" value={time} onChange={setTime} minuteStep={15} />;
+}
+```
+
+Combine it with a DatePicker value as `${date}T${time}`.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| label | string | — | Label above the picker |
+| value | string | — | Controlled value, 24-hour "HH:mm" |
+| defaultValue | string | "09:00" | Starting value when uncontrolled |
+| onChange | (time: string) => void | — | Called with "HH:mm" |
+| minuteStep | number | 5 | Minutes between options; a value off the step is still listed |
+| hourCycle | 12 \| 24 | device locale | 12 adds an AM/PM column |
+| disabled | boolean | false | Dims and locks the picker |
+
+## Accessibility
+
+- Each column is one adjustable control ("Hour", "Minute", "AM or PM"): swipe up or down with VoiceOver or TalkBack to change it
+- The current value is announced as text, e.g. "Hour, 6"

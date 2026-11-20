@@ -1,0 +1,30 @@
+# ImageWithFallback
+
+An image that shows a [Skeleton](/docs/components/skeleton) while it loads, and a themed fallback when it fails or has no source. It replaces the usual `Image` plus loading flag plus `onError` boilerplate.
+
+## Usage
+
+```tsx
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+
+<ImageWithFallback source={product.imageUrl} aspectRatio={4 / 3} radius="lg" accessibilityLabel={product.name} />
+
+// A custom fallback, e.g. initials for an avatar
+<ImageWithFallback source={user.avatar} width={48} height={48} radius="full" fallback={<Initials name={user.name} />} />
+```
+
+`source` takes a URL string, `{ uri }` or a `require()`d asset. An empty string or `null` goes straight to the fallback, and a new source shows the skeleton again.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| source | string \| ImageSource \| null | — | What to show |
+| width | DimensionValue | "100%" | Box width |
+| height | DimensionValue | — | Box height |
+| aspectRatio | number | — | Width / height, when only one side is set |
+| radius | "none" \| "sm" \| "md" \| "lg" \| "full" | "md" | Corner role from the style |
+| fallback | ReactNode | icon on muted | Shown on error or with no source |
+| onLoad / onError | () => void | — | Load events |
+
+Other `Image` props (`resizeMode`, `blurRadius`, …) pass through.

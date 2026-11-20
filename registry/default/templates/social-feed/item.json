@@ -1,0 +1,30 @@
+{
+  "id": "social-feed",
+  "name": "Social Feed",
+  "description": "Infinite-scroll feed with post cards, optimistic likes, comments and native share, pull to refresh, and error and end states.",
+  "type": "template",
+  "status": "beta",
+  "version": "0.1.0",
+  "stylingTargets": ["nativewind", "stylesheet"],
+  "platforms": { "android": true, "ios": true, "expoGo": true },
+  "files": [
+    { "path": "nativewind/SocialFeed.tsx", "target": "nativewind" },
+    { "path": "stylesheet/SocialFeed.tsx", "target": "stylesheet" }
+  ],
+  "registryDependencies": [
+    { "id": "safe-area", "registry": "default" },
+    { "id": "avatar", "registry": "default" },
+    { "id": "button", "registry": "default" },
+    { "id": "image-with-fallback", "registry": "default" },
+    { "id": "separator", "registry": "default" },
+    { "id": "use-infinite-scroll", "registry": "default" },
+    { "id": "use-theme-colors", "registry": "default" }
+  ],
+  "npmDependencies": [
+    { "package": "lucide-react-native", "version": "^1.73.0" },
+    { "package": "react-native-svg", "version": "^15.8.0" }
+  ],
+  "tags": ["template", "social", "feed", "infinite-scroll"],
+  "docsPath": "docs.mdx",
+  "addedAt": "2026-11-20T00:00:00.000Z"
+}
